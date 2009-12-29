@@ -1,4 +1,4 @@
-ASN.1
+﻿ASN.1
 ======
 ASN.1 (Abstract Syntax Notation One) jest to standard ITU-T/ISO służący do opisu
 struktur reprezentujących dane w sposób umożliwiający ich kodowanie, transmisję
@@ -21,7 +21,7 @@ wypadkach jest trudniejsze, ale możliwe dzięki ECN.
 ECN (Explicit Coding Notation) umożliwia formalny opis niestandardowych metod
 kodowania. Jest to standard ściśle związany z ASN.1 i opis danego kodowania
 zawsze łączy się z pewnym opisem danych wyrażonych w ASN.1. Z tego powodu często
-spotyka się frazę ASN.1+ECN.
+spotyka się określenie ASN.1+ECN.
 
 
 TTCN
