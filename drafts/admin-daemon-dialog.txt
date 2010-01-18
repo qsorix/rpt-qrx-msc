@@ -10,7 +10,11 @@
 < 10: kill {torrent}
 > OK
 
+< duration 15
+> OK
+
 < start 2010-01-12 11:23:03
-< duration 15ms
+> OK
+
 < end
 > OK
