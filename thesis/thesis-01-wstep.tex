@@ -1,0 +1,72 @@
+\documentclass[a4paper,11pt]{mwart}
+
+\usepackage[utf8]{inputenc}
+\usepackage[polish]{babel}
+\usepackage{polski}
+\usepackage{graphicx}
+%\usepackage{color}
+%\usepackage{float}
+%\usepackage{hyperref}
+
+\begin{document}
+
+\section{Wstęp}
+
+Oczywiście ponieważ implementacja rozwija się w czasie, a ponadto na pracę
+protokołu ma wpływ nie tylko pisany kod, ale również reszta stosu sieciowego,
+wszelkie testy najlepiej jest automatyzować, aby można je było wygodnie
+powtarzać i dokumentować ich wyniki.
+
+W pracy skupiamy się na protokołach warstwy transportowej i wyższych. Bla bla,
+coś na temat tego, że część pojęć (np. PDU) jest bardzo ogólnych i zawężamy ich
+znaczenie.
+
+\section{Skróty}
+
+PDU - PDU
+
+\section{Problematyka automatyzacji testów}
+
+Implementując dowolny protokół szczególną uwagę należy przywiązać do jego
+zgodności ze specyfikacją i założeniami dotyczącymi obszaru zastosowań.
+W procesie tym pomocne są narzędzia, które sprawdzają poprawność:
+\begin{itemize}
+  \item{wymienianych PDU,}
+  \item{sekwencji komunikatów,}
+  \item{wydajność transmisji.}
+\end{itemize}
+
+Pierwsze zagadnienie dotyczy budowy komunikatów: długość PDU, położenie i sposób
+obliczania sumy kontrolnej, występowanie numeru wersji, itp. Testowanie na tym
+poziomie polega na porównywaniu cech obserwowanych PDU z ich specyfikacją. Od
+narzędzia wymaga się możliwości sformalizowania opisu zawartego w dokumentacji w
+taki sposób, aby mogło samodzielnie analizować komunikaty.
+
+Skuteczna komunikacja wymaga często takich mechanizmów jak nawiązywanie
+połączenia czy negocjacja opcji. Wiążą się one z wymianą określonych sekwencji
+komunikatów. Wymaga to nie tylko parsowania PDU ale też obserwacji globalnego
+stanu połączenia.
+
+Wspomniane do tej pory aspekty, o ile dobierze się odpowiednie narzędzia, nie
+przysparzają problemów w czasie testów. Język TTCN-3\footnote{FIXME link?}
+został zaprojektowany aby umożliwić analizę implementacji dowolnych protokołów
+zarówno w środowiskach wirtualnych jak i rzeczywistych.
+
+Wydajność transmisji dotyczy między innymi osiąganych przepustowości, reakcji na
+zatory, jednoczesnych transmisji, rywalizacji z innymi przepływami i innych
+czynników mających wpływ na odczuwalną jakość połączenia.
+
+Test w tym przypadku nie polega zatwierdzeniu lub odrzuceniu pojedynczego
+przypadku, a na analizie wielokrotnie powtarzanych eksperymentów i odniesieniu
+wyników do teoretycznych założeń.
+
+\subsection{Testy wydajności}
+
+Do pomiaru transferów istnieje sporo narzędzi. Problem z pomiarem
+wydajności to konfiguracja środowiska, w którym można wykonywać
+powtarzalne pomiary. Trzeba tu więc metod opisujących konfiguracje
+prostych sieci, przepustowości łączy, procentu gubionych pakietów, itp,
+a także sposobu automatycznego zastosowania zdefiniowanej konfiguracji
+na zadanych maszynach/routerach.
+
+\end{document}
