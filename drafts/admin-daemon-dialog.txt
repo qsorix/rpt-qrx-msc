@@ -1,0 +1,9 @@
+test 324
+file {torrent-file} 1243453
+<data>
+schedule
+0: {torrent} ctorrent /foo/sru -ble -sre
+10: kill {torrent}
+start 2010-01-12 11:23:03
+duration 15ms
+end
