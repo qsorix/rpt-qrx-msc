@@ -1,0 +1,27 @@
+<configuration>
+  <hosts>
+    <host id="A" ip="192.168.6.2"/>
+    <host id="B" ip="192.168.6.6"/>
+  </hosts>
+
+  <test>
+    <duration>15ms</duration>
+    <file id="torrent-file">some/local/path/plik.torrent</file>
+
+    <schedule id="torrent-test">
+      0: {torrent} ctorrent /foo/sru -ble -sre
+      10: kill {torrent}
+    </schedule>
+
+    <setup for="A">
+      <file id="torrent-file"/>
+      <schedule id="torrent-test"/>
+    </setup>
+
+    <setup for="B">
+      <file id="torrent-file"/>
+      <schedule id="torrent-test"/>
+    </setup>
+  </test>
+
+</configuration>
