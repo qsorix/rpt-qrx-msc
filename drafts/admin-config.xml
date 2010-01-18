@@ -5,30 +5,37 @@
       <ip>192.168.6.2</ip>
     </host>
 
-    <host id="B">>
+    <host id="B">
       <name>marvin</name>
     </host>
   </hosts>
 
   <test>
-    <duration>15ms</duration>
+    <duration unit="s">15</duration>
 
-    <resource id="torrent=test">
+    <resource id="torrent-test">
       <file>/local/path/plik.torrent</file>
     </resource>
 
     <schedule id="torrent-test">
-      0: {torrent} ctorrent {torrent-file} -ble -sre
-      10: kill {torrent}
+      <action id="torrent">
+        <at unit="s">0</at>
+        <command>ctorrent <reference by="file-name" id="torrent-test"/> -foo -bar</command>
+      </action>
+ 
+      <action>
+        <at unit="s">10</at>
+        <kill id="torrent"/>
+      </action>
     </schedule>
 
     <setup for="A">
-      <file id="torrent-file"/>
+      <resource id="torrent-file"/>
       <schedule id="torrent-test"/>
     </setup>
 
     <setup for="B">
-      <file id="torrent-file"/>
+      <resource id="torrent-file"/>
       <schedule id="torrent-test"/>
     </setup>
   </test>
