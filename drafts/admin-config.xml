@@ -1,13 +1,21 @@
 <configuration>
 
   <hosts>
-    <host id="A" ip="192.168.6.2"/>
-    <host id="B" ip="192.168.6.6"/>
+	  <host id="A">
+			<ip>192.168.6.2</ip>
+		</host>
+
+		<host id="B">>
+			<name>marvin</name>
+		</host>
   </hosts>
 
   <test>
     <duration>15ms</duration>
-    <file id="torrent-file">some/local/path/plik.torrent</file>
+
+		<resource id="torrent=test">
+			<file>/local/path/plik.torrent</file>
+		</resource>
 
     <schedule id="torrent-test">
       0: {torrent} ctorrent {torrent-file} -ble -sre
