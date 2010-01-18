@@ -1,9 +1,16 @@
-test 324
-file {torrent-file} 1243453
-<data>
-schedule
-0: {torrent} ctorrent /foo/sru -ble -sre
-10: kill {torrent}
-start 2010-01-12 11:23:03
-duration 15ms
-end
+< test 324
+> OK
+
+< file {torrent-file} 1243453
+< <data>
+> OK
+
+< schedule 2
+< 0: {torrent} ctorrent {torrent-file} -ble -sre
+< 10: kill {torrent}
+> OK
+
+< start 2010-01-12 11:23:03
+< duration 15ms
+< end
+> OK
