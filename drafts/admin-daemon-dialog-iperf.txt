@@ -12,7 +12,7 @@
 > OK
 
 
-< results 3
+< cmds 3
 > OK
 
 < 0: uname -a
