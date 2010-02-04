@@ -1,0 +1,17 @@
+Przed przeprowadzeniem testu konieczna jest konfiguracja hostów wchodzących w skład
+systemu. Nierzadko wymaga to uprawnień administratora, a biorąc pod uwagę, że
+zadania zlecane są zdalnie, może to wprowadzać zagrożenie dla bezpieczeństwa
+maszyn wchodzących w skład testowego środowiska.
+
+Nasze rozwiązanie minimalizuje występujące ryzyko, zakładamy jednak kilka
+faktow o środowisku, w którym test zostanie przeprowadzony.
+
+Nie przewidujemy, aby nasz system był stosowany na jakichkolwiek maszynach
+wchodzących w skład szkieletu ważnej sieci. Sama możliwość czasowej zmiany
+konfiguracji interfejsów powoduje konflikt z ich głównym zastosowaniem.
+
+Zakładamy, że system stosowany będzie przez developerów i studentów
+dysponujących bądź to urządzeniami przeznaczonymi do wykonywania różnego
+rodzaju eksperymentów bądź kilkoma komputerami domowymi, nad konfiguracją
+których zwykle użytkownicy mają całkowitą kontrolę, a ich dostępność nie jest
+bardzo istotnym czynnikiem.
