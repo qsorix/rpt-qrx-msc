@@ -13,17 +13,10 @@ def send_sth(text):
 	print data
 	if data.startswith('400'): sys.exit(1)
 
+send_sth('results 235')
 
-send_sth('test 235')
-send_sth('schedule 2')
-send_sth('0: {iperf-server} iperf -u -s')
-send_sth('5: kill {iperf-server}')
-send_sth('cmds 3')
-send_sth('0: uname -a')
-send_sth('0: date')
-send_sth('0: iperf -v')
-send_sth('duration 10')
-send_sth('start 2010-01-19 01:13:03')
-send_sth('end')
+print '1',s.recv(1024)
+print '2',s.recv(1024)
+print '3',s.recv(1024)
 
 s.close()

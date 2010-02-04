@@ -1,35 +1,53 @@
 #!/usr/bin/env python
 
-from sched import TaskScheduler
+from scheduler import TaskScheduler
 from test import Task, Test
 import re
 from threading import Thread
 from time import strptime
 
 class Conn(Thread):
-	def __init__(self, c_sock, addr):
+	def __init__(self, c_sock, addr, daemon):
 		Thread.__init__(self)
 		self.c_sock = c_sock
 		self.addr = addr
+		self.daemon = daemon
 
 	def send_ok(self):
 #		print '200: OK'
-		self.c_sock.send('200: OK')
+		self.c_sock.send('200 OK')
 
 	def send_bad_request(self):
 #		print '400: Bad Request'
-		self.c_sock.send('400: Bad Request')
+		self.c_sock.send('400 Bad Request')
 		self.c_sock.close()
 
 	def run(self):
 		line = self.c_sock.recv(1024)
 
-		if not re.search('^test [0-9]+$', line):
+		if re.search('^test [0-9]+$', line):
+			self.send_ok()
+			self.recv_test(int(line[5:]))
+		elif re.search('^results [0-9]+$', line):
+			self.send_ok()
+			self.send_results(int(line[8:]))
+		else:
 			self.sent_bad_request()
 			return
 
-		self.send_ok()
-		test = Test(int(line[5:]))
+	def send_results(self, test_nr):
+		test = self.daemon.tests.get(test_nr)
+	
+		print 'Sending results for test', test_nr
+
+		for cmd in test.results_cmds:
+			print test.results_cmds.get(cmd)
+			self.c_sock.send(test.results_cmds.get(cmd))
+
+		self.c_sock.close()
+
+	def recv_test(self, test_nr):
+		test = Test(test_nr)
 
 		line = self.c_sock.recv(1024)
 		while not re.search('^end$', line):
@@ -50,6 +68,22 @@ class Conn(Thread):
 
 					task = task_line.split(':')
 					test.tasks.append(Task(int(task[0]), task[1][1:]))
+
+					self.send_ok()
+
+			elif re.search('^cmds [0-9]+$', line):
+				test.cmds = []
+				self.send_ok()
+
+				for i in range(0, int(line.split(' ')[1])):
+					cmd_line = self.c_sock.recv(1024)
+
+					if not re.search('^[0-9]+\: .+$', cmd_line):
+						self.send_bad_request()
+						return
+
+					cmd = cmd_line.split(':')
+					test.cmds.append(Task(int(cmd[0]), cmd[1][1:]))
 
 					self.send_ok()
 
@@ -75,6 +109,7 @@ class Conn(Thread):
 		print test
 
 		if test.check_config():
+			self.daemon.tests[test.id] = test
 			ts = TaskScheduler(test)
 			ts.run()
 		else:

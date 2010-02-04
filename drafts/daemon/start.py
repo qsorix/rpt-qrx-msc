@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from daemon.connection import Conn
+from threading import Thread
 import sys
 import socket
 
@@ -10,13 +11,13 @@ class Daemon:
 		self.sock.bind(('', int(sys.argv[1])))
 		self.sock.listen(1)
 
+		self.tests = {}
+
 		while 1:
 			c_sock, addr = self.sock.accept()
-			conn = Conn(c_sock, addr)
+			conn = Conn(c_sock, addr, self)
 			conn.start()
 
 		self.sock.close()
 
 daemon = Daemon()
-
-
