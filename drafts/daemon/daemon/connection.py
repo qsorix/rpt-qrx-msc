@@ -14,11 +14,9 @@ class Conn(Thread):
 		self.daemon = daemon
 
 	def send_ok(self):
-#		print '200: OK'
 		self.c_sock.send('200 OK')
 
 	def send_bad_request(self):
-#		print '400: Bad Request'
 		self.c_sock.send('400 Bad Request')
 		self.c_sock.close()
 
@@ -40,8 +38,10 @@ class Conn(Thread):
 	
 		print 'Sending results for test', test_nr
 
+		for task in test.results_tasks:
+			self.c_sock.send(test.results_tasks.get(task))
+
 		for cmd in test.results_cmds:
-			print test.results_cmds.get(cmd)
 			self.c_sock.send(test.results_cmds.get(cmd))
 
 		self.c_sock.close()

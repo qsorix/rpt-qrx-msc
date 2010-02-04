@@ -19,23 +19,21 @@ class TaskScheduler:
 		for cmd in self.test.cmds:
 			self.cmd_s.enter(cmd.start, 1, self.get_output, [cmd.cmd])
 
-		self.pids = {}
+		self.processes = {}
 
 	def run(self):
 		self.s.run()
 	
 	def run_cmd(self, cmd):
-		p = Popen(cmd.split(' '))
+		p = Popen(cmd.split(' '), stdout=PIPE, bufsize=0)
 
 		# TODO: Get the output!!!
 
 	def run_name_cmd(self, name, cmd):
 
-		p = Popen(cmd.split(' '))
+		p = Popen(cmd.split(' '), stdout=PIPE, bufsize=0)
 
-		# TODO: Get the output!!!
-
-		self.pids[name] = p.pid
+		self.processes[name] = p
 
 	def get_output(self, cmd):
 		self.test.results_cmds[cmd] = commands.getoutput(cmd)
@@ -44,8 +42,16 @@ class TaskScheduler:
 		print 'End of tasks'
 
 	def kill_cmd(self, task_name):
-		os.kill(self.pids.get(task_name), signal.SIGKILL)
-		print 'Killed', self.pids.get(task_name)
+		p = self.processes.get(task_name)
+
+		os.kill(p.pid, signal.SIGKILL)
+		print 'Killed', p.pid
+
+		task_output = ''
+		for line in p.stdout:
+			task_output += line
+
+		self.test.results_tasks[task_name] = task_output
 
 	def start_scheduler(self):
 		self.task_s = sched.scheduler(time, sleep)
