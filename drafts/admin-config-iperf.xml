@@ -1,0 +1,59 @@
+<configuration>
+  <hosts>
+    <host id="A">
+      <name>defteros</name> <!-- rozwiazac nazwy albo na razie dac na sztywno IP -->
+      <port>22</port> <!-- przyda sie, jakbysmy chcieli cos pokazywac, to beda forwardy na studnie -->
+    </host>
+
+    <host id="B">
+      <name>marvin</name>
+      <port>22</port>
+    </host>
+  </hosts>
+
+  <test>
+    <duration unit="s">70</duration>
+
+    <!-- z tego zrobic schedule do wykonania pomiaru -->
+    <schedule id="iperf-server">
+      <action id="iperf">
+        <at unit="s">0</at>
+        <command>iperf -u -s </command>
+      </action>
+      <action>
+        <at unit="s">65</at>
+        <kill id="iperf"/>
+      </action>
+    </schedule>
+
+    <!-- z tego zrobic schedule do wykonania pomiaru -->
+    <schedule id="iperf-client">
+      <action id="iperf">
+        <at unit="s">0</at>
+        <!-- IP hosta A... podmienic jakkolwiek. moze byc po prostu na stale podane IP ;-) -->
+        <command>iperf -u -c {host.A} -t 60</command>
+      </action>
+      <action>
+        <at unit="s">65</at>
+        <kill id="iperf"/>
+      </action>
+    </schedule>
+
+    <!-- a to jest schedule do pobrania wynikow. czas nie jest podany wiec niech sie wykonuja jedna za drugą -->
+    <results id="generic">
+      <action><command>uname -a</command></action>
+      <action><command>date</command></action>
+      <action><command>iperf -v</command></action>
+    </results>
+
+    <setup for="A">
+      <schedule id="iperf-server"/>
+      <results id="generic"/>
+    </setup>
+
+    <setup for="B">
+      <schedule id="iperf-client"/>
+      <results id="generic"/>
+    </setup>
+  </test>
+</configuration>
