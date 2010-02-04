@@ -1,44 +1,10 @@
 #!/usr/bin/env python
 
-from daemon_sched import TaskScheduler
-import sys
+from sched import TaskScheduler
+from test import Task, Test
 import re
-import socket
 from threading import Thread
-from time import *
-
-tests = []
-
-class Test:
-	def __init__(self, id):
-		self.id = id
-		self.tasks = []
-		self.duration = 0
-		self.start = None
-		self.files = {}
-
-	def __str__(self):
-		output = 'Test ' + str(self.id) + '\n'
-		output += ' Duration: ' + str(self.duration) + '\n'
-		output += ' Start: ' + strftime('%Y-%m-%d %H:%M:%S', self.start) + ' (' + str(mktime(self.start)) + ')\n'
-		for task in self.tasks:
-			output += ' ' + str(task) + '\n'
-		for file in self.files.keys():
-			output += ' File \"' + file + '\": ' + self.files.get(file)[:30] + '\n'
-		return output
-
-	def check_config(self):
-		if not self.duration > 0 or self.start is None or not len(self.tasks) > 0:
-			return False
-		return True
-	
-class Task:
-	def __init__(self, start, cmd):
-		self.start = start
-		self.cmd = cmd
-
-	def __str__(self):
-		return 'At ' + str(self.start) + ' start: ' + self.cmd
+from time import strptime
 
 class Conn(Thread):
 	def __init__(self, c_sock, addr):
@@ -114,19 +80,3 @@ class Conn(Thread):
 		else:
 			print 'Cos jest nie tak z tym testem...'
 	
-class Daemon:
-	def __init__(self):
-		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.sock.bind(('', int(sys.argv[1])))
-		self.sock.listen(1)
-
-		while 1:
-			c_sock, addr = self.sock.accept()
-			conn = Conn(c_sock, addr)
-			conn.start()
-
-		self.sock.close()
-
-daemon = Daemon()
-
-

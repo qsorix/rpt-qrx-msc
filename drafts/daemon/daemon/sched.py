@@ -1,3 +1,5 @@
+#!/usr/bin/evn python
+
 import sched
 import commands
 import subprocess
@@ -23,5 +25,4 @@ class TaskScheduler:
 
 		# dodanie kill'a dla testu po test.duration
 		self.task_s.run()
-
 
