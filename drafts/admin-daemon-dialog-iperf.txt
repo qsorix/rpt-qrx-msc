@@ -1,0 +1,36 @@
+< test 324
+> OK
+
+
+< schedule 2
+> OK
+
+< 0: {iperf-server} iperf -u -s
+> OK
+
+< 65: kill {iperf-server}
+> OK
+
+
+< results 3
+> OK
+
+< 0: uname -a
+> OK
+
+< 0: date
+> OK
+
+< 0: iperf -v
+> OK
+
+
+< duration 70
+> OK
+
+
+< start 2010-01-12 11:23:03
+> OK
+
+< end
+> OK
