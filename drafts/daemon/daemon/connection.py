@@ -42,13 +42,13 @@ class Conn(Thread):
 
 		for task in test.results_tasks:
 			print 'Sending:',test.results_tasks.get(task)
-			self.c_sock.send(test.results_tasks.get(task))
+			self.c_sock.send(test.results_tasks.get(task)+'\n')
 
 		print test.results_cmds
 
 		for cmd in test.results_cmds:
 			print 'Sending:',test.results_cmds.get(cmd)
-			self.c_sock.send(test.results_cmds.get(cmd))
+			self.c_sock.send(test.results_cmds.get(cmd)+'\n')
 
 		self.c_sock.close()
 
