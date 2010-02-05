@@ -30,7 +30,7 @@ class Conn(Thread):
 			self.send_ok()
 			self.send_results(int(line[8:]))
 		else:
-			self.sent_bad_request()
+			self.send_bad_request()
 			return
 
 	def send_results(self, test_nr):
