@@ -15,9 +15,9 @@ def send_sth(text):
 
 send_sth('results 235')
 
-print '1',s.recv(1024)
-print '2',s.recv(1024)
-print '3',s.recv(1024)
-print '4',s.recv(1024)
+print s.recv(1024)
+print s.recv(1024)
+print s.recv(1024)
+print s.recv(1024)
 
 s.close()
