@@ -125,7 +125,7 @@ int main(int argc, char** argv)
 	}
 
 	std::cout << " --- waiting for the test to finish --- " << std::endl;
-	usleep(((config.test_duration())) * 1500000);
+	usleep(((config.test_duration()+5)) * 1000000);
 	std::cout << " --- gathering results --- " << std::endl;
 
 	BOOST_FOREACH(Configuration::setups_t::const_iterator::value_type i, config.setups()) {
@@ -137,7 +137,7 @@ int main(int argc, char** argv)
 			conn_str = host.name;
 		conn_str += ":" + boost::lexical_cast<std::string>(host.port);
 
-		std::cout << "connecting with: " << conn_str << std::endl;
+		std::cout << "\n\nconnecting with: " << conn_str << std::endl;
 
 		sockets[i.first] = new Poco::Net::DialogSocket;
 		sockets[i.first]->connect(Poco::Net::SocketAddress(conn_str));
@@ -145,10 +145,6 @@ int main(int argc, char** argv)
 		(*sockets[i.first]) << ("results " + boost::lexical_cast<std::string>(test_number));
 
 		std::string line;
-		while((*sockets[i.first]).receiveMessage(line)) {
-			std::cout << line << std::endl;
-		}
-
 		while((*sockets[i.first]).receiveMessage(line)) {
 			std::cout << line << std::endl;
 		}

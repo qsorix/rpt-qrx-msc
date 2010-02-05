@@ -30,11 +30,12 @@ class TaskScheduler:
 	def run_name_cmd(self, name, cmd):
 
 		p = Popen(cmd.split(' '), stdout=PIPE, bufsize=0)
+
+		print 'Started',name,'pid:',p.pid
 		self.processes[name] = p
 
 	def get_output(self, cmd):
 		self.test.results_cmds[cmd] = commands.getoutput(cmd)
-		print 'Added:',self.test.results_cmds[cmd]
 
 	def kill_everything(self):
 		print 'End of tasks'

@@ -18,10 +18,12 @@ class Test:
 		output = 'Test ' + str(self.id) + '\n'
 		output += ' Duration: ' + str(self.duration) + '\n'
 		output += ' Start: ' + strftime('%Y-%m-%d %H:%M:%S', self.start) + ' (' + str(mktime(self.start)) + ')\n'
+		output += ' Tasks:\n'
 		for task in self.tasks:
-			output += ' ' + str(task) + '\n'
+			output += '  ' + str(task) + '\n'
+		output += ' Commands:\n'
 		for cmd in self.cmds:
-			output += ' ' + str(cmd) + '\n'
+			output += '  ' + str(cmd) + '\n'
 		for file in self.files.keys():
 			output += ' File \"' + file + '\": ' + self.files.get(file)[:30] + '\n'
 		return output

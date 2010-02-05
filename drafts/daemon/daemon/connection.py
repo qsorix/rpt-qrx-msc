@@ -22,10 +22,8 @@ class Conn(Thread):
 
 	def run(self):
 		line = self.c_sock.recv(1024).strip()
-		print '|',line,'|'
 
 		if re.search('^test [0-9]+$', line):
-			print line
 			self.send_ok()
 			self.recv_test(int(line[5:]))
 		elif re.search('^results [0-9]+$', line):
@@ -41,13 +39,11 @@ class Conn(Thread):
 		print 'Sending results for test', test_nr
 
 		for task in test.results_tasks:
-			print 'Sending:',test.results_tasks.get(task)
+#			print 'Sending:',test.results_tasks.get(task)
 			self.c_sock.send(test.results_tasks.get(task)+'\n')
 
-		print test.results_cmds
-
 		for cmd in test.results_cmds:
-			print 'Sending:',test.results_cmds.get(cmd)
+#			print 'Sending:',test.results_cmds.get(cmd)
 			self.c_sock.send(test.results_cmds.get(cmd)+'\n')
 
 		self.c_sock.close()
@@ -56,7 +52,6 @@ class Conn(Thread):
 		test = Test(test_nr)
 
 		line = self.c_sock.recv(1024).strip()
-		print '|',line,'|'
 		while not re.search('^end$', line):
 			if re.search('^file \{.+\} [0-9]+$', line):
 				test.files[line.split(' ')[1][1:-1]] = self.c_sock.recv(1024).strip()
@@ -68,7 +63,6 @@ class Conn(Thread):
 
 				for i in range(0, int(line.split(' ')[1])):
 					task_line = self.c_sock.recv(1024).strip()
-					print '|',task_line,'|'
 
 					if not re.search('^[0-9]+\: .+$', task_line):
 						self.send_bad_request()
@@ -85,7 +79,6 @@ class Conn(Thread):
 
 				for i in range(0, int(line.split(' ')[1])):
 					cmd_line = self.c_sock.recv(1024).strip()
-					print '|',cmd_line,'|'
 
 					if not re.search('^[0-9]+\: .+$', cmd_line):
 						self.send_bad_request()
@@ -111,7 +104,6 @@ class Conn(Thread):
 				return
 
 			line = self.c_sock.recv(1024).strip()
-			print '|',line,'|'
 
 		self.send_ok()
 		self.c_sock.close()
