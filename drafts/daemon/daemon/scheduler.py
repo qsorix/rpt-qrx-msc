@@ -15,9 +15,7 @@ class TaskScheduler:
 		self.s.enterabs(time()+2, 1, self.start_scheduler, ())	# zacznij za 2 sekundy
 
 		self.cmd_s = sched.scheduler(time, sleep)
-		
-		for cmd in self.test.cmds:
-			self.cmd_s.enter(cmd.start, 1, self.get_output, [cmd.cmd])
+		self.task_s = sched.scheduler(time, sleep)
 
 		self.processes = {}
 
@@ -32,11 +30,11 @@ class TaskScheduler:
 	def run_name_cmd(self, name, cmd):
 
 		p = Popen(cmd.split(' '), stdout=PIPE, bufsize=0)
-
 		self.processes[name] = p
 
 	def get_output(self, cmd):
 		self.test.results_cmds[cmd] = commands.getoutput(cmd)
+		print 'Added:',self.test.results_cmds[cmd]
 
 	def kill_everything(self):
 		print 'End of tasks'
@@ -54,7 +52,6 @@ class TaskScheduler:
 		self.test.results_tasks[task_name] = task_output
 
 	def start_scheduler(self):
-		self.task_s = sched.scheduler(time, sleep)
 		for task in self.test.tasks:
 			if task.cmd.startswith('{'):
 				task_name = task.cmd[task.cmd.index('{')+1:task.cmd.index('}')]
@@ -70,6 +67,9 @@ class TaskScheduler:
 
 		# dodanie kill'a dla testu po test.duration
 		self.task_s.enter(self.test.duration, 1, self.kill_everything, [])
+
+		for cmd in self.test.cmds:
+			self.cmd_s.enter(cmd.start, 1, self.get_output, [cmd.cmd])
 
 		# dodanie wykonania komend na koniec testu
 		self.task_s.enter(self.test.duration+1, 1, self.cmd_s.run, [])

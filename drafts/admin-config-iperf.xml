@@ -1,12 +1,12 @@
 <configuration>
   <hosts>
     <host id="A">
-      <name>defteros</name> <!-- rozwiazac nazwy albo na razie dac na sztywno IP -->
+      <name>localhost</name> <!-- rozwiazac nazwy albo na razie dac na sztywno IP -->
       <port>6666</port> <!-- przyda sie, jakbysmy chcieli cos pokazywac, to beda forwardy na studnie -->
     </host>
 
     <host id="B">
-      <name>defteros</name>
+      <name>localhost</name>
       <port>6667</port>
     </host>
   </hosts>
