@@ -14,10 +14,10 @@ class Conn(Thread):
 		self.daemon = daemon
 
 	def send_ok(self):
-		self.c_sock.send('200 OK')
+		self.c_sock.send('200 OK\n')
 
 	def send_bad_request(self):
-		self.c_sock.send('400 Bad Request')
+		self.c_sock.send('400 Bad Request\n')
 		self.c_sock.close()
 
 	def run(self):
