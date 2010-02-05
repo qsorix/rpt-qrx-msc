@@ -21,7 +21,7 @@ class Conn(Thread):
 		self.c_sock.close()
 
 	def run(self):
-		line = self.c_sock.recv(1024)
+		line = self.c_sock.recv(1024).strip()
 		print '|',line,'|'
 
 		if re.search('^test [0-9]+$', line):
@@ -51,11 +51,11 @@ class Conn(Thread):
 	def recv_test(self, test_nr):
 		test = Test(test_nr)
 
-		line = self.c_sock.recv(1024)
+		line = self.c_sock.recv(1024).strip()
 		print '|',line,'|'
 		while not re.search('^end$', line):
 			if re.search('^file \{.+\} [0-9]+$', line):
-				test.files[line.split(' ')[1][1:-1]] = self.c_sock.recv(1024)
+				test.files[line.split(' ')[1][1:-1]] = self.c_sock.recv(1024).strip()
 				self.send_ok()
 
 			elif re.search('^schedule [0-9]+$', line):
@@ -63,7 +63,7 @@ class Conn(Thread):
 				self.send_ok()
 
 				for i in range(0, int(line.split(' ')[1])):
-					task_line = self.c_sock.recv(1024)
+					task_line = self.c_sock.recv(1024).strip()
 					print '|',task_line,'|'
 
 					if not re.search('^[0-9]+\: .+$', task_line):
@@ -80,7 +80,7 @@ class Conn(Thread):
 				self.send_ok()
 
 				for i in range(0, int(line.split(' ')[1])):
-					cmd_line = self.c_sock.recv(1024)
+					cmd_line = self.c_sock.recv(1024).strip()
 					print '|',cmd_line,'|'
 
 					if not re.search('^[0-9]+\: .+$', cmd_line):
@@ -106,7 +106,7 @@ class Conn(Thread):
 				self.send_bad_request()
 				return
 
-			line = self.c_sock.recv(1024)
+			line = self.c_sock.recv(1024).strip()
 			print '|',line,'|'
 
 		self.send_ok()
