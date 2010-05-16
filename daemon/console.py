@@ -10,11 +10,8 @@ sock.connect((HOST, PORT))
 
 while 1:
     data = raw_input('> ')
-    if data == 'q' or data == 'quit' or data == 'exit':
-        sock.close()
-        sys.exit(0)
-    elif data == 'help' or data == 'h':
-        print 'help'
-    else:
-        sock.send(data + '\n')
-        print sock.recv(1024),
+    sock.send(data + '\n')
+    reply = sock.recv(1024)
+    print reply,
+    if reply.startswith('600'):
+        sys.exit(1)

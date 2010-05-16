@@ -21,6 +21,9 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
     def send_bad_request(self):
         self.send('400 Bad Request\n')
 
+    def send_end(self):
+        self.send('600 The End\n')
+
     def receive(self):
         data = self.rfile.readline().strip()
         if data:
@@ -46,7 +49,6 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
             self.send(test.results_tasks.get(task)+'\n')
 
         for cmd in test.results_cmds:
-#            print 'Sending:',test.results_cmds.get(cmd)
             self.send(test.results_cmds.get(cmd)+'\n')
 
     def recv_test(self, test_nr):
@@ -106,14 +108,14 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 
             line = self.receive()
 
-        self.send_ok()
+        self.send_end()
 
         print test
 
         if test.check_config():
             self.daemon.tests[test.id] = test
-            ts = TaskScheduler(test)
-            ts.run()
+#            ts = TaskScheduler(test)
+#            ts.run()
         else:
             print 'Cos jest nie tak z tym testem...'
 
