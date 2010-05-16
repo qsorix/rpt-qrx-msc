@@ -112,12 +112,15 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 
         print test
 
-        if test.check_config():
+        errors = test.check()
+        if errors == None:
             self.daemon.tests[test.id] = test
-#            ts = TaskScheduler(test)
+            ts = TaskScheduler(test)
 #            ts.run()
         else:
-            print 'Cos jest nie tak z tym testem...'
+            print 'Test %d is not valid because:' % test.id
+            for error in errors:
+                print ' - %s' % error
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 9999

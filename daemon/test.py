@@ -31,10 +31,19 @@ class Test:
             output += ' File \"' + file + '\": ' + self.files.get(file)[:30] + '\n'
         return output
 
-    def check_config(self):
-        if not self.duration > 0 or self.start is None or not len(self.tasks) > 0:
-            return False
-        return True
+    def check(self):
+        err_list = []
+
+        if not self.duration > 0:
+            err_list.append("duration time is set to 0")
+        if self.start is None:
+            err_list.append("start time is not set")
+        if not len(self.tasks) > 0:
+            err_list.append("there are no tasks")
+
+        if len(err_list) != 0:
+            return err_list
+        return None
     
 class Task:
     def __init__(self, start, cmd):
