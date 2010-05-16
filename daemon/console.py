@@ -14,4 +14,5 @@ while 1:
     reply = sock.recv(1024)
     print reply,
     if reply.startswith('600'):
+        sock.close()
         sys.exit(1)

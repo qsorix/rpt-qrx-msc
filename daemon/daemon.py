@@ -5,7 +5,8 @@ import sys
 from scheduler import TaskScheduler
 from test import Task, Test
 import re
-from time import strptime
+from datetime import datetime
+from models import *
 import SocketServer
 SocketServer.TCPServer.allow_reuse_address = True
 
@@ -13,16 +14,19 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 
     def send(self, msg):
         print >> sys.stderr, "[%s] Sending: %s" % (self.client_address[0], msg)
-        self.wfile.write(msg)
+        self.wfile.write(msg + '\n')
 
     def send_ok(self):
-        self.send('200 OK\n')
+        self.send('200 OK')
 
     def send_bad_request(self):
-        self.send('400 Bad Request\n')
+        self.send('400 Bad Request')
+
+    def send_already_exists(self):
+        self.send('401 Already exists')
 
     def send_end(self):
-        self.send('600 The End\n')
+        self.send('600 The End')
 
     def receive(self):
         data = self.rfile.readline().strip()
@@ -31,69 +35,70 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
         return data
 
     def handle(self):
-        line = self.receive()
+        while 1:
+            print >> sys.stderr, "handle..."
+            line = self.receive()
 
-        if re.search('^test [0-9]+$', line):
-            self.send_ok()
-            self.recv_test(int(line[5:]))
-        elif re.search('^results [0-9]+$', line):
-            self.send_ok()
-            self.send_results(int(line[8:]))
+            if re.search('^test [0-9]+$', line):
+                if not self.recv_test(int(line[5:])):
+                    break
+#            elif re.search('^results [0-9]+$', line):
+#                if not self.send_results(int(line[8:])):
+#                    break
+            else:
+                self.send_bad_request()
+ 
+    # TODO Sending results
+#    def send_results(self, test_nr):
+#        test = self.daemon.tests.get(test_nr)
+#    
+#        print 'Sending results for test', test_nr
+#
+#        for task in test.results_tasks:
+#            self.send(test.results_tasks.get(task))
+#
+#        for cmd in test.results_cmds:
+#            self.send(test.results_cmds.get(cmd))
 
-    def send_results(self, test_nr):
-        test = self.daemon.tests.get(test_nr)
-    
-        print 'Sending results for test', test_nr
-
-        for task in test.results_tasks:
-            self.send(test.results_tasks.get(task)+'\n')
-
-        for cmd in test.results_cmds:
-            self.send(test.results_cmds.get(cmd)+'\n')
+        return 0
 
     def recv_test(self, test_nr):
-        test = Test(test_nr)
+        if Test.query.filter_by(id=test_nr).all() != []:
+            self.send_already_exists()
+            return 1
+        else:
+            self.send_ok()
+            test = Test(id=test_nr)
 
         line = self.receive()
         while not re.search('^end$', line):
             if re.search('^file \{.+\} [0-9]+$', line):
-                test.files[line.split(' ')[1][1:-1]] = self.receive()
+                filename = line.split(' ')[1][1:-1]
+                file = File(name=unicode(filename), test=test)
+
                 self.send_ok()
 
-            elif re.search('^schedule [0-9]+$', line):
-                test.tasks = []
-                self.send_ok()
+                # TODO Receive file content
 
-                for i in range(0, int(line.split(' ')[1])):
-                    task_line = self.receive()
+            # TODO Tasks
+#            elif re.search('^schedule [0-9]+$', line):
+#                test.tasks = []
+#                self.send_ok()
 
-                    if not re.search('^[0-9]+\: .+$', task_line):
-                        self.send_bad_request()
-                        return
+#                for i in range(0, int(line.split(' ')[1])):
+#                    task_line = self.receive()
 
-                    task = task_line.split(':')
-                    test.tasks.append(Task(int(task[0]), task[1][1:]))
+#                    if not re.search('^[0-9]+\: .+$', task_line):
+#                        self.send_bad_request()
+#                        return
 
-                    self.send_ok()
+#                    task = task_line.split(':')
+#                    test.tasks.append(Task(int(task[0]), task[1][1:]))
 
-            elif re.search('^cmds [0-9]+$', line):
-                test.cmds = []
-                self.send_ok()
-
-                for i in range(0, int(line.split(' ')[1])):
-                    cmd_line = self.receive()
-
-                    if not re.search('^[0-9]+\: .+$', cmd_line):
-                        self.send_bad_request()
-                        return
-
-                    cmd = cmd_line.split(':')
-                    test.cmds.append(Task(int(cmd[0]), cmd[1][1:]))
-
-                    self.send_ok()
+#                    self.send_ok()
 
             elif re.search('^start [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$', line):
-                test.start = strptime(line[6:], "%Y-%m-%d %H:%M:%S")
+                test.start = datetime.strptime(line[6:], "%Y-%m-%d %H:%M:%S")
 
                 self.send_ok()
 
@@ -104,26 +109,27 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 
             else:
                 self.send_bad_request()
-                return
 
             line = self.receive()
 
-        self.send_end()
-
-        print test
-
-        errors = test.check()
-        if errors == None:
-            self.daemon.tests[test.id] = test
-            ts = TaskScheduler(test)
-#            ts.run()
+        if not test.duration > 0 or test.start is None:
+            session.rollback()
+            self.send_bad_request()
+            return 1
         else:
-            print 'Test %d is not valid because:' % test.id
-            for error in errors:
-                print ' - %s' % error
+            session.commit()
+            self.send_end()
+            return 0
+
+#            self.daemon.tests[test.id] = test
+#            ts = TaskScheduler(test)
+#            ts.run()
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 9999
+
+    setup_all()
+    create_all()
 
     daemon = SocketServer.TCPServer((HOST, PORT), DaemonHandler)
     daemon.serve_forever()
