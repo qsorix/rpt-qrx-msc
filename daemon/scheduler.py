@@ -23,14 +23,13 @@ class TaskScheduler:
 		self.s.run()
 	
 	def run_cmd(self, cmd):
-		p = Popen(cmd.split(' '), stdout=PIPE, bufsize=0)
+		p = Popen(cmd.split(' '), stdout=PIPE, stderr=PIPE, bufsize=0)
 
 		# TODO: Get the output!!!
 
 	def run_name_cmd(self, name, cmd):
 
-		p = Popen(cmd.split(' '), stdout=PIPE, bufsize=0)
-
+		p = Popen(cmd.split(' '), stdout=PIPE, stderr=PIPE, bufsize=0)
 		print 'Started',name,'pid:',p.pid
 		self.processes[name] = p
 
@@ -47,7 +46,7 @@ class TaskScheduler:
 		print 'Killed', p.pid
 
 		task_output = ''
-		for line in p.stdout:
+		for line in p.stdout:	# TODO: Fail
 			task_output += line
 
 		self.test.results_tasks[task_name] = task_output

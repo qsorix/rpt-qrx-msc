@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from daemon.connection import Conn
+from connection import Conn
 from threading import Thread
 import sys
 import socket
