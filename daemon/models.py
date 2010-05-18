@@ -15,6 +15,7 @@ class Test(Entity):
     start = Field(DateTime)
 
     tasks = OneToMany('Task')
+    commands = OneToMany('Command')
     files = OneToMany('File')
 
     def __repr__(self):
@@ -24,12 +25,26 @@ class Task(Entity):
     using_options(tablename='tasks')
 
     command = Field(Unicode(128), required=True)
+    name = Field(Unicode(128))
     output = Field(LargeBinary)
+    start = Field(Integer, required=True)
     
     test = ManyToOne('Test')
 
     def __repr__(self):
         return '<Task "%s">' % self.command
+
+class Command(Entity):
+    using_options(tablename='commands')
+
+    command = Field(Unicode(128), required=True)
+    output = Field(LargeBinary)
+    
+    test = ManyToOne('Test')
+
+    def __repr__(self):
+        return '<Command "%s">' % self.command
+
 
 class File(Entity):
     using_options(tablename='files')

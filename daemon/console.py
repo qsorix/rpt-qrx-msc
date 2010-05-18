@@ -13,6 +13,6 @@ while 1:
     sock.send(data + '\n')
     reply = sock.recv(1024)
     print reply,
-    if reply.startswith('600'):
+    if reply.startswith('40') or reply.startswith('60'):
         sock.close()
         sys.exit(1)

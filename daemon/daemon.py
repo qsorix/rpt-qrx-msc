@@ -35,8 +35,9 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
         return data
 
     def handle(self):
+        # FIXME Closing connection
         while 1:
-            print >> sys.stderr, "handle..."
+            print >> sys.stderr, "[%s] Handling..." % self.client_address[0]
             line = self.receive()
 
             if re.search('^test [0-9]+$', line):
@@ -70,41 +71,59 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
             self.send_ok()
             test = Test(id=test_nr)
 
-        line = self.receive()
-        while not re.search('^end$', line):
-            if re.search('^file \{.+\} [0-9]+$', line):
-                filename = line.split(' ')[1][1:-1]
-                file = File(name=unicode(filename), test=test)
+        rstart = re.compile('^start (?P<datetime>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})$')
+        rdur   = re.compile('^duration (?P<duration>[0-9]+)$')
+        rfile  = re.compile('^file \{(?P<name>.+)\} (?P<size>[0-9]+)$')
+        rtask  = re.compile('^task (?P<start>[0-9]+)( \{(?P<name>.+)\})? (?P<command>.+)$')
+        rcmd   = re.compile('^cmd (?P<command>.+)$')
+        rend   = re.compile('^end$')
 
+        line = self.receive()
+        while not rend.match(line):
+            if rfile.match(line):
+                m = rfile.match(line)
+                name = unicode(m.group('name'))
+
+                file = File(name=name, test=test)
                 self.send_ok()
 
                 # TODO Receive file content
 
-            # TODO Tasks
-#            elif re.search('^schedule [0-9]+$', line):
-#                test.tasks = []
-#                self.send_ok()
+            elif rtask.match(line):
+                m = rtask.match(line)
+                command = unicode(m.group('command'))
+                start = int(m.group('start'))
+                name = m.group('name')
 
-#                for i in range(0, int(line.split(' ')[1])):
-#                    task_line = self.receive()
+                if Task.query.filter_by(command=command, start=start, test=test).all() != []:
+                    self.send_already_exists()
+                else:
+                    if name:
+                        task = Task(command=command, start=start, name=unicode(name), test=test)
+                    else:
+                        task = Task(command=command, start=start, test=test)
+                    self.send_ok()
 
-#                    if not re.search('^[0-9]+\: .+$', task_line):
-#                        self.send_bad_request()
-#                        return
+            elif rcmd.match(line):
+                m = rcmd.match(line)
+                command = unicode(m.group('command'))
+ 
+                if Command.query.filter_by(command=command, test=test).all() != []:
+                    self.send_already_exists()
+                else:
+                    cmd = Command(command=command, test=test)
+                    self.send_ok()
 
-#                    task = task_line.split(':')
-#                    test.tasks.append(Task(int(task[0]), task[1][1:]))
+            elif rstart.match(line):
+                m = rstart.match(line)
 
-#                    self.send_ok()
-
-            elif re.search('^start [0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$', line):
-                test.start = datetime.strptime(line[6:], "%Y-%m-%d %H:%M:%S")
-
+                test.start = datetime.strptime(m.group('datetime'), '%Y-%m-%d %H:%M:%S')
                 self.send_ok()
 
-            elif re.search('^duration [0-9]+$', line):
-                test.duration = int(line[9:])
+            elif rdur.match(line):
+                m = rdur.match(line)
 
+                test.duration = int(m.group('duration'))
                 self.send_ok()
 
             else:
@@ -119,11 +138,11 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
         else:
             session.commit()
             self.send_end()
-            return 0
+            
+            ts = TaskScheduler(test)
+            ts.run()
 
-#            self.daemon.tests[test.id] = test
-#            ts = TaskScheduler(test)
-#            ts.run()
+            return 0
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 9999
