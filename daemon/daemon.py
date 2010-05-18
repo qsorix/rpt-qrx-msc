@@ -35,6 +35,7 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
         return data
 
     def handle(self):
+        # TODO Only if not doing anything
         # FIXME Closing connection
         while 1:
             print >> sys.stderr, "[%s] Handling..." % self.client_address[0]
@@ -43,28 +44,54 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
             if re.search('^test [0-9]+$', line):
                 if not self.recv_test(int(line[5:])):
                     break
-#            elif re.search('^results [0-9]+$', line):
-#                if not self.send_results(int(line[8:])):
-#                    break
+            elif re.search('^results [0-9]+$', line):
+                self.send_results(int(line[8:]))
             else:
                 self.send_bad_request()
  
-    # TODO Sending results
-#    def send_results(self, test_nr):
-#        test = self.daemon.tests.get(test_nr)
-#    
-#        print 'Sending results for test', test_nr
-#
-#        for task in test.results_tasks:
-#            self.send(test.results_tasks.get(task))
-#
-#        for cmd in test.results_cmds:
-#            self.send(test.results_cmds.get(cmd))
+    def send_results(self, test_nr):
+        test = Test.query.filter_by(id=test_nr).first()
+        if not test:
+            self.send_bad_request()
+            return 1
+        else:
+            self.send_ok()
 
+        rtasks = re.compile('^tasks$')
+        rcmds  = re.compile('^cmds$')
+        rend   = re.compile('^end$')
+
+        line = self.receive()
+        while not rend.match(line):
+            if rtasks.match(line):
+                tasks = len(Task.query.all())
+                self.send(unicode(tasks))
+
+                for task in Task.query.all():
+                    # FIXME Tag by something else than command?
+                    # FIXME How to send it?
+                    # TODO Same in commands
+                    self.send(task.command)
+#                    self.send(task.output)
+
+            elif rcmds.match(line):
+                cmds = len(Command.query.all())
+                self.send(unicode(cmds))
+
+                for cmd in Command.query.all():
+                    self.send(cmd.command)
+#                    self.send(cmd.output)
+
+            else:
+                self.send_bad_request()
+
+            line = self.receive()
+
+        self.send_end()
         return 0
 
     def recv_test(self, test_nr):
-        if Test.query.filter_by(id=test_nr).all() != []:
+        if Test.query.filter_by(id=test_nr).first():
             self.send_already_exists()
             return 1
         else:
