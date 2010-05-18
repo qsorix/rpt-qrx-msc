@@ -4,11 +4,12 @@
 import sched
 import commands
 import os
+import sys
 import signal
 import subprocess
 from time import time, sleep
 from models import *
-import shlex
+import thread
 
 class TaskScheduler:
     def __init__(self, test):
@@ -39,28 +40,41 @@ class TaskScheduler:
             self.kill_task(task.name)
         else:
             print '[test %d] Running task "%s"' % (self.test.id, task.command),
-            if task.name: print ' [%s]' % task.name
-            else: print ''
+            if task.name: print '[%s]' % task.name
+            else: sys.stdout.write('\n')
 
             args = task.command.split()
-            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0)
-            # TODO How to use those PIPEs?
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
             if task.name:
                 self.pids_to_kill[task.name] = p.pid
             self.all_pids.append(p.pid)
 
-        # TODO Get the output. Write to database?
+            thread.start_new_thread(self.save_output, (task, p))
+
+    def save_output(self, task, p):
+        output = p.stdout.read()
+        task.output = output
+        session.commit()
 
     def kill_task(self, name):
         pid_to_kill = self.pids_to_kill.get(name)
-        os.kill(pid_to_kill, signal.SIGKILL)
-        print '[test %d] Killing task [%s]' % (self.test.id, name)
+
+        print '[test %d] Killing task [%s]' % (self.test.id, name),
+        try:
+            os.kill(pid_to_kill, signal.SIGKILL)
+        except OSError:
+            print '(already ended)'
+        else:
+            sys.stdout.write('\n')
 
     def kill_all_tasks(self):
         for pid in self.all_pids:
-            os.kill(pid, signal.SIGKILL)
-        print '[test %d] Killing all tasks' % self.test.id
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except OSError:
+                pass
+        print '[test %d] Killing all remaining tasks' % self.test.id
 
     def start_scheduler(self):
         print '[test %d] Starting' % self.test.id
@@ -73,6 +87,7 @@ class TaskScheduler:
 
         for cmd in self.test.commands:
             self.cmd_s.enter(0, 1, self.run_command, [cmd])
+            self.cmd_s.enter(1, 1, self.clean_database, [])
 
         # Start commands scheduler after test.duration
         # FIXME Maybe it's a good idea to start them before tasks?
@@ -80,3 +95,8 @@ class TaskScheduler:
 
         self.task_s.run()
         self.cmd_s.run()
+
+    def clean_database(self):
+        for task in Task.query.filter_by(command=u'kill', test=self.test).all():
+            task.delete()
+        session.commit()
