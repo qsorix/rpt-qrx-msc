@@ -45,7 +45,8 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                 if not self.recv_test(int(line[5:])):
                     break
             elif re.search('^results [0-9]+$', line):
-                self.send_results(int(line[8:]))
+                if not self.send_results(int(line[8:])):
+                    break
             else:
                 self.send_bad_request()
  
