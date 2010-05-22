@@ -3,29 +3,27 @@
 
 from elixir import *
 
-metadata.bind = "sqlite:///database.db"
-#metadata.bind.echo = True
-session.configure(autoflush=False)
+
 
 class Test(Entity):
     using_options(tablename='tests')
 
-    id = Field(Integer, primary_key=True)
-    duration = Field(Integer)
-    start = Field(DateTime)
+    name = Field(Unicode(128), required=True)
+    duration = Field(Integer, required=True)
+    start = Field(DateTime, required=True)
 
     tasks = OneToMany('Task')
     commands = OneToMany('Command')
     files = OneToMany('File')
 
     def __repr__(self):
-        return '<Test %s (%s | %s)>' % (self.id, self.start, self.duration)
+        return '<Test "%s" (%s | %s)>' % (self.name, self.start, self.duration)
 
 class Task(Entity):
     using_options(tablename='tasks')
 
     command = Field(Unicode(128), required=True)
-    name = Field(Unicode(128))
+    name = Field(Unicode(128), required=True)
     output = Field(LargeBinary)
     start = Field(Integer, required=True)
     
@@ -38,6 +36,7 @@ class Command(Entity):
     using_options(tablename='commands')
 
     command = Field(Unicode(128), required=True)
+    name = Field(Unicode(128), required=True)
     output = Field(LargeBinary)
     
     test = ManyToOne('Test')
@@ -50,10 +49,10 @@ class File(Entity):
     using_options(tablename='files')
 
     name = Field(Unicode(128), required=True)
-    length = Field(Integer)
-    content = Field(LargeBinary, deferred=True)
+    size = Field(Integer, required=True)
+#    content = Field(LargeBinary, deferred=True)
 
     test = ManyToOne('Test')
 
     def __repr__(self):
-        return '<File "%s" (%d)>' % (self.name, self.length)
+        return '<File "%s" (%d)>' % (self.name, self.size)
