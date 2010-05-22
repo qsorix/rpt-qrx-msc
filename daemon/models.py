@@ -50,7 +50,7 @@ class File(Entity):
 
     name = Field(Unicode(128), required=True)
     size = Field(Integer, required=True)
-#    content = Field(LargeBinary, deferred=True)
+    content = Field(LargeBinary, deferred=True)
 
     test = ManyToOne('Test')
 

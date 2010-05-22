@@ -15,14 +15,22 @@ def results():
     while 1:
         input = raw_input('> ')
     
-        if input.startswith('task'):
+        if input.startswith('task') or input.startswith('cmd') or input.startswith('file'):
             sock.send(input + '\n')
             reply = sock.recv(1024).strip()
             isittheend(reply)
 
-            size = sock.recv(1024).strip()
+            size = int(reply.split(' ')[2])
 
             print size
+
+            tmp = ''
+            received = 0
+            while received < size:
+                tmp += sock.recv(1024)
+                received += 1024
+
+            print tmp
 
         else:
             sock.send(input + '\n')

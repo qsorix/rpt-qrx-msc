@@ -4,7 +4,6 @@
 import sys
 import os
 from scheduler import TaskScheduler
-from test import Task, Test
 import re
 from datetime import datetime
 from models import *
@@ -22,7 +21,10 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
         self.send('200 OK')
 
     def send_complete(self):
-        self.send('201 Transfer Complete')
+        self.send('201 Complete')
+
+    def send_ready(self, size):
+        self.send('202 Ready ' + str(size))
 
     def send_end(self):
         self.send('600 The End')
@@ -86,9 +88,35 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 
                 task = Task.query.filter_by(name=name, test=test).first()
                 if task:
-                    self.send_ok()
                     size = len(task.output)
-                    self.send(str(size) + '\n')
+                    self.send_ready(size)
+                    self.wfile.write(task.output)
+
+                else:
+                    self.send_bad_request()
+
+            elif rcmd.match(line):
+                m = rcmd.match(line)
+                name = unicode(m.group('name'))
+
+                cmd = Command.query.filter_by(name=name, test=test).first()
+                if cmd:
+                    size = len(cmd.output)
+                    self.send_ready(size)
+                    self.wfile.write(cmd.output)
+
+                else:
+                    self.send_bad_request()
+
+            elif rfile.match(line):
+                m = rfile.match(line)
+                name = unicode(m.group('name'))
+
+                file = File.query.filter_by(name=name, test=test).first()
+                if file:
+                    size = len(file.content)
+                    self.send_ready(size)
+                    self.wfile.write(file.content)
                 else:
                     self.send_bad_request()
 
@@ -121,16 +149,17 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                 size = int(m.group('size'))
 
                 file = File(name=name, test=test, size=size)
-                # FIXME Some other options
                 self.send_ok()
 
-                with open(name, 'wb') as f:
-                    while size > 1024:
-                        data = self.request.recv(1024)
-                        f.write(data)
-                        size -= 1024
-                    data = self.request.recv(size)
-                    f.write(data)
+                tmp = ''
+                while size > 1024:
+                    data = self.request.recv(1024)
+                    tmp += data
+                    size -= 1024
+                data = self.request.recv(size)
+                tmp += data
+                file.content = tmp
+
                 self.send_complete()
 
             elif rtask.match(line):
