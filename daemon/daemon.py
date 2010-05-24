@@ -4,6 +4,7 @@
 import sys
 import os
 from scheduler import TaskScheduler
+import threading
 import re
 from datetime import datetime
 from models import *
@@ -168,6 +169,7 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                 start = int(m.group('start'))
                 command = unicode(m.group('command'))
 
+                # TODO Uniques
  #               if Task.query.filter_by(name=name, test=test).all() != []:
  #                   self.send_already_exists()
  #               else:
@@ -179,7 +181,8 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                 m = rcmd.match(line)
                 name = unicode(m.group('name'))
                 command = unicode(m.group('command'))
- 
+
+                # TODO Uniques
 #                if Command.query.filter_by(command=command, name=name, test=test).all() != []:
 #                    self.send_already_exists()
 #                else:

@@ -26,6 +26,7 @@ class Task(Entity):
     name = Field(Unicode(128), required=True)
     output = Field(LargeBinary)
     start = Field(Integer, required=True)
+    pid = Field(Integer)
     
     test = ManyToOne('Test')
 
