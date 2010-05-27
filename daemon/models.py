@@ -3,8 +3,6 @@
 
 from elixir import *
 
-
-
 class Test(Entity):
     using_options(tablename='tests')
 
@@ -24,6 +22,8 @@ class Task(Entity):
 
     command = Field(Unicode(128), required=True)
     name = Field(Unicode(128), required=True)
+    file_output = Field(Boolean, default=False)
+    file_path = Field(Unicode(128))
     output = Field(LargeBinary)
     start = Field(Integer, required=True)
     pid = Field(Integer)

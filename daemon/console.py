@@ -22,8 +22,6 @@ def results():
 
             size = int(reply.split(' ')[2])
 
-            print size
-
             tmp = ''
             received = 0
             while received < size:
@@ -39,7 +37,7 @@ def results():
 
 def isittheend(reply):
     print reply
-    if reply.startswith('40') or reply.startswith('60'):
+    if reply.startswith('60'):
         sock.close()
         sys.exit(1)
 

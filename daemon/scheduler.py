@@ -14,6 +14,7 @@ import thread
 import threading
 import re
 import shlex
+import utilz
 
 class TaskScheduler:
     def __init__(self, test):
@@ -27,35 +28,13 @@ class TaskScheduler:
         self.cmd_s = sched.scheduler(time, sleep)
         self.task_s = sched.scheduler(time, sleep)
 
-#        self.pids_to_kill = {}
-        self.all_pids = []
-
     def run(self):
         self.s.run()
     
     def run_command(self, cmd):
         print '[test %s] Running command "%s"' % (self.test.name, cmd.name)
         cmd.output = commands.getoutput(cmd.command)
-        session.commit()
-
-    def join_args(self, args):
-        join = False
-        symbols = ['"', '\'', '`']
-        delete = []
-
-        for i in range(len(args)):
-            if join:
-                args[first] += ' ' + args[i]
-                if args[i].endswith(symbol):
-                    join = False
-                delete.append(args[i])
-            elif args[i][0] in symbols:
-                first = i
-                symbol = args[i][0]
-                join = True
-
-        for arg in delete:
-            args.remove(arg)
+#        session.commit()
 
     def run_task(self, task):
         print '[test %s] Running task "%s"' % (self.test.name, task.name)
@@ -63,36 +42,40 @@ class TaskScheduler:
         rsubst = re.compile('^(?P<pre>.+)?\@\{(?P<subst>.+)\}(?P<post>.+)?$')
 
         args = task.command.split()
-        self.join_args(args)
-        print task.command
-        print args
+        utilz.join_args(args)
 
         for i in range(len(args)):
             if rsubst.match(args[i]):
                 m = rsubst.match(args[i])
                 pre = m.group('pre')
                 post = m.group('post')
-                subst = m.group('subst')
+                str = m.group('subst')
 
                 args[i] = ''
                 if pre: args[i] += pre
-                args[i] += unicode(self.subst(subst))
+                args[i] += unicode(utilz.subst(self.test, str))
                 if post: args[i] += post
-        print args
+
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         task.pid = p.pid
-        session.commit()
+#        session.commit()
 
-        # TODO Move it to database query
-        self.all_pids.append(p.pid)
-
-        thread.start_new_thread(self.save_output, (task, p))
-
-    def save_output(self, task, p):
         output = p.stdout.read()
         task.output = output
-        session.commit()
+#        session.commit()
+
+#        thread.start_new_thread(self.save_output, (task, p))
+
+    def save_output(self, task, p):
+        print task.file_output
+#        if not task.file_output:
+        output = p.stdout.read()
+        task.output = output
+#        session.commit()
+#        else:
+            # TODO Write to file
+#            pass
 
     def kill_task(self, name):
         pid_to_kill = self.pids_to_kill.get(name)
@@ -106,56 +89,12 @@ class TaskScheduler:
             sys.stdout.write('\n')
 
     def kill_all_tasks(self):
-        for pid in self.all_pids:
+        for task in Task.query.filter(Task.pid!=None).all():
             try:
-                os.kill(pid, signal.SIGKILL)
+                os.kill(task.pid, signal.SIGKILL)
             except OSError:
                 pass
         print '[test %s] Killing all remaining tasks' % self.test.name
-
-    def subst(self, str):
-        rdatabase = re.compile('^(?P<type>(file|task|cmd))\.(?P<name>[a-zA-Z0-9_]+)\.(?P<param>[a-zA-Z0-9_]+)$')
-        rdaemon   = re.compile('^daemon.(?P<param>[a-zA-Z0-9_]+)$')
-
-        if rdatabase.match(str):
-            m = rdatabase.match(str)
-            type = unicode(m.group('type'))
-            name = unicode(m.group('name'))
-            param = unicode(m.group('param'))
-
-            print type, name, param
-
-            if type == 'file':
-                file = File.query.filter_by(name=name, test=self.test).first()
-                if file and param in ['name', 'size']:
-                    exec('value = file.%s' % param)
-                    return value
-
-            elif type == 'task':
-                task = Task.query.filter_by(name=name, test=self.test).first()
-                if task and param in ['name', 'command', 'start', 'pid']:
-                    exec('value = task.%s' % param)
-                    return value
-
-            elif type == 'cmd':
-                cmd = Command.query.filter_by(name=name, test=self.test).first()
-                if cmd and param in ['name', 'command']:
-                    exec('value = cmd.%s' % param)
-                    return value
-
-        elif rdaemon.match(str):
-            m = rdaemon.match(str)
-            param = unicode(m.group('param'))
-
-            if os.path.isfile('daemon.cfg') and param in ['tmpdir']:
-                config = ConfigParser.SafeConfigParser()
-                config.read('daemon.cfg')
-
-                exec('value = config.get(\'Daemon\', \'%s\')' % param)
-                return value
-
-        print 'CHECK THIS: Parameter %s could not be converted!' % str
-        return ''
 
     def start_scheduler(self):
         print '[test %s] Starting' % self.test.name
@@ -181,4 +120,4 @@ class TaskScheduler:
     def clean_database(self):
         for task in Task.query.filter_by(command=u'kill', test=self.test).all():
             task.delete()
-        session.commit()
+#        session.commit()

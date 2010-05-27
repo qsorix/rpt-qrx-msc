@@ -8,6 +8,7 @@ import threading
 import re
 from datetime import datetime
 from models import *
+import utilz
 import ConfigParser
 import SocketServer
 SocketServer.TCPServer.allow_reuse_address = True
@@ -32,9 +33,6 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 
     def send_bad_request(self):
         self.send('400 Bad Request')
-
-    def send_already_exists(self):
-        self.send('401 Already Exists')
 
     def receive(self):
         data = self.rfile.readline().strip()
@@ -89,9 +87,13 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 
                 task = Task.query.filter_by(name=name, test=test).first()
                 if task:
-                    size = len(task.output)
-                    self.send_ready(size)
-                    self.wfile.write(task.output)
+                    if not task.file_output:
+                        size = len(task.output)
+                        self.send_ready(size)
+                        self.wfile.write(task.output)
+                    else:
+                        pass
+                        # TODO Send file from disk
 
                 else:
                     self.send_bad_request()
@@ -130,12 +132,15 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
         return 0
 
     def recv_test(self, name, start, duration):
-        if Test.query.filter_by(name=name).first():
-            self.send_already_exists()
-            return 1
-        else:
+        test = Test.query.filter_by(name=name).first()
+        print test
+        if not test:
             test = Test(name=name, start=start, duration=duration)
-            self.send_ok()
+        else:
+            test.start = start
+            test.duration = duration
+#        session.commit()
+        self.send_ok()
 
         rfile  = re.compile('^file\s+\@\{name=(?P<name>.+)\}\s+\@\{size=(?P<size>[0-9]+)\}$')
         rtask  = re.compile('^task\s+\@\{name=(?P<name>.+)\}\s+\@\{at=(?P<start>[0-9]+)\}\s*(\@\{output=(?P<output>.+)\})?\s+(?P<command>.+)$')
@@ -149,7 +154,14 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                 name = unicode(m.group('name'))
                 size = int(m.group('size'))
 
-                file = File(name=name, test=test, size=size)
+                file = File.query.filter_by(name=name, test=test).first()
+                if not file:
+                    if utilz.name_exists(test, name):
+                        self.send_bad_request()
+                        continue
+                    file = File(name=name, test=test, size=size)
+                else:
+                    file.size = size
                 self.send_ok()
 
                 tmp = ''
@@ -168,13 +180,25 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                 name = unicode(m.group('name'))
                 start = int(m.group('start'))
                 command = unicode(m.group('command'))
+                output = m.group('output')
 
-                # TODO Uniques
- #               if Task.query.filter_by(name=name, test=test).all() != []:
- #                   self.send_already_exists()
- #               else:
+                task = Task.query.filter_by(name=name, test=test).first()
+                print task
+                if not task:
+                    print 'Creating task %s' % name
+                    if utilz.name_exists(test, name):
+                        self.send_bad_request()
+                        continue
+                    task = Task(command=command, start=start, name=name, test=test)
+                else:
+                    print 'Overwriting task %s' % name
+                    task.start = start
+                    task.command = command
+                if output:
+                    task.file_output = True
+                    task.file_path = unicode(output)
 
-                task = Task(command=command, start=start, name=name, test=test)
+#                session.commit()
                 self.send_ok()
 
             elif rcmd.match(line):
@@ -182,11 +206,14 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                 name = unicode(m.group('name'))
                 command = unicode(m.group('command'))
 
-                # TODO Uniques
-#                if Command.query.filter_by(command=command, name=name, test=test).all() != []:
-#                    self.send_already_exists()
-#                else:
-                cmd = Command(command=command, test=test, name=name)
+                cmd = Command.query.filter_by(command=command, name=name, test=test).first()
+                if not cmd:
+                    if utilz.name_exists(test, name):
+                        self.send_bad_request()
+                        continue
+                    cmd = Command(command=command, test=test, name=name)
+                else:
+                    cmd.command = command
                 self.send_ok()
 
             else:
@@ -199,7 +226,7 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
             self.send_bad_request()
             return 1
         else:
-            session.commit()
+#            session.commit()
             self.send_end()
             
             ts = TaskScheduler(test)
@@ -210,7 +237,7 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 def database():
     metadata.bind = "sqlite:///daemon.db"
     #metadata.bind.echo = True
-    session.configure(autoflush=False)
+    session.configure(autocommit=True)
     setup_all()
     create_all()
 
