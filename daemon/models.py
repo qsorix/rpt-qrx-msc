@@ -51,6 +51,8 @@ class File(Entity):
 
     name = Field(Unicode(128), required=True)
     size = Field(Integer, required=True)
+    file_output = Field(Boolean, default=False)
+    file_path = Field(Unicode(128))
     content = Field(LargeBinary, deferred=True)
 
     test = ManyToOne('Test')

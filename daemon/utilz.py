@@ -7,38 +7,50 @@ import os
 import ConfigParser
 from models import *
 
-def subst(test, str):
-    m = re.match('^((?P<name>[a-zA-Z0-9_]+)\.)?(?P<param>[a-zA-Z0-9_]+)$', str)
-    name = m.group('name')
-    param = unicode(m.group('param'))
+def subst(test, substr):
+    value = substr
 
-    if name:
-        file = File.query.filter_by(name=name, test=test).first()
-        task = Task.query.filter_by(name=name, test=test).first()
-        cmd  = Command.query.filter_by(name=name, test=test).first()
+    rsubst = re.compile('^(?P<pre>.+)?\@\{(?P<subst>.+)\}(?P<post>.+)?$')
 
-        if file and param in ['name', 'size']:
-            exec('value = file.%s' % param)
-            return value
+    while rsubst.match(value):
+        m = rsubst.match(value)
+        pre = m.group('pre')
+        post = m.group('post')
+        str = m.group('subst')
 
-        elif task and param in ['name', 'command', 'start', 'pid']:
-            exec('value = task.%s' % param)
-            return value
+        value = ''
+        if pre: value += pre
 
-        elif cmd and param in ['name', 'command']:
-            exec('value = cmd.%s' % param)
-            return value
+        m = re.match('^((?P<name>[a-zA-Z0-9_]+)\.)?(?P<param>[a-zA-Z0-9_]+)$', unicode(str))
 
-    else:
-        if os.path.isfile('daemon.cfg') and param in ['tmpdir']:
-            config = ConfigParser.SafeConfigParser()
-            config.read('daemon.cfg')
+        name = m.group('name')
+        param = unicode(m.group('param'))
 
-            exec('value = config.get(\'Daemon\', \'%s\')' % param)
-            return value
+        if name:
+            file = File.query.filter_by(name=name, test=test).first()
+            task = Task.query.filter_by(name=name, test=test).first()
+            cmd  = Command.query.filter_by(name=name, test=test).first()
 
-    print >> sys.stderr, 'CHECK THIS: Parameter %s could not be converted!' % str
-    return ''
+            if file and param in ['name', 'size']:
+                exec('tmp = file.%s' % param)
+
+            elif task and param in ['name', 'command', 'start', 'pid']:
+                exec('tmp = task.%s' % param)
+
+            elif cmd and param in ['name', 'command']:
+                exec('tmp = cmd.%s' % param)
+
+        else:
+            if os.path.isfile('daemon.cfg') and param in ['tmpdir']:
+                config = ConfigParser.SafeConfigParser()
+                config.read('daemon.cfg')
+
+                exec('tmp = config.get(\'Daemon\', \'%s\')' % param)
+
+        value += unicode(tmp)
+        if post: value += post
+
+    return value
 
 def join_args(args):
     join = False

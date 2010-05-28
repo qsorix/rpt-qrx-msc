@@ -92,8 +92,12 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                         self.send_ready(size)
                         self.wfile.write(task.output)
                     else:
-                        pass
-                        # TODO Send file from disk
+                        path = utilz.subst(test, task.file_path)
+                        size = int(os.path.getsize(path))
+                        self.send_ready(size)
+
+                        with open(path, 'rb') as file:
+                            self.wfile.write(file.read())
 
                 else:
                     self.send_bad_request()
@@ -133,18 +137,16 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 
     def recv_test(self, name, start, duration):
         test = Test.query.filter_by(name=name).first()
-        print test
         if not test:
             test = Test(name=name, start=start, duration=duration)
         else:
             test.start = start
             test.duration = duration
-#        session.commit()
         self.send_ok()
 
-        rfile  = re.compile('^file\s+\@\{name=(?P<name>.+)\}\s+\@\{size=(?P<size>[0-9]+)\}$')
-        rtask  = re.compile('^task\s+\@\{name=(?P<name>.+)\}\s+\@\{at=(?P<start>[0-9]+)\}\s*(\@\{output=(?P<output>.+)\})?\s+(?P<command>.+)$')
-        rcmd   = re.compile('^cmd\s+\@\{name=(?P<name>.+)\}\s+(?P<command>.+)$')
+        rfile  = re.compile('^file\s+\@\{name=(?P<name>[a-zA-Z0-9_]+)\}\s*(\@\{output=(?P<output>.+)\})?\s+\@\{size=(?P<size>[0-9]+)\}$')
+        rtask  = re.compile('^task\s+\@\{name=(?P<name>[a-zA-Z0-9_]+)\}\s*(\@\{output=(?P<output>.+)\})?\s+\@\{at=(?P<start>[0-9]+)\}\s+(?P<command>.+)$')
+        rcmd   = re.compile('^cmd\s+\@\{name=(?P<name>[a-zA-Z0-9_]+)\}\s+(?P<command>.+)$')
         rend   = re.compile('^end$')
 
         line = self.receive()
@@ -153,6 +155,7 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                 m = rfile.match(line)
                 name = unicode(m.group('name'))
                 size = int(m.group('size'))
+                output = m.group('output')
 
                 file = File.query.filter_by(name=name, test=test).first()
                 if not file:
@@ -162,6 +165,10 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                     file = File(name=name, test=test, size=size)
                 else:
                     file.size = size
+                if output:
+                    file.file_output = True
+                    file.file_path = unicode(output)
+
                 self.send_ok()
 
                 tmp = ''
@@ -171,7 +178,12 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                     size -= 1024
                 data = self.request.recv(size)
                 tmp += data
-                file.content = tmp
+
+                if output:
+                    with open(utilz.subst(test, unicode(output)), 'wb') as f:
+                        f.write(tmp)
+                else:
+                    file.content = tmp
 
                 self.send_complete()
 
@@ -183,22 +195,18 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
                 output = m.group('output')
 
                 task = Task.query.filter_by(name=name, test=test).first()
-                print task
                 if not task:
-                    print 'Creating task %s' % name
                     if utilz.name_exists(test, name):
                         self.send_bad_request()
                         continue
                     task = Task(command=command, start=start, name=name, test=test)
                 else:
-                    print 'Overwriting task %s' % name
                     task.start = start
                     task.command = command
                 if output:
                     task.file_output = True
                     task.file_path = unicode(output)
 
-#                session.commit()
                 self.send_ok()
 
             elif rcmd.match(line):
@@ -226,7 +234,6 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
             self.send_bad_request()
             return 1
         else:
-#            session.commit()
             self.send_end()
             
             ts = TaskScheduler(test)

@@ -34,48 +34,28 @@ class TaskScheduler:
     def run_command(self, cmd):
         print '[test %s] Running command "%s"' % (self.test.name, cmd.name)
         cmd.output = commands.getoutput(cmd.command)
-#        session.commit()
 
     def run_task(self, task):
         print '[test %s] Running task "%s"' % (self.test.name, task.name)
-
-        rsubst = re.compile('^(?P<pre>.+)?\@\{(?P<subst>.+)\}(?P<post>.+)?$')
 
         args = task.command.split()
         utilz.join_args(args)
 
         for i in range(len(args)):
-            if rsubst.match(args[i]):
-                m = rsubst.match(args[i])
-                pre = m.group('pre')
-                post = m.group('post')
-                str = m.group('subst')
-
-                args[i] = ''
-                if pre: args[i] += pre
-                args[i] += unicode(utilz.subst(self.test, str))
-                if post: args[i] += post
+            args[i] = utilz.subst(self.test, args[i])
 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         task.pid = p.pid
-#        session.commit()
 
-        output = p.stdout.read()
-        task.output = output
-#        session.commit()
+        if not task.file_output:
+            output = p.stdout.read()
+            task.output = output
+        else:
+            with open(utilz.subst(self.test, task.file_path), 'wb') as file:
+                file.write(p.stdout.read())
 
 #        thread.start_new_thread(self.save_output, (task, p))
-
-    def save_output(self, task, p):
-        print task.file_output
-#        if not task.file_output:
-        output = p.stdout.read()
-        task.output = output
-#        session.commit()
-#        else:
-            # TODO Write to file
-#            pass
 
     def kill_task(self, name):
         pid_to_kill = self.pids_to_kill.get(name)
@@ -120,4 +100,3 @@ class TaskScheduler:
     def clean_database(self):
         for task in Task.query.filter_by(command=u'kill', test=self.test).all():
             task.delete()
-#        session.commit()
