@@ -171,18 +171,23 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 
                 self.send_ok()
 
-                tmp = ''
-                while size > 1024:
-                    data = self.request.recv(1024)
-                    tmp += data
-                    size -= 1024
-                data = self.request.recv(size)
-                tmp += data
-
                 if output:
                     with open(utilz.subst(test, unicode(output)), 'wb') as f:
-                        f.write(tmp)
+                        while size > 1024:
+                            data = self.rfile.read(1024)
+                            f.write(data)
+                            size -= 1024
+                        data = self.rfile.read(size)
+                        f.write(data)
                 else:
+                    tmp = ''
+                    while size > 1024:
+                        data = self.request.recv(1024)
+                        tmp += data
+                        size -= 1024
+                    data = self.request.recv(size)
+                    tmp += data
+
                     file.content = tmp
 
                 self.send_complete()
