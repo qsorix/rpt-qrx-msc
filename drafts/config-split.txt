@@ -1,0 +1,187 @@
+Konfiguracja
+=============
+
+Konfiguracja testu zadana jest w czterech osobnych częściach:
+  - model (model)
+  - sieć (network)
+  - mapowanie (mapping)
+  - plan (schedule)
+
+Model opisuje koncepcyjną topologię testu. Przedstawia ilość wymaganych
+urządzeń i połączenia między nimi. Sieć służy do definiowania dostępnych w
+rzeczywistości sieci. Mapping zapewnia odwzorowanie urządzeń z modelu na te
+dostępne w sieci. Te trzy komponenty definiują statyczną strukturę testu. Plan
+natomiast określa dynamiczne zachowanie urządzeń, tj. komendy wykonywane na
+nich w trakcie odbywania się testu.
+
+Żeby lepiej oddać rolę każdego komponentu można posłużyć się analogią do
+ćwiczeń laboratoryjnych. Model będzie tutaj schematem sieci narysowanym w
+poleceniu do ćwiczenia. Sieć, to spis sprzętu dostępnego w laboratorium.
+Mapowanie określa, które z dostępnych urządzeń zostaną wykorzystane do
+zbudowania zadanej topologii. Plan mówi, co zrobić w momencie, kiedy potrzebna
+sieć jest już gotowa.
+
+Model
+======
+
+Zadaniem modelu jest przedstawienie koncepcyjnej topologii sieci. W tym
+elemencie konfiguracji opisuje się występujące urządzenia, połączenia między
+nimi oraz stawiane im warunki.
+
+Dla przykładu, aby zdefiniować sieć złożoną z dwóch bezpośrednio połączonych
+komputerów, można użyć poniższego modelu:
+FIXME: rysunek ze schematem
+FIXME: składnia się zmieni po przepisaniu na Python DSL.
+
+model = "Peers"
+Alice = m.Host()
+
+  model Peers
+  {
+	  host Alice
+	  host Bob
+
+	  link [ Alice, Bob ]
+  }
+
+W modelu tym nie interesuje nas, jakiego typu są urządzenia, jaki jest ich
+system operacyjnych ani w jaki sposób są połączone. Ważne jest, żeby były dwa
+(Alice i Bob) i mogłby się komunikować (link).
+
+Inna konfiguracja przedstawiona jest poniżej. Tym razem tworzymy dwie sieci,
+każda złożona z czterech komputerów. Sieci łaczymy przez router. Dodatkowo, na
+interfejsach routera konfigurujemy opóźnienie i procent strat pakietów.
+FIXME: rysunek sieci
+FIXME: przyklad sie zmieni po przejsciu na Python DSL
+
+  model Bar {
+  	host East[4]
+	host West[4]
+	host R
+
+	interface R.p0 {
+		delay = 10ms
+		loss  = 0.05
+	}
+
+	interface R.p1 {
+		delay = 10ms
+		loss  = 0.05
+	}
+
+	link_all [ R.p0, East ]
+	link_all [ R.p1, West ]
+  } 
+
+FIXME: ten akapit bedzie do przepisania po zmianie skladni
+Polecenia interface tworzą dwa interfejsy na routerze R. Ich nazwa jest dowolna,
+istotne jest tylko, że konfiguracja wymusza istnienie dwóch, oraz możliwość
+przypisania im odpowiednich parametrów.
+
+Wewnętrza reprezentacja
+------------------------
+Konfiguracja modelu opisuje graf, w którym węzłami są urządzenia, a
+krawędziami połączenia między nimi. Urządzenia zawierają intrerfejsy, a każda
+krawędź wychodząca musi być przypisana do jakiegoś interfejsu. Możliwe jest
+przypisanie wielu krawędzi do tego samego interfejsu.
+
+Atrybuty podane w konfiguracji (jak opóźnienia interfejsu) zachowane są jako
+atrybuty odpowiedniej klasy.
+
+Pojęcia te są w modelu obiektowym reprezentowane za pomocą klas:
+  - Model::Host
+  - Model::Interface
+  - Model::Link
+
+#FIXME: schemat UML
+  - Host
+  - Interface (agregacja w Host)
+  - Link (Klasa powiązania na połączeniu Interface-Interface)
+
+Sieć
+=====
+
+#v+
+network Krowoderska
+{
+	host A {
+		ip = 192.168.0.1
+		hostname = defteros
+		ports = [ eth0, wlan1 ]
+	}
+
+	host B {
+		ip = 192.168.0.2
+		hostname = marvin
+		ports = [ eth0 ]
+	}
+
+	hostrange Swarm {
+		# FIXME: tu nie ma portów
+		ip_range = [ 192.168.1.1, 192.168.1.32 ]
+	}
+}
+#v-
+
+Builders dla konfiguracji network tworzą byty typu:
+	- NetworkHost
+
+NetworkHost opisują zastaną konfigurację sieci. Opisywanie krawędzi nie ma
+tutaj znaczenia ponieważ:
+  - wystepują one w rzeczywistości,
+  - nie można ich programowo zmieniać.
+
+Co ważne, NetworkHost zawiera nazwy dostępnych portów -- interfejsów
+sieciowych, dzięki którym można nawiązać komunikację.
+
+
+#v+
+mapping M1 model Foo network Krowoderska
+{
+	map [ Alice, A ]
+	map [ Bob, B ]
+}
+#v-
+
+#v+
+mapping M2 model Bar network Krowoderska
+{
+	map [ S, Swarm ]
+	map [ R, Swarm ]
+	map [ Router, A ] {
+		p0 = "eth0"
+		p1 = "wlan1"
+	}
+}
+
+Algorytmy mapping mają na wejściu model oraz network. Na ich podstawie mają
+przypisać ModelHost do NetworkHost oraz wybrać taki zestaw portów każdego
+NetworkHost, aby realizować graf połączeń zadany przez ModelLink.
+
+NOTE: skoro w model nie ma nic o portach, to po co je mapować? Wystarczy przed
+testem sprawdzić, że każda para hostów z linkiem może się komunikować.
+
+#v+
+schedule iperf model Foo {
+	duration {
+		time = "10s"
+	}
+
+	flow Tcp<A, B> {
+		start = "iperf -tcp @{A.ip} @{B.ip}"
+	}
+
+	at Alice {
+		time = "5s"
+		every = "10s"
+		cmd = "ping @{Bob.ip}"
+	}
+
+	at Alice start_flow Tcp<Bob, Alice>
+
+	...
+	...
+	...
+}
+
+#v-
