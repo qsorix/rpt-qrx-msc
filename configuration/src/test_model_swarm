@@ -1,0 +1,19 @@
+from model_utils import group, link_all, interface
+
+east = group('east', 4)
+west = group('west', 4)
+
+router = host('router')
+
+R_p0 = router.interface('p0',
+        delay = '10ms',
+        loss  = 0.1)
+
+R_p1 = router.interface('p1',
+        delay = '10ms',
+        loss  = 0.3)
+
+link_all(R_p0, *(map(interface, east)))
+link_all(R_p1, *(map(interface, west)))
+
+# vim: ft=python

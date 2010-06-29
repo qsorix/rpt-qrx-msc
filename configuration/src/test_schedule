@@ -1,0 +1,11 @@
+def at(time):
+    return time
+
+on('alice') \
+    .schedule('run_bar', at(0), "bar") \
+    .schedule('blah', at(1), "blah")
+
+on('bob').schedule('run_foo', at(5), "foo")
+on('bob').schedule('grr', at(2), "exec grr")
+
+# vim: ft=python

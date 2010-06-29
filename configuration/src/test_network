@@ -1,0 +1,9 @@
+defteros = host('defteros',
+    ip = '192.168.6.1')
+
+marvin = host('marvin',
+    ip = '192.168.6.2')
+
+marvin.interface('foo', i='bar')
+
+# vim: ft=python

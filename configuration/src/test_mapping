@@ -1,0 +1,4 @@
+bind(alice, defteros)
+bind(bob, marvin)
+
+# vim: ft=python
