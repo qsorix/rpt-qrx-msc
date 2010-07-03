@@ -1,5 +1,3 @@
-from mapping_utils import auto_bind
-
 bind(alice, defteros)
 bind(bob,   marvin)
 

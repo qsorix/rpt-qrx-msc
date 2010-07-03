@@ -1,10 +1,10 @@
-from model_utils import host
-from schedule_utils import at
+from utils.model import get_host
+from utils.schedule import at
 
 add_resource('torrent', 'test-file-1gb.torrent')
 
-host('alice').use_resource('torrent')
-host('alice').use_resource('torrent')
+get_host('alice').use_resource('torrent')
+get_host('alice').use_resource('torrent')
 
 on('alice').schedule('ctorrent', at(0), 'ctorrent @{torrent.filename}')
 on('bob').schedule('ctorrent', at(0), 'ctorrent @{torrent.filename}')

@@ -1,6 +1,6 @@
 #!/usr/bin/evn python
 
-from config.Model import host, link
+from config.Model import host, link, model
 import itertools
 
 def group(name, count):
@@ -18,3 +18,9 @@ def interface(host):
 def link_all(*interfaces):
     for (a, b) in itertools.combinations(interfaces, 2):
         link(a, b)
+
+def get_host(name):
+    for h in model.hosts():
+        if h.name() == name:
+            return h
+

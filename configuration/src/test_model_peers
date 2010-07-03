@@ -1,4 +1,4 @@
-from model_utils import interface
+from utils.model import interface
 
 alice = host('alice')
 bob   = host('bob')
