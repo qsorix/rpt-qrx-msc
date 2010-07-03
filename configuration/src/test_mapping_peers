@@ -1,0 +1,9 @@
+from mapping_utils import auto_bind
+
+bind(alice, defteros)
+bind(bob,   marvin)
+
+bind(alice.interface('implicit'), defteros.interface('eth0'))
+bind(bob.interface('implicit'), marvin.interface('eth0'))
+
+# vim: ft=python
