@@ -28,8 +28,8 @@ class DummyDriver:
     def process_interface(self, cmd, host, interface, attributes):
         while attributes:
             a = attributes.pop()
-            cmd.add_setup('setup dev ' + interface.name() + ' ' + a)
-            cmd.add_cleanup('cleanup dev ' + interface.name() + ' ' + a)
+            cmd.add_setup('setup dev ' + interface.bound().name() + '(' + interface.name() + ') ' + a)
+            cmd.add_cleanup('cleanup dev ' + interface.bound().name() + ' ' + a)
 
 class Executer:
     def __init__(self):
