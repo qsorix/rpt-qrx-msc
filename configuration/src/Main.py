@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from config import Configuration
+from config import Resources
 from command import Executer
 import sys
 
@@ -38,8 +39,14 @@ if __name__ == "__main__":
 
     e = Executer.Executer()
 
+    print 'Resources:'
+    for k, v in Resources.resources.resources().items():
+        print k, "=", v
+
+    print 'Hosts:'
     for h in c.hosts():
-        print h.model.name()
+        print 'Host', h.model.name()
+        print h.resources
         c = e.generate(h)
         c.dump()
 

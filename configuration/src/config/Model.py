@@ -29,6 +29,9 @@ class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     def use_resource(self, resource_name):
         self.__resources.add(resource_name)
 
+    def needed_resources(self):
+        return self.__resources
+
 class Link:
     """Connection between hosts.
 

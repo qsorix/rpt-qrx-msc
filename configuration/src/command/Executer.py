@@ -1,9 +1,8 @@
 class HostCommands:
     def __init__(self):
-        self.__check   = []
-        self.__setup   = []
-        self.__core    = []
-        self.__cleanup = []
+        self.__setup    = []
+        self.__schedule = []
+        self.__cleanup  = []
 
     def add_setup(self, cmd):
         self.__setup.append(cmd)
@@ -11,10 +10,12 @@ class HostCommands:
     def add_cleanup(self, cmd):
         self.__cleanup.append(cmd)
 
+    def add_schedule(self, cmd):
+        self.__schedule.append(cmd)
+
     def dump(self):
-        print self.__check
         print self.__setup
-        print self.__core
+        print self.__schedule
         print self.__cleanup
 
 class DummyDriver:
@@ -31,17 +32,22 @@ class DummyDriver:
             cmd.add_setup('setup dev ' + interface.bound().name() + '(' + interface.name() + ') ' + a)
             cmd.add_cleanup('cleanup dev ' + interface.bound().name() + ' ' + a)
 
+    def process_event(self, cmd, host, event):
+        cmd.add_schedule(event.command())
+        return True
+
 class Executer:
     def __init__(self):
-        self.drivers = [DummyDriver()]
-        self.interface_drivers = [DummyDriver()]
+        self.__host_drivers = [DummyDriver()]
+        self.__interface_drivers = [DummyDriver()]
+        self.__event_drivers = [DummyDriver()]
 
     def generate(self, host):
         cmd = HostCommands()
 
         attributes = host.model.attributes().keys()
 
-        for d in self.drivers:
+        for d in self.__host_drivers:
             d.process(cmd, host, attributes)
 
         if attributes:
@@ -50,12 +56,26 @@ class Executer:
         for i in host.model.interfaces().values():
             self.generate_for_interface(cmd, host, i)
 
+        for event in host.schedule:
+            self.generate_for_event(cmd, host, event)
+
         return cmd
+
+    def generate_for_event(self, cmd, host, event):
+        processed = False
+
+        for d in self.__event_drivers:
+            if d.process_event(cmd, host, event):
+                processed = True
+                break
+
+        if not processed:
+            print 'Unprocessed event: ', event
     
     def generate_for_interface(self, cmd, host, interface):
         attributes = interface.attributes().keys()
 
-        for d in self.interface_drivers:
+        for d in self.__interface_drivers:
             d.process_interface(cmd, host, interface, attributes)
 
         if attributes:

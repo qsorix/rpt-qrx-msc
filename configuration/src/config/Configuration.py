@@ -53,6 +53,7 @@ class Configuration:
             host.model = h
             host.network = h.bound()
             host.schedule = Schedule.schedule.host_schedule(h.name())
+            host.resources = h.needed_resources()
 
             self.hosts().append(host)
 
