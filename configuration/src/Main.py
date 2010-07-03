@@ -1,4 +1,5 @@
 from config import Configuration
+from command import Executer
 
 def dump_configuration(c):
     for h in c.hosts():
@@ -28,6 +29,10 @@ c = Configuration.Configuration()
 
 c.read('test_model', 'test_network', 'test_mapping', 'test_schedule')
 
+e = Executer.Executer()
+
 for h in c.hosts():
-    pass
+    print h.model.name()
+    c = e.generate(h)
+    c.dump()
 
