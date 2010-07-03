@@ -1,4 +1,4 @@
-import Configuration
+from config import Configuration
 
 def dump_configuration(c):
     for h in c.hosts():

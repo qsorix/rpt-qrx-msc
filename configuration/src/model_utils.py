@@ -1,6 +1,6 @@
 #!/usr/bin/evn python
 
-from Model import host, link
+from config.Model import host, link
 
 def group(name, count):
     g = []
