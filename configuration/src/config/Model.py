@@ -24,6 +24,10 @@ class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     def __init__(self, name, **kwargs):
         self.rename(name)
         self.attributes(**kwargs)
+        self.__resources = set()
+
+    def use_resource(self, resource_name):
+        self.__resources.add(resource_name)
 
 class Link:
     """Connection between hosts.

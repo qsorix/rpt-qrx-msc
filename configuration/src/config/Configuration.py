@@ -4,32 +4,46 @@ import Model
 import Network
 import Mapping
 import Schedule
+import Resources
 
 class Host:
     def __init__(self):
         self.model = None
         self.network = None
         self.schedule = None
+        self.resources = []
 
 class Configuration:
     def __init__(self):
         self.__hosts = []
 
     def read(self, model, network, mapping, schedule):
+        # local variables for each configuration file
         ctx_model = {}
         ctx_network = {}
         ctx_mapping = {}
         ctx_schedule = {}
 
-        execfile(model, Model.public_functions.copy(), ctx_model)
-        execfile(network, Network.public_functions.copy(), ctx_network)
+        # resources can be defined in any configuration part
+        glob_resources = Resources.public_functions
+        def setup_glob(module):
+            x = module.public_functions.copy()
+            x.update(glob_resources)
+            return x
 
+        (glob_model, glob_network, glob_mapping, glob_schedule) = map(setup_glob, [Model, Network, Mapping, Schedule])
+
+        execfile(model, glob_model, ctx_model)
+        execfile(network, glob_network, ctx_network)
+
+        # populate mapping and schedule with variables defined in model/network parts
         ctx_mapping.update(ctx_model)
         ctx_mapping.update(ctx_network)
+
         ctx_schedule.update(ctx_model)
 
-        execfile(mapping, Mapping.public_functions.copy(), ctx_mapping)
-        execfile(schedule, Schedule.public_functions.copy(), ctx_schedule)
+        execfile(mapping, glob_mapping, ctx_mapping)
+        execfile(schedule, glob_schedule, ctx_schedule)
 
         self.combine_hosts()
     
