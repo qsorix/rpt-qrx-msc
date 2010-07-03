@@ -1,4 +1,9 @@
+from mapping_utils import auto_bind
+
 bind(router, defteros)
 bind(router.interface('p0'), defteros.interface('eth0'))
+bind(router.interface('p1'), defteros.interface('eth1'))
+
+auto_bind()
 
 # vim: ft=python

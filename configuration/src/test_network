@@ -4,17 +4,23 @@ standard_connection = {
     'frontend': 'daemon',
     'shell': 'linux_shell'}
 
-defteros = host('defteros',
-    ip = '192.168.6.1',
-    **standard_connection)
+counter = 1
 
-marvin = host('marvin',
-    ip = '192.168.6.2',
-    **standard_connection)
+def simple_host(name):
+    global counter, standard_connection
 
-marvin.add_interface('eth0')
-defteros.add_interface('eth0')
+    h = host(name,
+        ip = '192.168.6.%s' % counter,
+        **standard_connection)
+    h.add_interface('eth0')
+    ++counter
+    return h
+
+defteros = simple_host('defteros')
 defteros.add_interface('eth1')
-defteros.add_interface('eth2')
+marvin   = simple_host('marvin')
+
+for i in range(10):
+    simple_host('pool%s' % i)
 
 # vim: ft=python

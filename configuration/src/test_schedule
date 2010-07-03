@@ -1,6 +1,8 @@
 def at(time):
     return time
 
+add_resource('torrent', 'big-file.torrent')
+
 on('router') \
     .schedule('run_bar', at(0), "bar") \
     .schedule('blah', at(1), "blah")
