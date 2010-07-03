@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin
+from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
 
 class Model:
     def __init__(self):
@@ -20,7 +20,7 @@ class Model:
         self.links().append(l)
         return l
 
-class Host(NamedMixin, AttributedMixin, InterfacesMixin):
+class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     def __init__(self, name, **kwargs):
         self.rename(name)
         self.attributes(**kwargs)

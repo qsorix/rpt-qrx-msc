@@ -19,8 +19,18 @@ class NamedMixin:
     def name(self):
         return self.__name
 
+class BindableMixin:
+    def bind(self, bindable):
+        self.__bound_with = bindable
+
+    def bound(self):
+        try:
+            return self.__bound_with
+        except AttributeError:
+            return None
+
 class InterfacesMixin:
-    class Interface(NamedMixin, AttributedMixin):
+    class Interface(NamedMixin, AttributedMixin, BindableMixin):
         def __init__(self, host, name, **kwargs):
             self.__host = host
             self.rename(name)
@@ -29,7 +39,7 @@ class InterfacesMixin:
         def host(self):
             return self.__host
 
-    def interface(self, name, **attributes):
+    def add_interface(self, name, **attributes):
         i = InterfacesMixin.Interface(self, name, **attributes)
         try:
             self.__interfaces[i.name()] = i
@@ -43,4 +53,11 @@ class InterfacesMixin:
         except AttributeError:
             self.__interfaces = {}
             return self.__interfaces
+
+    def interface(self, name):
+        try:
+            return self.__interfaces[name]
+        except AttributeError:
+            self.__interfaces = {}
+            return self.__interfaces[name]
             

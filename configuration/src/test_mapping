@@ -1,4 +1,4 @@
-bind(alice, defteros)
-bind(bob, marvin)
+bind(router, defteros)
+bind(router.interface('p0'), defteros.interface('eth0'))
 
 # vim: ft=python

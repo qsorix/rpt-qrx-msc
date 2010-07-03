@@ -1,7 +1,7 @@
 def at(time):
     return time
 
-on('alice') \
+on('router') \
     .schedule('run_bar', at(0), "bar") \
     .schedule('blah', at(1), "blah")
 

@@ -9,10 +9,10 @@ def group(name, count):
     return g
 
 def interface(host):
-    if 'default' in host.interfaces():
-        return host.interfaces()['default']
+    if 'implicit' in host.interfaces():
+        return host.interface('implicit')
 
-    return host.interface('default')
+    return host.add_interface('implicit')
 
 def link_all(*interfaces):
     for (a, b) in [(a, b) for a in range(len(interfaces)) for b in range(len(interfaces)) if a<b]:

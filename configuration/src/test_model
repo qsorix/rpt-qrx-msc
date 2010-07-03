@@ -1,7 +1,1 @@
-from model_utils import interface
-alice = host('alice')
-bob   = host('bob')
-
-link(*(map(interface, [alice, bob])))
-
-# vim: ft=python
+test_model_swarm

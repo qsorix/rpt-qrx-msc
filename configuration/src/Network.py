@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin
+from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
 from Exceptions import ConfigurationError
 
 class Network:
@@ -14,7 +14,7 @@ class Network:
         self.hosts().append(h)
         return h
 
-class Host(NamedMixin, AttributedMixin, InterfacesMixin):
+class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     def __init__(self, name, **kwargs):
         self.rename(name)
         self.attributes(**kwargs)

@@ -5,36 +5,42 @@ import Network
 import Mapping
 import Schedule
 
+class Host:
+    def __init__(self):
+        self.model = None
+        self.network = None
+        self.schedule = None
+
 class Configuration:
+    def __init__(self):
+        self.__hosts = []
+
     def read(self, model, network, mapping, schedule):
         ctx_model = {}
         ctx_network = {}
         ctx_mapping = {}
         ctx_schedule = {}
 
-        self.read_model(model, ctx_model)
-        self.read_network(network, ctx_network)
+        execfile(model, Model.public_functions.copy(), ctx_model)
+        execfile(network, Network.public_functions.copy(), ctx_network)
 
         ctx_mapping.update(ctx_model)
         ctx_mapping.update(ctx_network)
         ctx_schedule.update(ctx_model)
 
-        self.read_mapping(mapping, ctx_mapping)
-        self.read_schedule(schedule, ctx_schedule)
+        execfile(mapping, Mapping.public_functions.copy(), ctx_mapping)
+        execfile(schedule, Schedule.public_functions.copy(), ctx_schedule)
+
+        self.combine_hosts()
     
-    def read_model(self, model, ctx_local):
-        ctx_global = Model.public_functions.copy()
-        execfile(model, ctx_global, ctx_local)
+    def combine_hosts(self):
+        for h in Model.model.hosts():
+            host = Host()
+            host.model = h
+            host.network = h.bound()
+            host.schedule = Schedule.schedule.host_schedule(h.name())
 
-    def read_network(self, network, ctx_local):
-        ctx_global = Network.public_functions.copy()
-        execfile(network, ctx_global, ctx_local)
+            self.hosts().append(host)
 
-    def read_mapping(self, mapping, ctx_local):
-        ctx_global = Mapping.public_functions.copy()
-        execfile(mapping, ctx_global, ctx_local)
-
-    def read_schedule(self, schedule, ctx_local):
-        ctx_global = Schedule.public_functions.copy()
-        execfile(schedule, ctx_global, ctx_local)
+    def hosts(self): return self.__hosts;
 

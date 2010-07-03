@@ -3,3 +3,5 @@
 class ConfigurationError(Exception):
     pass
 
+class NotBoundError(Exception):
+    pass

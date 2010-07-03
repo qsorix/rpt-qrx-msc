@@ -5,11 +5,11 @@ west = group('west', 4)
 
 router = host('router')
 
-R_p0 = router.interface('p0',
+R_p0 = router.add_interface('p0',
         delay = '10ms',
         loss  = 0.1)
 
-R_p1 = router.interface('p1',
+R_p1 = router.add_interface('p1',
         delay = '10ms',
         loss  = 0.3)
 

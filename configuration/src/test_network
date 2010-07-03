@@ -1,9 +1,20 @@
+standard_connection = {
+    'connection': 'tcp',
+    'connection_port': '4564',
+    'frontend': 'daemon',
+    'shell': 'linux_shell'}
+
 defteros = host('defteros',
-    ip = '192.168.6.1')
+    ip = '192.168.6.1',
+    **standard_connection)
 
 marvin = host('marvin',
-    ip = '192.168.6.2')
+    ip = '192.168.6.2',
+    **standard_connection)
 
-marvin.interface('foo', i='bar')
+marvin.add_interface('eth0')
+defteros.add_interface('eth0')
+defteros.add_interface('eth1')
+defteros.add_interface('eth2')
 
 # vim: ft=python
