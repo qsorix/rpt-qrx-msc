@@ -5,14 +5,15 @@ standard_connection = {
     'shell': 'linux_shell'}
 
 counter = 1
-
 def simple_host(name):
     global counter, standard_connection
 
     h = host(name,
         ip = '192.168.6.%s' % counter,
         **standard_connection)
+
     h.add_interface('eth0')
+
     ++counter
     return h
 

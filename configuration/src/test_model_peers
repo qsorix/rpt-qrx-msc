@@ -1,7 +1,8 @@
 from model_utils import interface
+
 alice = host('alice')
 bob   = host('bob')
 
-link(*(map(interface, [alice, bob])))
+link(interface(alice), interface(bob))
 
 # vim: ft=python
