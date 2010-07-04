@@ -1,21 +1,21 @@
 #!/usr/bin/env python
 
-class File:
-    def __init__(self, path):
-        self.__path = path
+from BaseMixins import NamedMixin
 
-    def path(self):
-        return self.__path
+class Resource(NamedMixin):
+    """Base class for resources.
 
-    def __repr__(self):
-        return 'File(%s)' % repr(self.path())
+    Implement transfer_with_<frontend> in your subclasses."""
+    def transfer_with_daemon(self, daemon):
+        raise NotImplementedError('Implement transfer_with_daemon method in your subclasses.')
+
 
 class Resources:
     def __init__(self):
         self.__resources = {}
 
-    def add_resource(self, name, resource):
-        self.__resources[name] = resource
+    def add_resource(self, resource):
+        self.__resources[resource.name()] = resource
         return resource
 
     def resources(self):
@@ -26,6 +26,5 @@ resources = Resources()
 add_resource = resources.add_resource
 
 public_functions = {
-        'add_resource': add_resource,
-        'File': File
-        }
+    'add_resource': add_resource
+}

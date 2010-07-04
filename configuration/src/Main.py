@@ -3,6 +3,8 @@
 from config import Configuration
 from config import Resources
 from command import Executer
+from controller import Controller
+
 import sys
 
 def dump_configuration(c):
@@ -35,18 +37,11 @@ if __name__ == "__main__":
         sys.exit(1)
 
     c = Configuration.Configuration()
-    c.read(*sys.argv[1:5])
+    configured_test = c.read(*sys.argv[1:5])
 
     e = Executer.Executer()
+    prepared_commands = e.process( configured_test )
 
-    print 'Resources:'
-    for k, v in Resources.resources.resources().items():
-        print k, "=", v
-
-    print 'Hosts:'
-    for h in c.hosts():
-        print 'Host', h.model.name()
-        print h.resources
-        c = e.generate(h)
-        c.dump()
+    ctrl = Controller.Controller()
+    ctrl.run(configured_test, prepared_commands)
 

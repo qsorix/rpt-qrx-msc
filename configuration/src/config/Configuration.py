@@ -13,9 +13,22 @@ class Host:
         self.schedule = None
         self.resources = []
 
+class ConfiguredTest:
+    """
+    Structure to easily pass test configuration.
+
+    attributes:
+        hosts - dictionary of Host objects (keys are names from
+                Host.model.name()
+
+        resources - dictionary of resources (keys are names from
+                    resource.name()
+    """
+    pass
+
 class Configuration:
     def __init__(self):
-        self.__hosts = []
+        self.__configured_test = []
 
     def read(self, model, network, mapping, schedule):
         # local variables for each configuration file
@@ -46,8 +59,14 @@ class Configuration:
         execfile(schedule, glob_schedule, ctx_schedule)
 
         self.combine_hosts()
+
+        return self.configured_test()
     
     def combine_hosts(self):
+        ct = ConfiguredTest()
+        ct.resources = Resources.resources.resources()
+        ct.hosts = {}
+
         for h in Model.model.hosts():
             host = Host()
             host.model = h
@@ -55,7 +74,10 @@ class Configuration:
             host.schedule = Schedule.schedule.host_schedule(h.name())
             host.resources = h.needed_resources()
 
-            self.hosts().append(host)
+            ct.hosts[h.name()] = host
 
-    def hosts(self): return self.__hosts;
+        self.__configured_test = ct
+
+    def configured_test(self):
+        return self.__configured_test
 

@@ -1,7 +1,8 @@
 from utils.model import get_host
 from utils.schedule import at
+from utils.resources import File
 
-add_resource('torrent', File('test-file-1gb.torrent'))
+add_resource(File('torrent', 'test-file-1gb.torrent'))
 
 get_host('alice').use_resource('torrent')
 get_host('bob').use_resource('torrent')

@@ -2,6 +2,13 @@
 
 from BaseMixins import NamedMixin
 
+class RunPolicy:
+    """Base class for run policies.
+
+    Implement schedule_for_<frontend> in your subclasses."""
+
+    pass
+
 class Schedule:
     def __init__(self):
         self.__schedules = {}
