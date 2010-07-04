@@ -5,6 +5,7 @@ import Network
 import Mapping
 import Schedule
 import Resources
+import Exceptions
 
 class Host:
     def __init__(self):
@@ -24,7 +25,21 @@ class ConfiguredTest:
         resources - dictionary of resources (keys are names from
                     resource.name()
     """
-    pass
+
+    def sanity_check(self):
+        for (name, host) in self.hosts.items():
+            if name != host.model.name():
+                raise Exceptions.SanityError("Key name is different than element's name")
+
+            if not host.model.bound():
+                raise Exceptions.SanityError("Model host '%s' is not bound" % host.name())
+
+            for (iname, interface) in host.model.interfaces().items():
+                if iname != interface.name():
+                    raise Exceptions.SanityError("Key's name is different than element's name")
+
+                if not interface.bound():
+                    raise Exceptions.SanityError("Interface '%s' of host '%s' is not bound" % (iname, name))
 
 class Configuration:
     def __init__(self):

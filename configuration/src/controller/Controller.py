@@ -15,18 +15,35 @@ class Frontend:
     def deploy_configuration(self, host):
         pass
 
+    def start_test(self, timestamp):
+        pass
+
     def fetch_results(self):
         pass
 
 class DaemonFrontend(Frontend):
-    def deploy_configuration(self, host):
-        self._send_command('foo\n')
+    def deploy_configuration(self, host_commands, resources=[]):
+        for r in resources:
+            r.transfer_with_daemon(self)
+
+        self._send_command("setup %i:\n" % len(host_commands.setup()))
+        for c in host_commands.setup():
+            self._send_command(c + '\n')
+
+        self._send_command("schedule %i:\n" % len(host_commands.schedule()))
+        for c in host_commands.schedule():
+            self._send_command(c + '\n')
+
+        self._send_command("cleanup: %i\n" % len(host_commands.cleanup()))
+        for c in host_commands.cleanup():
+            self._send_command(c + '\n')
+
+    def start_test(self, timestamp):
+        self._send_command('start at: ' + timestamp + '\n')
 
     def _send_command(self, cmd):
         self.connection().output().write(cmd)
         resp = self.connection().input().readline()
-
-        print resp
 
         if resp.split()[0] != '200':
             raise RuntimeError('Frontned got wrong response')
@@ -50,7 +67,6 @@ class Controller:
         self.__frontends = {}
 
     def run(self, configured_test, prepared_commands):
-        print configured_test.resources
 
         frontends = {}
 
@@ -58,10 +74,20 @@ class Controller:
             connection = self._connect(host)
             frontends[name] = self._frontend_class(host)(connection)
 
-            frontends[name].deploy_configuration(prepared_commands[name])
+            r = [configured_test.resources[rname] for rname in host.resources]
+            frontends[name].deploy_configuration(prepared_commands[name], resources=r)
 
         #for frontend in frontends.values():
-        #    frontend.
+            #frontend.start_sanity_check()
+
+        # now, if sanity check failed on any host, we can/must abort the test
+
+        #for frontend in frontends.values():
+            #frontend.wait_sanity_check()
+
+        # otherwise start it
+        for frontend in frontends.values():
+            frontend.start_test('<FIXME timestamp>')
 
         # FIXME: from the schedule it must be possible to deduce the test's
         # duration

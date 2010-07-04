@@ -2,7 +2,7 @@ class PreparedCommands(dict):
     """
     Datatype to hold Execute.process() result.
 
-    Keys are model host names, values are instances of HostCommands class.
+    Keys are model hosts' names, values are instances of HostCommands class.
     """
     pass
 

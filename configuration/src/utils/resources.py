@@ -12,5 +12,8 @@ class File(Resources.Resource):
         return self.__path
 
     def transfer_with_daemon(self, daemon):
-        daemon.out().write('file ' + self.name() + ' <size> <content>')
+        daemon.connection().output().write('file ' + self.name() + ' <size> <content>\n')
+        resp = daemon.connection().input().readline()
+        if resp.split()[0] != '200':
+            raise RuntimeError('Wrong response while transfering file')
 
