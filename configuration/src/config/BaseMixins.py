@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import Exceptions
+
 class AttributedMixin:
     def get(self, name):
         return self.__attributes[name]
@@ -29,6 +31,9 @@ class BindableMixin:
         except AttributeError:
             return None
 
+    def unbind(self):
+        self.__bound_with = None
+
 class InterfacesMixin:
     class Interface(NamedMixin, AttributedMixin, BindableMixin):
         def __init__(self, host, name, **kwargs):
@@ -42,9 +47,14 @@ class InterfacesMixin:
     def add_interface(self, name, **attributes):
         i = InterfacesMixin.Interface(self, name, **attributes)
         try:
+            if name in self.__interfaces:
+                raise Exceptions.NameExistsError('Interface ' + name + ' is already defined.')
+
             self.__interfaces[i.name()] = i
+
         except AttributeError:
             self.__interfaces = {i.name(): i}
+
         return i
 
     def interfaces(self):

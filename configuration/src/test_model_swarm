@@ -3,7 +3,7 @@ from model_utils import group, link_all, interface
 east = group('east', 4)
 west = group('west', 4)
 
-router = host('router')
+router = add_host('router')
 
 R_p0 = router.add_interface('p0',
         delay = '10ms',

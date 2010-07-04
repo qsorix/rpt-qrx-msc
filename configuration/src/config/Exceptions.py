@@ -5,3 +5,6 @@ class ConfigurationError(Exception):
 
 class NotBoundError(Exception):
     pass
+
+class NameExistsError(Exception):
+    pass

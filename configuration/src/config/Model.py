@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
+import Exceptions
 
 class Model:
     def __init__(self):
@@ -10,15 +11,22 @@ class Model:
     def hosts(self): return self.__hosts
     def links(self): return self.__links
 
-    def host(self, *args, **kwargs):
+    def add_host(self, *args, **kwargs):
         h = Host(*args, **kwargs)
+        for host in self.hosts():
+            if h.name() == host.name():
+                raise Exceptions.NameExistsError('Host ' + h.name() + ' is already defined for the model.')
+
         self.hosts().append(h)
         return h
 
-    def link(self, *args, **kwargs):
+    def add_link(self, *args, **kwargs):
         l = Link(*args, **kwargs)
         self.links().append(l)
         return l
+
+    def clear(self):
+        self.__hosts = []
 
 class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     def __init__(self, name, **kwargs):
@@ -49,11 +57,11 @@ class Link:
         return self.__second
 
 model = Model()
-host = model.host
-link = model.link
+add_host = model.add_host
+add_link = model.add_link
 
 public_functions = {
-        'host': host,
-        'link': link
+        'add_host': add_host,
+        'add_link': add_link
 }
 
