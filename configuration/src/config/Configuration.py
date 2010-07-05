@@ -5,7 +5,7 @@ import Network
 import Mapping
 import Schedule
 import Resources
-import Exceptions
+import common.Exceptions
 
 class ConfiguredHost:
     def __init__(self):
@@ -34,6 +34,11 @@ class ConfiguredTest:
 
             if not host.model.bound():
                 raise Exceptions.SanityError("Model host '%s' is not bound" % host.name())
+
+            network = host.network
+
+            if 'connection' not in network.attributes():
+                raise Exceptions.SanityError("Network host '%s' doesn't specify connection attribute" % network.name())
 
             for (iname, interface) in host.model.interfaces().items():
                 if iname != interface.name():

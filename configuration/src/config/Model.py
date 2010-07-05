@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
-import Exceptions
+import common.Exceptions
 import Resources
 
 class Model:
