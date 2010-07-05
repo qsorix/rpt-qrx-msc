@@ -5,9 +5,9 @@ import Exceptions
 
 class Network:
     def __init__(self):
-        self.__hosts = []
+        self._hosts = []
 
-    def hosts(self): return self.__hosts
+    def hosts(self): return self._hosts
 
     def add_host(self, *args, **kwargs):
         h = Host(*args, **kwargs)
@@ -19,7 +19,7 @@ class Network:
         return h
 
     def clear(self):
-        self.__hosts = []
+        self._hosts = []
 
 class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     def __init__(self, name, **kwargs):

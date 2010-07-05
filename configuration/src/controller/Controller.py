@@ -70,7 +70,7 @@ class DaemonFrontend(Frontend):
 
 class DummyConnection:
     def __init__(self, name):
-        self.__name = name
+        self._name = name
 
     def input(self):
         class DummyLine:

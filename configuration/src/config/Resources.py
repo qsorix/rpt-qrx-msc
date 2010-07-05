@@ -12,14 +12,14 @@ class Resource(NamedMixin):
 
 class Resources:
     def __init__(self):
-        self.__resources = {}
+        self._resources = {}
 
     def add_resource(self, resource):
-        self.__resources[resource.name()] = resource
+        self._resources[resource.name()] = resource
         return resource
 
     def resources(self):
-        return self.__resources
+        return self._resources
 
 resources = Resources()
 

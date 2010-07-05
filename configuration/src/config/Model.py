@@ -6,11 +6,11 @@ import Resources
 
 class Model:
     def __init__(self):
-        self.__hosts = []
-        self.__links = []
+        self._hosts = []
+        self._links = []
 
-    def hosts(self): return self.__hosts
-    def links(self): return self.__links
+    def hosts(self): return self._hosts
+    def links(self): return self._links
 
     def add_host(self, *args, **kwargs):
         h = Host(*args, **kwargs)
@@ -27,20 +27,20 @@ class Model:
         return l
 
     def clear(self):
-        self.__hosts = []
+        self._hosts = []
 
 class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     def __init__(self, name, **kwargs):
         self.rename(name)
         self.attributes(**kwargs)
-        self.__resources = set()
+        self._resources = set()
 
     def use_resource(self, resource_name):
         resource = Resources.resources.resources()[resource_name]
-        self.__resources.add(resource)
+        self._resources.add(resource)
 
     def needed_resources(self):
-        return self.__resources
+        return self._resources
 
 class Link:
     """Connection between hosts.
@@ -49,14 +49,14 @@ class Link:
     interfaces."""
 
     def __init__(self, first_interface, second_interface):
-        self.__first = first_interface
-        self.__second = second_interface
+        self._first = first_interface
+        self._second = second_interface
 
     def first(self):
-        return self.__first
+        return self._first
 
     def second(self):
-        return self.__second
+        return self._second
 
 model = Model()
 add_host = model.add_host

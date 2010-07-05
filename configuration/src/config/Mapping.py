@@ -2,7 +2,7 @@
 
 class Mapping:
     def __init__(self):
-        self.__bindings = set()
+        self._bindings = set()
 
     def bind(self, first, second):
         first.bind(second)
@@ -11,13 +11,13 @@ class Mapping:
         b = tuple(sorted([first, second]))
         self.bindings().add(b)
 
-    def bindings(self): return self.__bindings
+    def bindings(self): return self._bindings
 
     def clear(self):
-        for (a, b) in self.__bindings:
+        for (a, b) in self._bindings:
             a.unbind()
             b.unbind()
-        self.__bindings = set()
+        self._bindings = set()
 
 mapping = Mapping()
 bind = mapping.bind

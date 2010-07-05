@@ -44,7 +44,7 @@ class ConfiguredTest:
 
 class Configuration:
     def __init__(self):
-        self.__configured_test = []
+        self._configured_test = []
 
     def read(self, model, network, mapping, schedule):
         # local variables for each configuration file
@@ -92,8 +92,8 @@ class Configuration:
 
             ct.hosts[h.name()] = host
 
-        self.__configured_test = ct
+        self._configured_test = ct
 
     def configured_test(self):
-        return self.__configured_test
+        return self._configured_test
 

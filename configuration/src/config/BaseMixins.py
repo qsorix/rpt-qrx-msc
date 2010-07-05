@@ -4,70 +4,70 @@ import Exceptions
 
 class AttributedMixin:
     def get(self, name):
-        return self.__attributes[name]
+        return self._attributes[name]
 
     def attributes(self, **kwargs):
         try:
-            self.__attributes.update(kwargs)
+            self._attributes.update(kwargs)
         except AttributeError:
-            self.__attributes = kwargs
+            self._attributes = kwargs
 
-        return self.__attributes
+        return self._attributes
 
 class NamedMixin:
     def rename(self, name):
-        self.__name = name
+        self._name = name
 
     def name(self):
-        return self.__name
+        return self._name
 
 class BindableMixin:
     def bind(self, bindable):
-        self.__bound_with = bindable
+        self._bound_with = bindable
 
     def bound(self):
         try:
-            return self.__bound_with
+            return self._bound_with
         except AttributeError:
             return None
 
     def unbind(self):
-        self.__bound_with = None
+        self._bound_with = None
 
 class InterfacesMixin:
     class Interface(NamedMixin, AttributedMixin, BindableMixin):
         def __init__(self, host, name, **kwargs):
-            self.__host = host
+            self._host = host
             self.rename(name)
             self.attributes(**kwargs)
 
         def host(self):
-            return self.__host
+            return self._host
 
     def add_interface(self, name, **attributes):
         i = InterfacesMixin.Interface(self, name, **attributes)
         try:
-            if name in self.__interfaces:
+            if name in self._interfaces:
                 raise Exceptions.NameExistsError('Interface ' + name + ' is already defined.')
 
-            self.__interfaces[i.name()] = i
+            self._interfaces[i.name()] = i
 
         except AttributeError:
-            self.__interfaces = {i.name(): i}
+            self._interfaces = {i.name(): i}
 
         return i
 
     def interfaces(self):
         try:
-            return self.__interfaces
+            return self._interfaces
         except AttributeError:
-            self.__interfaces = {}
-            return self.__interfaces
+            self._interfaces = {}
+            return self._interfaces
 
     def interface(self, name):
         try:
-            return self.__interfaces[name]
+            return self._interfaces[name]
         except AttributeError:
-            self.__interfaces = {}
-            return self.__interfaces[name]
+            self._interfaces = {}
+            return self._interfaces[name]
             

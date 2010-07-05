@@ -8,32 +8,32 @@ class PreparedCommands(dict):
 
 class HostCommands:
     def __init__(self):
-        self.__check    = []
-        self.__setup    = []
-        self.__schedule = []
-        self.__cleanup  = []
+        self._check    = []
+        self._setup    = []
+        self._schedule = []
+        self._cleanup  = []
 
     def add_check(self, cmd):
-        self.__setup.append(cmd)
+        self._setup.append(cmd)
 
     def add_setup(self, cmd):
-        self.__setup.append(cmd)
+        self._setup.append(cmd)
 
     def add_cleanup(self, cmd):
-        self.__cleanup.append(cmd)
+        self._cleanup.append(cmd)
 
     def add_schedule(self, cmd):
-        self.__schedule.append(cmd)
+        self._schedule.append(cmd)
 
-    def check(self): return self.__check
-    def setup(self): return self.__setup
-    def schedule(self): return self.__schedule
-    def cleanup(self): return self.__cleanup
+    def check(self): return self._check
+    def setup(self): return self._setup
+    def schedule(self): return self._schedule
+    def cleanup(self): return self._cleanup
 
 class Executer:
     def __init__(self):
-        self.__host_drivers = [DummyDriver()]
-        self.__interface_drivers = [DummyDriver()]
+        self._host_drivers = [DummyDriver()]
+        self._interface_drivers = [DummyDriver()]
 
     def process(self, configured_test):
         result = PreparedCommands()
@@ -48,7 +48,7 @@ class Executer:
 
         attributes = host.model.attributes().keys()
 
-        for d in self.__host_drivers:
+        for d in self._host_drivers:
             d.process(cmd, host, attributes)
 
         if attributes:
@@ -68,7 +68,7 @@ class Executer:
     def _generate_for_interface(self, cmd, host, interface):
         attributes = interface.attributes().keys()
 
-        for d in self.__interface_drivers:
+        for d in self._interface_drivers:
             d.process_interface(cmd, host, interface, attributes)
 
         if attributes:
