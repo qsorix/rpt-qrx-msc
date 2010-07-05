@@ -88,7 +88,9 @@ class Configuration:
             host.model = h
             host.network = h.bound()
             host.schedule = Schedule.schedule.host_schedule(h.name())
-            host.resources = h.needed_resources()
+            host.resources = set(h.needed_resources())
+            for event in host.schedule:
+                host.resources.update(event.command().needed_resources())
 
             ct.hosts[h.name()] = host
 

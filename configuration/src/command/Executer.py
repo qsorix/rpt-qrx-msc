@@ -14,7 +14,7 @@ class HostCommands:
         self._cleanup  = []
 
     def add_check(self, cmd):
-        self._setup.append(cmd)
+        self._check.append(cmd)
 
     def add_setup(self, cmd):
         self._setup.append(cmd)
@@ -63,7 +63,10 @@ class Executer:
         return cmd
 
     def _generate_for_event(self, cmd, host, event):
-        cmd.add_schedule(event.name() + ' [' + event.run_policy().schedule_for_daemon() + '] ' + event.command())
+        for s in event.command().sanity_checks():
+            cmd.add_check(s)
+
+        cmd.add_schedule(event.name() + ' [' + event.run_policy().schedule_for_daemon() + '] ' + event.command().command())
     
     def _generate_for_interface(self, cmd, host, interface):
         attributes = interface.attributes().keys()

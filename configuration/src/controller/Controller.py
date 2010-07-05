@@ -43,7 +43,7 @@ class DaemonFrontend(Frontend):
             r.transfer_with_daemon(self)
 
         self._send_command("check %i:\n" % len(host_commands.check()))
-        for c in host_commands.setup():
+        for c in host_commands.check():
             self._send_command(c + '\n')
 
         self._send_command("setup %i:\n" % len(host_commands.setup()))
@@ -102,7 +102,6 @@ class Controller:
 
         Return connection object allowing streamed IO.
         """
-        print host
         return DummyConnection(host)
 
     def _frontend_class(self, host):

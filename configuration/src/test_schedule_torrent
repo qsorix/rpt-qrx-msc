@@ -1,13 +1,14 @@
 from utils.model import get_host
-from utils.schedule import at
+from utils.schedule import at, shell
 from utils.resources import File
 
-add_resource(File('torrent', 'test-file-1gb.torrent'))
+torrent = add_resource(File('torrent', 'test-file-1gb.torrent'))
 
-get_host('alice').use_resource('torrent')
-get_host('bob').use_resource('torrent')
+schedule = [
+    ('ctorrent', at(0), shell('ctorrent @{torrent.path}', use_resources=[torrent]))
+]
 
-on('alice').schedule('ctorrent', at(0), 'ctorrent @{torrent.path}')
-on('bob').schedule('ctorrent', at(0), 'ctorrent @{torrent.path}')
+append_schedule('alice', schedule)
+append_schedule('bob',   schedule)
 
 # vim: ft=python

@@ -12,3 +12,22 @@ class At(Schedule.RunPolicy):
 def at(time):
     return At(time)
 
+class ShellCommand(Schedule.Command):
+    def __init__(self, command, resources):
+        self._command = command
+        self._resources = resources
+        self._binary = command.split()[0]
+        self._resources = resources
+
+    def command(self):
+        return self._command
+
+    def sanity_checks(self):
+        return ["which '%s'" % self._binary]
+
+    def needed_resources(self):
+        return self._resources
+
+def shell(command, use_resources=[]):
+    return ShellCommand(command, use_resources)
+
