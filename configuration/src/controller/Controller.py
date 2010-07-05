@@ -1,41 +1,17 @@
 #!/usr/bin/env python
 
 import sys
+from ConnectionPlugin import ConnectionPlugin
+from FrontendPlugin import FrontendPlugin
 
-class Frontend:
-    """
-    Base class for frontend implementation.
-    """
-    def __init__(self, host, connection):
-        self._connection = connection
-        self._host = host
+class DaemonFrontend(FrontendPlugin):
+    frontend_type = 'daemon'
 
-    def connection(self):
-        return self._connection
-
-    def host(self):
-        return self._host
-
-    def start_sanity_check(self):
-        pass
-
-    def wait_sanity_check(self):
-        pass
-
-    def deploy_configuration(self, host_configuration):
-        pass
-
-    def start_test(self, timestamp):
-        pass
-
-    def wait_test(self):
-        pass
-
-    def fetch_results(self):
-        pass
-
-class DaemonFrontend(Frontend):
     def deploy_configuration(self):
+        # FIXME: probably move it to the controller so frontends can be
+        # disconnected for the test period
+        self.connect()
+
         host_commands = self.host().commands
         resources = self.host().resources
 
@@ -68,9 +44,11 @@ class DaemonFrontend(Frontend):
         if resp.split()[0] != '200':
             raise RuntimeError('Frontned got wrong response')
 
-class DummyConnection:
-    def __init__(self, name):
-        self._name = name
+class DummyConnection(ConnectionPlugin):
+    connection_type = 'tcp'
+
+    def __init__(self, host):
+        self._host = host
 
     def input(self):
         class DummyLine:
@@ -102,10 +80,22 @@ class Controller:
 
         Return connection object allowing streamed IO.
         """
-        return DummyConnection(host)
+        driver_name = host.network.attributes()['connection']
+
+        for plugin in ConnectionPlugin.plugins:
+            if plugin.connection_type == driver_name:
+                return plugin
+
+        raise RuntimeError("Connection plugin for type '%s' was not registered" % driver_name)
 
     def _frontend_class(self, host):
-        return DaemonFrontend
+        frontend = host.network.attributes()['frontend']
+
+        for plugin in FrontendPlugin.plugins:
+            if plugin.frontend_type == frontend:
+                return plugin
+
+        raise RuntimeError("Frontend plugin for type '%s' was not registered" % frontend)
 
     def _create_frontends(self, configured_test):
         self._frontends = {}
