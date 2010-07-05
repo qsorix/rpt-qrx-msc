@@ -19,6 +19,9 @@ if __name__ == "__main__":
     prepared_commands = e.process( configured_test )
     #TODO: prepared_commands.sanity_check()
 
+    for (host, commands) in prepared_commands.items():
+        configured_test.hosts[host].commands = commands
+
     ctrl = Controller.Controller()
-    ctrl.run(configured_test, prepared_commands)
+    ctrl.run(configured_test)
 

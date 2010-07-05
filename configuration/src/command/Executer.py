@@ -8,9 +8,13 @@ class PreparedCommands(dict):
 
 class HostCommands:
     def __init__(self):
+        self.__check    = []
         self.__setup    = []
         self.__schedule = []
         self.__cleanup  = []
+
+    def add_check(self, cmd):
+        self.__setup.append(cmd)
 
     def add_setup(self, cmd):
         self.__setup.append(cmd)
@@ -21,14 +25,10 @@ class HostCommands:
     def add_schedule(self, cmd):
         self.__schedule.append(cmd)
 
+    def check(self): return self.__check
     def setup(self): return self.__setup
     def schedule(self): return self.__schedule
     def cleanup(self): return self.__cleanup
-
-    def dump(self):
-        print self.__setup
-        print self.__schedule
-        print self.__cleanup
 
 class Executer:
     def __init__(self):

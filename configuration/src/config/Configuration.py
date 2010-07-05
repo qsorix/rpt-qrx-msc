@@ -7,19 +7,20 @@ import Schedule
 import Resources
 import Exceptions
 
-class Host:
+class ConfiguredHost:
     def __init__(self):
         self.model = None
         self.network = None
         self.schedule = None
         self.resources = []
+        self.commands = None
 
 class ConfiguredTest:
     """
     Structure to easily pass test configuration.
 
     attributes:
-        hosts - dictionary of Host objects (keys are names from
+        hosts - dictionary of ConfiguredHost objects (keys are names from
                 Host.model.name()
 
         resources - dictionary of resources (keys are names from
@@ -83,7 +84,7 @@ class Configuration:
         ct.hosts = {}
 
         for h in Model.model.hosts():
-            host = Host()
+            host = ConfiguredHost()
             host.model = h
             host.network = h.bound()
             host.schedule = Schedule.schedule.host_schedule(h.name())

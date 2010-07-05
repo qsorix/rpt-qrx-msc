@@ -2,6 +2,7 @@
 
 from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
 import Exceptions
+import Resources
 
 class Model:
     def __init__(self):
@@ -35,7 +36,8 @@ class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
         self.__resources = set()
 
     def use_resource(self, resource_name):
-        self.__resources.add(resource_name)
+        resource = Resources.resources.resources()[resource_name]
+        self.__resources.add(resource)
 
     def needed_resources(self):
         return self.__resources

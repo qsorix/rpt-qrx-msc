@@ -6,25 +6,45 @@ class Frontend:
     """
     Base class for frontend implementation.
     """
-    def __init__(self, connection):
-        self.__connection = connection
+    def __init__(self, host, connection):
+        self._connection = connection
+        self._host = host
 
     def connection(self):
-        return self.__connection
+        return self._connection
 
-    def deploy_configuration(self, host):
+    def host(self):
+        return self._host
+
+    def start_sanity_check(self):
+        pass
+
+    def wait_sanity_check(self):
+        pass
+
+    def deploy_configuration(self, host_configuration):
         pass
 
     def start_test(self, timestamp):
+        pass
+
+    def wait_test(self):
         pass
 
     def fetch_results(self):
         pass
 
 class DaemonFrontend(Frontend):
-    def deploy_configuration(self, host_commands, resources=[]):
+    def deploy_configuration(self):
+        host_commands = self.host().commands
+        resources = self.host().resources
+
         for r in resources:
             r.transfer_with_daemon(self)
+
+        self._send_command("check %i:\n" % len(host_commands.check()))
+        for c in host_commands.setup():
+            self._send_command(c + '\n')
 
         self._send_command("setup %i:\n" % len(host_commands.setup()))
         for c in host_commands.setup():
@@ -63,46 +83,61 @@ class DummyConnection:
         return sys.stdout
 
 class Controller:
-    def __init__(self):
-        self.__frontends = {}
+    def run(self, configured_test):
+        self._create_frontends(configured_test)
 
-    def run(self, configured_test, prepared_commands):
+        try:
+            self._send_configuration()
+            self._perform_sanity_check()
+            self._perform_test()
+            self._fetch_results()
 
-        frontends = {}
+        # FIXME:
+        except:
+            raise
 
-        for (name, host) in configured_test.hosts.items():
-            connection = self._connect(host)
-            frontends[name] = self._frontend_class(host)(connection)
-
-            r = [configured_test.resources[rname] for rname in host.resources]
-            frontends[name].deploy_configuration(prepared_commands[name], resources=r)
-
-        #for frontend in frontends.values():
-            #frontend.start_sanity_check()
-
-        # now, if sanity check failed on any host, we can/must abort the test
-
-        #for frontend in frontends.values():
-            #frontend.wait_sanity_check()
-
-        # otherwise start it
-        for frontend in frontends.values():
-            frontend.start_test('<FIXME timestamp>')
-
-        # FIXME: from the schedule it must be possible to deduce the test's
-        # duration
-        #wait_for_all_tasks
-
-        for host in configured_test.hosts:
-            frontends[host].fetch_results()
-
-    def _connect(self, host):
+    def _connection(self, host):
         """
         Find out how and connect to given host.
 
         Return connection object allowing streamed IO.
         """
-        return DummyConnection(host.model.name())
+        print host
+        return DummyConnection(host)
 
     def _frontend_class(self, host):
         return DaemonFrontend
+
+    def _create_frontends(self, configured_test):
+        self._frontends = {}
+        for (name, host) in configured_test.hosts.items():
+            connection = self._connection(host)
+            self._frontends[name] = self._frontend_class(host)(host, connection)
+
+    def _send_configuration(self):
+        for frontend in self._frontends.values():
+            frontend.deploy_configuration()
+
+    def _perform_sanity_check(self):
+        # TODO: perform synchronization. as part of environment&sanity check or on its own
+
+        for frontend in self._frontends.values():
+            frontend.start_sanity_check()
+
+        # now, if sanity check failed on any host, we can/must abort the test
+        for frontend in self._frontends.values():
+            frontend.wait_sanity_check()
+
+    def _perform_test(self):
+        # configuration is sane, start the test
+        start_time = '<FIXME timestamp>'
+        for frontend in self._frontends.values():
+            frontend.start_test(start_time)
+
+        # wait for the test to end
+        for frontend in self._frontends.values():
+            frontend.wait_test()
+
+    def _fetch_results(self):
+        for frontend in self._frontends.values():
+            frontend.fetch_results()
