@@ -4,61 +4,37 @@ import sys
 from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
 
-class DaemonFrontend(FrontendPlugin):
-    frontend_type = 'daemon'
-
-    def deploy_configuration(self):
-        # FIXME: probably move it to the controller so frontends can be
-        # disconnected for the test period
-        self.connect()
-
-        host_commands = self.host().commands
-        resources = self.host().resources
-
-        for r in resources:
-            r.transfer_with_daemon(self)
-
-        self._send_command("check %i:\n" % len(host_commands.check()))
-        for c in host_commands.check():
-            self._send_command(c + '\n')
-
-        self._send_command("setup %i:\n" % len(host_commands.setup()))
-        for c in host_commands.setup():
-            self._send_command(c + '\n')
-
-        self._send_command("schedule %i:\n" % len(host_commands.schedule()))
-        for c in host_commands.schedule():
-            self._send_command(c + '\n')
-
-        self._send_command("cleanup: %i\n" % len(host_commands.cleanup()))
-        for c in host_commands.cleanup():
-            self._send_command(c + '\n')
-
-    def start_test(self, timestamp):
-        self._send_command('start at: ' + timestamp + '\n')
-
-    def _send_command(self, cmd):
-        self.connection().output().write(cmd)
-        resp = self.connection().input().readline()
-
-        if resp.split()[0] != '200':
-            raise RuntimeError('Frontned got wrong response')
+#FIXME: loads the module so the plugin in it can register itself.
+#       rather than doing this, write some logic in Main.py to find and load
+#       plugin modules
+import DaemonFrontend
 
 class DummyConnection(ConnectionPlugin):
     connection_type = 'tcp'
 
     def __init__(self, host):
         self._host = host
+        self._name = host.model.name()
+        print self._name+'> ', ' -- connected --'
 
     def input(self):
         class DummyLine:
-            def readline(self):
-                return '200 OK'
+            def readline(s):
+                ans = '200 OK'
+                #print self._name+'< ', ans
+                return ans
 
         return DummyLine()
 
     def output(self):
-        return sys.stdout
+        class decorator:
+            def write(s, str):
+                print self._name+'> ', str,
+
+        return decorator()
+
+    def close(self):
+        print self._name+'> ', ' -- disconnected --'
 
 class Controller:
     def run(self, configured_test):
@@ -130,3 +106,4 @@ class Controller:
     def _fetch_results(self):
         for frontend in self._frontends.values():
             frontend.fetch_results()
+

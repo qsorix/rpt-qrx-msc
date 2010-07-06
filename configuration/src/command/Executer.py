@@ -8,10 +8,10 @@ class PreparedCommands(dict):
 
 class HostCommands:
     def __init__(self):
-        self._check    = []
-        self._setup    = []
-        self._schedule = []
-        self._cleanup  = []
+        self._check    = [] # list of strings
+        self._setup    = [] # list of strings
+        self._schedule = [] # list of Schedule.Event
+        self._cleanup  = [] # list of strings
 
     def add_check(self, cmd):
         self._check.append(cmd)
@@ -66,7 +66,7 @@ class Executer:
         for s in event.command().sanity_checks():
             cmd.add_check(s)
 
-        cmd.add_schedule(event.name() + ' [' + event.run_policy().schedule_for_daemon() + '] ' + event.command().command())
+        cmd.add_schedule(event)
     
     def _generate_for_interface(self, cmd, host, interface):
         attributes = interface.attributes().keys()

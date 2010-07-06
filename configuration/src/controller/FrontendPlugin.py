@@ -29,10 +29,16 @@ class FrontendPlugin:
         self._connection = None
         self._host = host
 
-    def connection(self):
-        return self._connection
+    def output(self):
+        assert self._connection
+        return self._connection.output()
+
+    def input(self):
+        assert self._connection
+        return self._connection.input()
 
     def connect(self):
+        assert not self._connection
         self._connection = self._connection_class(self.host())
 
     def disconnect(self):
