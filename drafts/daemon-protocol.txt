@@ -2,6 +2,7 @@ TODO:
   - dopisac odpowiedzi demona, ktore kontroler ma odebrac
   - opisac dokladnie jak odbierac wyniki
   - udokumentowac parametry
+  - synchronizacja czasu?
 
 
 Notacja @{param} służy do podstawiania zmiennych
@@ -32,7 +33,7 @@ cleanup wykonywany jest zawsze. wszystkie komendy z cleanup, niezaleznie od
 tego, czy sie powiodly, czy nie (bo jak setup zostal przerwany, to potem
 cleanup moze nie dzialac, ale nie wiadomo, kiedy sie setup przerwal)
 
-
+# przesyla konfiguracje:
 test @{id=<name>}
 	file @{id=<name>} @{size=<size>}
 	  -- <size> bytes of content follows --
@@ -42,8 +43,16 @@ test @{id=<name>}
 	schedule @{id=<name>} @{run=<start>} <command>
 end
 
+# pobiera wyniki:
 results @{name=<name>}, wysyłany jest rozmiar, a potem output
 	task @{name=<name>}
         cmd @{name=<name>}
         file @{name=<name>}
 end
+
+# startuje check:
+start check
+
+# startuje test:
+start test @{at=<timestamp>}
+
