@@ -1,0 +1,45 @@
+1. Wstęp
+
+
+2. Testy aplikacji sieciowych
+
+
+3. Nasze rozwiązanie
+
+3.1. Założenia
+
+3.2. Architektura
+
+3.3. Instalacja
+
+3.4. Konfiguracja testu
+
+3.4.1. Model
+
+3.4.1. Sieć
+
+3.4.1. Mapowanie
+
+3.4.1. Plan
+
+3.5. Wykonanie testów
+
+3.6. Przechowywanie wyników
+
+3.7. Rozszerzanie możliwości frameworku
+
+3.7.1. Nawiązywanie połączenia
+
+3.7.2. Frontend sterujący
+
+3.7.3. Przesyłanie zasobów
+
+
+4. Przykład użycia
+
+4.1. Pomiar wydajności transferu pomiędzy dwoma hostami.
+
+4.2. Pomiar czasu dystrybucji pliku w sieci peer2peer.
+
+
+5. Podsumowanie
