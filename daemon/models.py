@@ -8,7 +8,7 @@ class Test(Entity):
 
     name = Field(Unicode(128), required=True)
     duration = Field(Integer, required=True)
-    start = Field(DateTime, required=True)
+#    start = Field(DateTime, required=True)
 
     tasks = OneToMany('Task')
     commands = OneToMany('Command')

@@ -72,7 +72,9 @@ def join_args(args):
         args.remove(arg)
 
 def name_exists(test, name):
-    if Task.query.filter_by(name=unicode(name), test=test).all() + Command.query.filter_by(name=unicode(name), test=test).all() + File.query.filter_by(name=unicode(name), test=test).all():
+    if Task.query.filter_by(name=unicode(name), test=test).all() +\
+        Command.query.filter_by(name=unicode(name), test=test).all() +\
+        File.query.filter_by(name=unicode(name), test=test).all():
         return True
     return False
 
