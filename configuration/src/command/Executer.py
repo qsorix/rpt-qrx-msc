@@ -78,18 +78,3 @@ class Executer:
 
         if attributes:
             print 'Unprocessed interface attributes: ', attributes
-
-
-class DummyDriver:
-    def process(self, cmd, host, attributes):
-        for a in attributes:
-            cmd.add_setup('setup ' + a)
-            cmd.add_cleanup('cleanup ' + a)
-
-            attributes.remove(a)
-
-    def process_interface(self, cmd, host, interface, attributes):
-        while attributes:
-            a = attributes.pop()
-            cmd.add_setup('setup dev ' + interface.bound().name() + '(' + interface.name() + ') ' + a)
-            cmd.add_cleanup('cleanup dev ' + interface.bound().name() + ' ' + a)
