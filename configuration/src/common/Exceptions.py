@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 class ConfigurationError(Exception):
-    pass
+    def __init__(self, exception, traceback=None):
+        Exception.__init__(self, exception)
+        self.traceback = traceback
 
 class NotBoundError(Exception):
     pass

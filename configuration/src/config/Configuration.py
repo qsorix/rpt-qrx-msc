@@ -5,7 +5,9 @@ import Network
 import Mapping
 import Schedule
 import Resources
-import common.Exceptions
+import common.Exceptions as Exceptions
+
+import traceback
 
 class ConfiguredHost:
     def __init__(self):
@@ -67,8 +69,8 @@ class Configuration:
 
         (glob_model, glob_network, glob_mapping, glob_schedule) = map(setup_glob, [Model, Network, Mapping, Schedule])
 
-        execfile(model, glob_model, ctx_model)
-        execfile(network, glob_network, ctx_network)
+        self._execfile(model, glob_model, ctx_model)
+        self._execfile(network, glob_network, ctx_network)
 
         # populate mapping and schedule with variables defined in model/network parts
         ctx_mapping.update(ctx_model)
@@ -76,14 +78,14 @@ class Configuration:
 
         ctx_schedule.update(ctx_model)
 
-        execfile(mapping, glob_mapping, ctx_mapping)
-        execfile(schedule, glob_schedule, ctx_schedule)
+        self._execfile(mapping, glob_mapping, ctx_mapping)
+        self._execfile(schedule, glob_schedule, ctx_schedule)
 
-        self.combine_hosts()
+        self._combine_hosts()
 
         return self.configured_test()
     
-    def combine_hosts(self):
+    def _combine_hosts(self):
         ct = ConfiguredTest()
         ct.resources = Resources.resources.resources()
         ct.hosts = {}
@@ -100,6 +102,12 @@ class Configuration:
             ct.hosts[h.name()] = host
 
         self._configured_test = ct
+
+    def _execfile(self, file, globals, locals):
+        try:
+            execfile(file, globals, locals)
+        except Exception as e:
+            raise Exceptions.ConfigurationError(e, traceback=traceback.format_exc())
 
     def configured_test(self):
         return self._configured_test
