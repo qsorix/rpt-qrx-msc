@@ -1,5 +1,6 @@
 standard_connection = {
-    'connection': 'tcp',
+    # 'connection': 'tcp',
+    'connection': 'dummy',
     'connection_port': '4564',
     'frontend': 'daemon',
     'shell': 'linux_shell'}
