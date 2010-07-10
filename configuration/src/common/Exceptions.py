@@ -13,3 +13,6 @@ class NotBoundError(Exception):
 
 class NameExistsError(Exception):
     pass
+
+class MissingPluginError(Exception):
+    pass

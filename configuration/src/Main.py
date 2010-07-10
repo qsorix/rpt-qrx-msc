@@ -42,13 +42,22 @@ if __name__ == "__main__":
             print '-'*60
         sys.exit(2)
 
-    e = Executer.Executer()
-    prepared_commands = e.process( configured_test )
-    #TODO: prepared_commands.sanity_check()
+    try:
+        e = Executer.Executer()
+        prepared_commands = e.process( configured_test )
+        #TODO: prepared_commands.sanity_check()
 
-    for (host, commands) in prepared_commands.items():
-        configured_test.hosts[host].commands = commands
+        for (host, commands) in prepared_commands.items():
+            configured_test.hosts[host].commands = commands
+    except:
+        raise
 
-    ctrl = Controller.Controller()
-    ctrl.run(configured_test)
+    try:
+        ctrl = Controller.Controller()
+        ctrl.run(configured_test)
+
+    except Exceptions.MissingPluginError as e:
+        print 'Plugin not found:'
+        print e
+
 

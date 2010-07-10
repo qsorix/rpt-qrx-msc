@@ -3,6 +3,7 @@
 import sys
 from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
+from common import Exceptions
 
 #FIXME: loads the module so the plugin in it can register itself.
 #       rather than doing this, write some logic in Main.py to find and load
@@ -35,7 +36,7 @@ class Controller:
             if plugin.connection_type == driver_name:
                 return plugin
 
-        raise RuntimeError("Connection plugin for type '%s' was not registered" % driver_name)
+        raise Exceptions.MissingPluginError("Connection plugin for type '%s' was not registered" % driver_name)
 
     def _frontend_class(self, host):
         frontend = host.network.attributes()['frontend']
