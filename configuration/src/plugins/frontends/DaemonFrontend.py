@@ -1,4 +1,4 @@
-from FrontendPlugin import FrontendPlugin
+from controller.FrontendPlugin import FrontendPlugin
 
 class DaemonFrontend(FrontendPlugin):
     frontend_type = 'daemon'

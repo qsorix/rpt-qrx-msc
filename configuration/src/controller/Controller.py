@@ -5,11 +5,6 @@ from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
 from common import Exceptions
 
-#FIXME: loads the module so the plugin in it can register itself.
-#       rather than doing this, write some logic in Main.py to find and load
-#       plugin modules
-import DaemonFrontend
-
 class Controller:
     def run(self, configured_test):
         self._create_frontends(configured_test)
