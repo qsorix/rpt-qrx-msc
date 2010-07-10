@@ -3,6 +3,9 @@ from utils.model import interface
 alice = add_host('alice')
 bob   = add_host('bob')
 
+alice.add_interface('implicit',
+                   ip='192.168.6.4')
+
 add_link(interface(alice), interface(bob))
 
 # vim: ft=python
