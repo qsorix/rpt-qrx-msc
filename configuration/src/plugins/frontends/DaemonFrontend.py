@@ -3,9 +3,16 @@ from controller.FrontendPlugin import FrontendPlugin
 class DaemonFrontend(FrontendPlugin):
     frontend_type = 'daemon'
 
+    def __init__(self, host, connection):
+        FrontendPlugin.__init__(self, host, connection)
+        self._sent_cmds = {}
+        self._id = 0
+
+    def _make_id(self):
+        self._id += 1
+        return self._id
+
     def deploy_configuration(self):
-        # FIXME: probably move connection establishment to the controller so
-        # frontends can be disconnected for the test period
         self.connect()
 
         host_commands = self.host().commands
@@ -20,19 +27,30 @@ class DaemonFrontend(FrontendPlugin):
             r.transfer_with_daemon(self)
 
         for c in host_commands.check():
-            out('check @{id=FIXME} ' + c + '\n')
+            id = self._make_id()
+            out('check @{id=%i} %s\n' % (id, c))
+            assert id not in self._sent_cmds
+            self._sent_cmds[id] = c
 
         for c in host_commands.setup():
-            out('setup @{id=FIXME} ' + c + '\n')
+            id = self._make_id()
+            out('setup @{id=%i} %s\n' % (id, c))
+            assert id not in self._sent_cmds
+            self._sent_cmds[id] = c
 
         for c in host_commands.cleanup():
-            out('cleanup @{id=FIXME} ' + c + '\n')
+            id = self._make_id()
+            out('cleanup @{id=%i} %s\n' % (id, c))
+            assert id not in self._sent_cmds
+            self._sent_cmds[id] = c
 
         for c in host_commands.schedule():
             out('schedule @{id=%(id)s} @{run=%(run)s} %(cmd)s\n' %
                 {'id': c.name(),
                  'run': c.run_policy().schedule_for_daemon(),
                  'cmd': c.command().command()})
+            assert c.name() not in self._sent_cmds
+            self._sent_cmds[c.name()] = c
 
         out('end\n')
 
@@ -53,7 +71,12 @@ class DaemonFrontend(FrontendPlugin):
 
     def fetch_results(self):
         self.connect()
+
+        #FIXME: protocol z dupy
         self.output().write('results @{id=FIXME}\n')
+        for id in self._sent_cmds.keys():
+            self.output().write('get ' + str(id) + '\n')
+        self.output().write('end\n')
         self.disconnect()
 
     def foo():
