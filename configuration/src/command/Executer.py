@@ -34,8 +34,8 @@ class HostCommands:
 
 class Executer:
     def __init__(self):
-        self._host_drivers = DriverPlugin.HostDriverPlugin.plugins
-        self._interface_drivers = DriverPlugin.InterfaceDriverPlugin.plugins
+        self._host_drivers = [x() for x in DriverPlugin.HostDriverPlugin.plugins]
+        self._interface_drivers = [x() for x in DriverPlugin.InterfaceDriverPlugin.plugins]
 
     def process(self, configured_test):
         result = PreparedCommands()

@@ -10,9 +10,16 @@ from common import Exceptions
 import sys
 import getopt
 import argparse
+import py.path
 
+def load_plugins(paths):
+    for path in paths:
+        for f in py.path.local(path).visit('*.py'):
+            f.pyimport()
 
 if __name__ == "__main__":
+    load_plugins(['plugins'])
+
     parser = argparse.ArgumentParser(prog='Main.py')
     parser.add_argument('-m', '--model',    help='model file',    required=True)
     parser.add_argument('-n', '--network',  help='network file',  required=True)
