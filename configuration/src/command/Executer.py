@@ -1,3 +1,5 @@
+import DriverPlugin
+
 class PreparedCommands(dict):
     """
     Datatype to hold Execute.process() result.
@@ -32,8 +34,8 @@ class HostCommands:
 
 class Executer:
     def __init__(self):
-        self._host_drivers = [DummyDriver()]
-        self._interface_drivers = [DummyDriver()]
+        self._host_drivers = DriverPlugin.HostDriverPlugin.plugins
+        self._interface_drivers = DriverPlugin.InterfaceDriverPlugin.plugins
 
     def process(self, configured_test):
         result = PreparedCommands()
