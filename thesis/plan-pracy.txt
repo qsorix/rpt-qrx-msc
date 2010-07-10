@@ -1,45 +1,90 @@
 1. Wstęp
 
+  1-2 strony.
 
 2. Testy aplikacji sieciowych
 
+  1-2 strony na temat problemu, który rozwiązujemy.
 
 3. Nasze rozwiązanie
 
+  1-2 strony. Krótkie przedstawienie aplikacji
+
 3.1. Założenia
+
+  2-4 strony. Użyte technologie, kwestie bezpieczeństwa, zbierania wyników, itp.
 
 3.2. Architektura
 
+  4 strony. Budowa aplikacji, podział na moduły i ich funkcje. 
+
 3.3. Instalacja
+
+  1 strona. Wymagane oprogramowanie, procedura instalacji na hostach.
 
 3.4. Konfiguracja testu
 
+  2 strony. Ogóle założenia na temat podziału konfiguracji na 4 części i ich rola.
+
 3.4.1. Model
+
+  3 strony. Omówienie modelu.
 
 3.4.1. Sieć
 
+  3 strony. Omówienie sieci.
+
 3.4.1. Mapowanie
+
+  3 strony. Omówienie mapowania.
 
 3.4.1. Plan
 
+  3 strony. Omówienie planu.
+
 3.5. Wykonanie testów
+
+  2 strony. Uruchomienie prostej konfiguracji, omówienie zachodzących akcji i przepływu
+  danych.
 
 3.6. Przechowywanie wyników
 
+  4 strony. Powody wyboru bazy danych i formatu przechowywania danych, opis sposobu
+  przechowywania wyników, schematu bazy danych, itp.
+
 3.7. Rozszerzanie możliwości frameworku
 
-3.7.1. Nawiązywanie połączenia
+  1 strona. Przedstawienie miejsc, w których możliwe jest rozbudowywanie możliwości
+  narzędzia.
 
-3.7.2. Frontend sterujący
+3.7.1. Sterowniki konfiguracji
 
-3.7.3. Przesyłanie zasobów
+  1 strona. Omówienie pluginów konfigurujących hosty i interfejsy sieciowe.
 
+3.7.2. Nawiązywanie połączenia
+
+  1 strona. Omówienie pluginów Connection
+
+3.7.3. Frontend sterujący
+
+  1 strona. Omówienie pluginów Frontend
+
+3.7.4. Przesyłanie zasobów
+
+  1 strona. Omówienie klasy Resource
 
 4. Przykład użycia
 
+  1 strona. Dwa słowa wstępu do przykładów. Dlaczego właśnie takie, a nie inne.
+
 4.1. Pomiar wydajności transferu pomiędzy dwoma hostami.
+
+  2 strony. Przykład pomiaru przy użyciu iperf'a. Prosty scenariusz z dwoma hostami.
 
 4.2. Pomiar czasu dystrybucji pliku w sieci peer2peer.
 
+  3 strony. Realizacja zadania z laboratoriów peer2peer przy użyciu naszego programu.
 
 5. Podsumowanie
+
+  1 strona. Podsumowanie ;-)
