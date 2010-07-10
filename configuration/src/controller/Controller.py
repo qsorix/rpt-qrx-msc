@@ -9,33 +9,6 @@ from FrontendPlugin import FrontendPlugin
 #       plugin modules
 import DaemonFrontend
 
-class DummyConnection(ConnectionPlugin):
-    connection_type = 'tcp'
-
-    def __init__(self, host):
-        self._host = host
-        self._name = host.model.name()
-        print self._name+'> ', ' -- connected --'
-
-    def input(self):
-        class DummyLine:
-            def readline(s):
-                ans = '200 OK'
-                #print self._name+'< ', ans
-                return ans
-
-        return DummyLine()
-
-    def output(self):
-        class decorator:
-            def write(s, str):
-                print self._name+'> ', str,
-
-        return decorator()
-
-    def close(self):
-        print self._name+'> ', ' -- disconnected --'
-
 class Controller:
     def run(self, configured_test):
         self._create_frontends(configured_test)
