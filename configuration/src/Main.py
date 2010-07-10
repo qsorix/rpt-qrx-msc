@@ -29,9 +29,10 @@ if __name__ == "__main__":
     except Exceptions.ConfigurationError as e:
         print 'Configuration error:'
         print e
-        print '-'*60
-        print e.traceback,
-        print '-'*60
+        if e.traceback:
+            print '-'*60
+            print e.traceback,
+            print '-'*60
         sys.exit(2)
 
     e = Executer.Executer()

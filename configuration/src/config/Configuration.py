@@ -47,7 +47,7 @@ class ConfiguredTest:
                     raise Exceptions.SanityError("Key's name is different than element's name")
 
                 if not interface.bound():
-                    raise Exceptions.SanityError("Interface '%s' of host '%s' is not bound" % (iname, name))
+                    raise Exceptions.SanityError("Interface '%s' of model host '%s' is not bound" % (iname, name))
 
 class Configuration:
     def __init__(self):

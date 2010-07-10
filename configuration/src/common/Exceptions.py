@@ -5,6 +5,9 @@ class ConfigurationError(Exception):
         Exception.__init__(self, exception)
         self.traceback = traceback
 
+class SanityError(ConfigurationError):
+    pass
+
 class NotBoundError(Exception):
     pass
 
