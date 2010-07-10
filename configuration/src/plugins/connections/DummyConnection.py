@@ -11,7 +11,7 @@ class DummyConnection(ConnectionPlugin):
     def input(self):
         class DummyLine:
             def readline(s):
-                ans = '200 OK'
+                ans = 'ok'
                 #print self._name+'< ', ans
                 return ans
 

@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
 import sys
+import uuid
+
 from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
 from common import Exceptions
 
 class Controller:
     def run(self, configured_test):
+
+        self._test_uuid = uuid.uuid4()
         self._create_frontends(configured_test)
 
         try:
@@ -46,7 +50,7 @@ class Controller:
         self._frontends = {}
         for (name, host) in configured_test.hosts.items():
             connection = self._connection(host)
-            self._frontends[name] = self._frontend_class(host)(host, connection)
+            self._frontends[name] = self._frontend_class(host)(host, connection, test_uuid=self._test_uuid)
 
     def _send_configuration(self):
         for frontend in self._frontends.values():

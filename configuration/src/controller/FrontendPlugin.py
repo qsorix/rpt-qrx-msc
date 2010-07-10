@@ -24,7 +24,7 @@ class FrontendPlugin:
 
     __metaclass__ = PluginMount
 
-    def __init__(self, host, connection_class):
+    def __init__(self, host, connection_class, **kwargs):
         self._connection_class = connection_class
         self._connection = None
         self._host = host
