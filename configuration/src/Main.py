@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-
-
 from config import Configuration
 from command import Executer
 from controller import Controller
