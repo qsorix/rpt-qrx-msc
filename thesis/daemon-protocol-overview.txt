@@ -1,0 +1,81 @@
+Protokół komunikacji z Daemon'em:
+-------------------------------------
+
+1.1 Informacje ogólne
+
+1.2 Polecenia
+
+test - tworzy nowy test, pozwala dodać do niego pliki oraz komendy różnych typów
+
+check - sprawdza poprawność testu korzystając z komend typu 'check'
+
+start - rozpoczyna test, wywołuje kolejno komenty typu 'setup', 'schedule' oraz 'cleanup'
+
+stop - zatrzymuje test
+
+results - pobiera wyniki (output'y) wykonanych wcześniej komend różnych typów
+
+1.3 Typy komend
+
+check - dodaje komendę sprawdzającą poprawność testu, wykorzystywaną przy poleceniu 'check'
+
+setup - dodaje komendę konfiguracyjną, wywoływaną przez rozpoczęciem testu
+
+schedule - dodaje komendę wywoływaną w określonym momencie samego testu
+
+cleanup - dodaje komendę sprzątającą po teście, wywoływaną na koniec testu.
+
+del - usuwa komendę lub plik o podanej nazwie
+
+1.4 Zwracane komunikaty
+
+Komunikaty poprawne:
+
+    200 OK              - poprawna wiadomość
+    201 Complete        - potwierdzenie zakończenia odbierania przez daemon'a pliku
+    202 Ready <size>    - gotowość daemon'a do wysłania pliku o rozmiarze <size>
+
+Komunikaty błędne:
+
+    400 Bad Request     - nieprawidłowa wiadomość / nie istnieje element o danej nazwie
+
+Inne:
+
+    600 The End         - zakończenie połączenia
+
+2.1 Wysyłanie testu do daemon'a
+
+test @{name=<name>} @{duration=<seconds>}
+	file @{name=<name>} @{size=<size>} @{output=<path>}
+	check @{name=<name>} <command>
+	setup @{name=<name>} <command>
+	schedule @{name=<name>} @{at=<second>|every=<seconds>} @{output=<path>}? <command>
+	cleanup @{name=<name>} <command>
+    del @{name=<name>}
+end
+
+2.2 Sprawdzenie poprawności testu i jego uruchomienie
+
+check @{name=<name>}
+start @{name=<name> @{at=<datetime>|in=<seconds>}
+stop @{name=<name>}
+
+2.3 Odbieranie wyników
+
+results @{name=<name>}
+    file @{name=<name>}
+	schedule @{name=<name>}
+end
+
+3.1 Parametry
+
+@{<name>.<param>}   -   wyciągane z bazy na podstawie nazw
+
+file : name, size, path
+
+task (check, setup, cleanup): name, command
+    schedule: pid, start
+
+@{<param>}          -   wczytywane z pliku konfiguracyjnego
+
+tmpdir
