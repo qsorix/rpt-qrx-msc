@@ -22,6 +22,11 @@ class AttributedMixin:
             return []
 
 class NamedMixin(AttributedMixin):
+    def attributes(self):
+        a = AttributedMixin.attributes(self)
+        a.remove('name')
+        return a
+
     def rename(self, new_name):
         self.set_attributes(name=new_name)
 

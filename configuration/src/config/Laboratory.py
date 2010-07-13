@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
+from BaseMixins import NamedMixin, InterfacesMixin, BindableMixin
 from common import Exceptions
 
 class Laboratory(NamedMixin):
@@ -22,7 +22,7 @@ class Laboratory(NamedMixin):
     def clear(self):
         self._devices = []
 
-class Device(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
+class Device(NamedMixin, InterfacesMixin, BindableMixin):
     def __init__(self, name, **kwargs):
         self.rename(name)
         self.set_attributes(**kwargs)
