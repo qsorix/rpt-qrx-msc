@@ -15,7 +15,7 @@ class Resources:
         self._resources = {}
 
     def add_resource(self, resource):
-        self._resources[resource.name()] = resource
+        self._resources[resource['name']] = resource
         return resource
 
     def resources(self):
