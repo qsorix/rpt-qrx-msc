@@ -22,7 +22,7 @@ append_schedule(bob, schedule)
 create_laboratory('virtual')
 
 device_template = {
-    'connection': 'tcp',
+    'connection': 'dummy',
     'frontend': 'daemon',
     'connection_port': 345
 }
