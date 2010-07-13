@@ -3,30 +3,18 @@
 
 import re
 
-#regexes = [
-#    ('test',  r'^test\s+\@\{name=(?P<name>.+)\}\s+\@\{start=(?P<start>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})\}\s+\@\{duration=(?P<duration>[0-9]+)\}$'),
-#        ('file',  r'^file\s+\@\{name=(?P<name>[a-zA-Z0-9_]+)\}\s*(\@\{output=(?P<output>.+)\})?\s+\@\{size=(?P<size>[0-9]+)\}$'),
-#        ('task',  r'^task\s+\@\{name=(?P<name>[a-zA-Z0-9_]+)\}\s*(\@\{output=(?P<output>.+)\})?\s+\@\{at=(?P<start>[0-9]+)\}\s+(?P<command>.+)$'),
-#        ('cmd',   r'^cmd\s+\@\{name=(?P<name>[a-zA-Z0-9_]+)\}\s+(?P<command>.+)$'),
-#    ('rslt',  r'^results\s+\@\{name=(?P<name>.+)\}$'),
-#        ('task',  r'^task\s+\@\{name=(?P<name>.+)\}$'),
-#        ('cmd',   r'^cmd\s+\@\{name=(?P<name>.+)\}$'),
-#        ('file',  r'^file\s+\@\{name=(?P<name>.+)\}$'),
-#    ('end',   r'^end$'),
-#    ('check', r'^check\s+\@\{name=(?P<name>.+)\}$'),
-#    ('start', r'^check\s+\@\{name=(?P<name>.+)\}\s+\@\{at=(?P<start>[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2})\}$'),
-#    ('close', r'^close$')
-#]
-
-main_regex     = r'^(?P<type>\w+)\s+(?P<parameters>(\@\{\w+\=\w+\}\s+)+)(?P<command>.+)?\s*$'
+main_regex     = r'^(?P<type>\w+)\s+(?P<parameters>(\@\{\w+\=.+\}\s+)+)(?P<command>.+)?\s*$'
+datetime_regex = r'^[0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}$'
 main_types     = ['test', 'results', 'check', 'start', 'close']
 sub_types      = ['file', 'task', 'cmd', 'end']
+digit_types    = ['size', 'in', 'every', 'duration']
+datetime_types = ['at']
 required       = ['name']
 test_required  = []
 test_optional  = []
 file_required  = ['size']
 file_optional  = ['output']
-task_required  = [('at', 'every')]
+task_required  = [('in', 'every')]
 task_optional  = ['output']
 cmd_required   = []
 cmd_optional   = []
@@ -35,26 +23,9 @@ rslt_optional  = []
 check_required = []
 check_optional = []
 start_required = [('at','in')]
-start_optional = ['duration']    # TODO Do we need any other type of ending test?
+start_optional = ['duration']
 
 class Parser():
-
-    def __init__(self):
-        self.last_match = None
-
-    def match(self, pattern, text):
-        self.last_match = re.match(pattern, text)
-        return self.last_match
-
-    def search(self, pattern, text):
-        self.last_match = re.search(pattern, text)
-        return self.last_match
-
-#    def parse(self, line):
-#        for name, regex in regexes:
-#            if self.match(regex, line):
-#                return (name, self.last_match)
-#        return (None, None)
 
     def parse(self, line, parent=None):
         # Parse the line
@@ -80,7 +51,6 @@ class Parser():
         req = required
         if parent and parent is 'test':
             req += globals()[type+'_required']
-        print req
         for param in req:
             if isinstance(param, tuple):
                 good = False
@@ -99,8 +69,19 @@ class Parser():
                 else:
                     tmparamap.pop(param)
 
-        print paramap
-        print tmparamap
+        # Check some parameters values
+        for param in datetime_types:
+            if param in paramap:
+                if not re.match(datetime_regex, paramap[param]):
+                    raise NotDatetimeValueError(param)
+                else:
+                    pass # TODO Convert to Datetime            
+        for param in digit_types:
+            if param in paramap:
+                if not paramap[param].isdigit():
+                    raise NotDigitValueError(param)
+                else:
+                    paramap[param] = int(paramap[param])
 
         # Check optional parameters
         for param in tmparamap:
@@ -134,5 +115,17 @@ class TooManyParamsError(Exception):
     def __str__(self):
         return 'only one parameter from '+repr(self.value)+' can be present'
 
-pars = Parser()
-pars.parse('task @{output=value1} @{name=dupa} @{every=321} command', parent='test')
+class NotDatetimeValueError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return 'parameter\'s '+repr(self.value)+' value is not a correct datetime'
+
+class NotDigitValueError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return 'parameter\'s '+repr(self.value)+' value is not a digit'
+
+#pars = Parser()
+#type, dict, command = pars.parse('task @{name=@{te@{test}te}test@{test}} @{in=5} command', parent='test')
