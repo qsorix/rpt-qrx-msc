@@ -33,7 +33,7 @@ class Model(NamedMixin):
 class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     def __init__(self, name, **kwargs):
         self.rename(name)
-        self.attributes(**kwargs)
+        self.set_attributes(**kwargs)
         self._resources = set()
 
     def use_resource(self, resource_name):

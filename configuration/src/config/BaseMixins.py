@@ -3,23 +3,30 @@
 from common import Exceptions
 
 class AttributedMixin:
-    def get(self, name):
-        return self._attributes[name]
+    def __getitem__(self, name):
+        try:
+            return self._attributes[name]
+        except AttributeError:
+            return None
 
-    def attributes(self, **kwargs):
+    def set_attributes(self, **kwargs):
         try:
             self._attributes.update(kwargs)
         except AttributeError:
             self._attributes = kwargs
 
-        return self._attributes
+    def attributes(self):
+        try:
+            return self._attributes.keys()
+        except AttributeError:
+            return []
 
-class NamedMixin:
-    def rename(self, name):
-        self._name = name
+class NamedMixin(AttributedMixin):
+    def rename(self, new_name):
+        self.set_attributes(name=new_name)
 
     def name(self):
-        return self._name
+        return self['name']
 
 class BindableMixin:
     def bind(self, bindable):
@@ -39,7 +46,7 @@ class InterfacesMixin:
         def __init__(self, host, name, **kwargs):
             self._host = host
             self.rename(name)
-            self.attributes(**kwargs)
+            self.set_attributes(**kwargs)
 
         def host(self):
             return self._host

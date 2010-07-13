@@ -21,11 +21,11 @@ def test_no_duplicates():
 def test_host_interface():
     h = Host('alice', arg='value')
     assert h.name() == 'alice'
-    assert h.attributes() == {'arg': 'value'}
+    assert h['arg'] ==  'value'
 
     i = h.add_interface('eth0', arg='value')
     assert i.name() == 'eth0'
-    assert i.attributes() == {'arg': 'value'}
+    assert i['arg'] ==  'value'
     assert i == h.interface('eth0')
 
 def test_no_dublicated_interfaces():

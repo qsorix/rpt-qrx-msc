@@ -5,10 +5,10 @@ class InterfaceIP(InterfaceDriverPlugin):
         if 'ip' not in attributes:
             return
 
-        ip = interface.attributes()['ip']
+        ip = interface['ip']
         cmd.add_check('which ip')
 
-        args = {'ip': interface.attributes()['ip'],
+        args = {'ip': interface['ip'],
                 'dev': interface.bound().name()}
         cmd.add_setup('ip addr add %(ip)s dev %(dev)s' % args)
         cmd.add_cleanup('ip addr del %(ip)s dev %(dev)s' % args)

@@ -8,8 +8,8 @@ class TCPConnection(ConnectionPlugin):
 
     def __init__(self, host):
         self._host = host
-        ip = host.device.attributes()['ip']
-        port = host.device.attributes()['connection_port']
+        ip = host.device['ip']
+        port = host.device['connection_port']
 
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.connect((ip, int(port)))

@@ -48,7 +48,7 @@ class Executer:
     def _generate(self, host):
         cmd = HostCommands()
 
-        attributes = host.model.attributes().keys()
+        attributes = host.model.attributes()
 
         for d in self._host_drivers:
             d.process(cmd, host, attributes)
@@ -71,7 +71,7 @@ class Executer:
         cmd.add_schedule(event)
     
     def _generate_for_interface(self, cmd, host, interface):
-        attributes = interface.attributes().keys()
+        attributes = interface.attributes()
 
         for d in self._interface_drivers:
             d.process_interface(cmd, host, interface, attributes)

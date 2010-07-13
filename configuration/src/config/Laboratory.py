@@ -25,7 +25,7 @@ class Laboratory(NamedMixin):
 class Device(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     def __init__(self, name, **kwargs):
         self.rename(name)
-        self.attributes(**kwargs)
+        self.set_attributes(**kwargs)
 
 _laboratory = None
 

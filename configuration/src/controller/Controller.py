@@ -29,7 +29,7 @@ class Controller:
 
         Return connection object allowing streamed IO.
         """
-        driver_name = host.device.attributes()['connection']
+        driver_name = host.device['connection']
 
         for plugin in ConnectionPlugin.plugins:
             if plugin.connection_type == driver_name:
@@ -42,7 +42,7 @@ class Controller:
         raise Exceptions.MissingPluginError("Connection plugin for type '%s' was not registered" % driver_name)
 
     def _frontend_class(self, host):
-        frontend = host.device.attributes()['frontend']
+        frontend = host.device['frontend']
 
         for plugin in FrontendPlugin.plugins:
             if plugin.frontend_type == frontend:
