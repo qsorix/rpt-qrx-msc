@@ -14,7 +14,10 @@ class ConnectionPlugin:
     needed_attributes  List of attributes that must be set for a device if
                        this connection is to be used. Will revoke
                        configurations without those attributes set.
+                       Defaults to [].
     =================  =======================================================
     """
+    needed_attributes = []
+
     __metaclass__ = PluginMount
  

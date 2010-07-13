@@ -13,6 +13,7 @@ class FrontendPlugin:
     needed_attributes  List of attributes that must be set for a device if
                        this frontend is to be used. Will revoke configurations
                        without those attributes set.
+                       Defaults to [].
     =================  =======================================================
 
     and reimplement methods:
@@ -26,7 +27,10 @@ class FrontendPlugin:
     ====================
     """
 
+    needed_attributes = []
+
     __metaclass__ = PluginMount
+
     def __init__(self, host, connection_class, **kwargs):
         self._connection_class = connection_class
         self._connection = None
