@@ -2,6 +2,7 @@ from controller.ConnectionPlugin import ConnectionPlugin
 
 class DummyConnection(ConnectionPlugin):
     connection_type = 'dummy'
+    needed_attributes = []
 
     def __init__(self, host):
         self._host = host

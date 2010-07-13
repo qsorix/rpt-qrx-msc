@@ -2,6 +2,8 @@ from utils.model import get_host
 from utils.schedule import at, shell
 from utils.resources import File
 
+create_schedule('schedule-torrent')
+
 torrent = add_resource(File('torrent', 'test-file-1gb.torrent'))
 
 schedule = [
