@@ -30,9 +30,6 @@ class NamedMixin(AttributedMixin):
     def rename(self, new_name):
         self.set_attributes(name=new_name)
 
-    def name(self):
-        return self['name']
-
 class BindableMixin:
     def bind(self, bindable):
         self._bound_with = bindable
@@ -62,10 +59,10 @@ class InterfacesMixin:
             if name in self._interfaces:
                 raise Exceptions.NameExistsError('Interface ' + name + ' is already defined.')
 
-            self._interfaces[i.name()] = i
+            self._interfaces[i['name']] = i
 
         except AttributeError:
-            self._interfaces = {i.name(): i}
+            self._interfaces = {i['name']: i}
 
         return i
 

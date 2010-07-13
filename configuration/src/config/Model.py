@@ -16,8 +16,8 @@ class Model(NamedMixin):
     def add_host(self, *args, **kwargs):
         h = Host(*args, **kwargs)
         for host in self.hosts():
-            if h.name() == host.name():
-                raise Exceptions.NameExistsError('Host ' + h.name() + ' is already defined for the model.')
+            if h['name'] == host['name']:
+                raise Exceptions.NameExistsError('Host ' + h['name'] + ' is already defined for the model.')
 
         self.hosts().append(h)
         return h

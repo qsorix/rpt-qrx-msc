@@ -23,10 +23,10 @@ class ConfiguredTest:
 
     attributes:
         hosts - dictionary of ConfiguredHost objects (keys are names from
-                Host.model.name()
+                Host.model['name']
 
         resources - dictionary of resources (keys are names from
-                    resource.name()
+                    resource['name']
     """
 
     def sanity_check(self):
@@ -43,11 +43,11 @@ class ConfiguredTest:
             raise Exceptions.SanityError("No schedule defined. You need to create a schedule. Did you forget to use 'create_schedule(name)' in your configuration?")
 
         for (name, host) in self.hosts.items():
-            if name != host.model.name():
+            if name != host.model['name']:
                 raise Exceptions.SanityError("Key name is different than element's name")
 
             if not host.model.bound():
-                raise Exceptions.SanityError("Model host '%s' is not bound" % host.name())
+                raise Exceptions.SanityError("Model host '%s' is not bound" % host['name'])
 
             device = host.device
 
@@ -55,10 +55,10 @@ class ConfiguredTest:
 
             for attr in obligatory_attributes:
                 if not device[attr]:
-                    raise Exceptions.SanityError("Device '%s' doesn't specify '%s' attribute" % (device.name(), attr))
+                    raise Exceptions.SanityError("Device '%s' doesn't specify '%s' attribute" % (device['name'], attr))
 
             for (iname, interface) in host.model.interfaces().items():
-                if iname != interface.name():
+                if iname != interface['name']:
                     raise Exceptions.SanityError("Key's name is different than element's name")
 
                 if not interface.bound():
@@ -97,12 +97,12 @@ class Configuration:
             host = ConfiguredHost()
             host.model = h
             host.device = h.bound()
-            host.schedule = Schedule.get_schedule().host_schedule(h.name())
+            host.schedule = Schedule.get_schedule().host_schedule(h['name'])
             host.resources = set(h.needed_resources())
             for event in host.schedule:
                 host.resources.update(event.command().needed_resources())
 
-            ct.hosts[h.name()] = host
+            ct.hosts[h['name']] = host
 
         self._configured_test = ct
 

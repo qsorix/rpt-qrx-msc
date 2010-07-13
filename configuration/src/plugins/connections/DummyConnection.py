@@ -6,7 +6,7 @@ class DummyConnection(ConnectionPlugin):
 
     def __init__(self, host):
         self._host = host
-        self._name = host.model.name()
+        self._name = host.model['name']
         print self._name+'> ', ' -- connected --'
 
     def input(self):

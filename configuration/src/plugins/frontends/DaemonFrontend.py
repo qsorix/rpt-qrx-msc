@@ -48,11 +48,11 @@ class DaemonFrontend(FrontendPlugin):
 
         for c in host_commands.schedule():
             out('schedule @{id=%(id)s} @{run=%(run)s} %(cmd)s\n' %
-                {'id': c.name(),
+                {'id': c['name'],
                  'run': c.run_policy().schedule_for_daemon(),
                  'cmd': c.command().command()})
-            assert c.name() not in self._sent_cmds
-            self._sent_cmds[c.name()] = c
+            assert c['name'] not in self._sent_cmds
+            self._sent_cmds[c['name']] = c
 
         out('end\n')
 
@@ -60,7 +60,7 @@ class DaemonFrontend(FrontendPlugin):
         self.output().write('start check @{id=%s}\n' % self._test_id)
 
     def wait_sanity_check(self):
-        print '  -- waiting for sanity check to finish at ' + self.host().model.name() + ' --'
+        print '  -- waiting for sanity check to finish at ' + self.host().model['name'] + ' --'
         resp = self.input().readline()
         #FIXME: check answer
 
@@ -69,7 +69,7 @@ class DaemonFrontend(FrontendPlugin):
         self.disconnect()
 
     def wait_test(self):
-        print '  -- waiting for the test to finish at ' + self.host().model.name() + ' --'
+        print '  -- waiting for the test to finish at ' + self.host().model['name'] + ' --'
 
     def fetch_results(self):
         self.connect()

@@ -41,7 +41,7 @@ class Executer:
         result = PreparedCommands()
 
         for host in configured_test.hosts.values():
-            result[host.model.name()] = self._generate(host)
+            result[host.model['name']] = self._generate(host)
 
         return result
 

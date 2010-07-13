@@ -13,8 +13,8 @@ class Laboratory(NamedMixin):
     def add_device(self, *args, **kwargs):
         d = Device(*args, **kwargs)
         for device in self.devices():
-            if d.name() == device.name():
-                raise Exceptions.NameExistsError('Device ' + d.name() + ' is already defined for this laboratory.')
+            if d['name'] == device['name']:
+                raise Exceptions.NameExistsError('Device ' + d['name'] + ' is already defined for this laboratory.')
 
         self.devices().append(d)
         return d
