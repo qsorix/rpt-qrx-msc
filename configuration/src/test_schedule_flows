@@ -1,0 +1,39 @@
+from utils.schedule import at, shell
+global at, shell
+
+create_schedule('schedule_flows')
+
+class flow:
+    def __init__(self, name, server_command, client_command):
+        self._sname = name+'_server'
+        self._cname = name+'_client'
+        self._scmd = server_command
+        self._ccmd = client_command
+
+    def server(self, start, end):
+        start_policy = at(start)
+        end_policy = at(end)
+        return [
+            (self._sname, start_policy, shell(self._scmd)),
+            (self._sname+'_kill', end_policy, shell('kill @{%s}' % self._sname))
+        ]
+
+    def client(self, start, end, server):
+        start_policy = at(start)
+        end_policy = at(end)
+
+        ccmd = self._ccmd.replace('@{server', '@{%s' % server)
+
+        return [
+            (self._cname, start_policy, shell(ccmd)),
+            (self._cname+'_kill', end_policy, shell('kill @{%s}' % self._cname))
+        ]
+
+dccp = flow('dccp',
+    server_command='iperf -s -p 1024 -t dccp',
+    client_command='iperf -c @{server.ip} -p 1024 -t dccp')
+
+append_schedule('alice', dccp.server(start=0, end=30))
+append_schedule('bob',   dccp.client(start=1, end=29, server='alice'))
+
+# vim: ft=python
