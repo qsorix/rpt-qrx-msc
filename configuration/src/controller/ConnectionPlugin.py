@@ -6,11 +6,15 @@ class ConnectionPlugin:
 
     Plugins implementing this reference should provide the following attributes:
 
-    ===============  ========================================================
-    connection_type  String naming connection type a plugin can handle. This
-                     will be matched agains network host's connection
-                     attribute.
-    ===============  ========================================================
+    =================  =======================================================
+    connection_type    String naming connection type a plugin can handle. This
+                       will be matched agains network host's connection
+                       attribute.
+
+    needed_attributes  List of attributes that must be set for a device if
+                       this connection is to be used. Will revoke
+                       configurations without those attributes set.
+    =================  =======================================================
     """
     __metaclass__ = PluginMount
  

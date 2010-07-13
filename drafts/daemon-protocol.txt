@@ -34,25 +34,28 @@ tego, czy sie powiodly, czy nie (bo jak setup zostal przerwany, to potem
 cleanup moze nie dzialac, ale nie wiadomo, kiedy sie setup przerwal)
 
 # przesyla konfiguracje:
-test @{id=<name>}
+test @{id=<test id>}
 	file @{id=<name>} @{size=<size>}
 	  -- <size> bytes of content follows --
+    <<< ok
 	check @{id=<name>} <command>
 	setup @{id=<name>} <command>
 	cleanup @{id=<name>} <command>
 	schedule @{id=<name>} @{run=<start>} <command>
 end
+<<< ok
 
 # pobiera wyniki:
-results @{name=<name>}, wysyłany jest rozmiar, a potem output
-	task @{name=<name>}
-        cmd @{name=<name>}
-        file @{name=<name>}
+results @{id=<test id>}, wysyłany jest rozmiar, a potem output
+	get @{id=<cmd id>}  # todo: jak?
+    file @{name=<name>} # todo: jak?
 end
+<<< ok
 
 # startuje check:
-start check
+start check @{id=<test id>}
+<<< ok
 
 # startuje test:
-start test @{at=<timestamp>}
+start test @{id=<test id>} @{at=<timestamp>}
 

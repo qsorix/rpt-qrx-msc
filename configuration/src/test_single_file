@@ -1,0 +1,38 @@
+from utils.resources import File
+from utils.schedule import at, shell
+
+# --- model ---
+create_model('peers')
+
+alice = add_host('alice')
+bob   = add_host('bob')
+
+# --- schedule ---
+create_schedule('send-torrent')
+
+torrent = add_resource(File('torrent', 'test-file-1gb.torrent'))
+schedule = [
+    ('ctorrent', at(0), shell('ctorrent @{torrent.path}', use_resources=[torrent]))
+]
+
+append_schedule(alice, schedule)
+append_schedule(bob, schedule)
+
+# --- laboratory ---
+create_laboratory('virtual')
+
+device_template = {
+    'connection': 'tcp',
+    'frontend': 'daemon',
+    'connection_port': 345
+}
+node1 = add_device('node1', ip='192.168.6.200', **device_template)
+node2 = add_device('node2', ip='192.168.6.201', **device_template)
+
+# --- mapping ---
+create_mapping('peers_to_virtual')
+
+bind(alice, node1)
+bind(bob, node2)
+
+# vim: ft=python

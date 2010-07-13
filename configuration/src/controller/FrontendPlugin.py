@@ -6,10 +6,14 @@ class FrontendPlugin:
 
     Plugins implementing this reference should provide the following attributes:
 
-    =============  ==========================================================
-    frontend_type  String naming frontend type for this plugin. This will be
-                   matched agains network host's frontend attribute.
-    =============  ==========================================================
+    =================  =======================================================
+    frontend_type      String naming frontend type for this plugin. This will
+                       be matched agains network host's frontend attribute.
+
+    needed_attributes  List of attributes that must be set for a device if
+                       this frontend is to be used. Will revoke configurations
+                       without those attributes set.
+    =================  =======================================================
 
     and reimplement methods:
     ====================
@@ -23,8 +27,7 @@ class FrontendPlugin:
     """
 
     __metaclass__ = PluginMount
-
-    def __init__(self, host, connection_class):
+    def __init__(self, host, connection_class, **kwargs):
         self._connection_class = connection_class
         self._connection = None
         self._host = host

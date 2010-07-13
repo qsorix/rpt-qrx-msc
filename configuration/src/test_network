@@ -1,5 +1,6 @@
 standard_connection = {
-    'connection': 'tcp',
+    # 'connection': 'tcp',
+    'connection': 'dummy',
     'connection_port': '4564',
     'frontend': 'daemon',
     'shell': 'linux_shell'}
@@ -8,7 +9,7 @@ counter = 1
 def simple_host(name):
     global counter, standard_connection
 
-    h = add_host(name,
+    h = add_device(name,
         ip = '192.168.6.%s' % counter,
         **standard_connection)
 
@@ -16,6 +17,8 @@ def simple_host(name):
 
     ++counter
     return h
+
+create_laboratory('krowo')
 
 defteros = simple_host('defteros')
 defteros.add_interface('eth1')

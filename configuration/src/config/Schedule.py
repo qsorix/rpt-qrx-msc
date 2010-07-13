@@ -40,8 +40,9 @@ class RunPolicy:
     """
     pass
 
-class Schedule:
-    def __init__(self):
+class Schedule(NamedMixin):
+    def __init__(self, name):
+        self.rename(name)
         self._schedules = {}
 
     def host_schedule(self, host_name):
@@ -68,9 +69,27 @@ class Event(NamedMixin):
     def run_policy(self): return self._run_policy
     def command(self): return self._command
 
-schedule = Schedule()
-append_schedule = schedule.append_schedule
+_schedule = None
+
+def create_schedule(name):
+    global _schedule
+    if _schedule:
+        raise Exceptions.ConfigurationError('You cannot create more than one schedule.')
+    _schedule = Schedule(name)
+
+def get_schedule():
+    global _schedule
+    return _schedule
+
+def append_schedule(*args, **kwargs):
+    s = get_schedule()
+    if not s:
+        raise Exceptions.ConfigurationError('These is no schedule. Did you forget to call \'create_schedule(name)\' before calling append_schedule?')
+
+    return s.append_schedule(*args, **kwargs)
 
 public_functions = {
-        'append_schedule': append_schedule
-    }
+    'create_schedule': create_schedule,
+    'get_schedule': get_schedule,
+    'append_schedule': append_schedule
+}

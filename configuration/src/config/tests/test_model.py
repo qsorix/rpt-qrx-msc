@@ -1,19 +1,20 @@
-from config.Model import model, add_host, Host
-import config.Exceptions as Exceptions
+from config.Model import destroy_model, create_model, get_model, add_host, Host
+from common import Exceptions
 
 import py
 
-def clear_model():
-    model.clear()
-
 def test_add_host():
-    clear_model()
+    destroy_model()
+    create_model('test-model')
+
     add_host('foo')
-    assert len(model.hosts()) == 1
-    assert model.hosts()[0].name() == 'foo'
+    assert len(get_model().hosts()) == 1
+    assert get_model().hosts()[0].name() == 'foo'
 
 def test_no_duplicates():
-    clear_model()
+    destroy_model()
+    create_model('test-model')
+
     add_host('foo')
     py.test.raises(Exceptions.NameExistsError, add_host, 'foo')
 

@@ -1,43 +1,16 @@
 #!/usr/bin/env python
 
 import sys
+import uuid
+
 from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
-
-#FIXME: loads the module so the plugin in it can register itself.
-#       rather than doing this, write some logic in Main.py to find and load
-#       plugin modules
-import DaemonFrontend
-
-class DummyConnection(ConnectionPlugin):
-    connection_type = 'tcp'
-
-    def __init__(self, host):
-        self._host = host
-        self._name = host.model.name()
-        print self._name+'> ', ' -- connected --'
-
-    def input(self):
-        class DummyLine:
-            def readline(s):
-                ans = '200 OK'
-                #print self._name+'< ', ans
-                return ans
-
-        return DummyLine()
-
-    def output(self):
-        class decorator:
-            def write(s, str):
-                print self._name+'> ', str,
-
-        return decorator()
-
-    def close(self):
-        print self._name+'> ', ' -- disconnected --'
+from common import Exceptions
 
 class Controller:
     def run(self, configured_test):
+
+        self._test_uuid = uuid.uuid4()
         self._create_frontends(configured_test)
 
         try:
@@ -50,25 +23,32 @@ class Controller:
         except:
             raise
 
-    def _connection(self, host):
+    def _connection_class(self, host):
         """
         Find out how and connect to given host.
 
         Return connection object allowing streamed IO.
         """
-        driver_name = host.network.attributes()['connection']
+        driver_name = host.device.attributes()['connection']
 
         for plugin in ConnectionPlugin.plugins:
             if plugin.connection_type == driver_name:
+                for attr in plugin.needed_attributes:
+                    if attr not in host.device.attributes():
+                        raise Exceptions.ConfigurationError("Connection plugin for type '%s' needs '%s' attribute to be set for a device." % (driver_name, attr))
+
                 return plugin
 
-        raise RuntimeError("Connection plugin for type '%s' was not registered" % driver_name)
+        raise Exceptions.MissingPluginError("Connection plugin for type '%s' was not registered" % driver_name)
 
     def _frontend_class(self, host):
-        frontend = host.network.attributes()['frontend']
+        frontend = host.device.attributes()['frontend']
 
         for plugin in FrontendPlugin.plugins:
             if plugin.frontend_type == frontend:
+                for attr in plugin.needed_attributes:
+                    if attr not in host.device.attributes():
+                        raise Exceptions.ConfigurationError("Frontend plugin for type '%s' needs '%s' attribute to be set for a device." % (frontend, attr))
                 return plugin
 
         raise RuntimeError("Frontend plugin for type '%s' was not registered" % frontend)
@@ -76,8 +56,8 @@ class Controller:
     def _create_frontends(self, configured_test):
         self._frontends = {}
         for (name, host) in configured_test.hosts.items():
-            connection = self._connection(host)
-            self._frontends[name] = self._frontend_class(host)(host, connection)
+            connection = self._connection_class(host)
+            self._frontends[name] = self._frontend_class(host)(host, connection, test_uuid=self._test_uuid)
 
     def _send_configuration(self):
         for frontend in self._frontends.values():

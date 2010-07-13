@@ -1,45 +1,114 @@
 1. Wstęp
 
+  1 strona. Krótkie przedstawienie tematyki pracy.
 
 2. Testy aplikacji sieciowych
 
+  1-2 strony na temat problemu, który rozwiązujemy. Omówienie sposobów, w jaki
+  można testować implementacje aplikacji sieciowych. Określenie, którego
+  sposobu dotyczy nasz program. Przedstawienie rozwiązań, które można
+  zastosować do innych rodzajów testów. (np. TTCN, OmneT++)
 
 3. Nasze rozwiązanie
 
+  1 strona. Krótkie przedstawienie aplikacji.  Zaznaczenie, jaki rodzaj
+  testów można przeprowadzić.
+
 3.1. Założenia
+
+  2-4 strony. Użyte technologie, kwestie bezpieczeństwa, zbierania wyników,
+  itp.
 
 3.2. Architektura
 
+  4 strony. Budowa aplikacji, podział na moduły i ich funkcje. Przedstawienie
+  nazewnictwa i roli występujących komponentów. Omówienie zalet takiego
+  sposobu rozwiazania problemu.
+
 3.3. Instalacja
+
+  1 strona. Wymagane oprogramowanie, procedura instalacji na hostach.
 
 3.4. Konfiguracja testu
 
+  2 strony. Cechy, które naszym zdaniem powinna mieć dobra konfiguracja testu.
+  Krótka dyskusja różnych sposobów rozwiązania. Przedstawienie naszego
+  pomysłu. Ogóle założenia na temat podziału konfiguracji na 4 części jego
+  rola.
+
 3.4.1. Model
+
+  3 strony. Omówienie modelu -- wirtualnej topologii sieci poddawanej testom.
 
 3.4.1. Sieć
 
+  3 strony. Omówienie sieci -- dostępnego sprzętu sieciowego.
+
 3.4.1. Mapowanie
+
+  3 strony. Omówienie mapowania -- odwzrowoania modelu na sieć.
 
 3.4.1. Plan
 
+  3 strony. Omówienie planu -- akcji do wykonania w czasie testu.
+
 3.5. Wykonanie testów
+
+  2 strony. Uruchomienie prostej konfiguracji, omówienie zachodzących akcji i przepływu
+  danych. Rozdział powinien systematyzować koncepcje przedstawione w rozdziale
+  o konfiguracji i architekturze, a tym samym zamknąć opis dynamicznej części
+  aplikacji.
 
 3.6. Przechowywanie wyników
 
+  4 strony. Powody wyboru bazy danych i formatu przechowywania danych, opis sposobu
+  przechowywania wyników, schematu bazy danych, itp.
+
 3.7. Rozszerzanie możliwości frameworku
 
-3.7.1. Nawiązywanie połączenia
+  1 strona. Przedstawienie miejsc, w których możliwe jest rozbudowywanie możliwości
+  narzędzia.
 
-3.7.2. Frontend sterujący
+3.7.1. Sterowniki konfiguracji
 
-3.7.3. Przesyłanie zasobów
+  1 strona. Omówienie pluginów konfigurujących hosty i interfejsy sieciowe.
+  Pluginy te są odpowiedzialne za konfigurowanie atrybutów hostów i
+  interfejsów, które zostały określone w modelu.
 
+3.7.2. Nawiązywanie połączenia
+
+  1 strona. Omówienie pluginów Connection, służących do zestawienia kanału
+  komunikacyjnego z hostem biorącym udział w teście.
+
+3.7.3. Frontend sterujący
+
+  1 strona. Omówienie pluginów Frontend, odpowiedzialnym za transmisję
+  rozkazów w odpowiednim dla hosta protokole.
+
+3.7.4. Przesyłanie zasobów
+
+  1 strona. Omówienie klasy Resource, dzięki której można przesyłać
+  "załączniki" do testów, jak np. pliki wymagane przez uruchamiane aplikacje.
 
 4. Przykład użycia
 
+  1 strona. Dwa słowa wstępu do przykładów. Dlaczego właśnie takie, a nie
+  inne. Nawiązanie do przedstawionych na początku pracy cech dobrego testu,
+  pokazanie, że nasza aplikacja te pozwala przeprowadzać takie testy.
+
 4.1. Pomiar wydajności transferu pomiędzy dwoma hostami.
+
+  2 strony. Przykład pomiaru prędkości transferu przy użyciu iperf'a. Prosty
+  scenariusz z dwoma hostami. Jeden przez zadany czas wysyła dane do drugiego
+  i podane średnią prędkość transmisji.
 
 4.2. Pomiar czasu dystrybucji pliku w sieci peer2peer.
 
+  3 strony. Realizacja zadania z laboratoriów peer2peer przy użyciu naszego
+  programu. W teście występuje router i dwie sieci po 4 hosty. Na routerze
+  wprowadzane są duże straty pakietów i opóźnienia transmisji. Mierzony jest
+  czas dystrybucji pliku.
 
 5. Podsumowanie
+
+  1 strona. Podsumowanie ;-)

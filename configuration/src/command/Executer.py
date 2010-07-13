@@ -1,3 +1,5 @@
+import DriverPlugin
+
 class PreparedCommands(dict):
     """
     Datatype to hold Execute.process() result.
@@ -32,8 +34,8 @@ class HostCommands:
 
 class Executer:
     def __init__(self):
-        self._host_drivers = [DummyDriver()]
-        self._interface_drivers = [DummyDriver()]
+        self._host_drivers = [x() for x in DriverPlugin.HostDriverPlugin.plugins]
+        self._interface_drivers = [x() for x in DriverPlugin.InterfaceDriverPlugin.plugins]
 
     def process(self, configured_test):
         result = PreparedCommands()
@@ -76,18 +78,3 @@ class Executer:
 
         if attributes:
             print 'Unprocessed interface attributes: ', attributes
-
-
-class DummyDriver:
-    def process(self, cmd, host, attributes):
-        for a in attributes:
-            cmd.add_setup('setup ' + a)
-            cmd.add_cleanup('cleanup ' + a)
-
-            attributes.remove(a)
-
-    def process_interface(self, cmd, host, interface, attributes):
-        while attributes:
-            a = attributes.pop()
-            cmd.add_setup('setup dev ' + interface.bound().name() + '(' + interface.name() + ') ' + a)
-            cmd.add_cleanup('cleanup dev ' + interface.bound().name() + ' ' + a)

@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 
-class Mapping:
-    def __init__(self):
+from BaseMixins import NamedMixin
+from common import Exceptions
+
+class Mapping(NamedMixin):
+    def __init__(self, name):
+        self.rename(name)
         self._bindings = set()
 
     def bind(self, first, second):
@@ -19,9 +23,34 @@ class Mapping:
             b.unbind()
         self._bindings = set()
 
-mapping = Mapping()
-bind = mapping.bind
+_mapping = None
+
+def create_mapping(name):
+    global _mapping
+    if _mapping:
+        raise Exceptions.ConfigurationError('You cannot create more than one mapping.')
+    _mapping = Mapping(name)
+
+def destroy_mapping():
+    global _mapping
+    if _mapping:
+        _mapping.clear()
+
+    _mapping = None
+
+def get_mapping():
+    global _mapping
+    return _mapping
+
+def bind(*args, **kwargs):
+    m = get_mapping()
+    if m is None:
+        raise Exceptions.ConfigurationError('There is no mapping. Did you forget to call \'create_mapping(name)\' before calling bind?')
+
+    return m.bind(*args, **kwargs)
 
 public_functions = {
-        'bind': bind
-    }
+    'bind': bind,
+    'create_mapping': create_mapping,
+    'get_mapping': get_mapping
+}

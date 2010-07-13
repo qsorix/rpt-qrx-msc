@@ -15,6 +15,6 @@ class File(Resources.Resource):
         #FIXME: send proper size and file's content
         daemon.output().write('file @{id=%(id)s} @{size=%(size)s}\n' % {'id':self.name(), 'size':0})
         resp = daemon.input().readline()
-        if resp.split()[0] != '200':
+        if resp != 'ok':
             raise RuntimeError('Wrong response while transfering file')
 
