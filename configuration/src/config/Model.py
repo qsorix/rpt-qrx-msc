@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
-import common.Exceptions
+from common import Exceptions
 import Resources
 
-class Model:
-    def __init__(self):
+class Model(NamedMixin):
+    def __init__(self, name):
+        self.rename(name)
         self._hosts = []
         self._links = []
 
@@ -58,12 +59,41 @@ class Link:
     def second(self):
         return self._second
 
-model = Model()
-add_host = model.add_host
-add_link = model.add_link
+_model = None
+
+def create_model(name):
+    global _model
+    if _model:
+        raise Exceptions.ConfigurationError('You cannot create more than one model.')
+    _model = Model(name)
+
+def destroy_model():
+    global _model
+    if _model:
+        _model.clear()
+    _model = None
+
+def get_model():
+    global _model
+    return _model
+
+def add_host(*args, **kwargs):
+    m = get_model()
+    if m is None:
+        raise Exceptions.ConfigurationError('There is no model. Did you forget to call \'create_model(name)\' before calling add_host?')
+
+    return m.add_host(*args, **kwargs)
+
+def add_link(*args, **kwargs):
+    m = get_model()
+    if m is None:
+        raise Exceptions.ConfigurationError('There is no model. Did you forget to call \'create_model(name)\' before calling add_link?')
+
+    return m.add_link(*args, **kwargs)
 
 public_functions = {
-        'add_host': add_host,
-        'add_link': add_link
+    'create_model': create_model,
+    'get_model': get_model,
+    'add_host': add_host,
+    'add_link': add_link
 }
-

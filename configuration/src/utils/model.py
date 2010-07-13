@@ -1,6 +1,6 @@
 #!/usr/bin/evn python
 
-from config.Model import add_host, add_link, model
+from config.Model import add_host, add_link, get_model
 import itertools
 
 def group(name, count):

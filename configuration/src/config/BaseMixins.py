@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import common.Exceptions
+from common import Exceptions
 
 class AttributedMixin:
     def get(self, name):

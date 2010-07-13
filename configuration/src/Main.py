@@ -16,19 +16,19 @@ def load_plugins(paths):
             f.pyimport()
 
 if __name__ == "__main__":
-    load_plugins(['plugins'])
+    plugins = ['plugins']
 
     parser = argparse.ArgumentParser(prog='Main.py')
-    parser.add_argument('-m', '--model',    help='model file',    required=True)
-    parser.add_argument('-n', '--network',  help='network file',  required=True)
-    parser.add_argument('-p', '--mapping',  help='mapping file',  required=True)
-    parser.add_argument('-s', '--schedule', help='schedule file', required=True)
+    parser.add_argument('-c', '--config',   help='configuration files', required=True, nargs='+')
+    parser.add_argument('--plugins', help='plugins path', required=False, nargs='+', default=[])
 
     args = parser.parse_args()
 
+    load_plugins(plugins + args.plugins)
+
     try:
         c = Configuration.Configuration()
-        configured_test = c.read(args.model, args.network, args.mapping, args.schedule)
+        configured_test = c.read(args.config)
         configured_test.sanity_check()
 
     except Exceptions.ConfigurationError as e:

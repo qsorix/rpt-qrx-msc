@@ -1,5 +1,7 @@
 from utils.model import interface
 
+create_model('Peers')
+
 alice = add_host('alice')
 bob   = add_host('bob')
 

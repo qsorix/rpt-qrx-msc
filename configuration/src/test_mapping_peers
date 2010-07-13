@@ -1,3 +1,5 @@
+create_mapping('peers-to-krowo')
+
 bind(alice, defteros)
 bind(bob,   marvin)
 
