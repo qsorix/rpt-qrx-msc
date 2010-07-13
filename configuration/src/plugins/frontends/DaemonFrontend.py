@@ -2,6 +2,7 @@ from controller.FrontendPlugin import FrontendPlugin
 
 class DaemonFrontend(FrontendPlugin):
     frontend_type = 'daemon'
+    needed_attributes = []
 
     def __init__(self, host, connection, test_uuid):
         FrontendPlugin.__init__(self, host, connection)

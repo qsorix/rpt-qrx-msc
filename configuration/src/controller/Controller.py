@@ -23,7 +23,7 @@ class Controller:
         except:
             raise
 
-    def _connection(self, host):
+    def _connection_class(self, host):
         """
         Find out how and connect to given host.
 
@@ -33,6 +33,10 @@ class Controller:
 
         for plugin in ConnectionPlugin.plugins:
             if plugin.connection_type == driver_name:
+                for attr in plugin.needed_attributes:
+                    if attr not in host.device.attributes():
+                        raise Exceptions.ConfigurationError("Connection plugin for type '%s' needs '%s' attribute to be set for a device." % (driver_name, attr))
+
                 return plugin
 
         raise Exceptions.MissingPluginError("Connection plugin for type '%s' was not registered" % driver_name)
@@ -42,6 +46,9 @@ class Controller:
 
         for plugin in FrontendPlugin.plugins:
             if plugin.frontend_type == frontend:
+                for attr in plugin.needed_attributes:
+                    if attr not in host.device.attributes():
+                        raise Exceptions.ConfigurationError("Frontend plugin for type '%s' needs '%s' attribute to be set for a device." % (frontend, attr))
                 return plugin
 
         raise RuntimeError("Frontend plugin for type '%s' was not registered" % frontend)
@@ -49,7 +56,7 @@ class Controller:
     def _create_frontends(self, configured_test):
         self._frontends = {}
         for (name, host) in configured_test.hosts.items():
-            connection = self._connection(host)
+            connection = self._connection_class(host)
             self._frontends[name] = self._frontend_class(host)(host, connection, test_uuid=self._test_uuid)
 
     def _send_configuration(self):

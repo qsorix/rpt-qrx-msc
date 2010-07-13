@@ -4,11 +4,12 @@ import socket
 
 class TCPConnection(ConnectionPlugin):
     connection_type = 'tcp'
+    needed_attributes = ['ip', 'connection_port' ]
 
     def __init__(self, host):
         self._host = host
-        ip = host.network.attributes()['ip']
-        port = host.network.attributes()['connection_port']
+        ip = host.device.attributes()['ip']
+        port = host.device.attributes()['connection_port']
 
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.connect((ip, int(port)))
