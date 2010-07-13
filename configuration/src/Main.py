@@ -31,6 +31,15 @@ if __name__ == "__main__":
         configured_test = c.read(args.config)
         configured_test.sanity_check()
 
+        e = Executer.Executer()
+        prepared_commands = e.process( configured_test )
+        #TODO: prepared_commands.sanity_check()
+
+        for (host, commands) in prepared_commands.items():
+            configured_test.hosts[host].commands = commands
+        ctrl = Controller.Controller()
+        ctrl.run(configured_test)
+
     except Exceptions.ConfigurationError as e:
         print 'Configuration error:'
         print e
@@ -39,20 +48,6 @@ if __name__ == "__main__":
             print e.traceback,
             print '-'*60
         sys.exit(2)
-
-    try:
-        e = Executer.Executer()
-        prepared_commands = e.process( configured_test )
-        #TODO: prepared_commands.sanity_check()
-
-        for (host, commands) in prepared_commands.items():
-            configured_test.hosts[host].commands = commands
-    except:
-        raise
-
-    try:
-        ctrl = Controller.Controller()
-        ctrl.run(configured_test)
 
     except Exceptions.MissingPluginError as e:
         print 'Plugin not found:'
