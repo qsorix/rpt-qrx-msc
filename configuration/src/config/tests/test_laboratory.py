@@ -11,7 +11,7 @@ def test_add_device():
     clear()
     add_device('foo')
     assert len(get_laboratory().devices()) == 1
-    assert get_laboratory().devices()[0].name() == 'foo'
+    assert get_laboratory().devices()[0]['name'] == 'foo'
 
 def test_no_duplicates():
     clear()
@@ -21,10 +21,10 @@ def test_no_duplicates():
 
 def test_device_interface():
     h = Device('alice', arg='value')
-    assert h.name() == 'alice'
+    assert h['name'] == 'alice'
     assert h['arg'] == 'value'
 
     i = h.add_interface('eth0', arg='value')
-    assert i.name() == 'eth0'
+    assert i['name'] == 'eth0'
     assert i['arg'] == 'value'
     assert i == h.interface('eth0')
