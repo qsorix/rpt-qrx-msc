@@ -49,6 +49,7 @@ class Generator:
         cmd = HostCommands()
 
         attributes = host.model.attributes()
+        attributes.remove('name')
 
         for d in self._host_drivers:
             d.process(cmd, host, attributes)
@@ -72,6 +73,7 @@ class Generator:
     
     def _generate_for_interface(self, cmd, host, interface):
         attributes = interface.attributes()
+        attributes.remove('name')
 
         for d in self._interface_drivers:
             d.process_interface(cmd, host, interface, attributes)

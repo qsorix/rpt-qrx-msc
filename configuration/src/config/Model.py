@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from BaseMixins import NamedMixin, InterfacesMixin, BindableMixin
+from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
 from common import Exceptions
 import Resources
 
@@ -30,7 +30,7 @@ class Model(NamedMixin):
     def clear(self):
         self._hosts = []
 
-class Host(NamedMixin, InterfacesMixin, BindableMixin):
+class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     def __init__(self, name, **kwargs):
         self.rename(name)
         self.set_attributes(**kwargs)
