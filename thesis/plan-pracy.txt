@@ -52,6 +52,10 @@
 
   3 strony. Omówienie planu -- akcji do wykonania w czasie testu.
 
+3.4.1.1. Zmienne
+
+  1 strona. Możliwość podmiany wartości zmiennych @{...}
+
 3.5. Wykonanie testów
 
   2 strony. Uruchomienie prostej konfiguracji, omówienie zachodzących akcji i przepływu
