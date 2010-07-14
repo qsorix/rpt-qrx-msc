@@ -34,6 +34,18 @@ class HostCommands:
     def schedule(self): return self._schedule
     def cleanup(self): return self._cleanup
 
+    def accept_transformation(self, transformation):
+        """
+        Runs transformation on all command strings and stores the returned
+        values instead.
+        """
+        self._check = map(transformation, self._check)
+        self._setup = map(transformation, self._setup)
+        self._cleanup = map(transformation, self._cleanup)
+
+        for event in self.schedule():
+            event.command().accept_transformation(transformation)
+
 class Generator:
     def __init__(self):
         self._host_drivers = [x() for x in DriverPlugin.HostDriverPlugin.plugins]
@@ -92,20 +104,7 @@ class Generator:
 
             substitution = lambda x: self._substitute_for_host(host, x, configured_test)
 
-            for cmd in commands.check():
-                new_hc.add_check(substitution(cmd))
-
-            for cmd in commands.setup():
-                new_hc.add_setup(substitution(cmd))
-
-            for cmd in commands.cleanup():
-                new_hc.add_cleanup(substitution(cmd))
-
-            for event in commands.schedule():
-                event.command().accept_transformation(substitution)
-                new_hc.add_schedule(event)
-
-            prepared_commands[host] = new_hc
+            commands.accept_transformation(substitution)
 
     def _substitute_for_host(self, host, command, configured_test):
         models = dict([(h.model['name'], h.model) for h in configured_test.hosts.values()])
