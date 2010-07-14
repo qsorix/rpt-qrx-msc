@@ -8,6 +8,8 @@ class PreparedCommands(dict):
     """
     pass
 
+import re
+
 class HostCommands:
     def __init__(self):
         self._check    = [] # list of strings
@@ -42,6 +44,8 @@ class Generator:
 
         for host in configured_test.hosts.values():
             result[host.model['name']] = self._generate(host)
+
+        self._perform_substitutions(result, configured_test)
 
         return result
 
@@ -80,3 +84,59 @@ class Generator:
 
         if attributes:
             print 'Unprocessed interface attributes: ', attributes
+
+    def _perform_substitutions(self, prepared_commands, configured_test):
+        for host, commands in prepared_commands.items():
+
+            new_hc = HostCommands()
+
+            substitution = lambda x: self._substitute_for_host(host, x, configured_test)
+
+            for cmd in commands.check():
+                new_hc.add_check(substitution(cmd))
+
+            for cmd in commands.setup():
+                new_hc.add_setup(substitution(cmd))
+
+            for cmd in commands.cleanup():
+                new_hc.add_cleanup(substitution(cmd))
+
+            for event in commands.schedule():
+                event.command().accept_transformation(substitution)
+                new_hc.add_schedule(event)
+
+            prepared_commands[host] = new_hc
+
+    def _substitute_for_host(self, host, command, configured_test):
+        models = dict([(h.model['name'], h.model) for h in configured_test.hosts.values()])
+
+        def resovle_ref(matchobj):
+            ref = matchobj.group('ref').split('.')
+
+            if len(ref) > 1 and ref[0] in models:
+                host = models[ref.pop(0)]
+                if ref[0] in host.interfaces() and len(ref) > 1:
+                    interface = host.interface(ref.pop(0))
+
+                    if len(ref) == 1:
+                        if ref[0] != 'name' and ref[0] in interface.attributes():
+                            return interface[ref[0]]
+
+                        if ref[0] in interface.bound().attributes():
+                            return interface.bound()[ref[0]]
+
+                else:
+                    if len(ref) == 1:
+                        if ref[0] != 'name' and ref[0] in host.attributes():
+                            return host[ref[0]]
+
+                        if ref[0] in host.bound().attributes():
+                            return host.bound()[ref[0]]
+
+            else:
+                #FIXME: warn/error ?
+                pass
+
+            return '@{' + matchobj.group('ref') + '}'
+
+        return re.sub('@{(?P<ref>[a-zA-Z0-9\._]+)}', resovle_ref, command)

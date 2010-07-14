@@ -9,16 +9,17 @@ class Command:
     Allows users to store commands and generate sanity checks they need.
 
     Provides methods:
-        command()       - returns command string
-        sanity_checks() - returns a list of commands to execute during sanity
-                          check phase
+        def command(self):
 
+            Returns a string representing the command to execute.
+
+        def accept_transformation(self, transformation_function):
+
+            Apply transformation_function to the stored command and store the
+            result instead.
+
+            This is used to perform variables substitution in command strings.
     """
-    def command(self):
-        """
-        Returns a string representing the command to execute.
-        """
-        return None
 
     def sanity_checks(self):
         """

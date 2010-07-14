@@ -19,6 +19,9 @@ class ShellCommand(Schedule.Command):
         self._binary = command.split()[0]
         self._resources = resources
 
+    def accept_transformation(self, transformation):
+        self._command = transformation(self._command)
+
     def command(self):
         return self._command
 
