@@ -4,6 +4,7 @@ from config import Configuration
 from command import Generator
 from controller import Controller
 from common import Exceptions
+from common.Hooks import HookPlugin
 
 import sys
 import getopt
@@ -21,6 +22,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Main.py')
     parser.add_argument('-c', '--config',   help='configuration files', required=True, nargs='+')
     parser.add_argument('--plugins', help='plugins path', required=False, nargs='+', default=[])
+    parser.add_argument('--hooks', help='names of the hooks to run', required=False, nargs='+', default=[])
 
     args = parser.parse_args()
 
@@ -37,6 +39,18 @@ if __name__ == "__main__":
 
         for (host, commands) in prepared_commands.items():
             configured_test.hosts[host].commands = commands
+
+        for hook_name in args.hooks:
+            hook_to_run = None
+            for hook in HookPlugin.plugins:
+                if hook.hook_name == hook_name:
+                    hook_to_run = hook
+                    break
+            if not hook_to_run:
+                raise Exceptions.MissingPluginError("Can't find a plugin for a hook named '%s'." % hook_name)
+
+            hook_to_run().visit_configured_test(configured_test)
+
         ctrl = Controller.Controller()
         ctrl.run(configured_test)
 
