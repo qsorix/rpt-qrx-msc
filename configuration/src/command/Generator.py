@@ -2,7 +2,7 @@ import DriverPlugin
 
 class PreparedCommands(dict):
     """
-    Datatype to hold Execute.process() result.
+    Datatype to hold Generator.process() result.
 
     Keys are model hosts' names, values are instances of HostCommands class.
     """
@@ -32,7 +32,7 @@ class HostCommands:
     def schedule(self): return self._schedule
     def cleanup(self): return self._cleanup
 
-class Executer:
+class Generator:
     def __init__(self):
         self._host_drivers = [x() for x in DriverPlugin.HostDriverPlugin.plugins]
         self._interface_drivers = [x() for x in DriverPlugin.InterfaceDriverPlugin.plugins]

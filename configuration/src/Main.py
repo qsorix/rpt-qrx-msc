@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from config import Configuration
-from command import Executer
+from command import Generator
 from controller import Controller
 from common import Exceptions
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
         configured_test = c.read(args.config)
         configured_test.sanity_check()
 
-        e = Executer.Executer()
+        e = Generator.Generator()
         prepared_commands = e.process( configured_test )
         #TODO: prepared_commands.sanity_check()
 
