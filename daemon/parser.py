@@ -3,13 +3,13 @@
 
 import re
 
-main_regex     = r'^(?P<type>\w+)\s+(?P<parameters>(\@\{\w+\=.+\}\s+)+)(?P<command>.+)?\s*$'
-datetime_regex = r'^[0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2}$'
+main_regex     = r'^(?P<type>\w+)(?P<parameters>(\s+\@\{\w+\=.+\})+)(?P<command>\s+.+)?\s*$'
+datetime_regex = r'^[0-9]{4}-[0-9]{2}-[0-9]{2}\.[0-9]{2}:[0-9]{2}:[0-9]{2}$'
 main_types     = ['test', 'results', 'check', 'start', 'close']
 sub_types      = ['file', 'task', 'cmd', 'end']
 digit_types    = ['size', 'in', 'every', 'duration']
 datetime_types = ['at']
-required       = ['name']
+required       = ['id']
 test_required  = []
 test_optional  = []
 file_required  = ['size']
@@ -28,29 +28,39 @@ start_optional = ['duration']
 class Parser():
 
     def parse(self, line, parent=None):
-        # Parse the line
+        # Check line
         match   = re.match(main_regex, line)
+        if match is None:
+            raise LineError()
+
+        # Parse the line
         type    = match.group('type')
-        params  = match.group('parameters')[:-1].split(' ')
+        params  = match.group('parameters')[1:].split(' ')
         command = match.group('command')
+        if command:
+            command = command[1:]
         paramap = {}
         for param in params:
             paramsplited = param[2:-1].split('=')
             paramap[paramsplited[0]] = paramsplited[1]
         tmparamap = paramap.copy()
-      
+
+        # Check parent
+        if parent not in ['test', 'results', None]:
+            raise ParentError()
         # Check type
         if parent:
             if type not in sub_types:
-                raise UnknownTypeError(type)
+                raise TypeError()
         else:
             if type not in main_types:
-                raise UnknownTypeError(type)
+                raise TypeError()
 
         # Check required parameters
-        req = required
-        if parent and parent is 'test':
-            req += globals()[type+'_required']
+        if parent and parent is 'results':
+            req = required
+        else:
+            req = required + globals()[type+'_required']
         for param in req:
             if isinstance(param, tuple):
                 good = False
@@ -60,12 +70,12 @@ class Parser():
                         if good is False:
                             good = True
                         else:
-                            raise TooManyParamsError(param)
+                            raise ParamError()
                 if not good:
-                    raise RequiredParamError(param)
+                    raise ParamError()
             else:
                 if not tmparamap.has_key(param):
-                    raise RequiredParamError(param)
+                    raise ParamError()
                 else:
                     tmparamap.pop(param)
 
@@ -73,59 +83,39 @@ class Parser():
         for param in datetime_types:
             if param in paramap:
                 if not re.match(datetime_regex, paramap[param]):
-                    raise NotDatetimeValueError(param)
+                    raise ValueError()
                 else:
                     pass # TODO Convert to Datetime            
         for param in digit_types:
             if param in paramap:
                 if not paramap[param].isdigit():
-                    raise NotDigitValueError(param)
+                    raise ValueError()
                 else:
                     paramap[param] = int(paramap[param])
 
         # Check optional parameters
+        req = required + globals()[type+'_optional']
         for param in tmparamap:
-            if param not in required + globals()[type+'_optional']:
-                raise UnknownParameterError(param)
+            if param not in req:
+                raise ParamError()
+
+        # Check command
+        if parent and parent is not 'test' and command is not None:
+            raise CommandError()
 
         # Return parsed line
         return (type, paramap, command)
         
-class UnknownTypeError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return 'unknown type '+repr(self.value)
+class LineError(Exception):
+    pass
+class ParentError(Exception):
+    pass
+class TypeError(Exception):
+    pass
+class ParamError(Exception):
+    pass
+class ValueError(Exception):
+    pass
+class CommandError(Exception):
+    pass
 
-class UnknownParameterError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return 'unknown parameter '+repr(self.value)
-
-class RequiredParamError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return 'required parameter '+repr(self.value)+' not present'
-
-class TooManyParamsError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return 'only one parameter from '+repr(self.value)+' can be present'
-
-class NotDatetimeValueError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return 'parameter\'s '+repr(self.value)+' value is not a correct datetime'
-
-class NotDigitValueError(Exception):
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return 'parameter\'s '+repr(self.value)+' value is not a digit'
-
-#pars = Parser()
-#type, dict, command = pars.parse('task @{name=@{te@{test}te}test@{test}} @{in=5} command', parent='test')
