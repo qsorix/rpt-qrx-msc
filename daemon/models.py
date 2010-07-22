@@ -6,56 +6,75 @@ from elixir import *
 class Test(Entity):
     using_options(tablename='tests')
 
-    name = Field(Unicode(128), required=True)
-    duration = Field(Integer, required=True)
-#    start = Field(DateTime, required=True)
+    id = Field(Unicode(128), required=True)
+    started_at = Field(DateTime)
+    length = Field(Integer)
 
-    tasks = OneToMany('Task')
-    commands = OneToMany('Command')
     files = OneToMany('File')
+    commands = OneToMany('Command')
 
     def __repr__(self):
-        return '<Test "%s" (%s | %s)>' % (self.name, self.start, self.duration)
-
-class Task(Entity):
-    using_options(tablename='tasks')
-
-    command = Field(Unicode(128), required=True)
-    name = Field(Unicode(128), required=True)
-    file_output = Field(Boolean, default=False)
-    file_path = Field(Unicode(128))
-    output = Field(LargeBinary)
-    start = Field(Integer, required=True)
-    pid = Field(Integer)
-    
-    test = ManyToOne('Test')
-
-    def __repr__(self):
-        return '<Task "%s">' % self.command
-
-class Command(Entity):
-    using_options(tablename='commands')
-
-    command = Field(Unicode(128), required=True)
-    name = Field(Unicode(128), required=True)
-    output = Field(LargeBinary)
-    
-    test = ManyToOne('Test')
-
-    def __repr__(self):
-        return '<Command "%s">' % self.command
-
+        return '<Test "%s">' % self.name
 
 class File(Entity):
     using_options(tablename='files')
 
-    name = Field(Unicode(128), required=True)
+    id = Field(Unicode(128), required=True)
     size = Field(Integer, required=True)
-    file_output = Field(Boolean, default=False)
-    file_path = Field(Unicode(128))
+#    file_path = Field(Unicode(128), default=None)
     content = Field(LargeBinary, deferred=True)
 
     test = ManyToOne('Test')
 
     def __repr__(self):
         return '<File "%s" (%d)>' % (self.name, self.size)
+
+class Command(Entity):
+    using_options(tablename='commands')
+
+    id = Field(Unicode(128), required=True)
+    command = Field(Unicode(128), required=True)
+    
+    test = ManyToOne('Test')
+
+    def __repr__(self):
+        return '<Command "%s": %s >' % (self.id, self.command)
+
+class Check(Command):
+    using_options(inheritance='multi', tablename='check_commands')
+
+    result = Field(Boolean, default=True)
+
+    def __repr__(self):
+        return '<Check "%s": %s>' % (self.id, self.command)
+
+class Setup(Command):
+    using_options(inheritance='multi', tablename='setup_commands')
+
+    result = Field(Boolean, default=True)
+
+    def __repr__(self):
+        return '<Setup "%s": %s>' % (self.id, self.command)
+
+class Task(Command):
+    using_options(inheritance='multi', tablename='tasks')
+
+#    file_path = Field(Unicode(128), default=None)
+    output = Field(LargeBinary)
+    trigger_type = Field(Integer, required=True) # 0 - in, 1 - every
+    trigger_value = Field(Integer, default=0)
+    pid = Field(Integer)
+    
+    test = ManyToOne('Test')
+
+    def __repr__(self):
+        return '<Task "%s": %s>' % (self.id, self.command)
+
+class Clean(Command):
+    using_options(inheritance='multi', tablename='clean_commands')
+
+    result = Field(Boolean, default=True)
+
+    def __repr__(self):
+        return '<Clean "%s": %s>' % (self.id, self.command)
+
