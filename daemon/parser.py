@@ -3,27 +3,38 @@
 
 import re
 
-main_regex     = r'^(?P<type>\w+)(?P<parameters>(\s+\@\{\w+\=.+\})+)(?P<command>\s+.+)?\s*$'
-datetime_regex = r'^[0-9]{4}-[0-9]{2}-[0-9]{2}\.[0-9]{2}:[0-9]{2}:[0-9]{2}$'
-main_types     = ['test', 'results', 'check', 'start', 'close']
-sub_types      = ['file', 'task', 'cmd', 'end']
-digit_types    = ['size', 'in', 'every', 'duration']
-datetime_types = ['at']
-required       = ['id']
-test_required  = []
-test_optional  = []
-file_required  = ['size']
-file_optional  = ['output']
-task_required  = [('in', 'every')]
-task_optional  = ['output']
-cmd_required   = []
-cmd_optional   = []
-rslt_required  = []
-rslt_optional  = []
-check_required = []
-check_optional = []
-start_required = [('at','in')]
-start_optional = ['duration']
+main_regex        = r'^(?P<type>\w+)(?P<parameters>(\s+\@\{\w+\=.+\})+)(?P<command>\s+.+)?\s*$'
+datetime_regex    = r'^[0-9]{4}-[0-9]{2}-[0-9]{2}\.[0-9]{2}:[0-9]{2}:[0-9]{2}$'
+main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete']
+test_sub_types    = ['file', 'check', 'setup', 'task', 'clean', 'delete', 'end']
+results_sub_types = ['get', 'end']
+digit_types       = ['size', 'in', 'every', 'duration']
+datetime_types    = ['at']
+required          = ['id']
+test_required     = []
+test_optional     = []
+file_required     = ['size']
+file_optional     = ['output']
+check_required    = []
+check_optional    = []
+setup_required    = []
+setup_optional    = []
+task_required     = [('in', 'every')]
+task_optional     = ['output']
+clean_required    = []
+clean_optional    = []
+delete_required   = []
+delete_optional   = []
+results_required  = []
+results_optional  = []
+get_required      = []
+get_optional      = []
+prepare_required  = []
+prepare_optional  = []
+start_required    = [('at', 'in')]
+start_optional    = [('duration', 'until')]
+stop_required     = []
+stop_optional     = []
 
 class Parser():
 
@@ -33,8 +44,12 @@ class Parser():
         if match is None:
             raise LineError()
 
-        # Parse the line
+        # Parse type and check for closure
         type    = match.group('type')
+        if type is 'close':
+            return None
+
+        # Parse the rest of the line
         params  = match.group('parameters')[1:].split(' ')
         command = match.group('command')
         if command:
@@ -50,7 +65,7 @@ class Parser():
             raise ParentError()
         # Check type
         if parent:
-            if type not in sub_types:
+            if type not in globals()[parent+'_sub_types']:
                 raise TypeError()
         else:
             if type not in main_types:
@@ -95,6 +110,11 @@ class Parser():
 
         # Check optional parameters
         req = required + globals()[type+'_optional']
+        for param in req:
+            if isinstance(param, tuple):
+                for p in param:
+                    req.append(p)
+                req.remove(param)
         for param in tmparamap:
             if param not in req:
                 raise ParamError()
@@ -104,7 +124,14 @@ class Parser():
             raise CommandError()
 
         # Return parsed line
-        return (type, paramap, command)
+        if parent:
+            type = parent+'_'+type
+        paramap['command'] = command
+        return (type, paramap)
+
+    def __str__(self):
+        # TODO Nice daemon communication protocol summary
+        pass
         
 class LineError(Exception):
     pass

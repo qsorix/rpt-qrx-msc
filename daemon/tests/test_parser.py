@@ -6,25 +6,24 @@ import py
 
 def test_correct_test():
     parser = prs.Parser()
-    type, dict, command = parser.parse('test @{id=test}')
+    type, dict = parser.parse('test @{id=test}')
     assert type == 'test'
     assert 'id' in dict
     assert dict['id'] == 'test'
-    assert command == None
 
 def test_correct_task():
     parser = prs.Parser()
-    type, dict, command = parser.parse('task @{id=task} @{in=5} command -ls *()!#$%^&', parent='test')
-    assert type == 'task'
+    type, dict = parser.parse('task @{id=task} @{in=5} command -ls *()!#$%^&', parent='test')
+    assert type == 'test_task'
     assert 'id' in dict
     assert dict['id'] == 'task'
     assert 'in' in dict
     assert dict['in'] == 5
-    assert command == 'command -ls *()!#$%^&'
+    assert dict['command'] == 'command -ls *()!#$%^&'
 
 def test_correct_start():
     parser = prs.Parser()
-    type, dict, command = parser.parse('start @{id=start} @{at=2010-07-14.21:21:32} @{duration=10}')
+    type, dict = parser.parse('start @{id=start} @{at=2010-07-14.21:21:32} @{duration=10}')
     assert type == 'start'
     assert 'id' in dict
     assert dict['id'] == 'start'
@@ -35,8 +34,8 @@ def test_correct_start():
 
 def test_correct_task_results():
     parser = prs.Parser()
-    type, dict, command = parser.parse('task @{id=task}', parent='results')
-    assert type == 'task'
+    type, dict = parser.parse('get @{id=task}', parent='results')
+    assert type == 'results_get'
     assert 'id' in dict
     assert dict['id'] == 'task'
 
@@ -70,5 +69,5 @@ def test_unknown_param():
 
 def test_unwanted_command():
     parser = prs.Parser()
-    py.test.raises(prs.CommandError, parser.parse, 'task @{id=test} ls -al', parent='results')
+    py.test.raises(prs.CommandError, parser.parse, 'get @{id=test} ls -al', parent='results')
 
