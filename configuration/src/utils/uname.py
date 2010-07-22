@@ -1,4 +1,3 @@
-from config.Model import get_model
 from common.Hooks import HookPlugin
 
 class Uname(HookPlugin):
