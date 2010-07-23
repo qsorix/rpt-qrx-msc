@@ -13,13 +13,13 @@ def test_correct_test():
 
 def test_correct_task():
     parser = prs.Parser()
-    type, dict = parser.parse('task @{id=task} @{in=5} command -ls *()!#$%^&', parent='test')
+    type, dict = parser.parse('task @{id=task} @{in=5} @{command=ls -al *()!#$%^&}', parent='test')
     assert type == 'test_task'
     assert 'id' in dict
     assert dict['id'] == 'task'
     assert 'in' in dict
     assert dict['in'] == 5
-    assert dict['command'] == 'command -ls *()!#$%^&'
+    assert dict['command'] == 'ls -al *()!#$%^&'
 
 def test_correct_start():
     parser = prs.Parser()
@@ -38,6 +38,24 @@ def test_correct_task_results():
     assert type == 'results_get'
     assert 'id' in dict
     assert dict['id'] == 'task'
+
+def test_correct_test_end():
+    parser = prs.Parser()
+    type, dict = parser.parse('end', parent='test')
+    assert type == 'test_end'
+    assert dict == {}
+
+def test_correct_results_end():
+    parser = prs.Parser()
+    type, dict = parser.parse('end', parent='results')
+    assert type == 'results_end'
+    assert dict == {}
+
+def test_correct_close():
+    parser = prs.Parser()
+    type, dict = parser.parse('close')
+    assert type == 'close'
+    assert dict == {}
 
 def test_task_with_no_parent():
     parser = prs.Parser()
@@ -66,8 +84,4 @@ def test_unknown_type():
 def test_unknown_param():
     parser = prs.Parser()
     py.test.raises(prs.ParamError, parser.parse, 'test @{id=test} @{unknown=test}')
-
-def test_unwanted_command():
-    parser = prs.Parser()
-    py.test.raises(prs.CommandError, parser.parse, 'get @{id=test} ls -al', parent='results')
 

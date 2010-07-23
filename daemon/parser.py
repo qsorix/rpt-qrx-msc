@@ -3,38 +3,41 @@
 
 import re
 
-main_regex        = r'^(?P<type>\w+)(?P<parameters>(\s+\@\{\w+\=.+\})+)(?P<command>\s+.+)?\s*$'
+main_regex        = r'^(?P<type>\w+)(?P<parameters>(\s+\@\{\w+\=.+\})+)?$'#(?P<command>\s+.+)?\s*$'
 datetime_regex    = r'^[0-9]{4}-[0-9]{2}-[0-9]{2}\.[0-9]{2}:[0-9]{2}:[0-9]{2}$'
-main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete']
-test_sub_types    = ['file', 'check', 'setup', 'task', 'clean', 'delete', 'end']
-results_sub_types = ['get', 'end']
+main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete', 'close']
+test_sub_types    = ['file', 'check', 'setup', 'task', 'clean', 'delete', 'end', 'close']
+results_sub_types = ['get', 'end', 'close']
 digit_types       = ['size', 'in', 'every', 'duration']
 datetime_types    = ['at']
-required          = ['id']
-test_required     = []
+test_required     = ['id']
 test_optional     = []
-file_required     = ['size']
+file_required     = ['id', 'size']
 file_optional     = ['output']
-check_required    = []
+check_required    = ['id', 'command']
 check_optional    = []
-setup_required    = []
+setup_required    = ['id', 'command']
 setup_optional    = []
-task_required     = [('in', 'every')]
+task_required     = ['id', ('in', 'every'), 'command']
 task_optional     = ['output']
-clean_required    = []
+clean_required    = ['id', 'command']
 clean_optional    = []
-delete_required   = []
+delete_required   = ['id']
 delete_optional   = []
-results_required  = []
+end_required      = []
+end_optional      = []
+results_required  = ['id']
 results_optional  = []
-get_required      = []
+get_required      = ['id']
 get_optional      = []
-prepare_required  = []
+prepare_required  = ['id']
 prepare_optional  = []
-start_required    = [('at', 'in')]
+start_required    = ['id', ('at', 'in')]
 start_optional    = [('duration', 'until')]
-stop_required     = []
+stop_required     = ['id']
 stop_optional     = []
+close_required    = []
+close_optional    = []
 
 class Parser():
 
@@ -44,25 +47,20 @@ class Parser():
         if match is None:
             raise LineError()
 
-        # Parse type and check for closure
-        type    = match.group('type')
-        if type is 'close':
-            return None
-
-        # Parse the rest of the line
-        params  = match.group('parameters')[1:].split(' ')
-        command = match.group('command')
-        if command:
-            command = command[1:]
+        # Parse line
+        type = unicode(match.group('type'))
+        params = unicode(match.group('parameters'))
         paramap = {}
-        for param in params:
-            paramsplited = param[2:-1].split('=')
-            paramap[paramsplited[0]] = paramsplited[1]
+        if params:
+            for param in re.split(r'\s\@\{', params)[1:]:
+                paramsplited = param[:-1].split('=')
+                paramap[paramsplited[0]] = paramsplited[1]
         tmparamap = paramap.copy()
 
         # Check parent
         if parent not in ['test', 'results', None]:
             raise ParentError()
+
         # Check type
         if parent:
             if type not in globals()[parent+'_sub_types']:
@@ -72,10 +70,7 @@ class Parser():
                 raise TypeError()
 
         # Check required parameters
-        if parent and parent is 'results':
-            req = required
-        else:
-            req = required + globals()[type+'_required']
+        req = globals()[type+'_required']
         for param in req:
             if isinstance(param, tuple):
                 good = False
@@ -109,7 +104,7 @@ class Parser():
                     paramap[param] = int(paramap[param])
 
         # Check optional parameters
-        req = required + globals()[type+'_optional']
+        req = globals()[type+'_optional']
         for param in req:
             if isinstance(param, tuple):
                 for p in param:
@@ -119,14 +114,9 @@ class Parser():
             if param not in req:
                 raise ParamError()
 
-        # Check command
-        if parent and parent is not 'test' and command is not None:
-            raise CommandError()
-
         # Return parsed line
         if parent:
             type = parent+'_'+type
-        paramap['command'] = command
         return (type, paramap)
 
     def __str__(self):
@@ -142,7 +132,5 @@ class TypeError(Exception):
 class ParamError(Exception):
     pass
 class ValueError(Exception):
-    pass
-class CommandError(Exception):
     pass
 
