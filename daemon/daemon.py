@@ -10,10 +10,8 @@ from handler import Handler
 from models import *
 
 class DaemonHandler(SocketServer.StreamRequestHandler):
-
     def handle(self):
         # TODO Only if not doing anything
-        # FIXME Closing connection
 
         print >> sys.stderr, "[%s] Handling..." % self.client_address[0]
         handler = Handler(self)
@@ -22,7 +20,7 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 def setup_database():
     metadata.bind = "sqlite:///daemon.db"
     #metadata.bind.echo = True
-    session.configure(autocommit=True)
+    session.configure(autocommit=True)  # TODO It would be better to do it manually
     setup_all()
     create_all()
 
@@ -39,14 +37,10 @@ def setup_config():
             config.write(f)
 
 if __name__ == "__main__":
-
-    # Setup everything
     setup_database()
     setup_config()
 
     HOST, PORT = "localhost", 9999
     SocketServer.TCPServer.allow_reuse_address = True
-
-    # Create daemon
     daemon = SocketServer.TCPServer((HOST, PORT), DaemonHandler)
     daemon.serve_forever()
