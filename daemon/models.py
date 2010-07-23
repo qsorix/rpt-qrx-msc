@@ -6,7 +6,7 @@ from elixir import *
 class Test(Entity):
     using_options(tablename='tests')
 
-    id = Field(Unicode(128), required=True)
+    id = Field(Unicode(128), required=True, primary_key=True)
     started_at = Field(DateTime)
     length = Field(Integer)
 
@@ -19,10 +19,10 @@ class Test(Entity):
 class File(Entity):
     using_options(tablename='files')
 
-    id = Field(Unicode(128), required=True)
+    id = Field(Unicode(128), required=True, primary_key=True)
     size = Field(Integer, required=True)
-#    file_path = Field(Unicode(128), default=None)
-    content = Field(LargeBinary, deferred=True)
+    path = Field(Unicode(128), default=None)
+#    content = Field(LargeBinary, deferred=True)
 
     test = ManyToOne('Test')
 
@@ -32,9 +32,10 @@ class File(Entity):
 class Command(Entity):
     using_options(tablename='commands')
 
-    id = Field(Unicode(128), required=True)
+    id = Field(Unicode(128), required=True, primary_key=True)
     command = Field(Unicode(128), required=True)
-    
+    output = Field(LargeBinary)
+
     test = ManyToOne('Test')
 
     def __repr__(self):
@@ -43,15 +44,11 @@ class Command(Entity):
 class Check(Command):
     using_options(inheritance='multi', tablename='check_commands')
 
-    result = Field(Boolean, default=True)
-
     def __repr__(self):
         return '<Check "%s": %s>' % (self.id, self.command)
 
 class Setup(Command):
     using_options(inheritance='multi', tablename='setup_commands')
-
-    result = Field(Boolean, default=True)
 
     def __repr__(self):
         return '<Setup "%s": %s>' % (self.id, self.command)
@@ -60,20 +57,15 @@ class Task(Command):
     using_options(inheritance='multi', tablename='tasks')
 
 #    file_path = Field(Unicode(128), default=None)
-    output = Field(LargeBinary)
     trigger_type = Field(Integer, required=True) # 0 - in, 1 - every
     trigger_value = Field(Integer, default=0)
     pid = Field(Integer)
     
-    test = ManyToOne('Test')
-
     def __repr__(self):
         return '<Task "%s": %s>' % (self.id, self.command)
 
 class Clean(Command):
     using_options(inheritance='multi', tablename='clean_commands')
-
-    result = Field(Boolean, default=True)
 
     def __repr__(self):
         return '<Clean "%s": %s>' % (self.id, self.command)
