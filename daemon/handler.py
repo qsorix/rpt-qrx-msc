@@ -5,7 +5,8 @@ import sys
 import os
 from datetime import datetime
 
-from parser import Parser
+from parser import *
+from manager import *
 from models import *
 import utilz
 
@@ -15,34 +16,45 @@ class Handler:
 
     def handle(self):
         parser = Parser()
+        parent = None
+        parent_id = None
+        manager = Manager(self)
+        types_and_actions = {
+            'test'        : manager.create_test,
+            'test_check'  : manager.add_check_command,
+            'test_setup'  : manager.add_setup_command,
+            'test_task'   : manager.add_task_command,
+            'test_clean'  : manager.add_clean_command,
+            'test_file'   : manager.add_file,
+            'test_delete' : manager.delete_command,
+            'results_get' : manager.get_results,
+            'delete'      : manager.delete_test,
+            'prepare'     : manager.prepare_test,
+            'start'       : manager.start_test,
+            'stop'        : manager.stop_test
+        }
 
         while 1:
             line = self.receive()
-            name, match = parser.parse(line)
-
-            if name == 'test':
-                name = unicode(match.group('name'))
-                start = datetime.strptime(match.group('start'), '%Y-%m-%d %H:%M:%S')
-                duration = int(match.group('duration'))
-
-                self.recv_test(name, start, duration)
-
-            elif name == 'rslt':
-                name = unicode(match.group('name'))
-
-                self.send_results(name)
-
-            elif name == 'close':
-                self.send_end()
-                break;
-            elif name == 'check':
-                pass
-            elif name == 'start':
-                pass
-#                self.send_end()
-#                break
-            else:
+            try:
+                type, params = parser.parse(line, parent)
+                if types_and_actions.get(type):
+                    result = types_and_actions.get(type)(parent_id, params)
+ 
+                if type.endswith('close'):
+                    self.send_end()
+                    break;
+                if type in ['test', 'results']:
+                    parent = type
+                    parent_id = params['id']
+                if type.endswith('test_end'):
+                    parent = None
+                    parent_id = None
+                    
+            except (LineError, ParentError, TypeError, ParamError, ValueError):
                 self.send_bad_request()
+            except (ManagerError):
+                self.send_error()
 
     def receive(self):
         data = self.conn.rfile.readline().strip()
@@ -86,75 +98,6 @@ class Handler:
 
         self.send_complete()
 
-    def recv_task(self, test, name, start, output, command):
-        task = Task.query.filter_by(name=name, test=test).first()
-        if not task:
-            if utilz.name_exists(test, name):
-                self.send_bad_request()
-                return
-            task = Task(command=command, start=start, name=name, test=test)
-        else:
-            task.start = start
-            task.command = command
-        if output:
-            task.file_output = True
-            task.file_path = unicode(output)
-
-        self.send_ok()
-
-    def recv_cmd(self, test, name, command):
-        cmd = Command.query.filter_by(command=command, name=name, test=test).first()
-        if not cmd:
-            if utilz.name_exists(test, name):
-                self.send_bad_request()
-                return
-            cmd = Command(command=command, test=test, name=name)
-        else:
-            cmd.command = command
-        self.send_ok()
-
-    def recv_test(self, name, start, duration):
-        test = Test.query.filter_by(name=name).first()
-        if not test:
-            test = Test(name=name, start=start, duration=duration)
-        else:
-            test.start = start
-            test.duration = duration
-        self.send_ok()
-
-        parser = Parser()
-
-        line = self.receive()
-        name, match = parser.parse(line)
-        while not name == 'end':
-            if name == 'file':
-                name = unicode(match.group('name'))
-                size = int(match.group('size'))
-                output = match.group('output')
-
-                self.recv_file(test, name, size, output)
-
-            elif name == 'task':
-                name = unicode(match.group('name'))
-                start = int(match.group('start'))
-                command = unicode(match.group('command'))
-                output = match.group('output')
-
-                self.recv_task(test, name, start, output, command)
-
-            elif name == 'cmd':
-                name = unicode(match.group('name'))
-                command = unicode(match.group('command'))
-
-                self.recv_cmd(test, name, command)
-
-            else:
-                self.send_bad_request()
-
-            line = self.receive()
-            name, match = parser.parse(line)
-
-        self.send_ok()
 
     def send_task(self, test, name):
         task = Task.query.filter_by(name=name, test=test).first()
@@ -174,16 +117,6 @@ class Handler:
         else:
             self.send_bad_request()
 
-    def send_cmd(self, test, name):
-        cmd = Command.query.filter_by(name=name, test=test).first()
-        if cmd:
-            size = len(cmd.output)
-            self.send_ready(size)
-            self.wfile.write(cmd.output)
-
-        else:
-            self.send_bad_request()
-
     def send_file(self, test, name):
         file = File.query.filter_by(name=name, test=test).first()
         if file:
@@ -193,41 +126,6 @@ class Handler:
         else:
             self.send_bad_request()
 
-    def send_results(self, name):
-        test = Test.query.filter_by(name=name).first()
-        if not test:
-            self.send_bad_request()
-        else:
-            self.send_ok()
-
-        parser = Parser()
-
-        line = self.receive()
-        name, match = parser.parse(line)
-        while not name == 'end':
-            if name == 'task':
-                name = unicode(match.group('name'))
-
-                self.send_task(test, name)
-
-            elif name == 'cmd':
-                name = unicode(match.group('name'))
-
-                self.send_cmd(test, name)
-
-            elif name == 'file':
-                name = unicode(match.group('name'))
-
-                self.send_file(test, name)
-
-            else:
-                self.send_bad_request()
-
-            line = self.receive()
-            name, match = parser.parse(line)
-
-        self.send_ok()
-
     def send(self, msg):
         print >> sys.stderr, "[%s] Sending: %s" % (self.conn.client_address[0], msg)
         self.conn.wfile.write(msg + '\n')
@@ -235,28 +133,15 @@ class Handler:
     def send_ok(self):
         self.send('200 OK')
 
-    def send_complete(self):
-        self.send('201 Complete')
-
-    def send_ready(self, size):
-        self.send('202 Ready ' + str(size))
-
-    def send_end(self):
-        self.send('600 The End')
+    def send_sending(self, size):
+        self.send('201 Sending ' + str(size))
 
     def send_bad_request(self):
         self.send('400 Bad Request')
 
-    def check(self, test):
-        pass
+    def send_error(self):
+        self.send('401 Error')
 
-    def start(self, name, time):
-#        if not test.duration > 0 or test.start is None:
-#            session.rollback()
-#            self.sender.send_bad_request()
-#            return 1
-#        else:
-#            self.send_end()
-            
-        ts = TaskScheduler(test)
-        ts.run()
+    def send_end(self):
+        self.send('600 The End')
+
