@@ -62,70 +62,6 @@ class Handler:
             print >> sys.stderr, "[%s] Received: %s" % (self.conn.client_address[0], data)
         return data
 
-    def recv_file(self, test, name, size, output):
-        file = File.query.filter_by(name=name, test=test).first()
-        if not file:
-            if utilz.name_exists(test, name):
-                self.send_bad_request()
-                return
-            file = File(name=name, test=test, size=size)
-        else:
-            file.size = size
-        if output:
-            file.file_output = True
-            file.file_path = unicode(output)
-
-        self.send_ok()
-
-        if output:
-            with open(utilz.subst(test, unicode(output)), 'wb') as f:
-                while size > 1024:
-                    data = self.conn.rfile.read(1024)
-                    f.write(data)
-                    size -= 1024
-                data = self.conn.rfile.read(size)
-                f.write(data)
-        else:
-            tmp = ''
-            while size > 1024:
-                data = self.conn.request.recv(1024)
-                tmp += data
-                size -= 1024
-            data = self.conn.request.recv(size)
-            tmp += data
-
-            file.content = tmp
-
-        self.send_complete()
-
-
-    def send_task(self, test, name):
-        task = Task.query.filter_by(name=name, test=test).first()
-        if task:
-            if not task.file_output:
-                size = len(task.output)
-                self.send_ready(size)
-                self.wfile.write(task.output)
-            else:
-                path = utilz.subst(test, task.file_path)
-                size = int(os.path.getsize(path))
-                self.send_ready(size)
-
-                with open(path, 'rb') as file:
-                    self.wfile.write(file.read())
-
-        else:
-            self.send_bad_request()
-
-    def send_file(self, test, name):
-        file = File.query.filter_by(name=name, test=test).first()
-        if file:
-            size = len(file.content)
-            self.send_ready(size)
-            self.wfile.write(file.content)
-        else:
-            self.send_bad_request()
-
     def send(self, msg):
         print >> sys.stderr, "[%s] Sending: %s" % (self.conn.client_address[0], msg)
         self.conn.wfile.write(msg + '\n')
@@ -138,9 +74,6 @@ class Handler:
 
     def send_bad_request(self):
         self.send('400 Bad Request')
-
-    def send_error(self):
-        self.send('401 Error')
 
     def send_end(self):
         self.send('600 The End')
