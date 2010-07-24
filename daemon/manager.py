@@ -105,7 +105,11 @@ class Manager:
  
     def delete_command(self, test_id, params):
         id = params['id']
-        Command.get_by(test=Test.query.get_by(id=test_id), id=id).delete()
+        cmd = Command.get_by(test=Test.get_by(id=test_id), id=id)
+        if not cmd:
+            raise DatabaseError
+        cmd.delete()
+        self.handler.send_ok()
 
     def get_results(self, test_id, params):
         id = params['id']
