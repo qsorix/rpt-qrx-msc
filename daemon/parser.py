@@ -3,8 +3,8 @@
 
 import re
 
-main_regex        = r'^(?P<type>\w+)(?P<parameters>(\s+\@\{\w+\=.+\})+)?$'#(?P<command>\s+.+)?\s*$'
-datetime_regex    = r'^[0-9]{4}-[0-9]{2}-[0-9]{2}\.[0-9]{2}:[0-9]{2}:[0-9]{2}$'
+main_regex        = r'^(?P<type>\w+)(?P<parameters>( \@\{\w+\=.+\})*)(?P<command> .+)?\s*$'
+datetime_regex    = r'^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$'
 main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete', 'close']
 test_sub_types    = ['file', 'check', 'setup', 'task', 'clean', 'delete', 'end', 'close']
 results_sub_types = ['get', 'end', 'close']
@@ -14,13 +14,13 @@ test_required     = ['id']
 test_optional     = []
 file_required     = ['id', 'size']
 file_optional     = ['output']
-check_required    = ['id', 'command']
+check_required    = ['id']
 check_optional    = []
-setup_required    = ['id', 'command']
+setup_required    = ['id']
 setup_optional    = []
-task_required     = ['id', ('in', 'every'), 'command']
+task_required     = ['id', ('in', 'every')]
 task_optional     = ['output']
-clean_required    = ['id', 'command']
+clean_required    = ['id']
 clean_optional    = []
 delete_required   = ['id']
 delete_optional   = []
@@ -49,13 +49,17 @@ class Parser():
 
         # Parse line
         type = unicode(match.group('type'))
-        params = unicode(match.group('parameters'))
+        params = match.group('parameters')
+        command = match.group('command')
         paramap = {}
         if params:
+            params = unicode(params)
             for param in re.split(r'\s\@\{', params)[1:]:
                 paramsplited = param[:-1].split('=')
                 paramap[paramsplited[0]] = paramsplited[1]
         tmparamap = paramap.copy()
+        if command:
+            command = unicode(command[1:])
 
         # Check parent
         if parent not in ['test', 'results', None]:
@@ -117,6 +121,9 @@ class Parser():
         # Return parsed line
         if parent:
             type = parent+'_'+type
+        if command:
+            paramap['command'] = command
+        print paramap
         return (type, paramap)
 
     def __str__(self):
