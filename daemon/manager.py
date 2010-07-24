@@ -12,6 +12,8 @@ class Manager:
         test = Test.get_by(id=id)
         if not test:
             test = Test(id=id)
+        else:
+            raise DatabaseError
         self.handler.send_ok()
 
     def delete_test(self, parent_id , params):
@@ -20,9 +22,11 @@ class Manager:
         if test:
             for command in test.commands:
                 command.delete()
+            for file in test.files:
+                file.delete()
             test.delete()
         else:
-            raise ManagerError
+            raise DatabaseError
         self.handler.send_ok()
 
     def add_check_command(self, test_id, params):
@@ -35,11 +39,9 @@ class Manager:
             if not file:
                 cmd = Check(test=test, id=id, command=command)
             else:
-                raise ManagerError
-        elif isinstance(cmd, Check):
-            cmd.command = command
+                raise DatabaseError
         else:
-            raise ManagerError
+            raise DatabaseError
         self.handler.send_ok()
 
     def add_setup_command(self, test_id, params):
@@ -52,11 +54,9 @@ class Manager:
             if not file:
                 cmd = Setup(test=test, id=id, command=command)
             else:
-                raise ManagerError
-        elif isinstance(cmd, Setup):
-            cmd.command = command
+                raise DatabaseError
         else:
-            raise ManagerError
+            raise DatabaseError
         self.handler.send_ok()
 
     def add_task_command(self, test_id, params):
@@ -77,13 +77,9 @@ class Manager:
             if not file:
                 cmd = Task(test=test, id=id, command=command, trigger_type=trigger_type, trigger_value=trigger_value)
             else:
-                raise ManagerError
-        elif isinstance(cmd, Task):
-            cmd.command = command
-            cmd.trigger_type = trigger_type
-            cmd.trigger_value = trigger_value
+                raise DatabaseError
         else:
-            raise ManagerError
+            raise DatabaseError
         self.handler.send_ok()
  
     def add_clean_command(self, test_id, params):
@@ -96,17 +92,16 @@ class Manager:
             if not file:
                 cmd = Clean(test=test, id=id, command=command)
             else:
-                raise ManagerError
-        elif isinstance(cmd, Clean):
-            cmd.command = command
+                raise DatabaseError
         else:
-            raise ManagerError
+            raise DatabaseError
         self.handler.send_ok()
 
     def add_file(self, test_id, params):
         id = params['id']
 #        if params.haskey('output'):
 #            output = params['output']
+        self.handler.send_ok()
  
     def delete_command(self, test_id, params):
         id = params['id']
@@ -119,7 +114,7 @@ class Manager:
         if not cmd:
             file = File.get_by(test=test, id=id)
             if not file:
-                raise ManagerError
+                raise DatabaseError
             else:
                 # TODO Send file here
                 pass
@@ -128,13 +123,16 @@ class Manager:
             self.handler.conn.wfile.write(cmd.output)
 
     def prepare_test(self, parent_id, params):
+        # TODO Run check commands
         pass
 
     def start_test(self, parent_id, params):
+        # TODO Start test
         pass
 
     def stop_test(self, parent_id, params):
+        # TODO Stop test
         pass
 
-class ManagerError(Exception):
+class DatabaseError(Exception):
     pass
