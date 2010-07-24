@@ -5,9 +5,9 @@ import re
 
 main_regex        = r'^(?P<type>\w+)(?P<parameters>( \@\{\w+\=.+\})*)(?P<command> .+)?\s*$'
 datetime_regex    = r'^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$'
-main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete', 'close']
-test_sub_types    = ['file', 'check', 'setup', 'task', 'clean', 'delete', 'end', 'close']
-results_sub_types = ['get', 'end', 'close']
+main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete']
+test_sub_types    = ['file', 'check', 'setup', 'task', 'clean', 'delete', 'end']
+results_sub_types = ['get', 'end']
 digit_types       = ['size', 'in', 'every', 'duration']
 datetime_types    = ['at']
 test_required     = ['id']
@@ -36,8 +36,6 @@ start_required    = ['id', ('at', 'in')]
 start_optional    = [('duration', 'until')]
 stop_required     = ['id']
 stop_optional     = []
-close_required    = []
-close_optional    = []
 
 class Parser():
 
@@ -123,7 +121,6 @@ class Parser():
             type = parent+'_'+type
         if command:
             paramap['command'] = command
-        print paramap
         return (type, paramap)
 
     def __str__(self):
