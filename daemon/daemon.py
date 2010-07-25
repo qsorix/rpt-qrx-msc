@@ -3,6 +3,7 @@
 
 import sys
 import os
+import errno
 import ConfigParser
 import SocketServer
 
@@ -20,7 +21,7 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 def setup_database():
     metadata.bind = "sqlite:///daemon.db"
     #metadata.bind.echo = True
-    session.configure(autocommit=True)  # TODO It would be better to do it manually
+    #session.configure(autocommit=True)
     setup_all()
     create_all()
 
@@ -28,13 +29,23 @@ def setup_config():
     config = ConfigParser.SafeConfigParser()
     config.read('daemon.cfg')
 
+    TMPDIR = './tmp'
+
     try:
         tmpdir = config.get('Daemon', 'tmpdir')
     except ConfigParser.NoSectionError:
         config.add_section('Daemon')
-        config.set('Daemon', 'tmpdir', './')
+        config.set('Daemon', 'tmpdir', TMPDIR)
         with open('daemon.cfg', 'wb') as f:
             config.write(f)
+    finally:
+        try:
+            os.makedirs(TMPDIR)
+        except OSError as e:
+            if e.errno == errno.EEXIST:
+                pass
+            else:
+                raise
 
 if __name__ == "__main__":
     setup_database()
