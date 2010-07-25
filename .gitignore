@@ -1,2 +1,4 @@
 *.pyc
 .*.swp
+*~
+thesis/diagrams/*.eps
