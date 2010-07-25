@@ -14,6 +14,7 @@ class Manager:
         test = Test.get_by(id=id)
         if not test:
             test = Test(id=id)
+            session.commit()
         else:
             raise DatabaseError
         self.handler.send_ok()
@@ -28,6 +29,7 @@ class Manager:
                 os.remove(file.path)
                 file.delete()
             test.delete()
+            session.commit()
         else:
             raise DatabaseError
         self.handler.send_ok()
@@ -41,6 +43,7 @@ class Manager:
             file = File.get_by(test=test, id=id)
             if not file:
                 cmd = Check(test=test, id=id, command=command)
+                session.commit()
             else:
                 raise DatabaseError
         else:
@@ -56,6 +59,7 @@ class Manager:
             file = File.get_by(test=test, id=id)
             if not file:
                 cmd = Setup(test=test, id=id, command=command)
+                session.commit()
             else:
                 raise DatabaseError
         else:
@@ -79,6 +83,7 @@ class Manager:
             file = File.get_by(test=test, id=id)
             if not file:
                 cmd = Task(test=test, id=id, command=command, trigger_type=trigger_type, trigger_value=trigger_value)
+                session.commit()
             else:
                 raise DatabaseError
         else:
@@ -94,6 +99,7 @@ class Manager:
             file = File.get_by(test=test, id=id)
             if not file:
                 cmd = Clean(test=test, id=id, command=command)
+                session.commit()
             else:
                 raise DatabaseError
         else:

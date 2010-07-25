@@ -21,7 +21,7 @@ class DaemonHandler(SocketServer.StreamRequestHandler):
 def setup_database():
     metadata.bind = "sqlite:///daemon.db"
     #metadata.bind.echo = True
-    session.configure(autocommit=True)  # TODO It would be better to do it manually
+    #session.configure(autocommit=True)
     setup_all()
     create_all()
 
