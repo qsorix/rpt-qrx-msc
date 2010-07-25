@@ -13,7 +13,7 @@ def test_correct_test():
 
 def test_correct_task():
     parser = prs.Parser()
-    type, dict = parser.parse('task @{id=task} @{in=5} @{command=ls -al *()!#$%^&}', parent='test')
+    type, dict = parser.parse('task @{id=task} @{in=5} ls -al *()!#$%^&', parent='test')
     assert type == 'test_task'
     assert 'id' in dict
     assert dict['id'] == 'task'
@@ -23,12 +23,12 @@ def test_correct_task():
 
 def test_correct_start():
     parser = prs.Parser()
-    type, dict = parser.parse('start @{id=start} @{at=2010-07-14.21:21:32} @{duration=10}')
+    type, dict = parser.parse('start @{id=start} @{at=2010-07-14 21:21:32} @{duration=10}')
     assert type == 'start'
     assert 'id' in dict
     assert dict['id'] == 'start'
     assert 'at' in dict
-    assert dict['at'] == '2010-07-14.21:21:32'
+    assert dict['at'] == '2010-07-14 21:21:32'
     assert 'duration' in dict
     assert dict['duration'] == 10
 
@@ -75,7 +75,7 @@ def test_with_too_many_params():
 
 def test_unknown_line():
     parser = prs.Parser()
-    py.test.raises(prs.LineError, parser.parse, 'unknown line')
+    py.test.raises(prs.TypeError, parser.parse, 'unknown line')
 
 def test_unknown_type():
     parser = prs.Parser()
