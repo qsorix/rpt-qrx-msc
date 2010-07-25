@@ -1,0 +1,43 @@
+\documentclass[a4paper]{mwbk}
+
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage{polski}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\usepackage{subfiles}
+
+\usepackage{color}
+\usepackage{graphicx}
+\DeclareGraphicsExtensions{.eps}
+\graphicspath{{./diagrams/}}
+
+% automatic conversion from .eps to .pdf so pdflatex can be used
+\usepackage{epstopdf}
+
+\usepackage{minted}
+\newminted{python}{gobble=2,linenos}
+
+\newcommand{\code}[1] {{\textbf{\texttt{#1}}}}
+\newcommand{\FIXME}[1] {
+  \vspace{0.2cm}
+  \noindent\ignorespaces\fcolorbox{black}{red}{
+    \begin{minipage}{1.0\textwidth}
+    FIXME
+
+    #1
+    \end{minipage}}
+  \vspace{0.2cm}}
+\newcommand{\fixme}[1] {\textcolor{red}{#1}}
+
+\title{Praca Magisterska}
+\author{Krzysztof Rutka \and Tomasz Rydzyński}
+
+\begin{document}
+
+\maketitle
+
+\subfile{konfiguracja}
+
+\end{document}

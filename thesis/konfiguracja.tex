@@ -1,0 +1,398 @@
+\documentclass[praca-magisterska.tex]{subfiles}
+
+\begin{document}
+
+\chapter{Nasze rozwiązanie}
+
+\section{Konfiguracja}
+
+Cechą dobrze zaplanowanego testu jest możliwość przeprowadzania go
+wielokrotnie. Aby test można było powtarzać, trzeba go opisać. Opis taki
+powinien określać postępowanie w czasie testu, a także środowisko, w jakim się
+go przeprowadza.
+
+Sposób opisu powinien być dostosowany do charakteru przeprowadzanych testów.
+Inaczej określa się doświadczenia fizyczne, a inaczej chemiczne. Naszym
+zdaniem w przypadku testów aplikacji sieciowych opis ten powinien:
+\begin{itemize}
+\item umożliwiać wielokrotne użycie,
+\item abstrahować koncepcję testu,
+\item wspierać złożone konfiguracje,
+\item być zwięzły i precyzyjny.
+\end{itemize}
+
+Wielokrotne użycie części tego samego opisu pozwala szybciej stworzyć wiele
+podobnych testów. Zamiast za każdym razem zaczynać od nowa, można skorzystać z
+części już przygotowanego testu i wykorzystać je.
+
+Przez koncepcję testu rozumiemy to, co w teście chcemy zrobić. Jeśli naszym
+celem jest nawiązanie komunikacji między dwoma komputerami w pracowni, zwykle
+nie interesuje nas, które konkretnie komputery wykorzystamy.
+
+W skład najprostszego testu wchodzi jeden komputer. Złożone konfiguracje mogą
+zawierać ich kilkadziesiąt i definiować specyficzne sposoby komunikacji, jak
+np. Chord\footnote{http://en.wikipedia.org/wiki/Chord\_\%28peer-to-peer\%29}.
+Sposób opisu testu powinien umożliwiać zdefiniowanie rozbudowanych
+eksperymentów, a jednocześnie nie komplikować definicji tych prostych.
+
+Dzięki zwięzłości opisu można się szybko zorientować co w danym teście się
+dzieje. Łatwiej jest tworzyć nowe testy i wprowadzać zmiany. Odpowiednia
+notacja może stać się zarówno definicją testu, jak też sposobem komunikacji
+dla ludzi ten test przygotowujących.
+
+Z technicznego punktu widzenia, rozwiązanie posiadające powyższe cechy
+powinno:
+\begin{itemize}
+\item umożliwiać podział opisu na kilka plików,
+\item osobno definiować wykonywane czynności i środowisko ich przeprowadzania,
+\item korzystać z formatu tekstowego,
+\item umożliwiać stosowanie komentarzy,
+\item być proste w nauce,
+\item być niezależne od platformy sprzętowej i programowej.
+\end{itemize}
+
+Początkowo planowaliśmy stworzyć narzędzie, które graficznym interfejsem
+będzie wspierać tworzenie testu. Zdaliśmy sobie jednak sprawę, że jedyną jego
+zaletą byłaby prostsza edycja grafu przedstawiającego topologię sieci. Z
+drugiej strony narzędzie takie wprowadzałoby pewne utrudnienia techniczne, jak
+np. przenośność między systemami operacyjnymi, zależności od bibliotek
+graficznych i, co najważniejsze, prawdopodobnie nieprzyjazny człowiekowi
+format zapisu.
+
+Następnie rozważaliśmy stworzenie dedykowanego języka (DSL), którego cechy będą
+odpowiadać naszym wymaganiom. Inspiracją był tutaj język NED\footnote{NEtwork
+Description} używany przez symulator sieci
+OMNeT++\footnote{http://www.omnetpp.org/} do opisu budowy urządzeń, topologii
+połączeń i formatu komunikatów. Po kilku eksperymentach ze składnią stało się
+jednak jasne, że aby w czytelny sposób wspierać wiele rodzajów testów i
+jednocześnie niczego nie utrudniać, użytkownik będzie potrzebował możliwości
+rozbudowy tego języka. OMNeT++ rozwiązuje ten problem umożliwiając tworzenie
+implementacji modułów w języku C++, my postanowiliśmy skorzystać z Pythona.
+
+Ostatecznie zdecydowaliśmy użyć Pythona jako języka konfiguracji. Tego typu
+rozwiązanie stosują m.in. takie narzędzia jak systemy budowania
+SCons\footnote{http://www.scons.org/} i
+Waf\footnote{http://code.google.com/p/waf/}.  Idąc ich śladem, postanowiliśmy
+stworzyć framework, który w prosty sposób będzie umożliwiał tworzenie
+różnorodnych konfiguracji.
+
+Python posiada wszystkie poszukiwane przez nas cechy. Ponadto użycie właśnie
+Pythona jako środowiska do stworzenia potrzebnego nam DSL jest łatwiejsze niż
+korzystanie z innych języków ponieważ:
+\begin{itemize}
+\item jest ogólnie dostępny,
+\item instalacja jest prosta,
+\item jest przenośny,
+\item skrypty nie wymagają kompilacji,
+\item jest ogólnie znany i łatwy do nauki.
+\end{itemize}
+
+Porównując z popularnymi językami: zarówno Java jak i C++ ze względu na
+silne typowanie posiadają bardzo werbalną składnię, która utrudniałaby
+odczytanie sedna zapisanego testu. Poza tym konfiguracja taka musiałaby być
+kompilowana po każdej zmianie. Perl jest mniej popularny i naszym zdaniem
+trudniejszy od Pythona. Bash i inne języki powłok systemowych są zbyt ubogie,
+żeby wygodnie się nimi posługiwać w tworzeniu złożonych struktur danych.
+Interesującą alternatywą byłby Lua, uznaliśmy jednak, że nie chcemy zmuszać
+użytkowników do nauki niezbyt popularnego języka.
+
+\FIXME{dyskusja na temat niebezpieczeństw związanych z użyciem pythona (brak
+konroli nad wykonywanym kodem, itp.)}
+
+\subsection{Format konfiguracji}
+
+Aby zwiększyć szanse na ponowne wykorzystanie poprzednio definiowanych
+tekstów, konfiguracja logicznie podzielona jest na cztery osobne części:
+\begin{itemize}
+\item model,
+\item laboratorium,
+\item mapowanie,
+\item plan.
+\end{itemize}
+
+Model opisuje koncepcyjną topologię testu. Przedstawia ilość wymaganych
+urządzeń i połączenia między nimi. Laboratorium służy do definiowania sprzętu,
+którym w rzeczywistości dysponujemy. Mapowanie zapewnia odwzorowanie urządzeń
+z modelu na te dostępne w laboratorium. Te trzy komponenty definiują statyczną
+strukturę testu. Plan natomiast określa dynamiczne zachowanie urządzeń, tj.
+komendy wykonywane na nich w trakcie odbywania się testu.
+
+Żeby lepiej oddać rolę każdego komponentu można posłużyć się analogią do
+ćwiczeń laboratoryjnych. Model będzie tutaj schematem sieci narysowanym w
+poleceniu do ćwiczenia. Laboratorium, to po prostu spis dostępnego nam
+sprzętu. Mapowanie określa, które z dostępnych urządzeń zostaną wykorzystane
+do zbudowania zadanej topologii. Plan mówi, co zrobić w momencie, kiedy
+potrzebna sieć jest już gotowa.
+
+Framework nie narzuca żadnego podziału, poszczególne części można nawet
+definiować równolegle. Możliwe i zalecane jest jednak aby każdą część
+definiować w osobnym pliku. W ten sposób będziemy posiadać pliki,
+które opisywać będą dostępne nam laboratoria i kilka plików z testami, jakie
+aktualnie wykonujemy. Definicji mapowań będzie potrzeba tyle, ile różnych par
+model-sprzęt będziemy używać. Plan najczęściej można umieścić razem z modelem,
+chyba, że na tej samej topologii będziemy wykonywać wiele różnego rodzaju
+zadań.
+
+W dalszej części opisujemy szczegółowo poszczególne fragmenty konfiguracji.
+
+\subsubsection{Model}
+
+Zadaniem modelu jest przedstawienie koncepcyjnej topologii sieci. W tym
+elemencie konfiguracji opisuje się występujące urządzenia, ich interfejsy i
+połączenia między nimi.
+
+O definiowaniu modelu możemy myśleć, jak o definiowaniu grafu, którego węzłami
+są urządzenia, a połączenia odpowiadają krawędziom. Framework zapewnia tylko
+interfejs do tworzenia węzłów -- urządzeń i krawędzi -- dodawania interfejsów
+i połączeń między nimi.
+
+Dodatkowo możliwe jest przypisanie dowolnych cech zarówno urządzeniom jak też
+ich interfejsom. Cechy te maja format par nazwa-wartość. Sposób ich
+wykorzystania zależy od użytkownika. Framework przekaże je do odpowiednich
+sterowników \fixme{ref do rozdziału o Host i Interface Drivers}, które można
+tworzyć samodzielnie. Cechy można wykorzystać na przykład do przypisywania
+adresów IP interfejsom, określania sztucznie generowanych opóźnień,
+sprawdzania czy system pracuje pod kontrolą danego systemu operacyjnego itp.
+
+Framework nie wymaga definiowania żadnego z wymienionych elementów, jeśli
+jawnie go nie używamy. Jeśli w teście interesuje nas tylko, aby występowały
+dwa komputery, nie musimy określać ich interfejsów i adresów sieciowych,
+możemy też sami założyć, że komputery są połączone i w konfiguracji to
+przemilczeć.
+
+Definicja prostego modelu może wyglądać tak, jak poniżej:
+
+\begin{pythoncode}
+  create_model('peers')
+
+  alice = add_host('alice')
+  bob   = add_host('bob')
+\end{pythoncode}
+
+W pierwsze linii funkcja \code{create\_model} tworzy model. Funkcja ta jest
+definiowana przez framework i eksportowana do globalnej przestrzeni nazw w
+czasie wczytywania plików konfiguracyjnych. Zadanie \code{create\_model} jest
+bardzo proste. Dzięki niej nie można przez pomyłkę podać do testu dwóch
+różnych modeli (np. przekazując do programu złe pliki). Przed jej wykonaniem
+nie można używać pozostałej części interfejsu modelu, a wywołać można ją tylko
+raz. Z tego powodu powinna się pojawić na początku każdego definiowanego
+modelu.
+
+Dwie pozostałe linie tworzą i dodają do modelu dwa urządzenia przy pomocy
+funkcji \code{add\_host}. Pierwszym i obowiazkowym argumentem jest nazwa
+urządzenia. Dla wygody, funkcja zwraca referencję do utworzonego urządzenia.
+
+Taka konfiguracja wystarczy do przeprowadzenia szerokiej gamy testów, w
+których potrzebne są dwa komputery i nic więcej nas nie interesuje.
+
+Załóżmy jednak, że z jakiegoś powodu musimy na czas testu określić komputerom
+zadane adresy IP. Adresy przypisuje się oczywiście do interfejsów.
+
+\begin{pythoncode*}{firstnumber=5}
+  a_eth = alice.add_interface('eth', ip='192.168.6.4')
+  b_eth = bob.add_interface('eth', ip='192.168.6.5')
+\end{pythoncode*}
+
+Metoda \code{add\_interface} dodaje interfejs o podanej nazwie i adresie IP.
+Podobnie jak \code{add\_host} dla wygody zwracana jest referencja do
+stworzonego interfejsu.
+
+Pierwszy parametr (nazwa interfejsu) jest obowiązkowy. Dalsze, nazwane
+parametry\footnote{keyword arguments} są dowolne i służą do przypisania
+interfejsowi porządanych cech.  W tym wypadku podajemy parametr \code{ip}. W
+czasie przetwarzania konfiguracji, odpowiedni sterownik widząc ten parametr
+wygeneruje komendy konfigurujące podany adres na odpowiednim interfejsie
+urządzenia docelowego.
+
+Nawiasem mówiąc, funkcja \code{add\_host} również przyjmuje dowolny zestaw
+nazwanych parametrów.
+
+Można używać dowolnych cech. Framework nie przypisuje im żadnego znaczenia, a
+sterowniki definiowane są przez użytkownika. Dzięki temu mamy pełną kontrolę i
+swobodę w tym, co chcemy osiągnąć.
+
+Ostatnim pojęciem występującym w modelu jest połączenie. Połączenie występuje
+zawsze pomiędzy dwoma interfejsami i tworzy się je korzystając z funkcji
+\code{add\_link}.
+
+\begin{pythoncode*}{firstnumber=7}
+  add_link(a_eth, b_eth)
+\end{pythoncode*}
+
+Kolejność parametrów nie jest istotna. Połączeniu nie można przypisywać
+żadnych atrybutów.
+
+\FIXME{obecnie nie przychodzi nam do głowy żaden przypadek
+użycia, w którym połączenie wnosiło by cokolwiek istotnego.}
+
+Definiowanie połączeń nie jest obowiązkowe.
+
+Ostatecznie otrzymujemy konfigurację, która odpowiada diagramowi:
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{konfiguracja-model}
+\end{center}
+\caption{Model}
+\label{fig:konfiguracja-model}
+\end{figure}
+
+\subsubsection{Laboratorium}
+
+Laboratorium prezentuje zestaw dostępnych urządzeń i sposób, w jaki można się
+z nimi komunikować.
+
+W danym teście może być zdefiniowanych więcej urządzeń, niż wykorzystujemy.
+Podobnie jak w laboratorium sieciowym zwykle znajduje się wiecej sprzętu niż
+wymagają proste ćwiczenia.
+
+Sposób definiowania urządzeń jest bardzo podobny do tego zaprezentowanego w
+modelu, dlatego od razu prezentujemy pełną konfigurację:
+
+\begin{pythoncode}
+  create_laboratory('myroom')
+
+  defteros = add_device('defteros',
+      ip='192.168.1.100',
+      connection='tcp',
+      frontend='anagkid')
+
+  marvin = add_device('marvin',
+      ip='192.168.1.101',
+      connection='tcp',
+      frontend='anagkid')
+
+  d_eth0 = defteros.add_interface('eth0')
+  m_eth0 = marvin.add_interface('eth0')
+\end{pythoncode}
+
+Konfiguracja ta mówi, że w laboratorium \code{myroom} dysponujemy komputerami
+\code{defteros} i \code{marvin}. Na obu uruchomiony jest demon \code{anagkid} i
+połaczyć się z nim można korzystając z TCP, na standardowym
+porcie\footnote{decyduje o tym plugin connection typu 'tcp'}. Oba komputery
+posiadają interfejs sieciowy nazwany \code{eth0}. Przedstawione jest to na
+diagramie poniżej. \fixme{ref do diagramu}.
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{konfiguracja-laboratory}
+\end{center}
+\caption{Laboratorium}
+\label{fig:konfiguracja-laboratory}
+\end{figure}
+
+Funkcja \code{create\_laboratory}, podobnie jak w przypadku modelu, służy
+uniemożliwieniu przypadkowego mieszania kilku definicji laboratoriów.
+
+Funkcja \code{add\_device} zachowuje się analogicznie do \code{add\_host}.
+Pierwszy, obowiązkow parametr to nazwa urządzenia. Framework wymaga
+zdefiniowania kilku dodatkowych atrybutów:
+\begin{itemize}
+\item \code{connection} -- określa, z którego pluginu korzystać w celu
+nawiązania komunikacji z danym urządzeniem,
+\item \code{frontend} -- mówi, który plugin określa sposób w jaki przebiega
+komunikacja z danym urządzeniem (protokół przesyłanych komunikatów).
+\end{itemize}
+
+Więcej na temat pluginów piszemy w rozdziale \fixme{referencja do rozdziału o
+pluginach}.
+
+Framework nie wymaga podawania parametru \code{ip}. Jest to atrybut, z którego
+korzysta plugin \code{tcp} i w przypadku jego braku, zgłosiłby błąd w czasie
+przetwarzania konfiguracji. Opis wymaganych atrybutów znajduje się w
+dokumentacji każdego z pluginów.
+
+Sposób tworzenia interfejsów jest identyczny jak w przypadku modelu. Ważne,
+aby nazwy odpowiadały rzeczywistym nazwom, jakich używa się na danej
+platformie do identyfikacji interfejsu, ponieważ nazwy te mogą pojawić się w
+generowanych komendach.
+
+Urządzenie może posiadać więcej interfejsów niż wymaga tego model, więcej na
+ten temat w rozdziale o mapowaniu. \fixme{ref do rozdziału o mapowaniu}
+
+W przypadku laboratorium nie definiuje się połaczeń między urządzeniami. Nie
+miałoby to sensu ponieważ połaczenia te muszą istnieć w rzeczywistości.
+Wykonuje je użytkownik wpinając odpowiednie kable i nie ma możliwości zmiany
+połączeń z poziomu oprogramowania.
+
+\subsubsection{Mapowanie}
+
+Mapowanie to najprostsza część konfiguracji. Jej zadaniem jest przypisanie
+hostów z modelu do konkretnych urządzeń w laboratorium. Jeśli w modelu
+zdefiniowano interfejsy, również należy je przypisać do interfejsów urządzeń.
+Oczywiście interfejsy danego hosta można przypisywać tylko do interfejsów
+urządzenia, z którym powiązany został host.
+
+Do tworzenia powiązania służy funkcja \code{bind}, która przyjmuje dwa
+argumenty. Na początku pliku widzimy też funkcję \code{create\_mapping}, której
+zadanie jest analogiczne jak poprzednio w przypadku modelu i laboratorium.
+
+\begin{pythoncode}
+  create_mapping('peers-to-myroom')
+
+  bind(alice, defteros)
+  bind(bob,   marvin)
+
+  bind(alice.interface('eth'), defteros.interface('eth0'))
+  bind(bob.interface('eth'), marvin.interface('eth0'))
+\end{pythoncode}
+
+Stworzone mapowanie podsumowuje diagram \fixme{ref do rysunku}.
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{konfiguracja-mapping}
+\end{center}
+\caption{Mapowanie}
+\label{fig:konfiguracja-mapping}
+\end{figure}
+
+\subsubsection{Plan}
+
+\begin{pythoncode*}{samepage}
+  schedule iperf model Foo {
+  	duration {
+  		time = "10s"
+  	}
+  
+  	flow Tcp<A, B> {
+  		start = "iperf -tcp @{A.ip} @{B.ip}"
+  	}
+  
+  	at Alice {
+  		time = "5s"
+  		every = "10s"
+  		cmd = "ping @{Bob.ip}"
+  	}
+  
+  	at Alice start_flow Tcp<Bob, Alice>
+  
+  	...
+  	...
+  	...
+  }
+\end{pythoncode*}
+
+\subsection{Podsumowanie}
+
+Napisać jak nasze rozwiązanie przyczynia się do spełnienia założeń omówionych
+we wstępie:
+\begin{itemize}
+\item umożliwiać wielokrotne użycie,
+\item abstrahować koncepcję testu,
+\item wspierać złożone konfiguracje,
+\item być zwięzły i precyzyjny.
+\item umożliwiać podział opisu na kilka plików,
+\item osobno definiować wykonywane czynności i środowisko ich przeprowadzania,
+\item korzystać z formatu tekstowego,
+\item umożliwiać stosowanie komentarzy,
+\item być proste w nauce,
+\item być niezależne od platformy sprzętowej i programowej.
+\end{itemize}
+
+
+
+\end{document}
