@@ -2,3 +2,7 @@
 .*.swp
 *~
 thesis/diagrams/*.eps
+thesis/diagrams/*.pdf
+thesis/*.aux
+thesis/*.log
+thesis/*.pdf
