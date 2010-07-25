@@ -1,0 +1,59 @@
+"Reference - Model"
+-------------------
+FIXME: Przenieść do odpowiedniego rozdziału, uzupełnić i dokładnie opisać.
+
+Funkcje i metody:
+  - create_model(name)
+
+  - add_host(name, attr1=value1, ...)
+    zwraca Host
+
+  - add_interface(name, attr1=value1, ...)
+    zwraca Interface
+
+  - add_link(interface, interface)
+    zwraca Link
+
+Typy:
+
+  - Host
+  - Interface
+  - Link
+
+#FIXME: schemat UML
+  - Host
+  - Interface (agregacja w Host)
+  - Link (Klasa powiązania na połączeniu Interface-Interface)
+
+Reference "Laboratory"
+======================
+FIXME: Przenieść do odpowiedniego rozdziału, uzupełnić i dokładnie opisać.
+
+Funkcje i metody:
+  - create_laboratory(name)
+
+  - add_device(name, attr1=value1, ...)
+    Zwraca Device
+
+  - add_interface(name, attr1=value1, ...)
+    Zwraca Interface
+
+Typy:
+
+  - Device
+  - Interface
+
+#FIXME: schemat UML
+  - Device
+  - Interface (agregacja w Device)
+
+Reference "Mapping"
+====================
+FIXME: Przenieść do odpowiedniego rozdziału, uzupełnić i dokładnie opisać.
+
+Funkcje i metody:
+  - create_mapping(name)
+
+  - bind(object1, object2)
+
+#FIXME: schemat UML ?

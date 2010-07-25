@@ -1,0 +1,34 @@
+Przenieść do rozdziału z przykładowym zastosowaniem programu
+============================================================
+FIXME: dokończyć, poprawić.
+
+Inna konfiguracja modelu przedstawiona jest poniżej. Tym razem tworzymy dwie
+sieci, każda złożona z czterech komputerów. Sieci łaczymy przez router.
+Dodatkowo, na interfejsach routera konfigurujemy opóźnienie i procent strat
+pakietów.  FIXME: rysunek sieci FIXME: przyklad sie zmieni po przejsciu na
+Python DSL
+
+  model Bar {
+  	host East[4]
+	host West[4]
+	host R
+
+	interface R.p0 {
+		delay = 10ms
+		loss  = 0.05
+	}
+
+	interface R.p1 {
+		delay = 10ms
+		loss  = 0.05
+	}
+
+	link_all [ R.p0, East ]
+	link_all [ R.p1, West ]
+  } 
+
+FIXME: ten akapit bedzie do przepisania po zmianie skladni
+Polecenia interface tworzą dwa interfejsy na routerze R. Ich nazwa jest dowolna,
+istotne jest tylko, że konfiguracja wymusza istnienie dwóch, oraz możliwość
+przypisania im odpowiednich parametrów.
+
