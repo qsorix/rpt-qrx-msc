@@ -17,7 +17,6 @@ class Manager:
             session.commit()
         else:
             raise DatabaseError
-        self.handler.send_ok()
 
     def delete_test(self, parent_id , params):
         id = params['id']
@@ -158,10 +157,17 @@ class Manager:
             if not file:
                 raise DatabaseError
             else:
-                # TODO Send file here
-                pass
+                size = int(os.path.getsize(file.path))
+                self.handler.send_ok(size=size)
+                with open(file.path, 'rb') as f:
+                    while size > 1024:
+                        data = f.read(1024)
+                        self.handler.conn.wfile.write(data)
+                        size -= 1024
+                    data = f.read(1024)
+                    self.handler.conn.wfile.write(data)
         else:
-            self.send_sending(len(cmd.output))
+            self.handler.send_ok(size=len(cmd.output))
             self.handler.conn.wfile.write(cmd.output)
 
     def prepare_test(self, parent_id, params):

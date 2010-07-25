@@ -66,11 +66,11 @@ class Handler:
         print >> sys.stderr, "[%s] Sending: %s" % (self.conn.client_address[0], msg)
         self.conn.wfile.write(msg + '\n')
 
-    def send_ok(self):
-        self.send('200 OK')
-
-    def send_sending(self, size):
-        self.send('201 Sending ' + str(size))
+    def send_ok(self, size=None):
+        msg = '200 OK'
+        if size:
+            msg += ' ' + str(size)
+        self.send(msg)
 
     def send_bad_request(self):
         self.send('400 Bad Request')
