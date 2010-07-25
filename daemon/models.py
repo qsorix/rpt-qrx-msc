@@ -22,9 +22,8 @@ class File(Entity):
     id = Field(Unicode(128), required=True, primary_key=True)
     size = Field(Integer, required=True)
     path = Field(Unicode(128), default=None)
-#    content = Field(LargeBinary, deferred=True)
 
-    test = ManyToOne('Test')
+    test = ManyToOne('Test', primary_key=True)
 
     def __repr__(self):
         return '<File "%s" (%d)>' % (self.name, self.size)
@@ -36,7 +35,7 @@ class Command(Entity):
     command = Field(Unicode(128), required=True)
     output = Field(LargeBinary)
 
-    test = ManyToOne('Test')
+    test = ManyToOne('Test', primary_key=True)
 
     def __repr__(self):
         return '<Command "%s": %s >' % (self.id, self.command)
@@ -56,7 +55,6 @@ class Setup(Command):
 class Task(Command):
     using_options(inheritance='multi', tablename='tasks')
 
-#    file_path = Field(Unicode(128), default=None)
     trigger_type = Field(Integer, required=True) # 0 - in, 1 - every
     trigger_value = Field(Integer, default=0)
     pid = Field(Integer)

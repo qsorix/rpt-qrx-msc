@@ -1,7 +1,9 @@
 #!/usr/bin/evn python
 # coding=utf-8
 
+import os
 from models import *
+import ConfigParser
 
 class Manager:
     def __init__(self, handler):
@@ -23,6 +25,7 @@ class Manager:
             for command in test.commands:
                 command.delete()
             for file in test.files:
+                os.remove(file.path)
                 file.delete()
             test.delete()
         else:
@@ -99,16 +102,47 @@ class Manager:
 
     def add_file(self, test_id, params):
         id = params['id']
+        test = Test.get_by(id=test_id)
+        size = params['size']
 #        if params.haskey('output'):
 #            output = params['output']
-        self.handler.send_ok()
- 
-    def delete_command(self, test_id, params):
-        id = params['id']
-        cmd = Command.get_by(test=Test.get_by(id=test_id), id=id)
-        if not cmd:
+        file = File.get_by(test=test, id=id)
+        if not file:
+            cmd = Command.get_by(test=test, id=id)
+            if not cmd:
+                config = ConfigParser.SafeConfigParser()
+                config.read('daemon.cfg')
+                tmpdir = config.get('Daemon', 'tmpdir')
+                path = tmpdir + '/' + test_id + '_' + id
+                file = File(test=test, id=id, size=size, path=path)
+                session.commit()
+                with open(path, 'wb') as f:
+                    while size > 1024:
+                        data = self.handler.conn.request.recv(1024)
+                        f.write(data)
+                        size -= 1024
+                    data = self.handler.conn.request.recv(size)
+                    f.write(data)
+            else:
+                raise DatabaseError
+        else:
             raise DatabaseError
-        cmd.delete()
+        self.handler.send_ok()
+
+    def delete_command_or_file(self, test_id, params):
+        id = params['id']
+        test = Test.get_by(id=test_id)
+        cmd = Command.get_by(test=test, id=id)
+        if not cmd:
+            file = File.get_by(test=test, id=id)
+            if not file:
+                raise DatabaseError
+            else:
+                os.remove(file.path)
+                file.delete()
+        else:
+            cmd.delete()
+        session.commit()
         self.handler.send_ok()
 
     def get_results(self, test_id, params):

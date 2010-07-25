@@ -47,8 +47,8 @@ while 1:
     if input.startswith('file'):
         size = int(os.path.getsize(FILENAME))
         sock.send(input + ' @{size=' + str(size) + '}\n')
-        reply = sock.recv(1024).strip()
-        isittheend(reply)
+#        reply = sock.recv(1024).strip()
+#        isittheend(reply)
         
         if reply.startswith('20'):
             with open(FILENAME, 'rb') as f:

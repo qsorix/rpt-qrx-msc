@@ -26,7 +26,7 @@ class Handler:
             'test_task'   : manager.add_task_command,
             'test_clean'  : manager.add_clean_command,
             'test_file'   : manager.add_file,
-            'test_delete' : manager.delete_command,
+            'test_delete' : manager.delete_command_or_file,
             'results_get' : manager.get_results,
             'delete'      : manager.delete_test,
             'prepare'     : manager.prepare_test,
