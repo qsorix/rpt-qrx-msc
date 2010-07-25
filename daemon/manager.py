@@ -75,8 +75,6 @@ class Manager:
         elif params.haskey('every'):
             trigger_type  = 'every'
             trigger_value = params['every']
-#        if params.haskey('output'):
-#            output = params['output']
         command = params['command']
         cmd = Command.get_by(test=test, id=id)
         if not cmd:
