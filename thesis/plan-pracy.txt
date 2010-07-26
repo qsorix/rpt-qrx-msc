@@ -40,59 +40,65 @@
 
   3 strony. Omówienie modelu -- wirtualnej topologii sieci poddawanej testom.
 
-3.4.1. Sieć
+3.4.2. Sieć
 
   3 strony. Omówienie sieci -- dostępnego sprzętu sieciowego.
 
-3.4.1. Mapowanie
+3.4.3. Mapowanie
 
   3 strony. Omówienie mapowania -- odwzrowoania modelu na sieć.
 
-3.4.1. Plan
+3.4.4. Plan
 
   3 strony. Omówienie planu -- akcji do wykonania w czasie testu.
 
-3.4.1.1. Zmienne
+3.5. Utilities
 
-  1 strona. Możliwość podmiany wartości zmiennych @{...}
+  X stron. Opis funkcji i klas do konfiguracji dostarczanych razem z
+  frameworkiem.
 
-3.5. Wykonanie testów
+3.6. Rozszerzanie możliwości frameworku
+
+  1 strona. Przedstawienie miejsc, w których możliwe jest rozbudowywanie możliwości
+  narzędzia.
+
+3.6.1. Sterowniki konfiguracji
+
+  1 strona. Omówienie pluginów konfigurujących hosty i interfejsy sieciowe.
+  Pluginy te są odpowiedzialne za konfigurowanie atrybutów hostów i
+  interfejsów, które zostały określone w modelu.
+
+3.6.2. Nawiązywanie połączenia
+
+  1 strona. Omówienie pluginów Connection, służących do zestawienia kanału
+  komunikacyjnego z hostem biorącym udział w teście.
+
+3.6.3. Frontend sterujący
+
+  1 strona. Omówienie pluginów Frontend, odpowiedzialnym za transmisję
+  rozkazów w odpowiednim dla hosta protokole.
+
+3.6.4. Przesyłanie zasobów
+
+  1 strona. Omówienie klasy Resource, dzięki której można przesyłać
+  "załączniki" do testów, jak np. pliki wymagane przez uruchamiane aplikacje.
+
+3.7. Przechowywanie wyników
+
+  4 strony. Powody wyboru bazy danych i formatu przechowywania danych, opis sposobu
+  przechowywania wyników, schematu bazy danych, itp.
+
+3.8. Wykonanie testów
 
   2 strony. Uruchomienie prostej konfiguracji, omówienie zachodzących akcji i przepływu
   danych. Rozdział powinien systematyzować koncepcje przedstawione w rozdziale
   o konfiguracji i architekturze, a tym samym zamknąć opis dynamicznej części
   aplikacji.
 
-3.6. Przechowywanie wyników
+3.9. Reference
 
-  4 strony. Powody wyboru bazy danych i formatu przechowywania danych, opis sposobu
-  przechowywania wyników, schematu bazy danych, itp.
-
-3.7. Rozszerzanie możliwości frameworku
-
-  1 strona. Przedstawienie miejsc, w których możliwe jest rozbudowywanie możliwości
-  narzędzia.
-
-3.7.1. Sterowniki konfiguracji
-
-  1 strona. Omówienie pluginów konfigurujących hosty i interfejsy sieciowe.
-  Pluginy te są odpowiedzialne za konfigurowanie atrybutów hostów i
-  interfejsów, które zostały określone w modelu.
-
-3.7.2. Nawiązywanie połączenia
-
-  1 strona. Omówienie pluginów Connection, służących do zestawienia kanału
-  komunikacyjnego z hostem biorącym udział w teście.
-
-3.7.3. Frontend sterujący
-
-  1 strona. Omówienie pluginów Frontend, odpowiedzialnym za transmisję
-  rozkazów w odpowiednim dla hosta protokole.
-
-3.7.4. Przesyłanie zasobów
-
-  1 strona. Omówienie klasy Resource, dzięki której można przesyłać
-  "załączniki" do testów, jak np. pliki wymagane przez uruchamiane aplikacje.
+  X stron. Dokumentacja techniczna całego API frameworku i standardowo
+  dostarczanych utilities. 
 
 4. Przykład użycia
 
@@ -105,6 +111,12 @@
   2 strony. Przykład pomiaru prędkości transferu przy użyciu iperf'a. Prosty
   scenariusz z dwoma hostami. Jeden przez zadany czas wysyła dane do drugiego
   i podane średnią prędkość transmisji.
+
+  Zaszyć tu tworzenie konfiguracji od początku do końca. Nie powtarzać tego,
+  co zostało wyjaśnione w rozdziale o konfiguracji, tylko mówić co i po co się
+  robi.
+
+  Dodać opis zmiennych @{}, bo nigdzie go nie ma.
 
 4.2. Pomiar czasu dystrybucji pliku w sieci peer2peer.
 
