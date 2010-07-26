@@ -9,9 +9,13 @@ def configure(conf):
 
 def build(bld):
 
-    def dia(src, tgt, layers):
+    def dia(src, tgt, layers=None):
+        ls = ''
+        if layers:
+            ls = ' --show-layers=%s' % layers
+
         return bld(source=src, target=tgt,
-            rule='dia ${SRC} --show-layers=%s --export=${TGT}'%layers)
+            rule='dia ${SRC}' + ls + ' --export=${TGT}')
 
     dia('diagrams/konfiguracja-model-lab-mapping.dia',
         'diagrams/konfiguracja-model.eps',
