@@ -27,12 +27,9 @@ def build(bld):
 
     bld.add_group()
 
-    obj=bld(features='tex',
-        source='konfiguracja.tex',
-        prompt=0)
-
-    obj=bld(features='tex',
-        source='praca-magisterska.tex',
-        prompt=0)
+    bld(features='tex', source='00-praca-magisterska.tex',          prompt=0)
+    bld(features='tex', source='01-wstep.tex',                      prompt=0)
+    bld(features='tex', source='02-testy-aplikacji-sieciowych.tex', prompt=0)
+    bld(features='tex', source='konfiguracja.tex',                  prompt=0)
 
 # vim: ft=python
