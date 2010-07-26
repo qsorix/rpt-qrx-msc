@@ -57,3 +57,15 @@ Funkcje i metody:
   - bind(object1, object2)
 
 #FIXME: schemat UML ?
+
+Reference "Schedule"
+====================
+FIXME: Przenieść do odpowiedniego rozdziału, uzupełnić i dokładnie opisać.
+
+Funkcje i metody:
+  - create_schedule(name)
+  - append_schedule(host, [(name, run_policy, command), ...])
+
+Typy:
+  - RunPolicy
+  - Command

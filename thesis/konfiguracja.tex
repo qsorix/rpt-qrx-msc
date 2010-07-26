@@ -133,7 +133,9 @@ model-sprzęt będziemy używać. Plan najczęściej można umieścić razem z m
 chyba, że na tej samej topologii będziemy wykonywać wiele różnego rodzaju
 zadań.
 
-W dalszej części opisujemy szczegółowo poszczególne fragmenty konfiguracji.
+W dalszej części opisujemy szczegółowo poszczególne fragmenty konfiguracji,
+ograniczając się jednak tylko do podstawowego interfejsu zapewnianego przez
+framework. \fixme{Odesłać do rozdziału z opisem toolsetów i pełnego API}
 
 \subsubsection{Model}
 
@@ -335,9 +337,13 @@ zadanie jest analogiczne jak poprzednio w przypadku modelu i laboratorium.
   bind(alice, defteros)
   bind(bob,   marvin)
 
-  bind(alice.interface('eth'), defteros.interface('eth0'))
-  bind(bob.interface('eth'), marvin.interface('eth0'))
+  bind(a_eth, d_eth0))
+  bind(b_eth, m_eth0))
 \end{pythoncode}
+
+Warto zwrócić uwagę, że zmienne utworzone w dwóch poprzednich częściach
+konfiguracji są dostępne w czasie wczytywania pliku z mapowaniem, dzięki czemu
+odwoływanie się do stworzonych wcześniej obiektów jest łatwiejsze.
 
 Stworzone mapowanie podsumowuje diagram \fixme{ref do rysunku}.
 
@@ -350,49 +356,98 @@ Stworzone mapowanie podsumowuje diagram \fixme{ref do rysunku}.
 \label{fig:konfiguracja-mapping}
 \end{figure}
 
+Wymaga się, aby wszystkie hosty i interfejsy z modelu zostały zmapowane. W
+przeciwnym razie framework odmówi działania, ponieważ koncepcyjnemu urządzeniu
+nie będzie odpowiadać żadna realizacja sprzętowa, na której możnaby wykonać
+zadane akcje.
+
 \subsubsection{Plan}
 
-\begin{pythoncode*}{samepage}
-  schedule iperf model Foo {
-  	duration {
-  		time = "10s"
-  	}
-  
-  	flow Tcp<A, B> {
-  		start = "iperf -tcp @{A.ip} @{B.ip}"
-  	}
-  
-  	at Alice {
-  		time = "5s"
-  		every = "10s"
-  		cmd = "ping @{Bob.ip}"
-  	}
-  
-  	at Alice start_flow Tcp<Bob, Alice>
-  
-  	...
-  	...
-  	...
-  }
-\end{pythoncode*}
+Trzy poprzednie części konfiguracji opisywały test od strony sprzętowej --
+statycznej. Plan służy do określenia co urządzenia występujące w teście będą
+robić. Kod poniżej przedstawia prosty plan, w którym host wykonuje polecenie
+\code{ping}.
+
+\begin{pythoncode}
+  create_schedule('schedule_ping')
+
+  append_schedule('alice', [('ping', at(0), shell('ping @{bob.eth.ip}')])
+\end{pythoncode}
+
+Tym razem framework również udostępnia funkcję (\code{create\_schedule}) do
+zapewnienia, że użyjemy tylko jednego planu.
+
+Wywołanie funkcji \code{append\_schedule} jest bardziej złożone, poświęcimy mu
+zatem więcej czasu.
+
+Pierwszy argument to nazwa hosta z modelu\footnote{\fixme{czy w kodzie jest
+test, który sprawdza, że dany host istnieje w momencie tworzenia planu?}}, na
+którym wykonane maja zostać przekazywane polecenia. Z tego powodu plan jest
+związany z konkretnym modelem i, jeśli na jednym modelu realizujemy tylko jeden
+plan, często będzie definiowany w tym samym pliku.
+
+Drugi argument to lista trójek składających się z:
+\begin{itemize}
+\item nazwy komendy,
+\item strategia wykonania,
+\item komenda
+\end{itemize}
+
+Nazwa komendy to po prostu napis ją identyfikujący. Dla danego hosta musi być
+unikalna ponieważ możliwe jest odwoływanie się do jednej komendy z drugiej.
+
+Strategia wykonania mówi w jaki sposób komenda ma być uruchamiana. W tym
+wypadku \code{at(0)} zleca jednokrotne wykonanie w zerowej sekundzie testu.
+Strategie muszą być wybierane z uwzględnieniem możliwości wybranego frontendu
+(patrz opis laboratorium). Konstruktor \code{at} tworzy obiekt typu
+\code{RunPolicy}. Użytkownik może definiować własne strategie. Opis dostępnych
+strategii, a także informacje o ich tworzeniu znajdują się w rozdziale
+\fixme{ref do rozdziału}.
+
+Ostatni element trójki to komenda do wykonania. Jest ona enkapsulowana w
+obiekcie typu \code{Command}, którego klasa dostarcza interfejsu
+potrzebnego do przekazania samej komendy, ale także do kilku pomocnicznych
+zadań jak dołączania zasobów czy stworzenia testów (np. sprawdzenia czy
+potrzebny program jest dostępny na urządzeniu).
+
+Wydawać się może, że taki rozbudowany interfejs będzie niewygodny w użyciu, ale
+zwiezłość i funkcje narzędziowe dostępne wraz z frameworkiem pozwalają w prosty
+i ekspresywny sposób przekazać to, co chcemy osiągnąć. Przykładem może być taki
+plan:
+
+\begin{pythoncode}
+  dccp = flow('dccp',
+      server_command='iperf -s -p 1024 -t dccp',
+      client_command='iperf -c @{server.ip} -p 1024 -t dccp')
+
+  append_schedule('alice', dccp.server(start=0, end=30))
+  append_schedule('bob',   dccp.client(start=1, end=29, server='alice'))
+\end{pythoncode}
+
+\FIXME{Polecenia pisane są z pamięci. Sprawdzić, czy iperf faktycznie przyjmuje
+takie argumenty. Port 1024 to nie jest najlepszy port ;)}
+
+Fragment ten używa pomocniczej klasy \code{flow} do wygenerowania komend
+uruchamiających i kończących aplikacje klienta i serwera. Przed testem
+sprawdzone zostanie również, czy dostępny jest używany program \code{iperf}.
+
+W teście tym serwer będzie uruchomiony między 0 a 30 sekundą na
+hoście \code{alice}, klient natomiast połączy się z nim w 1 sekundzie i rozłączy
+w 29.
+
+Inne przykłady definicji planów można znaleźć w rozdziale prezentującym
+zastosowania \fixme{ref do rozdziału}. Ich lektura pozwoli lepiej zrozumieć
+w jaki sposób wykorzystać dostępny interfejs.
 
 \subsection{Podsumowanie}
 
-Napisać jak nasze rozwiązanie przyczynia się do spełnienia założeń omówionych
-we wstępie:
-\begin{itemize}
-\item umożliwiać wielokrotne użycie,
-\item abstrahować koncepcję testu,
-\item wspierać złożone konfiguracje,
-\item być zwięzły i precyzyjny.
-\item umożliwiać podział opisu na kilka plików,
-\item osobno definiować wykonywane czynności i środowisko ich przeprowadzania,
-\item korzystać z formatu tekstowego,
-\item umożliwiać stosowanie komentarzy,
-\item być proste w nauce,
-\item być niezależne od platformy sprzętowej i programowej.
-\end{itemize}
+Zaprezentowany sposób konfiguracji dostarcza prostego interfejsu pozwalającego
+budować test poprzez wiele wywołań funkcji. Dzięki zastosowaniu istniejącego
+języka programowania użytkownik nie musi uczyć się nowej składni, a dostarczony
+interfejs może dowolnie rozszczerzyć do swoich potrzeb.
 
-
+Podział konfiguracji na model, laboratorium, mapowanie i plan umożliwia
+wielokrotne użycie tych samych definicji bez konieczności powtarzania się. W
+wyraźny sposób odziela to też koncepcję testu, od jego sprzętowej realizacji.
 
 \end{document}
