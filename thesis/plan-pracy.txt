@@ -1,8 +1,17 @@
-1. Wstęp
+1. Przedmowa
 
   1 strona. Krótkie przedstawienie tematyki pracy.
 
-2. Testy aplikacji sieciowych
+1.1. Cele
+
+  Co chcemy w pracy pokazać
+
+1.1. Układ pracy
+
+  Co jest w poszczególnych rozdziałach. A rozdziały ułożyć tak, żeby miały
+  sens, jak się je streszcza w kolejności. :P
+
+2. Wprowadzenie
 
   1-2 strony na temat problemu, który rozwiązujemy. Omówienie sposobów, w jaki
   można testować implementacje aplikacji sieciowych. Określenie, którego
