@@ -1,0 +1,38 @@
+srcdir='.'
+blddir='output'
+ 
+def configure(conf):
+    conf.check_tool('tex')
+    conf.find_program('pygmentize')
+    conf.find_program('dia')
+    conf.env.PDFLATEXFLAGS = ['-shell-escape']
+
+def build(bld):
+
+    def dia(src, tgt, layers):
+        return bld(source=src, target=tgt,
+            rule='dia ${SRC} --show-layers=%s --export=${TGT}'%layers)
+
+    dia('diagrams/konfiguracja-model-lab-mapping.dia',
+        'diagrams/konfiguracja-model.eps',
+        'model')
+
+    dia('diagrams/konfiguracja-model-lab-mapping.dia',
+        'diagrams/konfiguracja-laboratory.eps',
+        'laboratory')
+
+    dia('diagrams/konfiguracja-model-lab-mapping.dia',
+        'diagrams/konfiguracja-mapping.eps',
+        'model,laboratory,mapping')
+
+    bld.add_group()
+
+    obj=bld(features='tex',
+        source='konfiguracja.tex',
+        prompt=0)
+
+    obj=bld(features='tex',
+        source='praca-magisterska.tex',
+        prompt=0)
+
+# vim: ft=python
