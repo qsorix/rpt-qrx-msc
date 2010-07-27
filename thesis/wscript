@@ -29,6 +29,18 @@ def build(bld):
         'diagrams/konfiguracja-mapping.eps',
         'model,laboratory,mapping')
 
+    dia('diagrams/reference-config.dia',
+        'diagrams/reference-config-model.eps',
+        'model')
+
+    dia('diagrams/reference-config.dia',
+        'diagrams/reference-config-laboratory.eps',
+        'laboratory')
+
+    dia('diagrams/reference-config.dia',
+        'diagrams/reference-config-schedule.eps',
+        'schedule')
+
     bld.add_group()
 
     bld(features='tex', source='00-praca-magisterska.tex', prompt=0)
