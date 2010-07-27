@@ -1,5 +1,7 @@
 srcdir='.'
 blddir='output'
+
+import os
  
 def configure(conf):
     conf.check_tool('tex')
@@ -14,32 +16,17 @@ def build(bld):
         if layers:
             ls = ' --show-layers=%s' % layers
 
-        return bld(source=src, target=tgt,
+        return bld(source='diagrams' + os.sep + src + '.dia',
+                   target='diagrams' + os.sep + tgt + '.eps',
             rule='dia ${SRC}' + ls + ' --export=${TGT}')
 
-    dia('diagrams/konfiguracja-model-lab-mapping.dia',
-        'diagrams/konfiguracja-model.eps',
-        'model')
+    dia('konfiguracja-model-lab-mapping', 'konfiguracja-model', 'model')
+    dia('konfiguracja-model-lab-mapping', 'konfiguracja-laboratory', 'laboratory')
+    dia('konfiguracja-model-lab-mapping', 'konfiguracja-mapping', 'model,laboratory,mapping')
 
-    dia('diagrams/konfiguracja-model-lab-mapping.dia',
-        'diagrams/konfiguracja-laboratory.eps',
-        'laboratory')
-
-    dia('diagrams/konfiguracja-model-lab-mapping.dia',
-        'diagrams/konfiguracja-mapping.eps',
-        'model,laboratory,mapping')
-
-    dia('diagrams/reference-config.dia',
-        'diagrams/reference-config-model.eps',
-        'model')
-
-    dia('diagrams/reference-config.dia',
-        'diagrams/reference-config-laboratory.eps',
-        'laboratory')
-
-    dia('diagrams/reference-config.dia',
-        'diagrams/reference-config-schedule.eps',
-        'schedule')
+    dia('reference-config', 'reference-config-model', 'model')
+    dia('reference-config', 'reference-config-laboratory', 'laboratory')
+    dia('reference-config', 'reference-config-schedule', 'schedule')
 
     bld.add_group()
 
