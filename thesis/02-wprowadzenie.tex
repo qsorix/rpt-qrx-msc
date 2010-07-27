@@ -2,8 +2,101 @@
 
 \begin{document}
 
-\chapter{Testy aplikacji sieciowych}
+\chapter{Wprowadzenie}
 
+Inżynieria oprogramowania bardzo szeroko omawia tematykę testów, na każdym
+kroku podkreślając wagę i nieodłączność tej fazy w procesie tworzenia.
+Powstający produkt testuje się, aby zapewnić jak najwyższą jakość dostarczanego
+oprogramowania. Pod tym ogólnym stwierdzeniem często rozumie się co innego, w
+zależności od rodzaju i przeznaczenia programu. Dlatego też w tym rozdziale
+przybliżamy zakres zagadnień, na którym skupimy się w pracy.
+
+\section{Dlaczego testujemy}
+
+Oprogramowanie testuje się, żeby sprawdzić jego poprawność. Twórcy zależy na
+tym, żeby zminimalizować ilość swoich błędów. Odbiorca natomiast chciałby
+potwierdzenia, że otrzymuje produkt, jakiego oczekiwał. Pod tymi słowami kryje
+się za każdym razem inny konkret, któremu się przyglądamy, jednak kilka
+ogólnych cech pozostaje niezmiennych.
+
+Pierwszą taką cechą jest weryfikacja mierzalnej wartości. Każdy test powstaje w
+celu sprawdzenia czy oczekiwane przewidywania są spełnione. Wymagane jest więc
+określenie jakich wartości oczekujemy od poszczególnych czynników. Biorąc za
+przykład popularny ostatnio ,,szybki Internet'' łatwo pokazać, że samo nazwanie
+czegoś szybkim nie przedstawia żadnej cennej informacji, gdyż mówiąc potocznie,
+dostawcy usług zawsze dostarczają najszybszego Internetu, a mimo to z roku na
+rok udaje się zapewnić jeszcze szybsze łącza.
+
+Obiektywne sformułowanie przedmiotu testu wymienia nie tylko badaną wielkość,
+ale też oczekiwaną wartość. Mówienie o szybkości transferu ma sens, kiedy
+padają konkretne liczby, ponieważ wtedy można je porównać z przewidywaniami i
+stwierdzić czy dana szybkość nas zadowala.
+
+Może zdarzyć się, że nie taka wartości odniesienia nie istnieje. Przy pierwszym
+pomiarze czasu wykonania nowego algorytmu możemy tylko zgadywać lub
+subiektywnie oceniać go w świetle podobnych algorytmów. W kolejnych pomiarach
+dysponujemy już jednak poprzednią wartością i możemy wnioskować z jej pomocą.
+Niezmienny jest jednak fakt, że sprawdzamy wielkość, którą można zmierzyć i
+nasze pomiary nie są zaburzone naszą osobistą oceną.
+
+Możliwość dokonania kolejnego pomiaru jest drugą bardzo istotną cechą
+testu\footnote{Istnieje szereg testów, których charakter uniemożliwia ich
+powtórzenie lub czyni je kosztownym. Sprzęt sieciowy naszczęście nie ulega
+zniszczeniu w czasie większości testów.}. Dzięki temu jesteśmy w stanie ocenić
+jak na wyniki wpływają takie czynniki jak sprzęt czy zmiany w oprogramowaniu.
+
+Uruchomienie tego samego testu na różnego rodzaju urządzeniach pozwala
+stwierdzić czy tworzone rozwiązanie jest przenośne, czy się skaluje, czy
+sprawdza się w eksremalnych warunkach itp. W zastosowaniach związanych z
+sieciami komputerowymi tego typu testy są szczególnie istotne ze względu na
+różnorodność dostępnych urządzeń i protokołów.
+
+Zmiany w oprogramowaniu są naturalne. Zmienia się je tworząc, poprawiając i
+rozbudowując. Możliwość wielokrotnego testowania funkcjonalności pozwala ocenić
+ją w świetle wprowadzanych zmian. Najpierw można przekonać się o tym, że
+pożądana cecha została osiągnięta. Następnie, w przypadku poprawek istniejącego
+produktu, możemy przekonać się, że problemy zostały usunięte, a także, że ich
+eliminacja nie zaburzyła innych komponentów. To samo dotyczy nowej
+funkcjonalności. Mamy też możliwość oceny wpływu zmian na wydajność i to, przy
+systematycznym wykonywaniu testów, na przestrzeni życia całego projektu.
+
+Ponieważ w środowiskach rozproszonych powszechna jest sytuacja, w której mamy
+do czynienia ze sprzętem różnego rodzaju i różnych producentów, a budowane
+rozwiązania mają niezawodnie pracować przez wiele lat, testowanie tworzonych
+produktów jest tu bardzo istotne. Jednocześnie jest ono trudniejsze niż w
+wypadku rozwiązań przeznaczonych na pojedyncze systemy.
+
+\section{Testy aplikacji sieciowych}
+
+Testowanie sieciowe
+\begin{itemize}
+  \item{wymienianych PDU,}
+  \item{sekwencji komunikatów,}
+  \item{wydajność transmisji.}
+\end{itemize}
+
+Wyniki. Zapisywać wszystko, dokładnie. Miejsce jest tanie.
+
+\section{Dostępne rozwiązania}
+
+TTCN, ASN1, OMNeT++
+
+\section{Testy w realnych sieciach}
+
+Testy real-life -- czym się różnią od tych w warunkach symulacyjnych.
+ - sprzęt
+ - wpływ innych użytkowników
+ - bezpieczeństwo
+ - opóźnienia
+ - synchronizacja
+ - powtarzalnośc
+I nic z tym nie będziemy robić, bo o to chodzi w testach reallife, żeby tak
+było.
+
+wymienianych PDU - łatwiej i szybciej jest testować na jednej maszynie, w "sterylnych" warunkach.
+wydajność - interesują nas realne, a nie symulowane osiągi
+
+Kwestie bezpieczeństwa.
 
 Oczywiście ponieważ implementacja rozwija się w czasie, a ponadto na pracę
 protokołu ma wpływ nie tylko pisany kod, ale również reszta stosu sieciowego,
@@ -13,10 +106,6 @@ powtarzać i dokumentować ich wyniki.
 W pracy skupiamy się na protokołach warstwy transportowej i wyższych. Bla bla,
 coś na temat tego, że część pojęć (np. PDU) jest bardzo ogólnych i zawężamy ich
 znaczenie.
-
-\section{Skróty}
-
-PDU - PDU
 
 \section{Problematyka automatyzacji testów}
 
