@@ -1,0 +1,19 @@
+jako, ze sie dwa razy an inżynierie oprogramowania powołałem,
+to można pisać te cegłę, z której się na IO uczyliśmy :)
+
+Wikipedia oczywiście
+  (szczególnie artykuł o prokrastynacji) 
+
+Jakaś cegła o sieciach (Model OSI, PDU)
+
+Strony projektów:
+  ASN1
+  TTCN3
+  OMNeT++
+  Python
+ 
+Bibliografia
+==============
+ * http://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One
+ * http://en.wikipedia.org/wiki/Encoding_Control_Notation
+ * http://www.ttcn-3.org/
