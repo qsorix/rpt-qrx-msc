@@ -1,0 +1,8 @@
+Dobrze będzie nawiązać do opisu testów i zaznaczyć, że:
+
+Wspomniano o konfiguracji środwiska, nasze narzędzie to potrafi.
+
+Nie zastępować, ale wspierać człowieka w wykonywaniu testu. Nie podejmować za
+niego decyzji, niczego mu nie zabraniać. Człowiek wie lepiej. ;)
+
+Wyniki. Zapisywać wszystko, dokładnie. Miejsce jest tanie.
