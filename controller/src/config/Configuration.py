@@ -30,18 +30,6 @@ class ConfiguredTest:
     """
 
     def sanity_check(self):
-        if not Model.get_model():
-            raise Exceptions.SanityError("No model defined. You need to create a model. Did you forget to use 'create_model(name)' in your configuration?")
-
-        if not Laboratory.get_laboratory():
-            raise Exceptions.SanityError("No laboratory defined. You need to create a laboratory. Did you forget to use 'create_laboratory(name)' in your configuration?")
-
-        if not Mapping.get_mapping():
-            raise Exceptions.SanityError("No mapping defined. You need to create a mapping. Did you forget to use 'create_mapping(name)' in your configuration?")
-
-        if not Schedule.get_schedule():
-            raise Exceptions.SanityError("No schedule defined. You need to create a schedule. Did you forget to use 'create_schedule(name)' in your configuration?")
-
         for (name, host) in self.hosts.items():
             if name != host.model['name']:
                 raise Exceptions.SanityError("Key name is different than element's name")
@@ -84,9 +72,24 @@ class Configuration:
             except Exception as e:
                 raise Exceptions.ConfigurationError(e, traceback=traceback.format_exc())
 
+        self._sanity_check()
+
         self._combine_hosts()
 
         return self.configured_test()
+
+    def _sanity_check(self):
+        if not Model.get_model():
+            raise Exceptions.SanityError("No model defined. You need to create a model. Did you forget to use 'create_model(name)' in your configuration?")
+
+        if not Laboratory.get_laboratory():
+            raise Exceptions.SanityError("No laboratory defined. You need to create a laboratory. Did you forget to use 'create_laboratory(name)' in your configuration?")
+
+        if not Mapping.get_mapping():
+            raise Exceptions.SanityError("No mapping defined. You need to create a mapping. Did you forget to use 'create_mapping(name)' in your configuration?")
+
+        if not Schedule.get_schedule():
+            raise Exceptions.SanityError("No schedule defined. You need to create a schedule. Did you forget to use 'create_schedule(name)' in your configuration?")
     
     def _combine_hosts(self):
         ct = ConfiguredTest()
@@ -103,6 +106,8 @@ class Configuration:
                 host.resources.update(event.command().needed_resources())
 
             ct.hosts[h['name']] = host
+
+        ct.sanity_check()
 
         self._configured_test = ct
 

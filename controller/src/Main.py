@@ -32,7 +32,6 @@ if __name__ == "__main__":
     try:
         c = Configuration.Configuration()
         configured_test = c.read(args.config)
-        configured_test.sanity_check()
 
         e = Generator.Generator()
         prepared_commands = e.process( configured_test )
