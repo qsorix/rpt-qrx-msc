@@ -13,7 +13,7 @@ class File(Resources.Resource):
 
     def transfer_with_daemon(self, daemon):
         #FIXME: send proper size and file's content
-        daemon.output().write('file @{id=%(id)s} @{size=%(size)s}\n' % {'id':self.name(), 'size':0})
+        daemon.output().write('file @{id=%(id)s} @{size=%(size)s}\n' % {'id':self['name'], 'size':0})
         resp = daemon.input().readline()
         if resp != 'ok':
             raise RuntimeError('Wrong response while transfering file')
