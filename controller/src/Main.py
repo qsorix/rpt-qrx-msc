@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from config import Configuration
+from config import Global
 from command import Generator
 from controller import Controller
 from common import Exceptions
@@ -17,11 +18,20 @@ def load_plugins(paths):
             if f.purebasename != '__init__':
                 f.pyimport()
 
+def consume_parameters(params):
+    for p in params:
+        try:
+            name, value = p.split('=')
+            Global.parameters[name] = value
+        except ValueError:
+            raise Exceptions.ConfigurationError("Could not understand --set argument '%s'. Use name=value format" % p)
+
 if __name__ == "__main__":
     plugins = ['plugins']
 
     parser = argparse.ArgumentParser(prog='Main.py')
     parser.add_argument('-c', '--config',   help='configuration files', required=True, nargs='+')
+    parser.add_argument('-s', '--set', help='set a test parameter, the format is name=value', required=False, nargs='+', default=[])
     parser.add_argument('--plugins', help='plugins path', required=False, nargs='+', default=[])
     parser.add_argument('--hooks', help='names of the hooks to run', required=False, nargs='+', default=[])
 
@@ -30,6 +40,8 @@ if __name__ == "__main__":
     load_plugins(plugins + args.plugins)
 
     try:
+        consume_parameters(args.set)
+
         c = Configuration.Configuration()
         configured_test = c.read(args.config)
 
