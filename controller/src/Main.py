@@ -14,7 +14,8 @@ import py.path
 def load_plugins(paths):
     for path in paths:
         for f in py.path.local(path).visit('*.py'):
-            f.pyimport()
+            if f.purebasename != '__init__':
+                f.pyimport()
 
 if __name__ == "__main__":
     plugins = ['plugins']
