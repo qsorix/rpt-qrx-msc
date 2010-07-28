@@ -16,7 +16,7 @@ schedule = [
 ]
 
 append_schedule(alice, schedule)
-append_schedule(bob, schedule)
+append_schedule('bob', schedule)
 
 # --- laboratory ---
 create_laboratory('virtual')

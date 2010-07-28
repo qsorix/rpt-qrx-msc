@@ -2,6 +2,8 @@
 
 from BaseMixins import NamedMixin
 
+from Utils import resolve_host_name
+
 class Command:
     """
     Base class for commands.
@@ -46,11 +48,17 @@ class Schedule(NamedMixin):
         self.rename(name)
         self._schedules = {}
 
-    def host_schedule(self, host_name):
-        return self._schedules.setdefault(host_name, HostSchedule())
+    def host_schedule(self, host):
+        if isinstance(host, str):
+            host = resolve_host_name(host)
 
-    def append_schedule(self, host_name, schedule):
-        host_schedule = self.host_schedule(host_name)
+        return self._schedules.setdefault(host['name'], HostSchedule())
+
+    def append_schedule(self, host, schedule):
+        if isinstance(host, str):
+            host = resolve_host_name(host)
+
+        host_schedule = self.host_schedule(host['name'])
 
         for name, run_policy, command in schedule:
             e = Event(name, run_policy, command)

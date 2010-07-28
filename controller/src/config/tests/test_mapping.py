@@ -35,3 +35,21 @@ def test_no_dublicated_mapping():
     bind(m, n)
     bind(n, m)
     assert len(get_mapping().bindings()) == 1
+
+def test_mapping_by_name():
+    clear()
+
+    m = Model.add_host('alice')
+    n = Laboratory.add_device('node1')
+
+    mi = m.add_interface('eth')
+    ni = n.add_interface('eth1')
+
+    bind('alice', 'node1')
+    bind('alice.eth', 'node1.eth1')
+
+    assert(m.bound() == n)
+    assert(n.bound() == m)
+
+    assert(mi.bound() == ni)
+    assert(ni.bound() == mi)

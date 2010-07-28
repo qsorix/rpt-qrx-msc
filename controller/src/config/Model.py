@@ -2,6 +2,7 @@
 
 from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
 from common import Exceptions
+import Utils
 import Resources
 
 class Model(NamedMixin):
@@ -50,6 +51,12 @@ class Link:
     interfaces."""
 
     def __init__(self, first_interface, second_interface):
+        if isinstance(first_interface, str):
+            first_interface = Utils.resolve_interface_name(first_interface, model=True)
+
+        if isinstance(second_interface, str):
+            second_interface = Utils.resolve_interface_name(second_interface, model=True)
+
         self._first = first_interface
         self._second = second_interface
 

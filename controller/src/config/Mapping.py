@@ -1,18 +1,28 @@
 #!/usr/bin/env python
 
-from BaseMixins import NamedMixin
+from BaseMixins import NamedMixin, InterfacesMixin
 from common import Exceptions
+import Utils
 
 class Mapping(NamedMixin):
     def __init__(self, name):
         self.rename(name)
         self._bindings = set()
 
-    def bind(self, first, second):
-        first.bind(second)
-        second.bind(first)
+    def bind(self, model_object, laboratory_object):
+        if isinstance(model_object, str):
+            model_object = Utils.resolve_name(model_object, model=True)
 
-        b = tuple(sorted([first, second]))
+        if isinstance(laboratory_object, str):
+            laboratory_object = Utils.resolve_name(laboratory_object, laboratory=True)
+
+        if (isinstance(model_object, InterfacesMixin.Interface) != isinstance(laboratory_object, InterfacesMixin.Interface)):
+            raise Exceptions.ConfigurationError('You can only bind interface with an interface, not with host or device.')
+
+        model_object.bind(laboratory_object)
+        laboratory_object.bind(model_object)
+
+        b = tuple(sorted([model_object, laboratory_object]))
         self.bindings().add(b)
 
     def bindings(self): return self._bindings
