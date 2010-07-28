@@ -17,6 +17,7 @@ class FrontendPlugin:
     =================  =======================================================
 
     and reimplement methods:
+        FIXME: describe them better
     ====================
     start_sanity_check
     wait_sanity_check
@@ -24,6 +25,7 @@ class FrontendPlugin:
     start_test
     wait_test
     fetch_results
+    abort_test
     ====================
     """
 
@@ -56,6 +58,7 @@ class FrontendPlugin:
     def host(self):
         return self._host
 
+    # FIXME: remove these, it is not pythonish
     def start_sanity_check(self):
         pass
 
@@ -72,6 +75,9 @@ class FrontendPlugin:
         pass
 
     def fetch_results(self):
+        pass
+
+    def abort_test(self):
         pass
 
  
