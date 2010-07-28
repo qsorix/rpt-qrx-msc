@@ -79,3 +79,7 @@ class DaemonFrontend(FrontendPlugin):
             self.output().write('get ' + str(id) + '\n')
         self.output().write('end\n')
         self.disconnect()
+
+    def abort_test(self):
+        # FIXME: implement clean up
+        pass

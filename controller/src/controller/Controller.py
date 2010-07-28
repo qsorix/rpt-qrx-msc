@@ -19,8 +19,8 @@ class Controller:
             self._perform_test()
             self._fetch_results()
 
-        # FIXME:
         except:
+            self._abort_test()
             raise
 
     def _connection_class(self, host):
@@ -69,8 +69,8 @@ class Controller:
         for frontend in self._frontends.values():
             frontend.start_sanity_check()
 
-        # now, if sanity check failed on any host, we can/must abort the test
         for frontend in self._frontends.values():
+            # throws an exception in case of a problem
             frontend.wait_sanity_check()
 
     def _perform_test(self):
@@ -86,4 +86,8 @@ class Controller:
     def _fetch_results(self):
         for frontend in self._frontends.values():
             frontend.fetch_results()
+
+    def _abort_test(self):
+        for frontend in self._frontends.values():
+            frontend.abort_test()
 
