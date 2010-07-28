@@ -1,4 +1,4 @@
-from config.Model import destroy_model, create_model, get_model, add_host, Host
+from config.Model import destroy_model, create_model, get_model, add_host, add_link, Host
 from common import Exceptions
 
 import py
@@ -33,3 +33,23 @@ def test_no_dublicated_interfaces():
     h.add_interface('eth0')
     py.test.raises(Exceptions.NameExistsError, h.add_interface, 'eth0')
 
+def test_link_by_name():
+    destroy_model()
+    create_model('test-model')
+
+    t1 = add_host('test1')
+    t2 = add_host('test2')
+
+    t1.add_interface('eth1')
+    t2.add_interface('eth2')
+
+    py.test.raises(Exceptions.ConfigurationError, add_link, 'foo', 'bar')
+    py.test.raises(Exceptions.ConfigurationError, add_link, 'test1', 'test2')
+    py.test.raises(Exceptions.ConfigurationError, add_link, 'test1.', 'test2.')
+    py.test.raises(Exceptions.ConfigurationError, add_link, 'test1.eth2', 'test2.eth1')
+    py.test.raises(Exceptions.ConfigurationError, add_link, 'test1.eth1', 'test2.eth1')
+
+    link = add_link('test1.eth1', 'test2.eth2')
+
+    assert link.first()  == t1.interface('eth1')
+    assert link.second() == t2.interface('eth2')
