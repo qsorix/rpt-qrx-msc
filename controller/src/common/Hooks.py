@@ -1,4 +1,5 @@
 from common.PluginMount import PluginMount
+from common import Exceptions
 
 class HookPlugin:
     """
@@ -13,3 +14,11 @@ class HookPlugin:
     =========  ====================================================
     """
     __metaclass__ = PluginMount
+
+    @staticmethod
+    def lookup(name):
+        for hook in HookPlugin.plugins:
+            if hook.hook_name == name: 
+                return hook
+
+        raise Exceptions.MissingPluginError("Can't find a plugin for a hook named '%s'." % name)

@@ -33,6 +33,14 @@ class FrontendPlugin:
 
     __metaclass__ = PluginMount
 
+    @staticmethod
+    def lookup(name):
+        for p in FrontendPlugin.plugins:
+            if p.frontend_type == name:
+                return p
+
+        raise RuntimeError("Frontend plugin for type '%s' was not registered" % name)
+
     def __init__(self, host, connection_class, **kwargs):
         self._host = host
         self._connection_class = connection_class

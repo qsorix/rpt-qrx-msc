@@ -53,15 +53,7 @@ if __name__ == "__main__":
             configured_test.hosts[host].commands = commands
 
         for hook_name in args.hooks:
-            hook_to_run = None
-            for hook in HookPlugin.plugins:
-                if hook.hook_name == hook_name:
-                    hook_to_run = hook
-                    break
-            if not hook_to_run:
-                raise Exceptions.MissingPluginError("Can't find a plugin for a hook named '%s'." % hook_name)
-
-            hook_to_run().visit_configured_test(configured_test)
+            HookPlugin.lookup(hook_name)().visit_configured_test(configured_test)
 
         ctrl = Controller.Controller()
         ctrl.run(configured_test)

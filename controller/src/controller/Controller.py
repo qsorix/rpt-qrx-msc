@@ -31,27 +31,24 @@ class Controller:
         """
         driver_name = host.device['connection']
 
-        for plugin in ConnectionPlugin.plugins:
-            if plugin.connection_type == driver_name:
-                for attr in plugin.needed_attributes:
-                    if attr not in host.device.attributes():
-                        raise Exceptions.ConfigurationError("Connection plugin for type '%s' needs '%s' attribute to be set for a device." % (driver_name, attr))
+        plugin = ConnectionPlugin.lookup(driver_name)
 
-                return plugin
+        for attr in plugin.needed_attributes:
+            if attr not in host.device.attributes():
+                raise Exceptions.ConfigurationError("Connection plugin for type '%s' needs '%s' attribute to be set for a device." % (driver_name, attr))
 
-        raise Exceptions.MissingPluginError("Connection plugin for type '%s' was not registered" % driver_name)
+        return plugin
 
     def _frontend_class(self, host):
         frontend = host.device['frontend']
 
-        for plugin in FrontendPlugin.plugins:
-            if plugin.frontend_type == frontend:
-                for attr in plugin.needed_attributes:
-                    if attr not in host.device.attributes():
-                        raise Exceptions.ConfigurationError("Frontend plugin for type '%s' needs '%s' attribute to be set for a device." % (frontend, attr))
-                return plugin
+        plugin = FrontendPlugin.lookup(frontend)
 
-        raise RuntimeError("Frontend plugin for type '%s' was not registered" % frontend)
+        for attr in plugin.needed_attributes:
+            if attr not in host.device.attributes():
+                raise Exceptions.ConfigurationError("Frontend plugin for type '%s' needs '%s' attribute to be set for a device." % (frontend, attr))
+
+        return plugin
 
     def _create_frontends(self, configured_test):
         self._frontends = {}

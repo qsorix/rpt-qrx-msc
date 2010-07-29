@@ -25,4 +25,11 @@ class ConnectionPlugin:
     needed_attributes = []
 
     __metaclass__ = PluginMount
- 
+
+    @staticmethod
+    def lookup(name):
+        for p in ConnectionPlugin.plugins:
+            if p.connection_type == name:
+                return p
+
+        raise RuntimeError("Connection plugin for type '%s' was not registered" % name)
