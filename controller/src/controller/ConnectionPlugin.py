@@ -16,6 +16,11 @@ class ConnectionPlugin:
                        configurations without those attributes set.
                        Defaults to [].
     =================  =======================================================
+
+    And methods FIXME: describe
+        connect()
+        disconnect()
+        __init__(host)
     """
     needed_attributes = []
 

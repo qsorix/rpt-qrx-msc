@@ -34,9 +34,9 @@ class FrontendPlugin:
     __metaclass__ = PluginMount
 
     def __init__(self, host, connection_class, **kwargs):
-        self._connection_class = connection_class
-        self._connection = None
         self._host = host
+        self._connection_class = connection_class
+        self._connection = connection_class(self.host())
 
     def output(self):
         assert self._connection
@@ -47,13 +47,11 @@ class FrontendPlugin:
         return self._connection.input()
 
     def connect(self):
-        assert not self._connection
-        self._connection = self._connection_class(self.host())
+        self._connection.connect()
 
     def disconnect(self):
         if self._connection:
             self._connection.close()
-        self._connection = None
 
     def host(self):
         return self._host
