@@ -55,8 +55,7 @@ class Setup(Command):
 class Task(Command):
     using_options(inheritance='multi', tablename='tasks')
 
-    trigger_type = Field(Integer, required=True) # 0 - in, 1 - every
-    trigger_value = Field(Integer, default=0)
+    run = Field(Unicode(128), required=True)
     pid = Field(Integer)
     
     def __repr__(self):
