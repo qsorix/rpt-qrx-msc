@@ -8,6 +8,9 @@ class DaemonError(Exception):
 class CheckError(DaemonError):
     pass
 
+class ResolvError(DaemonError):
+    pass
+
 class LineError(DaemonError):
     pass
 

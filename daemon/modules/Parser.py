@@ -103,12 +103,12 @@ class Parser():
 #                    raise ValueError("Parameter '%s' has no datetime value." % (param))
 #                else:
 #                    pass # TODO Convert to Datetime
-#        for param in digit_types:
-#            if param in paramap:
-#                if not re.match(digit_regex, paramap[param]):
-#                    raise ValueError("Parameter '%s' has no digital value." % (param))
-#                else:
-#                    paramap[param] = int(paramap[param])
+        for param in digit_types:
+            if param in paramap:
+                if not paramap[param].isdigit():
+                    raise ValueError("Parameter '%s' has no digital value." % (param))
+                else:
+                    paramap[param] = int(paramap[param])
 
         # Check optional parameters
         opt = globals()[type+'_optional']

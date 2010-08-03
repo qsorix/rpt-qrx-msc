@@ -15,7 +15,7 @@ import re
 import shlex
 
 from daemon.Models import *
-from common.Exceptions import CheckError
+from common.Exceptions import CheckError, ResolvError
 
 # TODO Parameters substitution
 
@@ -90,26 +90,35 @@ class Scheduler:
 
         task.output = p.stdout.read()
 
-#    def kill_task(self, name):
-#        pid_to_kill = self.pids_to_kill.get(name)
-#
-#        print '[test %s] Killing task [%s]' % (self.test.name, name)
-#        try:
-#            os.kill(pid_to_kill, signal.SIGKILL)
-#        except OSError:
-#            print '(already ended)'
-#        else:
-#            sys.stdout.write('\n')
+    def _subst(self, param):
+        cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test=self.test).all())
+        file_ids = list(file.id for file in File.query.filter_by(test=self.test).all())
 
-#    def kill_all_tasks(self):
-#        for task in Task.query.filter(Task.pid!=None).all():
-#            try:
-#                os.kill(task.pid, signal.SIGKILL)
-#            except OSError:
-#                pass
-#        print '[test %s] Killing all remaining tasks' % self.test.name
+        print cmd_ids
+        print file_ids
 
-#    def start_scheduler(self):
-        # Kill all tasks after test.duration
-        #self.task_s.enter(self.test.duration, 1, self.kill_all_tasks, [])
+        def resolve_ref(matchobj):
+            to_resolv = matchobj.group('ref')
+            ref = to_resolv.split('.')
+            if len(ref) is 2:
+                id    = ref[0]
+                param = ref[1]
+                if id in cmd_ids:
+                    cmd = Command.get_by(id=id)
+                    value_map = cmd.get_subst_params()
+                    if cmd.row_type is 'task' and cmd.pid is not None:
+                        # TODO Check those pids later
+                        values_map['pid'] = cmd.pid
+                    if param in value_map.keys():
+                        return value_map[param]
+                elif id in file_ids:
+                    file = File.get_by(id=id)
+                    value_map = file.get_subst_params()
+                    if param in value_map.keys():
+                        return value_map[param]
+            elif len(ref) is 1 and ref[0] in ['tmpdir']:
+                pass
+            raise ResolvError("Cannot resolve '%s'." % (to_resolv))
+
+        return re.sub('@{(?P<ref>[a-zA-Z0-9\._]+)}', resolve_ref, param)
 

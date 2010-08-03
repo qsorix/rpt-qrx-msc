@@ -26,7 +26,12 @@ class File(Entity):
     test = ManyToOne('Test', primary_key=True)
 
     def __repr__(self):
-        return '<File "%s" (%d)>' % (self.name, self.size)
+        return '<File "%s" (%d)>' % (self.id, self.size)
+
+    def get_subst_params(self):
+        return {'id': self.id,
+                'size': self.size,
+                'path': self.path}
 
 class Command(Entity):
     using_options(tablename='commands')
@@ -39,6 +44,10 @@ class Command(Entity):
 
     def __repr__(self):
         return '<Command "%s": %s >' % (self.id, self.command)
+
+    def get_subst_params(self):
+        return {'id': self.id,
+                'command': self.command}
 
 class Check(Command):
     using_options(inheritance='multi', tablename='check_commands')
