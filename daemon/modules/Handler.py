@@ -32,27 +32,25 @@ class Handler:
             'stop'        : manager.stop_test
         }
 
+        # FIXME Correct connection dropping
+
         while 1:
             line = self.receive()
             try:
                 type, params = parser.parse(line, parent)
                 if types_and_actions.get(type):
                     result = types_and_actions.get(type)(parent_id, params)
- 
-                if type.endswith('close'):
-                    self.send_end()
-                    break;
+            except (LineError, ParentError, TypeError, ParamError, ValueError, DatabaseError):
+                self.send_bad_request()
+            else:
                 if type in ['test', 'results']:
                     parent = type
                     parent_id = params['id']
-                if type.endswith('test_end'):
+                    self.send_ok()
+                if type.endswith('end'):
                     parent = None
                     parent_id = None
-                    
-            except (LineError, ParentError, TypeError, ParamError, ValueError):
-                self.send_bad_request()
-            except (ManagerError):
-                self.send_error()
+                    self.send_ok()
 
     def receive(self):
         data = self.conn.rfile.readline().strip()
