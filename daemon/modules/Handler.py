@@ -2,13 +2,11 @@
 # coding=utf-8
 
 import sys
-import os
-from datetime import datetime
 
-from parser import *
-from manager import *
-from models import *
-import utilz
+from daemon.Models import *
+from modules.Parser import Parser
+from modules.Manager import Manager
+from common.Exceptions import *
 
 class Handler:
     def __init__(self, conn):

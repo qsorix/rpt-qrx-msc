@@ -2,8 +2,11 @@
 # coding=utf-8
 
 import os
-from models import *
 import ConfigParser
+
+from daemon.Models import *
+from modules.Scheduler import Scheduler
+from common.Exceptions import DatabaseError
 
 class Manager:
     def __init__(self, handler):
@@ -182,5 +185,3 @@ class Manager:
         # TODO Stop test
         pass
 
-class DatabaseError(Exception):
-    pass

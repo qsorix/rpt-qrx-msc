@@ -3,8 +3,8 @@
 
 import py
 import socket
-from daemon.daemon import *
-from daemon.models import *
+from daemon.Daemon import *
+from daemon.Models import *
 import thread
 import time
 
@@ -26,7 +26,7 @@ def connect_to_daemon(port):
 
     return sock
 
-def test_create_test_123_only():
+def test_create_test_only():
 #    thread.start_new_thread(run_daemon, (5001,))
     sock = connect_to_daemon(9999)
 
@@ -36,9 +36,6 @@ def test_create_test_123_only():
 
     # TODO Test if it was created
 
-    sock.send('close\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('60')
     sock.close()
 
 def test_bad_line():
@@ -49,9 +46,6 @@ def test_bad_line():
     reply = sock.recv(1024).strip()
     assert reply.startswith('40')
 
-    sock.send('close\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('60')
     sock.close()
 
 def test_delete_test_123():
@@ -64,9 +58,44 @@ def test_delete_test_123():
     #assert Test.get_by(id='123') == None
     # TODO Test if it was deleted
 
-    sock.send('close\n')
+    sock.close()
+
+def test_same_id_commands():
+    sock = connect_to_daemon(9999)
+
+    sock.send('test @{id=512}\n')
     reply = sock.recv(1024).strip()
-    assert reply.startswith('60')
+    assert reply.startswith('20')
+
+    sock.send('setup @{id=setup} echo \'setup\'\n')
+    reply = sock.recv(1024).strip()
+    assert reply.startswith('20')
+
+    sock.send('setup @{id=setup} echo \'correct setup\'\n')
+    reply = sock.recv(1024).strip()
+    assert reply.startswith('40')
+
+    sock.send('check @{id=setup} echo \'wrong setup\'\n')
+    reply = sock.recv(1024).strip()
+    assert reply.startswith('40')
+
+    sock.close()
+
+def test_create_two_tests_with_the_same_id():
+    sock = connect_to_daemon(9999)
+
+    sock.send('test @{id=356}\n')
+    reply = sock.recv(1024).strip()
+    assert reply.startswith('20')
+
+    sock.send('end\n')
+    reply = sock.recv(1024).strip()
+    assert reply.startswith('20')
+
+    sock.send('test @{id=356}\n')
+    reply = sock.recv(1024).strip()
+    assert reply.startswith('40')
+
     sock.close()
 
 def test_create_full_test():
@@ -76,29 +105,22 @@ def test_create_full_test():
     reply = sock.recv(1024).strip()
     assert reply.startswith('20')
 
-    sock.send('check @{id=check1} @{command=uname -a}\n')
+    sock.send('check @{id=check1} uname -a\n')
     reply = sock.recv(1024).strip()
     assert reply.startswith('20')
 
-    sock.send('check @{id=check2} @{command=gcc --version}\n')
+    sock.send('check @{id=check2} gcc --version\n')
     reply = sock.recv(1024).strip()
     assert reply.startswith('20')
 
-    sock.send('setup @{id=setup} @{command=echo \'setup\'}\n')
+    sock.send('setup @{id=setup} echo \'setup\'\n')
     reply = sock.recv(1024).strip()
     assert reply.startswith('20')
 
-    sock.send('setup @{id=setup} @{command=echo \'correct setup\'}\n')
+    sock.send('end\n')
     reply = sock.recv(1024).strip()
     assert reply.startswith('20')
 
-    sock.send('check @{id=setup} @{command=echo \'wrong setup\'}\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('40')
-
-    sock.send('close\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('60')
     sock.close()
 
- 
+

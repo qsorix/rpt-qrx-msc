@@ -8,15 +8,18 @@ import sys
 import signal
 import subprocess
 from time import time, sleep
-from models import *
 import ConfigParser
 import thread
 import threading
 import re
 import shlex
-import utilz
 
-class TaskScheduler:
+from daemon.Models import *
+from common.Exceptions import CheckError
+
+# TODO Parameters substitution
+
+class Scheduler:
     def __init__(self, test):
         self.test = test
         self.s = sched.scheduler(time, sleep)

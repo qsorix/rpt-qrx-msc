@@ -7,8 +7,8 @@ import errno
 import ConfigParser
 import SocketServer
 
-from handler import Handler
-from models import *
+from modules.Handler import Handler
+from daemon.Models import *
 
 class DaemonHandler(SocketServer.StreamRequestHandler):
     def handle(self):
@@ -46,12 +46,3 @@ def setup_config():
                 pass
             else:
                 raise
-
-if __name__ == "__main__":
-    setup_database()
-    setup_config()
-
-    HOST, PORT = "localhost", 9999
-    SocketServer.TCPServer.allow_reuse_address = True
-    daemon = SocketServer.TCPServer((HOST, PORT), DaemonHandler)
-    daemon.serve_forever()

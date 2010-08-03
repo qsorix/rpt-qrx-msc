@@ -43,7 +43,7 @@ class Parser():
         # Check line
         match   = re.match(main_regex, line)
         if match is None:
-            raise LineError()
+            raise LineError("Unknown line '%s'." % (line))
 
         # Parse line
         type = unicode(match.group('type'))
@@ -54,6 +54,8 @@ class Parser():
             params = unicode(params)
             for param in re.split(r'\s\@\{', params)[1:]:
                 paramsplited = param[:-1].split('=')
+                if paramap.has_key(paramsplited[0]):
+                    raise ParamError("Parameter '%s' exists more than once." % (paramsplited[0]))
                 paramap[paramsplited[0]] = paramsplited[1]
         tmparamap = paramap.copy()
         if command:
@@ -61,15 +63,15 @@ class Parser():
 
         # Check parent
         if parent not in ['test', 'results', None]:
-            raise ParentError()
+            raise ParentError("Unknown parent '%s'." % (parent))
 
         # Check type
         if parent:
             if type not in globals()[parent+'_sub_types']:
-                raise TypeError()
+                raise TypeError("Unknown subtype '%s'." %(type))
         else:
             if type not in main_types:
-                raise TypeError()
+                raise TypeError("Unknown type '%s'." %(type))
 
         # Check required parameters
         req = globals()[type+'_required']
@@ -113,8 +115,8 @@ class Parser():
                     req.append(p)
                 req.remove(param)
         for param in tmparamap:
-            if param not in req:
-                raise ParamError()
+            if param not in opt:
+                raise ParamError("Unknown parameter '%s'." % (param))
 
         # Return parsed line
         if parent:
@@ -127,14 +129,3 @@ class Parser():
         # TODO Nice daemon communication protocol summary
         pass
         
-class LineError(Exception):
-    pass
-class ParentError(Exception):
-    pass
-class TypeError(Exception):
-    pass
-class ParamError(Exception):
-    pass
-class ValueError(Exception):
-    pass
-
