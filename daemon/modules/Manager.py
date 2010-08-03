@@ -12,8 +12,7 @@ class Manager:
     def __init__(self, handler):
         self.handler = handler
 
-    def create_test(self, parent_id, params):
-        id = params['id']
+    def create_test(self, parent_id, id):
         test = Test.get_by(id=id)
         if not test:
             test = Test(id=id)
@@ -21,8 +20,7 @@ class Manager:
         else:
             raise DatabaseError("Test '%s' already exists." % (id))
 
-    def delete_test(self, parent_id , params):
-        id = params['id']
+    def delete_test(self, parent_id , id):
         test = Test.get_by(id=id)
         if test:
             for command in test.commands:
@@ -36,10 +34,8 @@ class Manager:
             raise DatabaseError("Test '%s' doesn't exist." % (id))
         self.handler.send_ok()
 
-    def add_check_command(self, test_id, params):
-        id = params['id']
+    def add_check_command(self, test_id, id, command):
         test = Test.get_by(id=test_id)
-        command = params['command']
         cmd = Command.get_by(test=test, id=id)
         if not cmd:
             file = File.get_by(test=test, id=id)
@@ -52,10 +48,8 @@ class Manager:
             raise DatabaseError("Command or file named '%s' already exists." % (id))
         self.handler.send_ok()
 
-    def add_setup_command(self, test_id, params):
-        id = params['id']
+    def add_setup_command(self, test_id, id, command):
         test = Test.get_by(id=test_id)
-        command = params['command']
         cmd = Command.get_by(test=test, id=id)
         if not cmd:
             file = File.get_by(test=test, id=id)
@@ -68,21 +62,13 @@ class Manager:
             raise DatabaseError("Command or file named '%s' already exists." % (id))
         self.handler.send_ok()
 
-    def add_task_command(self, test_id, params):
-        id = params['id']
+    def add_task_command(self, test_id, id, run, command):
         test = Test.get_by(id=test_id)
-        if params.haskey('at'):
-            trigger_type  = 'at'
-            trigger_value = params['at']
-        elif params.haskey('every'):
-            trigger_type  = 'every'
-            trigger_value = params['every']
-        command = params['command']
         cmd = Command.get_by(test=test, id=id)
         if not cmd:
             file = File.get_by(test=test, id=id)
             if not file:
-                cmd = Task(test=test, id=id, command=command, trigger_type=trigger_type, trigger_value=trigger_value)
+                cmd = Task(test=test, id=id, command=command, run=run)
                 session.commit()
             else:
                 raise DatabaseError("Command or file named '%s' already exists." % (id))
@@ -90,10 +76,8 @@ class Manager:
             raise DatabaseError("Command or file named '%s' already exists." % (id))
         self.handler.send_ok()
  
-    def add_clean_command(self, test_id, params):
-        id = params['id']
+    def add_clean_command(self, test_id, id, command):
         test = Test.get_by(id=test_id)
-        command = params['command']
         cmd = Command.get_by(test=test, id=id)
         if not cmd:
             file = File.get_by(test=test, id=id)
@@ -106,12 +90,8 @@ class Manager:
             raise DatabaseError("Command or file named '%s' already exists." % (id))
         self.handler.send_ok()
 
-    def add_file(self, test_id, params):
-        id = params['id']
+    def add_file(self, test_id, id, size):
         test = Test.get_by(id=test_id)
-        size = params['size']
-#        if params.haskey('output'):
-#            output = params['output']
         file = File.get_by(test=test, id=id)
         if not file:
             cmd = Command.get_by(test=test, id=id)
@@ -135,8 +115,7 @@ class Manager:
             raise DatabaseError("File or command named '%s' already exists." % (id))
         self.handler.send_ok()
 
-    def delete_command_or_file(self, test_id, params):
-        id = params['id']
+    def delete_command_or_file(self, test_id, id):
         test = Test.get_by(id=test_id)
         cmd = Command.get_by(test=test, id=id)
         if not cmd:
@@ -151,8 +130,7 @@ class Manager:
         session.commit()
         self.handler.send_ok()
 
-    def get_results(self, test_id, params):
-        id = params['id']
+    def get_results(self, test_id, id):
         test = Test.get_by(id=test_id)
         cmd = Command.get_by(test=test, id=id)
         if not cmd:
@@ -173,8 +151,7 @@ class Manager:
             self.handler.send_ok(size=len(cmd.output))
             self.handler.conn.wfile.write(cmd.output)
 
-    def prepare_test(self, parent_id, params):
-        id = params['id']
+    def prepare_test(self, parent_id, id):
         test = Test.get_by(id=id)
         if not test:
             raise DatabaseError("Test '%s' doesn't exist." % (id))
@@ -183,8 +160,7 @@ class Manager:
         self.scheduler.prepare()
         self.handler.send_ok()
 
-    def start_test(self, parent_id, params):
-        id = params['id']
+    def start_test(self, parent_id, id):
         test = Test.get_by(id=id)
         if not test:
             raise DatabaseError("Test '%s' doesn't exist." % (id))
@@ -196,8 +172,7 @@ class Manager:
             self.scheduler.start(in_time=params['in'])
         self.handler.send_ok()
 
-    def stop_test(self, parent_id, params):
-        id = params['id']
+    def stop_test(self, parent_id, id):
         test = Test.get_by(id=id)
         if not test:
             raise DatabaseError("Test '%s' doesn't exist." % (id))

@@ -39,7 +39,7 @@ class Handler:
             try:
                 type, params = parser.parse(line, parent)
                 if types_and_actions.get(type):
-                    result = types_and_actions.get(type)(parent_id, params)
+                    result = types_and_actions.get(type)(parent_id, **params)
             except (LineError, ParentError, TypeError, ParamError, ValueError, DatabaseError):
                 self.send_bad_request()
             else:
