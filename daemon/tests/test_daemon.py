@@ -124,4 +124,22 @@ def test_create_full_test():
 
     sock.close()
 
+def test_send_file():
+    sock = connect_to_daemon(9999)
+
+    sock.send('test @{id=333}\n')
+    reply = sock.recv(1024).strip()
+    assert reply.startswith('20')
+
+    sock.send('file @{id=file} @{size=3}\n')
+    sock.send('123')
+    reply = sock.recv(1024).strip()
+    assert reply.startswith('20')
+
+
+    sock.send('end\n')
+    reply = sock.recv(1024).strip()
+    assert reply.startswith('20')
+
+    sock.close()
 
