@@ -14,7 +14,7 @@ class Test(Entity):
     commands = OneToMany('Command')
 
     def __repr__(self):
-        return '<Test "%s">' % self.name
+        return '<Test "%s">' % self.id
 
 class File(Entity):
     using_options(tablename='files')

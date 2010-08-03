@@ -68,21 +68,20 @@ class Scheduler:
         print '[test %s] Starting' % self.test.name
         self.main_scheduler.run()
 
-    def run_command(self, cmd):
+    def _run_command(self, cmd):
         print '[test %s] Running command "%s"' % (self.test.id, cmd.id)
         status, output = commands.getstatusoutput(cmd.command)
         cmd.output = output
         if status is not 0:
             raise CheckError
 
-    def run_task(self, task):
+    def _run_task(self, task):
         print '[test %s] Running task "%s"' % (self.test.name, task.name)
 
         args = shlex.split(task.command)
+        print args
 
-#        for i in range(len(args)):
-            # TODO Create better subst
-#            args[i] = utilz.subst(self.test, args[i])
+        # TODO Substitution
 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
