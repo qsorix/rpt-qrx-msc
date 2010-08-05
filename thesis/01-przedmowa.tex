@@ -4,55 +4,57 @@
 
 \chapter{Przedmowa}
 
-W czasie pracy nad jednym z projektów mieliśmy za zadanie sprawdzić wydajność
-transmisji ówczesnej implementacji DCCP w kernelu Linuksa. Sam pomiar nie był
-uciążliwy i sprowadzał się do uruchomienia programu na dwóch komputerach,
-odczekaniu kilkudziesięciu sekund i zapisaniu wyniku.
+W czasie pracy nad jednym z projektów w czasie studiów mieliśmy za zadanie
+sprawdzić wydajność transmisji ówczesnej implementacji DCCP w kernelu Linuksa.
+Sam pomiar nie był uciążliwy i sprowadzał się do uruchomienia programu na dwóch
+komputerach, odczekaniu kilkudziesięciu sekund i zapisaniu wyniku.
 
-Kłopot polegał na tym, że trzeba było zrobić to kilkanaście razy przy różnych
-parametrach, czasem odwracając role komputerów. Kiedy wprowadziliśmy trzecie
-urządzenie, wszystko skomplikowało się jeszcze bardziej.
+Kłopot polegał na tym, że pomiary musieliśmy wykonywać po kilkanaście razy dla
+każdej z przygotowanych konfiguracji. Często dwie konfiguracje różniły się
+wyłącznie tym który z komputerów biorących udział w teście pełnił rolę klienta,
+a który serwera, a wszystko znacznie komplikowało się gdy test wymagał
+wykorzystania więcej niż dwóch komputerów.
 
-Czasem test trzeba było powtarzać, bo zapomnieliśmy ustawić odpowiedniej
-konfiguracji, czasem nie pamiętaliśmy czego dotyczyły otrzymane wyniki i
-uruchamialiśmy test jeszcze raz, tylko po to, żeby się upewnić.
+Niekiedy testy należało powtarzać, ponieważ uruchamialiśmy je korzystając z
+nieodpowiedniej konfiguracji. Innym razem nie pamiętaliśmy czego dotyczyły
+otrzymane wyniki i uruchamialiśmy testy ponownie, wyłącznie po to, by się o tym
+przekonać.
 
-Traciliśmy sporo czasu na robieniu rzeczy, które powinny robić się same. Tak
-zrodził się pomysł stworzenia narzędzia, które pomogłoby nam usystematyzować
-przeprowadzanie odpowiednich pomiarów.
+Traciliśmy sporo czasu na czynnościach, które powinny być wykonywane
+automatycznie. Tak zrodził się pomysł stworzenia narzędzia, które
+pomogłoby usystematyzować przeprowadzanie testów aplikacji sieciowych.
 
-W pracy tej prezentujemy rozwiązanie, które, osobom wykonującym pomiary na
-kilku urządzeniach jednocześnie, pomoże zaoszczędzić wiele godzin traconych na
-robieniu małych, prostych czynności. Za każdym razem zajmują one tylko
-kilkanaście sekund, ale wyeliminowanie ich pozwala skupić się na tym, co w
+W miniejszej pracy zaprezentujemy rozwiązanie, które pomoże zaoszczędzić wiele
+godzin traconych na wykonywaniu małych, prostych czynności osobom wykonującym
+pomiary na kilku urządzeniach\footnote{Jakich urządzeniach?}
+jednocześnie\footnote{Co to znaczy jednocześnie?}. Za każdym razem zajmują one
+tylko kilkanaście sekund, ale wyeliminowanie ich pozwala skupić się na tym, co w
 testowaniu jest najważniejsze -- na wynikach -- i pracować efektywniej.
 
 \section{Cele}
 
-W naszej pracy
-\begin{itemize}
-\item przedstawiamy problemy związane z testowaniem aplikacji i
-protokołów sieciowych;
-\item prezentujemy część dostępnych rozwiązań i narzędzi;
-\item przedstawiamy stworzone przez nas oprogramowanie ułatwiające przeprowadzanie wybranego
-zakresu testów;
-\item demonstrujemy jego użycie.
-\end{itemize}
+W pracy skupiliśmy się na analizie problemu jakim jest automatyzacja testowania,
+przeglądzie istniejących rozwiązań i narzędzi w tym zakresie oraz omówieniu i
+ocenie narzędzia NAZWA - stworzonego przez nas środowiska do automatyzacji
+testów. 
 
-Praca skupia się przede wszystkim na udokumentowaniu naszego narzędzia i
-objaśnieniu sposobów wykorzystania go do wykonania różnego rodzaju testów.
-Wyjaśniamy też w jakich przypadkach nasze rozwiązanie nie będzie odpowiednie.
-
-Poruszamy również kwestie poprawnego przeprowadzania testów oraz katalogowania
+Przedstawimy problemy związane z testowaniem aplikacji i protokołów sieciowych.
+Zademonstrujemy zastosowanie środowiska NAZWA do wykonywania różnego rodzaju
+testów oraz wyjaśniamy w jakich przypadkach nie będzie ono odpowiednie.
+Poruszymy również kwestie poprawnego przeprowadzania testów oraz katalogowania
 wyników. Testowanie nie jest jednak głównym tematem pracy i informacji oraz
 wytycznych należy szukać w innych źródłach.
 
-\section{Układ pracy}
+\FIXME{
+Wymyślić nazwę. Określić czy można to nazwać środowiskiem.
+}
+
+\section{Plan pracy}
 
 \FIXME{
 patrz plan-pracy.txt
 
-Kilka słów o użytych rodzajach \code{formatowania}?
+Kilka słów o użytych rodzajach \code{formatowania}? O co Ci chodziło tutaj?
 }
 
 \end{document}

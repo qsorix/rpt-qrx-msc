@@ -13,37 +13,37 @@ przybliżamy zakres zagadnień, na którym skupimy się w pracy.
 
 \section{Dlaczego testujemy}
 
-Oprogramowanie testuje się, żeby sprawdzić jego poprawność. Twórcy zależy na
-tym, żeby zminimalizować ilość swoich błędów. Odbiorca natomiast chciałby
-potwierdzenia, że otrzymuje produkt, jakiego oczekiwał. Pod tymi słowami kryje
-się za każdym razem inny konkret, któremu się przyglądamy, jednak kilka
-ogólnych cech pozostaje niezmiennych.
+Oprogramowanie testuje się, żeby sprawdzić poprawność jego działania. Twórcy
+zależy na tym, żeby zminimalizować liczbę swoich błędów. Odbiorca natomiast
+chciałby potwierdzenia, że otrzymuje produkt, jakiego oczekiwał. Pod tymi
+słowami kryje się za każdym razem inny konkret, któremu się przyglądamy, jednak
+kilka ogólnych cech pozostaje niezmiennych.
 
 Pierwszą taką cechą jest weryfikacja mierzalnej wartości. Każdy test powstaje w
 celu sprawdzenia czy oczekiwane przewidywania są spełnione. Wymagane jest więc
 określenie jakich wartości oczekujemy od poszczególnych czynników. Biorąc za
 przykład popularny ostatnio ,,szybki Internet'' łatwo pokazać, że samo nazwanie
 czegoś szybkim nie przedstawia żadnej cennej informacji, gdyż mówiąc potocznie,
-dostawcy usług zawsze dostarczają najszybszego Internetu, a mimo to z roku na
+dostawcy usług zawsze dostarczają najszybszy Internetu, a mimo to z roku na
 rok udaje się zapewnić jeszcze szybsze łącza.
 
 Obiektywne sformułowanie przedmiotu testu wymienia nie tylko badaną wielkość,
-ale też oczekiwaną wartość. Mówienie o szybkości transferu ma sens, kiedy
+ale również oczekiwaną wartość. Mówienie o szybkości transferu ma sens, kiedy
 padają konkretne liczby, ponieważ wtedy można je porównać z przewidywaniami i
 stwierdzić czy dana szybkość nas zadowala.
 
-Może zdarzyć się, że nie taka wartości odniesienia nie istnieje. Przy pierwszym
-pomiarze czasu wykonania nowego algorytmu możemy tylko zgadywać lub
-subiektywnie oceniać go w świetle podobnych algorytmów. W kolejnych pomiarach
-dysponujemy już jednak poprzednią wartością i możemy wnioskować z jej pomocą.
-Niezmienny jest jednak fakt, że sprawdzamy wielkość, którą można zmierzyć i
-nasze pomiary nie są zaburzone naszą osobistą oceną.
+Może zdarzyć się, że taka wartość odniesienia nie istnieje. Przy pierwszym
+pomiarze czasu wykonania nowego algorytmu możemy tylko zgadywać lub subiektywnie
+oceniać go w świetle podobnych algorytmów. W kolejnych pomiarach dysponujemy już
+jednak poprzednią wartością i możemy wnioskować z jej pomocą.  Niezmienny jest
+jednak fakt, że sprawdzamy wielkość, którą można zmierzyć i nasze pomiary nie są
+zaburzone naszą osobistą oceną.
 
-Możliwość dokonania kolejnego pomiaru jest drugą bardzo istotną cechą
-testu\footnote{Istnieje szereg testów, których charakter uniemożliwia ich
-powtórzenie lub czyni je kosztownym. Sprzęt sieciowy na szczęście nie ulega
-zniszczeniu w czasie większości testów.}. Dzięki temu jesteśmy w stanie ocenić
-jak na wyniki wpływają takie czynniki jak sprzęt czy zmiany w oprogramowaniu.
+Możliwość dokonania kolejnego pomiaru jest drugą bardzo istotną cechą testu.
+Dzięki temu jesteśmy w stanie ocenić jak na wyniki wpływają takie czynniki jak
+sprzęt czy zmiany w oprogramowaniu. Istnieje szereg testów, których charakter
+uniemożliwia ich powtórzenie lub czyni je kosztownym. Na szczęście sprzęt
+sieciowy nie ulega zniszczeniu w czasie większości testów.
 
 Uruchomienie tego samego testu na różnego rodzaju urządzeniach pozwala
 stwierdzić czy tworzone rozwiązanie jest przenośne, czy się skaluje, czy
@@ -82,7 +82,7 @@ W dalszych rozważaniach skupimy się na podziale testów ze względu na rodzaj
 obserwowanych wielkości, ponieważ niezależnie od warstwy, sposób ich pomiaru
 jest podobny. Wyróżniliśmy następujące rodzaje testów:
 \begin{itemize}
-  \item{wymienianych PDU\footnote{Protocol Data Unit},}
+  \item{wymienianych Protocol Data Unit,}
   \item{sekwencji komunikatów,}
   \item{wydajności transmisji.}
 \end{itemize}
@@ -110,7 +110,7 @@ Wydajność transmisji dotyczy między innymi osiąganych przepustowości, reakc
 na zatory, rywalizacji z innymi przepływami, jakości łączy fizycznych i innych
 czynników mających wpływ na odczuwalną jakość połączenia. Chociaż wystarczą tu
 najprostsze narzędzia (niemal każdy klient HTTP jest w stanie wyświetlić
-uzyskaną prędkość transferu), jest to najtrudniejsza płaszczyzna testów.
+uzyskaną przepływność), jest to najtrudniejsza płaszczyzna testów.
 
 Trudność polega na poprawnym zdefiniowaniu testu. O ile w przypadku obserwacji
 pojedynczych PDU i ich sekwencji łatwo pokusić się o stwierdzenie, że cały test
@@ -118,7 +118,7 @@ można automatycznie wygenerować z dokumentacji protokołu, to kwestii wydajno�
 nie da się zbadać bez udziału człowieka.
 
 W tego typu testach sama implementacja odgrywa istotną rolę, ale ogromne
-znaczenie ma też wpływ środowiska i to człowiek musi zadecydować o tym, jakie
+znaczenie ma też wpływ środowiska i to użytkownik musi zadecydować o tym, jakie
 warunki chcemy badać, bo tylko on zna przeznaczenie tworzonego oprogramowania.
 
 Ponadto test w tym przypadku nie polega na zatwierdzeniu lub odrzuceniu
@@ -131,6 +131,10 @@ wspierać go ułatwiając konfigurację środowiska, obsługę wielu urządzeń
 jednocześnie i katalogowanie wyników.
 
 \section{Testy w warunkach rzeczywistych}
+
+\FIXME{
+Nazwać ten dział bardziej adekwatnie do zawartości.
+}
 
 Jest jasne, że eksperymenty najwygodniej przeprowadza się w sterylnych
 warunkach laboratorium. Błędem jest jednak oczekiwanie, że produkt będzie
@@ -191,11 +195,13 @@ powtarzać.
 
 \section{Dostępne rozwiązania}
 
-Nie jesteśmy pierwszymi ludźmi, którzy zauważyli ten problem i dostępnych jest
-wiele programów adresujących go. Jednak spośród znanych nam rozwiązań, żadne
-nie pozwalało przeprowadzić takiego rodzaju testów, jakie próbowaliśmy wykonać.
+Istnieje wiele programów rozwiązujących problem automatyzacji testowania, które
+w mniejszym lub większym stopniu pozwalają na ułatwienie i przyspieszenie
+przeprowadzania testów aplikacji i protokołów sieciowych. Jednak spośród znanych
+nam rozwiązań, żadne nie pozwalało przeprowadzić takiego rodzaju testów, jakie
+próbowaliśmy wykonać.
 
-\subsection{ASN.1}
+\subsection{ASN.1 i ECN}
 ASN.1 (Abstract Syntax Notation One) jest to standard ITU-T/ISO służący do opisu
 struktur reprezentujących dane w sposób umożliwiający ich kodowanie, transmisję
 i dekodowanie. Dostarcza on formalnej notacji do opisu struktur w sposób
@@ -212,9 +218,10 @@ przedstawionych w oddzielnych dokumentach. Przykładowe metody to:
 Wykorzystanie formalnych metod opisu pozwala na automatyczne tworzenie koderów i
 dekoderów. W przypadku pracy z istniejącymi protokołami, PDU zwykle na stałe
 wiąże przenoszone dane z ich kodowaniem. Przykładem może być opis pakietów TCP w
-RFC 793. Gdzie dane (np. numer sekwencyjny) i ich kodowanie (rozmiar i położenie
-bitów w pakiecie) określone są jednocześnie. Korzystanie z ASN.1 w takich
-wypadkach jest trudniejsze, ale możliwe dzięki ECN.
+RFC 793, gdzie dane (np. numer sekwencyjny) i ich kodowanie (rozmiar i położenie
+bitów w pakiecie) określone są w tym samym miejscu\footnote{O to Ci chodziło jak
+pisałeś \emph{jednocześnie}?}. Korzystanie z ASN.1 w takich wypadkach jest
+trudniejsze, ale możliwe dzięki ECN.
 
 ECN (Explicit Coding Notation) umożliwia formalny opis niestandardowych metod
 kodowania. Jest to standard ściśle związany z ASN.1 i opis danego kodowania
@@ -271,22 +278,22 @@ w prosty sposób, dogłębnie testować komunikację na poziomie sekwencji
 komunikatów. Uważamy, że rozwiązanie to wyczerpuje problematykę związaną z
 mechanizmami pracy protokołu.
 
-Obecnie narzędzie nie adresuje kwestii wydajności. Przygotowywane rozwiązania
-są w fazie planowania. Dodatkowo, w celu zbadania wyłącznie wydajności, nie
-jest potrzebne stosowanie niskopoziomowego TTCN. Można założyć, że komunikacja
-między testowanymi komponentami przebiega według ustalonych reguł, po czym
-obserwować jej efektywność.
+Obecnie narzędzie to nie pozwala na testowanie wydajności. Przygotowywane
+rozwiązania są w fazie planowania. Dodatkowo, w celu zbadania wyłącznie
+wydajności, nie jest potrzebne stosowanie niskopoziomowego TTCN. Można założyć,
+że komunikacja między testowanymi komponentami przebiega według ustalonych
+reguł, po czym obserwować jej efektywność.
 
 \subsection{OMNeT++}
 
-OMNeT++ to biblioteka i framework do tworzenia symulacji sieci. Użytkownik może
-korzystać z szerokiej gamy modułów oraz tworzyć własne. Framework wspiera
-symulacje sterowane zdarzeniami przesyłanymi między występującymi w
-realizowanej sieci komponentami.
+OMNeT++ to biblioteka i framework\footnote{Polskie słowo na to trzeba!} do
+tworzenia symulacji sieci. Użytkownik może korzystać z szerokiej gamy modułów
+oraz tworzyć własne. Framework\footnote{Tu też.} wspiera symulacje sterowane
+zdarzeniami przesyłanymi między występującymi w realizowanej sieci komponentami.
 
-Istnieje szereg frameworków zbudowanych na bazie środowiska OMNeT++, a które
-zostały stworzone z myślą o konkretnych rodzajach sieci, jak np. OverSim będący
-symulatorem sieci peer2peer.
+Istnieje szereg frameworków\footnote{I tu.} zbudowanych na bazie środowiska
+OMNeT++, a które zostały stworzone z myślą o konkretnych rodzajach sieci, jak
+np. OverSim będący symulatorem sieci peer2peer.
 
 Framework umożliwia pracę w IDE opartym na Eclipse i wspiera wiele pożądanych
 funkcji jak np.~symulacje w czasie rzeczywistych czy integracja z bazą danych.
@@ -323,5 +330,11 @@ Nie dotarliśmy do programu, który ułatwiałby wykonanie testów w
 rzeczywistych sieciach, gdzie problemy takie jak synchronizacja urządzeń i
 zbieranie wyników powodują, że ręczne wykonywanie wszystkich czynności staje
 się bardzo czasochłonne i uciążliwe, choć sam test jest w swojej naturze prosty.
+
+\FIXME{
+Tutaj ma powstać tabelka w której będą w pionie różne aspekty testowania, a w
+poziomie istniejące rozwiązania. W środku + i - czy dany program się nadaje do
+tego. Zrobić to tak, żeby wśród rozwiązań był nasz program i wszędzie miał +.
+}
 
 \end{document}

@@ -1,20 +1,27 @@
 \documentclass[00-praca-magisterska.tex]{subfiles}
 \begin{document}
 
-\chapter{Nasze rozwiązanie}
+\chapter{NAZWA}
+
+\FIXME{
+Podzielić ten rozdział na mniejsze - mniej pojemne. Nadać mu jakąś konkretną nazwę.
+}
 
 W tym rozdziale prezentujemy stworzona przez nas aplikację. Jej zadaniem jest
 automatyzacja powtarzających się czynności występujących przy przeprowadzaniu
 testów w środowiskach rozproszonych. Samo zaprojektowanie testu i stworzeniu
 programów potrzebnych do jego przeprowadzenia pozostaje w kwestii użytkownika.
 
+\section{Zastosowania}
+
+\FIXME{
+Bardziej ogólnie. Dla testerów, zespołów badawczych...
+
 Aplikacja została stworzoną przede wszystkim z myślą o studentach kierunków
 informatycznych, którzy często mają za zadanie tworzyć oprogramowanie sieciowe
 lub przeprowadzać eksperymenty w sieciach komputerowych. Narzędzie to będzie
 również przydatne dla prowadzących przygotowujących ćwiczenia w takich
 środowiskach.
-
-\section{Zastosowania}
 
 Tworząc program skupiliśmy się na kilku przypadkach zastosowań, które pojawiły
 się w czasie naszych zajęć laboratoryjnych z różnych przedmiotów. Na uwadze
@@ -23,6 +30,10 @@ mieliśmy trzy konkretne scenariusze omówione poniżej.
 Potrzebowaliśmy narzędzia, które zautomatyzuje najczęściej wykonywane
 czynności: skonfiguruje maszyny, przeprowadzi testy, zapamięta wyniki i
 przywróci pierwotną konfigurację.
+}
+
+\FIXME{
+Ten scenariusz nie pasuje.
 
 Najprostszy scenariusz ma miejsce w czasie tworzenia oprogramowania typu
 klient-serwer. Testując działanie na dwóch maszynach, najczęściej korzystamy z
@@ -38,6 +49,7 @@ Zadanie programu polega tutaj na:
 \item zapamiętaniu wyników pracy obu komponentów,
 \item usunięcie plików serwera ze zdalnej maszyny.
 \end{enumerate}
+}
 
 Drugi scenariusz dotyczy pomiaru szybkości transferu danych przy użyciu
 protokołu DCCP oraz wpływu innych transmisji na tę szybkość. Sposób pomiaru
@@ -118,10 +130,10 @@ powracać w pozostałej treści pracy, żeby wykazać, iż zostały one spełnio
 
 \section{Założenia}
 
-Realizacja właśnie wymienionych wymagań wiązała się z podjęciem wielu decyzji
-projektowych, które miały istotny wpływ na ogólny obraz tworzonego programu.
-Podejmując je kierowaliśmy się głównie chęcią stworzenia wygodnego i prostego
-narzędzia.
+Realizacja wymienionych w poprzedniej części wymagań wiązała się z podjęciem
+wielu decyzji projektowych, które miały istotny wpływ na ogólny obraz tworzonego
+programu.  Podejmując je kierowaliśmy się głównie chęcią stworzenia wygodnego i
+prostego narzędzia.
 
 \paragraph{Użytkownik wie, co robi.} Przyjęliśmy więc, że nie będziemy
 wprowadzać rygorystycznej kontroli poprawności konfigurowanych akcji kosztem
@@ -136,12 +148,16 @@ administrator. Nie niesie to jednak zagrożeń dla bezpieczeństwa gdyż środow
 przeprowadzania testu zwykle odpowiada jego wymaganiom dotyczącym uprawnień w
 dostępie.
 
+\FIXME{
+Znowy przyczepiłeś się do laboratorium i sieci akademickiej.
+
 Urządzenia w laboratoriach są przeznaczone do wykonywania na nich eksperymentów.
 Ich konfiguracja zmieniana jest na porządku dziennym i też z tego powodu
 najczęściej jest regularnie przywracana do postaci wyjściowej. Tworzone sieci
 często są odizolowane od sieci akademickiej. Urządzenia wchodzące w ich skład są
 natomiast wyłączane, a fizyczne połączenia likwidowane. Szansa zdalnego dostępu
 do tego typu sieci jest znikoma.
+}
 
 Sieci domowe składają się z urządzeń, których administratorem jest właściciel i
 najczęściej jest to ta sama osoba, która wykonuje test. Od sieci laboratoryjnych
@@ -159,10 +175,20 @@ korzystać tylko z wyznaczonych systemów, na których muszą się uwierzytelnia
 Użytkownikom często nie wolno instalować własnego oprogramowania, a komunikacja
 sieciowa jest ograniczana. W takich warunkach korzystanie z naszego programu
 jest technicznie ograniczone do wykonywania czynności, które użytkownik ma prawo
-wykonywać. Zadbaliśmy jednak o to, aby automatyzacja takich czynności jak
-uwierzytelniane nie naruszała bezpieczeństwa poufnych informacji\footnote{Mamy
-tu na myśli tajne dane występujące w powszechnych sposobach uwierzytelniania jak
-hasła czy klucze szyfrujące.}.
+wykonywać. 
+
+\FIXME{
+Wyjaśnić to lepiej.
+
+Zadbaliśmy jednak o to, aby automatyzacja takich czynności jak uwierzytelniane
+nie naruszała bezpieczeństwa poufnych informacji. Mamy tu na myśli tajne dane
+występujące w powszechnych sposobach uwierzytelniania jak hasła czy klucze
+szyfrujące.
+}
+
+\FIXME{
+Opisać to mniej ogólnie na przykładzie naszego programu. Jak już ponazywamy
+wszystko. + Przykład na koniec.
 
 \paragraph{Architektura Master-Worker.} Ponieważ wymagane jest, aby dało się
 wykonywać test w sytuacji kiedy nie ma połączenia między urządzeniem, z którego
@@ -179,6 +205,10 @@ umożliwia współpracę z urządzeniami bez zainstalowanego modułu
 Worker\footnote{Jak np.~routery sprzętowe, gdzie instalacja własnego
 oprogramowania nie jest możliwa.}, ale może wtedy nie być możliwe wykonanie
 pewnych testów.\footnote{\fixme{tu by się może przydał jednozdaniowy przykład?}}
+}
+
+\FIXME{
+Więcej i dokładniej o synchronizacji.
 
 \paragraph{Synchronizacja urządzeń nie zmienia wskazań ich zegarów.}
 Najprostszym rozwiązaniem problemu synchronizacji byłoby wykorzystanie protokołu
@@ -189,9 +219,7 @@ pracy systemu mogłaby zaburzyć pracę innych uruchomionych programów. Z tego
 powodu prościej i bezpieczniej jest sprawdzić czy urządzenia są zsynchronizowane
 i odmówić pracy w przeciwnym razie, niż automatycznie tę synchronizację
 przeprowadzać.
-
-\FIXME{Jak się dorobimy sposobu synchronizacji niezależnego od zegara systemowego, to
-tutaj o tym napisać.}
+}
 
 \paragraph{Wszystkie wyniki są cenne.} Ponieważ obecnie przechowywanie dużych
 ilości danych nie sprawia problemu, w czasie testu staramy się zebrać jak
@@ -207,7 +235,7 @@ zdaniem odpowiedni kompromis między możliwościami bazy danych a wygodą
 przechowywania wyników w zwykłych plikach.
 
 \paragraph{Narzędzie musi być elastyczne.} W czasie pracy zauważyliśmy, że
-scenariusze różnego rodzaju testów należy wykonywać inaczej. Projektując
+scenariusze różnego rodzaju testów wymagają różnych podejść. Projektując
 aplikację uwzględniliśmy rozmaite przypadki, aby żadnego nie dyskryminować.
 Zdajemy sobie jednak sprawę, że stworzenie gotowego narzędzia do przeprowadzania
 wszystkich testów nie jest możliwe. Z tego powodu stworzyliśmy produkt
@@ -215,19 +243,17 @@ elastyczny, którego funkcjonalność w wielu miejscach można rozszerzać
 samodzielnie. Dzięki temu możliwa jest obsługa różnego rodzaju urządzeń i
 topologii sieciowych, jak również sposobów przeprowadzania testu.
 
-\paragraph{Użytkownicy znają Pythona.} Język Python jest wybranym przez nas
+\paragraph{Użytkownicy znają język Python.} Język Python jest wybranym przez nas
 językiem implementacji jak i konfiguracji programu. Z tego powodu od
-użytkowników nie znających go wymagana jest jego podstawowa znajomość. Uważamy,
-że nie jest to utrudnienie, ponieważ alternatywą byłoby wymaganie, aby użytkownik
-nauczył się m.in.~stosowanej przez nas, nowej składni plików konfiguracyjnych, a
-znajomość podstaw Pythona jest bardziej uniwersalna.
+użytkowników wymagana jest jego podstawowa znajomość. Uważamy, że nie jest to
+utrudnienie, ponieważ alternatywą byłoby wymaganie, aby użytkownik nauczył się
+stosowanej przez nas, nowej składni plików konfiguracyjnych, a znajomość podstaw
+języka Python jest bardziej uniwersalna.
 
-Python został wybrany z kilku powodów. Jednym z nich była popularność tego
-języka, mamy więc nadzieję, że spora część użytkowników odbierze to założenia
-jako zaletę, a nie wadę produktu.
-
-Popularność Pythona powoduje też, że jest on dostępny na wszystkich popularnych
-systemach operacyjnych, ponadto jest domyślnie zainstalowany na większości
+Wybór tego, a nie innego języka Python był podyktowany jego popularnością, mamy
+więc nadzieję, że spora część użytkowników odbierze to założenia jako zaletę, a
+nie wadę produktu. Kolejną zaletą jest to, że jest on dostępny na wszystkich
+popularnych systemach operacyjnych oraz domyślnie zainstalowany na większości
 systemów Linuksowych.
 
 \FIXME{Można dopisać jeszcze trochę na temat zalet pythona. W rozdziale o
@@ -267,12 +293,16 @@ na komunikację sieciową ani nie monitoruje innych użytkowników sieci. Jeśli
 poprawnego przeprowadzenia pomiaru wymagane jest, aby testowany program był
 jedynym użytkownikiem sieci, osoba wykonująca test sama musi o to zadbać.
 
-\paragraph{O urządzeniach zakładamy jak najmniej.} Program sam z siebie nie
-wymaga od urządzeń występujących w teście żadnej funkcjonalności. Dzięki temu
-jesteśmy w stanie obsługiwać zarówno tanie urządzenia sieciowe, o bardzo
-ograniczonych możliwościach konfiguracyjnych, jak i w pełni wyposażone systemu
-Uniksowe czy dedykowane routery. To użytkownik decyduje o tym, co w danym teście
-mają robić występujące w nim urządzenia i tym samym stawia im wymagania. Zarówno
-te dotyczące funkcjonalności, jak i bezpieczeństwa.
+\FIXME{
+Znowu problem z 'urządzeniami'.
+
+\paragraph{O urządzeniach zakładamy jak najmniej.} Program NAZWA nie wymaga od
+urządzeń biorących udział w teście żadnej funkcjonalności. Dzięki temu jesteśmy
+w stanie obsługiwać zarówno tanie urządzenia sieciowe, o bardzo ograniczonych
+możliwościach konfiguracyjnych, jak i w pełni wyposażone systemu Uniksowe czy
+dedykowane routery. To użytkownik decyduje o tym, co w danym teście mają robić
+występujące w nim urządzenia i tym samym stawia im wymagania. Zarówno te
+dotyczące funkcjonalności, jak i bezpieczeństwa.
+}
 
 \end{document}
