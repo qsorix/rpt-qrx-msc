@@ -83,7 +83,7 @@ W dalszych rozważaniach skupimy się na podziale testów ze względu na rodzaj
 obserwowanych wielkości, ponieważ niezależnie od warstwy, sposób ich pomiaru
 jest podobny. Wyróżniliśmy następujące rodzaje testów:
 \begin{itemize}
-  \item{wymienianych Protocol Data Unit\footnote{\emph{Czy wszędzie indziej też
+  \item{wymienianych Protocol Data Unit\footnote{\fixme{Czy wszędzie indziej też
 pisać rozwinięty skrót?}},}
   \item{sekwencji komunikatów,}
   \item{wydajności transmisji.}
@@ -94,7 +94,7 @@ to testy mające na celu sprawdzić czy przesyłane dane odpowiadają założeni
 Badane są takie wielkości jak: długość PDU, zgodność sumy kontrolnej,
 poprawność kodowania numeru wersji itp. Kontrola jakości na tym etapie ma na
 celu zweryfikowanie, czy zbudowane PDU jest zgodne ze
-specyfikacją\footnote{\emph{Coś tutaj było nie tak z tym zdaniem, ale nie umiem
+specyfikacją\footnote{\fixme{Coś tutaj było nie tak z tym zdaniem, ale nie umiem
 wymyslić co.}}. Od wykorzystywanych tu narzędzi wymaga się, aby umożliwiały
 sformalizowanie opisu zawartego w dokumentacji do postaci, którą można
 algorytmicznie porównać z obserwowanymi PDU.
@@ -218,7 +218,7 @@ Wykorzystanie formalnych metod opisu pozwala na automatyczne tworzenie koderów 
 dekoderów. W przypadku pracy z istniejącymi protokołami, PDU zwykle na stałe
 wiąże przenoszone dane z ich kodowaniem. Przykładem może być opis pakietów TCP w
 RFC 793, gdzie dane (np. numer sekwencyjny) i ich kodowanie (rozmiar i
-położenie bitów w pakiecie) określone są w tym samym miejscu\footnote{\emph{Co
+położenie bitów w pakiecie) określone są w tym samym miejscu\footnote{\fixme{Co
 znaczy jednocześnie?}}. Korzystanie z ASN.1 w takich wypadkach jest
 trudniejsze, ale możliwe dzięki ECN.
 
@@ -285,7 +285,7 @@ reguł, po czym obserwować jej efektywność.
 
 \subsection{OMNeT++}
 
-OMNeT++ to biblioteka i framework\footnote{\emph{Postanowiliśmy zdecydowanie
+OMNeT++ to biblioteka i framework\footnote{\fixme{Postanowiliśmy zdecydowanie
 nie tłumaczyć tego na polski, bo mija sie to z celem. KAŻDY wie co to
 framework.}} do tworzenia symulacji sieci. Użytkownik może korzystać z
 szerokiej gamy modułów oraz tworzyć własne. Środowisko to wspiera symulacje
