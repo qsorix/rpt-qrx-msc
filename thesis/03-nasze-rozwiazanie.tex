@@ -4,36 +4,35 @@
 \chapter{NAZWA}
 
 \FIXME{
-Podzielić ten rozdział na mniejsze - mniej pojemne. Nadać mu jakąś konkretną nazwę.
+Podzielić ten rozdział na mniejsze - mniej pojemne.
 }
 
-W tym rozdziale prezentujemy stworzona przez nas aplikację. Jej zadaniem jest
-automatyzacja powtarzających się czynności występujących przy przeprowadzaniu
-testów w środowiskach rozproszonych. Samo zaprojektowanie testu i stworzeniu
-programów potrzebnych do jego przeprowadzenia pozostaje w kwestii użytkownika.
+W tym rozdziale prezentujemy stworzone przez nas narzędzie NAZWA. Jego zadaniem
+jest automatyzacja powtarzających się czynności występujących przy
+przeprowadzaniu testów w środowiskach rozproszonych w warunkach rzeczywistych.
+Samo zaprojektowanie testu i stworzeniu programów potrzebnych do jego
+przeprowadzenia pozostaje w kwestii użytkownika. Przykładowe konfiguracje i
+scenariusze użycia zostaną przedstawione w \fixme{rozdziale JAKIMŚTAM}.
 
 \section{Zastosowania}
 
-\FIXME{
-Bardziej ogólnie. Dla testerów, zespołów badawczych...
+NAZWA zostało stworzone z myślą o testerach, zespołach badawczych oraz
+studentach kierunków informatycznych, zajmujących się tworzeniem oprogramowanie
+sieciowe lub przeprowadzaniem eksperymentów w sieciach komputerowych. Może być
+ono również przydatne dla prowadzących zajęcia praktyczne, przygotowujących
+ćwiczenia w takich środowiskach.
 
-Aplikacja została stworzoną przede wszystkim z myślą o studentach kierunków
-informatycznych, którzy często mają za zadanie tworzyć oprogramowanie sieciowe
-lub przeprowadzać eksperymenty w sieciach komputerowych. Narzędzie to będzie
-również przydatne dla prowadzących przygotowujących ćwiczenia w takich
-środowiskach.
-
-Tworząc program skupiliśmy się na kilku przypadkach zastosowań, które pojawiły
+Tworząc NAZWA skupiliśmy się na kilku przypadkach zastosowań, które pojawiły
 się w czasie naszych zajęć laboratoryjnych z różnych przedmiotów. Na uwadze
 mieliśmy trzy konkretne scenariusze omówione poniżej.
 
 Potrzebowaliśmy narzędzia, które zautomatyzuje najczęściej wykonywane
 czynności: skonfiguruje maszyny, przeprowadzi testy, zapamięta wyniki i
 przywróci pierwotną konfigurację.
-}
 
 \FIXME{
-Ten scenariusz nie pasuje.
+Pierwszy scenariusz nie pasuje do pozostałych. Jest zbyt ogólny. Zrobić to lepiej.
+}
 
 Najprostszy scenariusz ma miejsce w czasie tworzenia oprogramowania typu
 klient-serwer. Testując działanie na dwóch maszynach, najczęściej korzystamy z
@@ -49,15 +48,16 @@ Zadanie programu polega tutaj na:
 \item zapamiętaniu wyników pracy obu komponentów,
 \item usunięcie plików serwera ze zdalnej maszyny.
 \end{enumerate}
-}
 
 Drugi scenariusz dotyczy pomiaru szybkości transferu danych przy użyciu
-protokołu DCCP oraz wpływu innych transmisji na tę szybkość. Sposób pomiaru
-jest prosty. Wykorzystujemy program \code{iperf}, który umożliwia uruchomienie
-serwera i klienta wybranego protokołu. Klient transmituje do serwera strumień
-losowych danych korzystając ze wskazanego protokołu transportowego i zapamiętuje
-uzyskaną szybkość transmisji. Dodatkowo, przy użyciu reguł \code{iptables}
-mierzy się ilość pakietów i bajtów całego ruchu sieciowego.
+protokołu DCCP (Datagram Congestion Control Protocol\footnote{\fixme{Trzeba
+ustalić co robimy ze skrótami. Może jednak słownik?}}) oraz wpływu innych
+transmisji na tę szybkość. Sposób pomiaru jest prosty. Wykorzystujemy program
+\code{iperf}, który umożliwia uruchomienie serwera i klienta wybranego
+protokołu. Klient transmituje do serwera strumień losowych danych korzystając
+ze wskazanego protokołu transportowego i zapamiętuje uzyskaną szybkość
+transmisji. Dodatkowo, przy użyciu reguł \code{iptables} mierzy się ilość
+pakietów i bajtów całego ruchu sieciowego.
 
 Stworzyliśmy kilka różnych testów badających m.in.: samodzielną pracę DCCP,
 wpływ transmisji TCP i UDP na pracę DCCP, porównanie DCCP z TCP i UDP, itd.
@@ -68,8 +68,9 @@ Aby zautomatyzować te testy, program musi:
 \begin{enumerate}
 \item korzystając z interfejsu \code{sysctl} skonfigurować parametry DCCP,
 \item stworzyć reguły \code{iptables} do mierzenia ruchu,
-\item jednocześnie rozpocząć test,
-\item w wyznaczonych momentach uruchamiać lub zabijać instancje \code{iperf},
+\item przeprowadzić synchronizację, 
+\item rozpocząć test,
+\item w wyznaczonych momentach rozpocząć lub zakończyć działanie \code{iperf},
 \item zbierać wartości liczników \code{iptables},
 \item zapamiętać wszystkie uzyskiwane wyniki,
 \item przywrócić opcje DCCP i konfigurację \code{iptables}.
@@ -78,7 +79,7 @@ Aby zautomatyzować te testy, program musi:
 Ważne jest też, żeby w czasie testu program nie przesyłał żadnych danych, aby
 nie wpływał na uzyskiwane wyniki.
 
-Ostatni scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
+Trzeci scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
 Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
 BitTorrent. Klienci mają rozpocząć ściąganie w tym samym momencie, a test należy
 zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
@@ -137,8 +138,8 @@ prostego narzędzia.
 
 \paragraph{Użytkownik wie, co robi.} Przyjęliśmy więc, że nie będziemy
 wprowadzać rygorystycznej kontroli poprawności konfigurowanych akcji kosztem
-funkcjonalności. Nasz program stara się użytkownika jak najmniej ograniczać,
-dzięki czemu będzie mógł być wykorzystany w większej liczbie przypadków.
+funkcjonalności. NAZWA stara się ograniczać użytkownika w jak najmniejszym stopniu,
+dzięki czemu może być wykorzystany w większej liczbie przypadków.
 
 \paragraph{Bezpieczeństwo jest adekwatne do zagrożeń.} Aby możliwe było
 przeprowadzenie pewnych testów, na urządzeniach wymagany jest dostęp w trybie
@@ -148,16 +149,10 @@ administrator. Nie niesie to jednak zagrożeń dla bezpieczeństwa gdyż środow
 przeprowadzania testu zwykle odpowiada jego wymaganiom dotyczącym uprawnień w
 dostępie.
 
-\FIXME{
-Znowy przyczepiłeś się do laboratorium i sieci akademickiej.
-
-Urządzenia w laboratoriach są przeznaczone do wykonywania na nich eksperymentów.
-Ich konfiguracja zmieniana jest na porządku dziennym i też z tego powodu
-najczęściej jest regularnie przywracana do postaci wyjściowej. Tworzone sieci
-często są odizolowane od sieci akademickiej. Urządzenia wchodzące w ich skład są
-natomiast wyłączane, a fizyczne połączenia likwidowane. Szansa zdalnego dostępu
-do tego typu sieci jest znikoma.
-}
+Urządzenia w laboratoriach są przeznaczone do wykonywania na nich
+eksperymentów.  Ich pierwotna konfiguracja jest po wykonaniu testów
+przywracana. Sieci takie są najczęściej odizolowane, a wieć szansa zdalnego
+dostępu do tego typu sieci jest znikoma.
 
 Sieci domowe składają się z urządzeń, których administratorem jest właściciel i
 najczęściej jest to ta sama osoba, która wykonuje test. Od sieci laboratoryjnych
@@ -178,17 +173,13 @@ jest technicznie ograniczone do wykonywania czynności, które użytkownik ma pr
 wykonywać. 
 
 \FIXME{
-Wyjaśnić to lepiej.
+Wyjaśnić lepiej o co chodzi z bezpieczeństwem w akapicie poniżej.
+}
 
 Zadbaliśmy jednak o to, aby automatyzacja takich czynności jak uwierzytelniane
 nie naruszała bezpieczeństwa poufnych informacji. Mamy tu na myśli tajne dane
 występujące w powszechnych sposobach uwierzytelniania jak hasła czy klucze
 szyfrujące.
-}
-
-\FIXME{
-Opisać to mniej ogólnie na przykładzie naszego programu. Jak już ponazywamy
-wszystko. + Przykład na koniec.
 
 \paragraph{Architektura Master-Worker.} Ponieważ wymagane jest, aby dało się
 wykonywać test w sytuacji kiedy nie ma połączenia między urządzeniem, z którego
@@ -197,18 +188,20 @@ dodatkowej aplikacji pomocniczej. Wyróżniamy więc aplikację (Master) nadzoru
 przebieg testu, oraz aplikacje wykonujące go (Worker), zainstalowane na
 występujących w teście urządzeniach.
 
-Jej wprowadzenie powoduje, że instalacja aplikacji zajmuje więcej czasu, trzeba
-ją bowiem przeprowadzić na wszystkich systemach. Jest to jednak konieczne, w
-celu osiągnięcia funkcjonalności wymaganej w pewnych scenariuszach testów. Jej
-występowanie jest również przydatne ze względów bezpieczeństwa. Aplikacja
-umożliwia współpracę z urządzeniami bez zainstalowanego modułu
-Worker\footnote{Jak np.~routery sprzętowe, gdzie instalacja własnego
-oprogramowania nie jest możliwa.}, ale może wtedy nie być możliwe wykonanie
-pewnych testów.\footnote{\fixme{tu by się może przydał jednozdaniowy przykład?}}
+\FIXME{
+Trzeba to napisać mniej ogólnie, a do tego trzeba ustalić co jak się nazywa i
+używać konkretnych nazw i sformułowań: narzędzie, aplikacja, program...
 }
 
-\FIXME{
-Więcej i dokładniej o synchronizacji.
+Wprowadzenie takiej architektury powoduje, że instalacja aplikacji wykonującej
+testy (Worker) zajmuje więcej czasu, trzeba ją bowiem przeprowadzić na
+wszystkich systemach.  Jest to jednak konieczne, w celu osiągnięcia
+funkcjonalności wymaganej w pewnych scenariuszach testów, jak również przydatne
+ze względów bezpieczeństwa. Aplikacja nadzorująca (Master) umożliwia również
+współpracę z urządzeniami bez zainstalowanego modułu Worker\footnote{Jak
+np.~routery sprzętowe, gdzie instalacja własnego oprogramowania nie jest
+możliwa.}, ale może wtedy nie być możliwe wykonanie pewnych testów.
+\fixme{Tutaj przykład musi być.}
 
 \paragraph{Synchronizacja urządzeń nie zmienia wskazań ich zegarów.}
 Najprostszym rozwiązaniem problemu synchronizacji byłoby wykorzystanie protokołu
@@ -219,6 +212,9 @@ pracy systemu mogłaby zaburzyć pracę innych uruchomionych programów. Z tego
 powodu prościej i bezpieczniej jest sprawdzić czy urządzenia są zsynchronizowane
 i odmówić pracy w przeciwnym razie, niż automatycznie tę synchronizację
 przeprowadzać.
+
+\FIXME{
+Więcej i dokładniej o synchronizacji.
 }
 
 \paragraph{Wszystkie wyniki są cenne.} Ponieważ obecnie przechowywanie dużych
@@ -294,15 +290,15 @@ poprawnego przeprowadzenia pomiaru wymagane jest, aby testowany program był
 jedynym użytkownikiem sieci, osoba wykonująca test sama musi o to zadbać.
 
 \FIXME{
-Znowu problem z 'urządzeniami'.
-
-\paragraph{O urządzeniach zakładamy jak najmniej.} Program NAZWA nie wymaga od
-urządzeń biorących udział w teście żadnej funkcjonalności. Dzięki temu jesteśmy
-w stanie obsługiwać zarówno tanie urządzenia sieciowe, o bardzo ograniczonych
-możliwościach konfiguracyjnych, jak i w pełni wyposażone systemu Uniksowe czy
-dedykowane routery. To użytkownik decyduje o tym, co w danym teście mają robić
-występujące w nim urządzenia i tym samym stawia im wymagania. Zarówno te
-dotyczące funkcjonalności, jak i bezpieczeństwa.
+Problem 'urządzeń'. Trzeba to przedyskutować. Zrobię issue na githubie.
 }
+
+\paragraph{O \fixme{urządzeniach} zakładamy jak najmniej.} Program NAZWA nie
+wymaga od \fixme{urządzeń} biorących udział w teście żadnej funkcjonalności.
+Dzięki temu jesteśmy w stanie obsługiwać zarówno tanie urządzenia sieciowe, o
+bardzo ograniczonych możliwościach konfiguracyjnych, jak i w pełni wyposażone
+systemu Uniksowe czy dedykowane routery. To użytkownik decyduje o tym, co w
+danym teście mają robić występujące w nim \fixme{urządzenia} i tym samym stawia
+im wymagania dotyczące zarówno funkcjonalności, jak i bezpieczeństwa.
 
 \end{document}
