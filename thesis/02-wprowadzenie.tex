@@ -64,7 +64,8 @@ Ponieważ w środowiskach rozproszonych powszechna jest sytuacja, w której mamy
 do czynienia ze sprzętem różnego rodzaju i różnych producentów, a budowane
 rozwiązania mają niezawodnie pracować przez wiele lat, testowanie tworzonych
 produktów jest tu bardzo istotne. Jednocześnie jest ono trudniejsze niż w
-wypadku rozwiązań przeznaczonych na samodzielne\footnote{standalone} systemy.
+wypadku rozwiązań przeznaczonych na samodzielne\footnote{ang. standalone}
+systemy.
 
 \section{Testy aplikacji sieciowych}
 
@@ -82,7 +83,8 @@ W dalszych rozważaniach skupimy się na podziale testów ze względu na rodzaj
 obserwowanych wielkości, ponieważ niezależnie od warstwy, sposób ich pomiaru
 jest podobny. Wyróżniliśmy następujące rodzaje testów:
 \begin{itemize}
-  \item{wymienianych Protocol Data Unit,}
+  \item{wymienianych Protocol Data Unit\footnote{\emph{Czy wszędzie indziej też
+pisać rozwinięty skrót?}},}
   \item{sekwencji komunikatów,}
   \item{wydajności transmisji.}
 \end{itemize}
@@ -91,10 +93,11 @@ Pierwszy rodzaj dotyczy budowy komunikatów wymienianych między urządzeniami. 
 to testy mające na celu sprawdzić czy przesyłane dane odpowiadają założeniom.
 Badane są takie wielkości jak: długość PDU, zgodność sumy kontrolnej,
 poprawność kodowania numeru wersji itp. Kontrola jakości na tym etapie ma na
-celu zweryfikowanie, czy zbudowane PDU jest zgodne ze specyfikacją. Od
-wykorzystywanych tu narzędzi wymaga się, aby umożliwiały sformalizowanie opisu
-zawartego w dokumentacji do postaci, którą można algorytmicznie porównać z
-obserwowanymi PDU.
+celu zweryfikowanie, czy zbudowane PDU jest zgodne ze
+specyfikacją\footnote{\emph{Coś tutaj było nie tak z tym zdaniem, ale nie umiem
+wymyslić co.}}. Od wykorzystywanych tu narzędzi wymaga się, aby umożliwiały
+sformalizowanie opisu zawartego w dokumentacji do postaci, którą można
+algorytmicznie porównać z obserwowanymi PDU.
 
 Kiedy operujemy poprawnymi komunikatami, należy zadbać o poprawność ich
 sekwencji. Skuteczna komunikacja najczęściej wymaga zachowania pewnej
@@ -130,11 +133,7 @@ Narzędzia do testowania wydajności nie powinny więc wyręczać człowieka, al
 wspierać go ułatwiając konfigurację środowiska, obsługę wielu urządzeń
 jednocześnie i katalogowanie wyników.
 
-\section{Testy w warunkach rzeczywistych}
-
-\FIXME{
-Nazwać ten dział bardziej adekwatnie do zawartości.
-}
+\section{Testy w warunkach rzeczywistych, a symulacje}
 
 Jest jasne, że eksperymenty najwygodniej przeprowadza się w sterylnych
 warunkach laboratorium. Błędem jest jednak oczekiwanie, że produkt będzie
@@ -218,9 +217,9 @@ przedstawionych w oddzielnych dokumentach. Przykładowe metody to:
 Wykorzystanie formalnych metod opisu pozwala na automatyczne tworzenie koderów i
 dekoderów. W przypadku pracy z istniejącymi protokołami, PDU zwykle na stałe
 wiąże przenoszone dane z ich kodowaniem. Przykładem może być opis pakietów TCP w
-RFC 793, gdzie dane (np. numer sekwencyjny) i ich kodowanie (rozmiar i położenie
-bitów w pakiecie) określone są w tym samym miejscu\footnote{O to Ci chodziło jak
-pisałeś \emph{jednocześnie}?}. Korzystanie z ASN.1 w takich wypadkach jest
+RFC 793, gdzie dane (np. numer sekwencyjny) i ich kodowanie (rozmiar i
+położenie bitów w pakiecie) określone są w tym samym miejscu\footnote{\emph{Co
+znaczy jednocześnie?}}. Korzystanie z ASN.1 w takich wypadkach jest
 trudniejsze, ale możliwe dzięki ECN.
 
 ECN (Explicit Coding Notation) umożliwia formalny opis niestandardowych metod
@@ -286,14 +285,16 @@ reguł, po czym obserwować jej efektywność.
 
 \subsection{OMNeT++}
 
-OMNeT++ to biblioteka i framework\footnote{Polskie słowo na to trzeba!} do
-tworzenia symulacji sieci. Użytkownik może korzystać z szerokiej gamy modułów
-oraz tworzyć własne. Framework\footnote{Tu też.} wspiera symulacje sterowane
-zdarzeniami przesyłanymi między występującymi w realizowanej sieci komponentami.
+OMNeT++ to biblioteka i framework\footnote{\emph{Postanowiliśmy zdecydowanie
+nie tłumaczyć tego na polski, bo mija sie to z celem. KAŻDY wie co to
+framework.}} do tworzenia symulacji sieci. Użytkownik może korzystać z
+szerokiej gamy modułów oraz tworzyć własne. Środowisko to wspiera symulacje
+sterowane zdarzeniami przesyłanymi między występującymi w realizowanej sieci
+komponentami.
 
-Istnieje szereg frameworków\footnote{I tu.} zbudowanych na bazie środowiska
-OMNeT++, a które zostały stworzone z myślą o konkretnych rodzajach sieci, jak
-np. OverSim będący symulatorem sieci peer2peer.
+Istnieje szereg frameworków zbudowanych na bazie środowiska OMNeT++, a które
+zostały stworzone z myślą o konkretnych rodzajach sieci, jak np. OverSim będący
+symulatorem sieci peer2peer.
 
 Framework umożliwia pracę w IDE opartym na Eclipse i wspiera wiele pożądanych
 funkcji jak np.~symulacje w czasie rzeczywistych czy integracja z bazą danych.
@@ -335,6 +336,23 @@ się bardzo czasochłonne i uciążliwe, choć sam test jest w swojej naturze pr
 Tutaj ma powstać tabelka w której będą w pionie różne aspekty testowania, a w
 poziomie istniejące rozwiązania. W środku + i - czy dany program się nadaje do
 tego. Zrobić to tak, żeby wśród rozwiązań był nasz program i wszędzie miał +.
+Będzie ciężko, bo nasz program też ma dość specyficzne zastosowanie. Pomyśleć
+jakby to zrobić, żeby mimo wszystko wypadł w porównaniu dobrze.
+
+Tabelkę zrobiłam byle jak, żeby było. Bardziej się na texie znasz to zrób to
+ładnie.
 }
+
+\begin{center}
+   \begin{tabular}{ r | c | c | c | c }
+       & ASN.1+ECN & TTCN & OMNeT++ & NAZWA \\
+      \hline
+      cecha1 & + & + & - & + \\
+      \hline
+      cecha2 & - & + & + & + \\
+      \hline
+      cecha3 & - & - & + & + \\
+  \end{tabular}
+\end{center}
 
 \end{document}
