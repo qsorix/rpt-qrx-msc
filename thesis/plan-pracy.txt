@@ -18,7 +18,7 @@
   sposobu dotyczy nasz program. Przedstawienie rozwiązań, które można
   zastosować do innych rodzajów testów. (np. TTCN, OmneT++)
 
-3. Nasze rozwiązanie
+3. NAZWA - założenia i architektura
 
   1 strona. Krótkie przedstawienie aplikacji.  Zaznaczenie, jaki rodzaj
   testów można przeprowadzić.
@@ -38,84 +38,92 @@
 
   1 strona. Wymagane oprogramowanie, procedura instalacji na hostach.
 
-3.4. Konfiguracja testu
+4. NAZWA - opis Mastera
+
+4.1 Konfiguracja testu
 
   2 strony. Cechy, które naszym zdaniem powinna mieć dobra konfiguracja testu.
   Krótka dyskusja różnych sposobów rozwiązania. Przedstawienie naszego
   pomysłu. Ogóle założenia na temat podziału konfiguracji na 4 części jego
   rola.
 
-3.4.1. Model
+4.1.1. Model
 
   3 strony. Omówienie modelu -- wirtualnej topologii sieci poddawanej testom.
 
-3.4.2. Sieć
+4.1.2. Sieć
 
   3 strony. Omówienie sieci -- dostępnego sprzętu sieciowego.
 
-3.4.3. Mapowanie
+4.1.3. Mapowanie
 
   3 strony. Omówienie mapowania -- odwzrowoania modelu na sieć.
 
-3.4.4. Plan
+4.1.4. Plan
 
   3 strony. Omówienie planu -- akcji do wykonania w czasie testu.
 
-3.5. Utilities
+4.2. Utilities
 
   X stron. Opis funkcji i klas do konfiguracji dostarczanych razem z
   frameworkiem.
 
-3.6. Rozszerzanie możliwości frameworku
+4.3. Rozszerzanie możliwości frameworku
 
   1 strona. Przedstawienie miejsc, w których możliwe jest rozbudowywanie możliwości
   narzędzia.
 
-3.6.1. Sterowniki konfiguracji
+4.3.1. Sterowniki konfiguracji
 
   1 strona. Omówienie pluginów konfigurujących hosty i interfejsy sieciowe.
   Pluginy te są odpowiedzialne za konfigurowanie atrybutów hostów i
   interfejsów, które zostały określone w modelu.
 
-3.6.2. Nawiązywanie połączenia
+4.3.2. Nawiązywanie połączenia
 
   1 strona. Omówienie pluginów Connection, służących do zestawienia kanału
   komunikacyjnego z hostem biorącym udział w teście.
 
-3.6.3. Frontend sterujący
+4.3.3. Frontend sterujący
 
   1 strona. Omówienie pluginów Frontend, odpowiedzialnym za transmisję
   rozkazów w odpowiednim dla hosta protokole.
 
-3.6.4. Przesyłanie zasobów
+4.3.4. Przesyłanie zasobów
 
   1 strona. Omówienie klasy Resource, dzięki której można przesyłać
   "załączniki" do testów, jak np. pliki wymagane przez uruchamiane aplikacje.
 
-3.7. Przechowywanie wyników
+4.4. Przechowywanie wyników
 
   4 strony. Powody wyboru bazy danych i formatu przechowywania danych, opis sposobu
   przechowywania wyników, schematu bazy danych, itp.
 
-3.8. Wykonanie testów
+5. NAZWA - moduł Worker
+
+5.1 Opis itd
+
+6. NAZWA - działanie, przykłady konfiguracji i użycia
+
+6.1. Wykonanie testów
 
   2 strony. Uruchomienie prostej konfiguracji, omówienie zachodzących akcji i przepływu
   danych. Rozdział powinien systematyzować koncepcje przedstawione w rozdziale
   o konfiguracji i architekturze, a tym samym zamknąć opis dynamicznej części
   aplikacji.
 
-3.9. Reference
+6.2. Reference
 
   X stron. Dokumentacja techniczna całego API frameworku i standardowo
   dostarczanych utilities. 
 
-4. Przykład użycia
+6.3. Przykład użycia
 
   1 strona. Dwa słowa wstępu do przykładów. Dlaczego właśnie takie, a nie
   inne. Nawiązanie do przedstawionych na początku pracy cech dobrego testu,
   pokazanie, że nasza aplikacja te pozwala przeprowadzać takie testy.
 
-4.1. Pomiar wydajności transferu pomiędzy dwoma hostami.
+6.3.1. Pomiar wydajności transferu pomiędzy dwoma hostami.
 
   2 strony. Przykład pomiaru prędkości transferu przy użyciu iperf'a. Prosty
   scenariusz z dwoma hostami. Jeden przez zadany czas wysyła dane do drugiego
@@ -127,13 +135,13 @@
 
   Dodać opis zmiennych @{}, bo nigdzie go nie ma.
 
-4.2. Pomiar czasu dystrybucji pliku w sieci peer2peer.
+6.3.2 Pomiar czasu dystrybucji pliku w sieci peer2peer.
 
   3 strony. Realizacja zadania z laboratoriów peer2peer przy użyciu naszego
   programu. W teście występuje router i dwie sieci po 4 hosty. Na routerze
   wprowadzane są duże straty pakietów i opóźnienia transmisji. Mierzony jest
   czas dystrybucji pliku.
 
-5. Podsumowanie
+7. Podsumowanie
 
   1 strona. Podsumowanie ;-)

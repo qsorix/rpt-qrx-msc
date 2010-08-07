@@ -33,7 +33,7 @@ def build(bld):
     bld(features='tex', source='00-praca-magisterska.tex', prompt=0)
     bld(features='tex', source='01-przedmowa.tex', prompt=0)
     bld(features='tex', source='02-wprowadzenie.tex', prompt=0)
-    bld(features='tex', source='03-nasze-rozwiazanie.tex', prompt=0)
-    bld(features='tex', source='konfiguracja.tex', prompt=0)
+    bld(features='tex', source='03-nazwa.tex', prompt=0)
+    bld(features='tex', source='04-nazwa-master.tex', prompt=0)
 
 # vim: ft=python
