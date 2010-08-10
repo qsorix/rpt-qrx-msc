@@ -1,145 +1,121 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import py
+import nose
+from nose.tools import with_setup
 import socket
 import os
-from daemon.Daemon import *
-from daemon.Models import *
 import thread
 import time
 
-def run_daemon(port):
-    setup_database()
-    setup_config()
+from daemon.Daemon import *
+from daemon.Models import *
 
-    HOST, PORT = "localhost", port
-    SocketServer.TCPServer.allow_reuse_address = True
-    daemon = SocketServer.TCPServer((HOST, PORT), DaemonHandler)
-    daemon.serve_forever()
+class TestDaemon:
+    def _send_sth(self, sth):
+        self.sock.send(sth)
+        return self.sock.recv(1024).strip()
 
-def connect_to_daemon(port):
-    time.sleep(0.5)
+    @classmethod
+    def setUpClass(self):
+        setup_database()
+        setup_config()
 
-    HOST, PORT = "localhost", port
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((HOST, PORT))
+        def run_daemon():
+            HOST, PORT = 'localhost', 9876
+            SocketServer.TCPServer.allow_reuse_address = True
+            daemon = SocketServer.TCPServer((HOST, PORT), DaemonHandler)
+            daemon.serve_forever()
 
-    return sock
+        self.daemon = thread.start_new_thread(run_daemon, ())
+        time.sleep(0.3)
 
-def test_create_test_only():
-#    thread.start_new_thread(run_daemon, (5001,))
-    sock = connect_to_daemon(9999)
+    def setUp(self):
+        HOST, PORT = 'localhost', 9876
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect((HOST, PORT))
 
-    sock.send('test @{id=123}\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
+    def test_create_test_only(self):
+        reply = self._send_sth('test @{id=test_daemon}\n')
+        assert reply.startswith('20')
+        assert Test.get_by(id=u'test_daemon') != None
 
-    # TODO Test if it was created
+    def test_bad_line(self):
+        reply = self._send_sth('bad line @{id=123}\n')
+        assert reply.startswith('40')
 
-    sock.close()
+    def test_create_and_delete_test(self):
+        reply = self._send_sth('test @{id=test_daemon}\n')
+        assert reply.startswith('20')
+        assert Test.get_by(id=u'test_daemon') != None
 
-def test_bad_line():
-#    thread.start_new_thread(run_daemon, (5002,))
-    sock = connect_to_daemon(9999)
+        reply = self._send_sth('end\n')
+        assert reply.startswith('20')
 
-    sock.send('bad line @{id=123}\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('40')
+        reply = self._send_sth('delete @{id=test_daemon}\n')
+        assert reply.startswith('20')
+        assert Test.get_by(id=u'test_daemon') == None
 
-    sock.close()
+    def test_same_id_commands(self):
+        reply = self._send_sth('test @{id=test_daemon}\n')
+        assert reply.startswith('20')
 
-def test_delete_test_123():
-    sock = connect_to_daemon(9999)
+        reply = self._send_sth('setup @{id=setup} echo \'setup\'\n')
+        assert reply.startswith('20')
 
-    sock.send('delete @{id=123}\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
+        reply = self._send_sth('setup @{id=setup} echo \'correct setup\'\n')
+        assert reply.startswith('40')
 
-    #assert Test.get_by(id='123') == None
-    # TODO Test if it was deleted
+        reply = self._send_sth('check @{id=setup} echo \'wrong setup\'\n')
+        assert reply.startswith('40')
 
-    sock.close()
+    def test_create_two_tests_with_the_same_id(self):
+        reply = self._send_sth('test @{id=test_daemon}\n')
+        assert reply.startswith('20')
 
-def test_same_id_commands():
-    sock = connect_to_daemon(9999)
+        reply = self._send_sth('end\n')
+        assert reply.startswith('20')
 
-    sock.send('test @{id=512}\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
+        reply = self._send_sth('test @{id=test_daemon}\n')
+        assert reply.startswith('40')
 
-    sock.send('setup @{id=setup} echo \'setup\'\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
+    def test_create_full_test(self):
+        reply = self._send_sth('test @{id=test_daemon}\n')
+        assert reply.startswith('20')
 
-    sock.send('setup @{id=setup} echo \'correct setup\'\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('40')
+        reply = self._send_sth('check @{id=check1} uname -a\n')
+        assert reply.startswith('20')
 
-    sock.send('check @{id=setup} echo \'wrong setup\'\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('40')
+        reply = self._send_sth('check @{id=check2} gcc --version\n')
+        assert reply.startswith('20')
 
-    sock.close()
+        reply = self._send_sth('check @{id=check3} which badprogram\n')
+        assert reply.startswith('20')
 
-def test_create_two_tests_with_the_same_id():
-    sock = connect_to_daemon(9999)
+        reply = self._send_sth('setup @{id=setup} echo setup\n')
+        assert reply.startswith('20')
 
-    sock.send('test @{id=356}\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
+        reply = self._send_sth('task @{id=task} @{run=in 3} echo task\n')
+        assert reply.startswith('20')
 
-    sock.send('end\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
+        reply = self._send_sth('end\n')
+        assert reply.startswith('20')
 
-    sock.send('test @{id=356}\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('40')
+    def test_send_file(self):
+        reply = self._send_sth('test @{id=test_daemon}\n')
+        assert reply.startswith('20')
 
-    sock.close()
+        self.sock.send('file @{id=file} @{size=3}\n')
+        reply = self._send_sth('123')
+        assert reply.startswith('20')
 
-def test_create_full_test():
-    sock = connect_to_daemon(9999)
+        reply = self._send_sth('end\n')
+        assert reply.startswith('20')
 
-    sock.send('test @{id=666}\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
-
-    sock.send('check @{id=check1} uname -a\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
-
-    sock.send('check @{id=check2} gcc --version\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
-
-    sock.send('setup @{id=setup} echo \'setup\'\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
-
-    sock.send('end\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
-
-    sock.close()
-
-def test_send_file():
-    sock = connect_to_daemon(9999)
-
-    sock.send('test @{id=333}\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
-
-    sock.send('file @{id=file} @{size=3}\n')
-    sock.send('123')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
-
-
-    sock.send('end\n')
-    reply = sock.recv(1024).strip()
-    assert reply.startswith('20')
-
-    sock.close()
+    def tearDown(self):
+        self.sock.close()
+        test = Test.get_by(id=u'test_daemon')
+        if test:
+            session.delete(test)
+            session.commit()
 
