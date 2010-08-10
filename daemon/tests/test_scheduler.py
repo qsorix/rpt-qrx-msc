@@ -7,13 +7,14 @@ import ConfigParser
 
 from common.Exceptions import *
 from daemon.Models import *
-from daemon.Daemon import setup_database
+from daemon.Daemon import setup_database, setup_config
 from modules.Scheduler import Scheduler
 
 class TestSubst:
     @classmethod
     def setUpClass(self):
         setup_database()
+        setup_config()
         config = ConfigParser.SafeConfigParser()
         config.read('daemon.cfg')
         self.tmpdir = config.get('Daemon', 'tmpdir')
