@@ -10,8 +10,8 @@ class Test(Entity):
     started_at = Field(DateTime, required=False)
     length = Field(Integer, required=False)
 
-    files = OneToMany('File')
-    commands = OneToMany('Command')
+    files = OneToMany('File', cascade='delete')
+    commands = OneToMany('Command', cascade='delete')
 
     def __repr__(self):
         return '<Test "%s">' % self.id
@@ -23,7 +23,7 @@ class File(Entity):
     size = Field(Integer, required=True)
     path = Field(Unicode(128), default=None)
 
-    test = ManyToOne('Test', cascade='delete', single_parent=True)
+    test = ManyToOne('Test')
 
     def __repr__(self):
         return '<File "%s" (%d)>' % (self.id, self.size)
@@ -40,7 +40,7 @@ class Command(Entity):
     command = Field(Unicode(128), required=True)
     output = Field(LargeBinary, default=None)
 
-    test = ManyToOne('Test', cascade='delete', single_parent=True)
+    test = ManyToOne('Test')
 
     def __repr__(self):
         return '<Command "%s": %s >' % (self.id, self.command)
