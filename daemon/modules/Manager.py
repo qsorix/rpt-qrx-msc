@@ -23,12 +23,7 @@ class Manager:
     def delete_test(self, parent_id , id):
         test = Test.get_by(id=id)
         if test:
-            for command in test.commands:
-                command.delete()
-            for file in test.files:
-                os.remove(file.path)
-                file.delete()
-            test.delete()
+            session.delete(test)
             session.commit()
         else:
             raise DatabaseError("Test '%s' doesn't exist." % (id))
@@ -124,9 +119,9 @@ class Manager:
                 raise DatabaseError("Command or file named '%s' doesn't exist." % (id))
             else:
                 os.remove(file.path)
-                file.delete()
+                session.delete(file)
         else:
-            cmd.delete()
+            session.delete(cmd)
         session.commit()
         self.handler.send_ok()
 

@@ -7,8 +7,8 @@ class Test(Entity):
     using_options(tablename='tests')
 
     id = Field(Unicode(128), required=True, primary_key=True)
-    started_at = Field(DateTime)
-    length = Field(Integer)
+    started_at = Field(DateTime, required=False)
+    length = Field(Integer, required=False)
 
     files = OneToMany('File')
     commands = OneToMany('Command')
@@ -23,7 +23,7 @@ class File(Entity):
     size = Field(Integer, required=True)
     path = Field(Unicode(128), default=None)
 
-    test = ManyToOne('Test', primary_key=True)
+    test = ManyToOne('Test', cascade='delete', single_parent=True)
 
     def __repr__(self):
         return '<File "%s" (%d)>' % (self.id, self.size)
@@ -38,9 +38,9 @@ class Command(Entity):
 
     id = Field(Unicode(128), required=True, primary_key=True)
     command = Field(Unicode(128), required=True)
-    output = Field(LargeBinary)
+    output = Field(LargeBinary, default=None)
 
-    test = ManyToOne('Test', primary_key=True)
+    test = ManyToOne('Test', cascade='delete', single_parent=True)
 
     def __repr__(self):
         return '<Command "%s": %s >' % (self.id, self.command)
@@ -65,7 +65,7 @@ class Task(Command):
     using_options(inheritance='multi', tablename='tasks')
 
     run = Field(Unicode(128), required=True)
-    pid = Field(Integer)
+    pid = Field(Integer, default=None)
     
     def __repr__(self):
         return '<Task "%s": %s>' % (self.id, self.command)
