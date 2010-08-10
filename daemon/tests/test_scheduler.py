@@ -1,50 +1,85 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import py
+import nose
+from nose.tools import raises
 import ConfigParser
 
-from daemon.Models import *
-from modules.Scheduler import Scheduler
 from common.Exceptions import *
+from daemon.Models import *
+from daemon.Daemon import setup_database
+from modules.Scheduler import Scheduler
 
-def prepare_database():
-    metadata.bind = "sqlite:///daemon.db"
-    setup_all()
-    create_all()
+class TestSubst:
+    @classmethod
+    def setUpClass(self):
+        setup_database()
+        config = ConfigParser.SafeConfigParser()
+        config.read('daemon.cfg')
+        self.tmpdir = config.get('Daemon', 'tmpdir')
+        self.test = Test(id=u'test_subst')
+        Check(id=u'check', command=u'echo check', test=self.test)
+        File(id=u'file', size='123', path=unicode(self.tmpdir+'/subst_file'), test=self.test)
+        session.commit()
+        self.scheduler = Scheduler(self.test)
 
-def test_correct_subst_cmd():
-    prepare_database()
-    scheduler = Scheduler(Test.get_by(id='666'))
-    result = scheduler._subst('abc @{setup.command} cba')
+    def test_correct_subst_cmd(self):
+        result = self.scheduler._subst(u'abc @{check.command} cba')
+        assert result == 'abc echo check cba'
 
-    assert result == "abc echo 'setup' cba"
- 
-def test_subst_bad_id():
-    prepare_database()
-    scheduler = Scheduler(Test.get_by(id='666'))
+    @raises(ResolvError)
+    def test_subst_bad_id(self):
+        self.scheduler._subst(u'abc @{bad.command} cba')
 
-    py.test.raises(ResolvError, scheduler._subst, 'abc @{bad.command} cba')
+    @raises(ResolvError)
+    def test_subst_cmd_bad_param_name(self):
+        self.scheduler._subst(u'abc @{check.bad} cba')
 
-def test_subst_cmd_bad_param_name():
-    prepare_database()
-    scheduler = Scheduler(Test.get_by(id='666'))
+    def test_correct_subst_file(self):
+        result = self.scheduler._subst(u'abc @{file.path} cba')
+        assert result == 'abc ' + self.tmpdir + '/subst_file cba'
+     
+    @raises(ResolvError)
+    def test_subst_file_bad_param_name(self):
+        self.scheduler._subst(u'abc @{file.bad} cba')
 
-    py.test.raises(ResolvError, scheduler._subst, 'abc @{check1.bad} cba')
+    @classmethod
+    def tearDownClass(self):
+        session.delete(self.test)
+        session.commit()
 
-def test_correct_subst_file():
-    prepare_database()
-    scheduler = Scheduler(Test.get_by(id='333'))
-    result = scheduler._subst('abc @{file.path} cba')
+class TestOutput:
+    @classmethod
+    def setUpClass(self):
+        setup_database()
+        self.test = Test(id=u'test_output')
+        self.check1 = Check(id=u'check1', command=u'echo check', test=self.test)
+        self.check2 = Check(id=u'check2', command=u'which notexistingone', test=self.test)
+        self.task1  = Task (id=u'task1',  command=u'echo task', run=u'in 0', test=self.test)
+        self.task2  = Task (id=u'task2',  command=u'which notexistingone', run=u'in 2', test=self.test)
+        session.commit()
+        self.scheduler = Scheduler(self.test)
 
-    config = ConfigParser.SafeConfigParser()
-    config.read('daemon.cfg')
-    tmpdir = config.get('Daemon', 'tmpdir')
+    def test_correct_run_cmd(self):
+        self.scheduler._run_command(self.check1)
+        print repr(self.check1.output)
+        assert self.check1.output == 'check'
 
-    assert result == "abc " + tmpdir + "/333_file cba"
- 
-def test_subst_file_bad_param_name():
-    prepare_database()
-    scheduler = Scheduler(Test.get_by(id='333'))
+    @raises(CheckError)
+    def test_run_bad_cmd(self):
+        self.scheduler._run_command(self.check2)
+        assert self.check2.output == 'notexistingone not found\n'
 
-    py.test.raises(ResolvError, scheduler._subst, 'abc @{file.bad} cba')
+#    def test_run_task():
+#        self.scheduler._run_task(self.task1)
+#        assert task1.output == 'task\n'
+
+#    @raises(CheckError)
+#    def test_run_bad_task():
+#        self.scheduler._run_command(self.task2)
+#        assert self.task2.output == 'notexistingone not found\n'
+
+    @classmethod
+    def tearDownClass(self):
+        session.delete(self.test)
+        session.commit()
