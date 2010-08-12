@@ -23,7 +23,7 @@ class File(Entity):
     size = Field(Integer, required=True)
     path = Field(Unicode(128), default=None)
 
-    test = ManyToOne('Test')
+    test = ManyToOne('Test', primary_key=True)
 
     def __repr__(self):
         return '<File "%s" (%d)>' % (self.id, self.size)
@@ -40,7 +40,7 @@ class Command(Entity):
     command = Field(Unicode(128), required=True)
     output = Field(LargeBinary, default=None)
 
-    test = ManyToOne('Test')
+    test = ManyToOne('Test', primary_key=True)
 
     def __repr__(self):
         return '<Command "%s": %s >' % (self.id, self.command)
