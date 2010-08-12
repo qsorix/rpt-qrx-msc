@@ -8,6 +8,7 @@ import sys
 import signal
 import subprocess
 from time import time, sleep
+from datetime import datetime
 import ConfigParser
 import thread
 import threading
@@ -36,30 +37,32 @@ class Scheduler:
     def prepare(self):
         for cmd in self.test.commands:
             if isinstance(cmd, Check):
-                self.check_scheduler.enter(0, 1, self.run_command, [cmd])
+                self.check_scheduler.enter(0, 1, self._run_command, [cmd])
         try:
             self.check_scheduler.run()
         except CheckError:
             print 'dupa'
 
-    def start(self, at_time=None, in_time=None):
+    def start(self, run, end):
         # Create setup commands scheduler
         for cmd in self.test.commands:
             if isinstance(cmd, Setup):
-                self.setup_scheduler.enter(0, 1, self.run_command, [cmd])
-
-        # TODO Create tasks scheduler
-
-        # Create clean commands scheduler
-        for cmd in self.test.commands:
+                self.setup_scheduler.enter(0, 1, self._run_command, [cmd])
+            if isinstance(cmd, Task):
+                type, value = self.resolv_run(cmd.run)
+                if type == 'in':
+                    self.task_scheduler.enter(value, 1, self.run_task, [cmd])
+                elif type == 'every':
+                    self.task_scheduler.enter(0, 1, self.run_task, [cmd])
             if isinstance(cmd, Clean):
-                self.setup_scheduler.enter(0, 1, self.run_command, [cmd])
+                self.clean_scheduler.enter(0, 1, self._run_command, [cmd])
 
         # Configure main scheduler
         self.main_scheduler.enter(0, 1, self.setup_scheduler.run, ())
-        if at_time:
+        type, value = self.resolv_run(run)
+        if type == 'at':
             self.main_scheduler.enterabs(mktime(self.test.start), 1, self.task_scheduler.run, ())
-        elif in_time:
+        elif type == 'in':
             self.main_scheduler.enter(in_time, 1, self.task_scheduler.run, ())
 
         # TODO Add some finishing method with clean_scheduler.run()
@@ -73,28 +76,25 @@ class Scheduler:
         status, output = commands.getstatusoutput(cmd.command)
         cmd.output = output
         if status is not 0:
-            raise CheckError
+            raise CheckError("Command '%s' ended badly." % (cmd.id))
 
     def _run_task(self, task):
-        print '[test %s] Running task "%s"' % (self.test.name, task.name)
+        print '[test %s] Running task "%s"' % (self.test.id, task.id)
 
-        args = shlex.split(task.command)
+        args = shlex.split(str(task.command))
         print args
 
-        # TODO Substitution
+        for arg in args:
+            if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', arg):
+                arg = self._subst(arg)
 
         p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
         task.pid = p.pid
-
         task.output = p.stdout.read()
 
     def _subst(self, param):
         cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test=self.test).all())
         file_ids = list(file.id for file in File.query.filter_by(test=self.test).all())
-
-        print cmd_ids
-        print file_ids
 
         def resolve_ref(matchobj):
             to_resolv = matchobj.group('ref')
@@ -120,4 +120,11 @@ class Scheduler:
             raise ResolvError("Cannot resolve '%s'." % (to_resolv))
 
         return re.sub('@{(?P<ref>[a-zA-Z0-9\._]+)}', resolve_ref, param)
+
+    def resolv_run(self, run):
+        run = run.split(' ')
+        if run[0] in ['every', 'in']:
+            return (run[0], int(run[1]))
+        elif run[0] in ['at']:
+            return (run[0], datetime.strptime(run[1], '%Y-%m-%d %H:%M:%S'))
 
