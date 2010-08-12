@@ -9,6 +9,7 @@ class TCPConnection(ConnectionPlugin):
     def __init__(self, host):
         self._ip = host.device['ip']
         self._port = host.device['connection_port']
+        self._socket = None
 
     def connect(self):
         assert not self._socket
