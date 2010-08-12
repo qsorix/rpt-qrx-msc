@@ -11,6 +11,7 @@ from common.Exceptions import DatabaseError
 class Manager:
     def __init__(self, handler):
         self.handler = handler
+        self.schedulers = {}
 
     def create_test(self, parent_id, id):
         test = Test.get_by(id=id)
@@ -136,6 +137,7 @@ class Manager:
                 size = int(os.path.getsize(file.path))
                 self.handler.send_ok(size=size)
                 with open(file.path, 'rb') as f:
+                    # TODO File doesn't exist.
                     while size > 1024:
                         data = f.read(1024)
                         self.handler.conn.wfile.write(data)
@@ -143,28 +145,32 @@ class Manager:
                     data = f.read(1024)
                     self.handler.conn.wfile.write(data)
         else:
-            self.handler.send_ok(size=len(cmd.output))
-            self.handler.conn.wfile.write(cmd.output)
+            if cmd.output:
+                self.handler.send_ok(size=len(cmd.output))
+                self.handler.conn.wfile.write(cmd.output)
+            else:
+                raise DatabaseError("Output for command named '%s' doesn't exist." % (id))
+                self.handler.send_bad_request()
 
     def prepare_test(self, parent_id, id):
         test = Test.get_by(id=id)
         if not test:
             raise DatabaseError("Test '%s' doesn't exist." % (id))
-        if not self.schedulers.haskey(id):
+        if not self.schedulers.has_key(id):
             self.schedulers[id] = Scheduler(test)
-        self.scheduler.prepare()
+        self.schedulers[id].prepare()
         self.handler.send_ok()
 
     def start_test(self, parent_id, id):
         test = Test.get_by(id=id)
         if not test:
             raise DatabaseError("Test '%s' doesn't exist." % (id))
-        if not self.schedulers.haskey(id):
+        if not self.schedulers.has_key(id):
             self.schedulers[id] = Scheduler(test)
         if params.haskey('at'):
-            self.scheduler.start(at_time=params['at'])
+            self.schedulers[id].start(at_time=params['at'])
         elif params.haskey('in'):
-            self.scheduler.start(in_time=params['in'])
+            self.schedulers[id].start(in_time=params['in'])
         self.handler.send_ok()
 
     def stop_test(self, parent_id, id):
