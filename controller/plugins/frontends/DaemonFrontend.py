@@ -1,5 +1,7 @@
 from controller.FrontendPlugin import FrontendPlugin
 
+import time
+
 class DaemonFrontend(FrontendPlugin):
     frontend_type = 'daemon'
 
@@ -23,6 +25,7 @@ class DaemonFrontend(FrontendPlugin):
 
         # FIXME: test id
         out('test @{id=%s}\n' % self._test_id)
+        resp = self.input().readline()
 
         for r in resources:
             r.transfer_with_daemon(self)
@@ -30,33 +33,38 @@ class DaemonFrontend(FrontendPlugin):
         for c in host_commands.check():
             id = self._make_id()
             out('check @{id=%i} %s\n' % (id, c))
+            resp = self.input().readline()
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
         for c in host_commands.setup():
             id = self._make_id()
             out('setup @{id=%i} %s\n' % (id, c))
+            resp = self.input().readline()
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
         for c in host_commands.cleanup():
             id = self._make_id()
-            out('cleanup @{id=%i} %s\n' % (id, c))
+            out('clean @{id=%i} %s\n' % (id, c))
+            resp = self.input().readline()
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
         for c in host_commands.schedule():
-            out('schedule @{id=%(id)s} @{run=%(run)s} %(cmd)s\n' %
+            out('task @{id=%(id)s} @{run=%(run)s} %(cmd)s\n' %
                 {'id': c['name'],
                  'run': c.run_policy().schedule_for_daemon(),
                  'cmd': c.command().command()})
+            resp = self.input().readline()
             assert c['name'] not in self._sent_cmds
             self._sent_cmds[c['name']] = c
 
         out('end\n')
+        resp = self.input().readline()
 
     def start_sanity_check(self):
-        self.output().write('start check @{id=%s}\n' % self._test_id)
+        self.output().write('prepare @{id=%s}\n' % self._test_id)
 
     def wait_sanity_check(self):
         print '  -- waiting for sanity check to finish at ' + self.host().model['name'] + ' --'
@@ -64,20 +72,45 @@ class DaemonFrontend(FrontendPlugin):
         #FIXME: check answer
 
     def start_test(self, timestamp):
-        self.output().write('start test @{id=%s} @{at=%s}\n' % (self._test_id, timestamp))
+        #FIXME: Add duration/until.
+        self.output().write('start @{id=%s} @{at=%s}\n' % (self._test_id, timestamp))
+        resp = self.input().readline()
         self.disconnect()
 
     def wait_test(self):
         print '  -- waiting for the test to finish at ' + self.host().model['name'] + ' --'
+        #FIXME: It cannot look this way (; Temp.
+        time.sleep(3)
 
     def fetch_results(self):
         self.connect()
 
-        #FIXME: protocol z dupy
         self.output().write('results @{id=%s}\n' % self._test_id)
+        resp = self.input().readline()
         for id in self._sent_cmds.keys():
-            self.output().write('get ' + str(id) + '\n')
+            self.output().write('get @{id=%s}\n' % id)
+
+            #FIXME: Do it better.
+            reply = self.input().readline()
+
+            if reply.startswith('20'):
+                size = int(reply.split(' ')[2])
+
+                received = 0
+                while received + 1024 < size:
+                    data = self.input().read(1024)
+                    received += 1024
+                    print data
+                data = self.input().read(size)
+                print data
+
         self.output().write('end\n')
+        resp = self.input().readline()
+
+        #FIXME: Temporarily deleting test after fetching results.
+        self.output().write('delete @{id=%s}\n' % self._test_id)
+        resp = self.input().readline()
+
         self.disconnect()
 
     def abort_test(self):

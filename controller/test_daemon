@@ -3,10 +3,11 @@ from utils.schedule import at, shell
 
 create_model('daemon_model')
 daemon = add_host('daemon')
-daemon_eth = daemon.add_interface('eth', ip='127.0.0.1')
+daemon_eth = daemon.add_interface('eth', ip='192.168.12.12')
 
 connection = {
     'connection': 'tcp',
+#    'connection': 'dummy',
     'connection_port': '4567',
     'frontend': 'daemon',
     'shell': 'linux_shell'

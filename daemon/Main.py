@@ -8,7 +8,7 @@ if __name__ == "__main__":
     d.setup_database()
     d.setup_config()
 
-    HOST, PORT = "localhost", 9999
+    HOST, PORT = "localhost", 4567
     SocketServer.TCPServer.allow_reuse_address = True
     daemon = SocketServer.TCPServer((HOST, PORT), d.DaemonHandler)
     daemon.serve_forever()
