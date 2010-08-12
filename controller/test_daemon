@@ -1,0 +1,27 @@
+from utils.model import interface
+from utils.schedule import at, shell
+
+create_model('daemon_model')
+daemon = add_host('daemon')
+daemon_eth = daemon.add_interface('eth', ip='127.0.0.1')
+
+connection = {
+    'connection': 'tcp',
+    'connection_port': '4567',
+    'frontend': 'daemon',
+    'shell': 'linux_shell'
+}
+
+create_laboratory('daemon_lab')
+
+marvin = add_device('marvin', ip = '127.0.0.1', **connection)
+marvin_eth0 = marvin.add_interface('eth0')
+
+create_mapping('daemon_map')
+
+bind(daemon, marvin)
+bind(daemon_eth, marvin_eth0)
+
+create_schedule('daemon_sched')
+
+append_schedule('daemon', [('echo', at(0), shell('echo test'))])
