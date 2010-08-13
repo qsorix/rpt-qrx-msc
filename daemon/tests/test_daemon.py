@@ -2,7 +2,6 @@
 # coding=utf-8
 
 import nose
-from nose.tools import with_setup
 import socket
 import os
 import thread
@@ -52,9 +51,9 @@ class TestDaemon:
         reply = self._send_sth('end\n')
         assert reply.startswith('20')
 
-#        reply = self._send_sth('delete @{id=test_daemon}\n')
-#        assert reply.startswith('20')
-#        assert Test.get_by(id=u'test_daemon') == None
+        reply = self._send_sth('delete @{id=test_daemon}\n')
+        assert reply.startswith('20')
+        assert Test.get_by(id=u'test_daemon') == None
 
     def test_same_id_commands(self):
         reply = self._send_sth('test @{id=test_daemon}\n')
@@ -87,31 +86,31 @@ class TestDaemon:
 
         reply = self._send_sth('check @{id=check1} uname -a\n')
         assert reply.startswith('20')
-        check = Check.get_by(id=u'check1')#, test_id='test_daemon')
+        check = Check.get_by(id=u'check1', test_id='test_daemon')
         assert check != None
         assert check.command == 'uname -a'
 
         reply = self._send_sth('check @{id=check2} gcc --version\n')
         assert reply.startswith('20')
-        check = Check.get_by(id=u'check2')#, test_id='test_daemon')
+        check = Check.get_by(id=u'check2', test_id='test_daemon')
         assert check != None
         assert check.command == 'gcc --version'
 
         reply = self._send_sth('check @{id=check3} which badprogram\n')
         assert reply.startswith('20')
-        check = Check.get_by(id=u'check3')#, test_id='test_daemon')
+        check = Check.get_by(id=u'check3', test_id='test_daemon')
         assert check != None
         assert check.command == 'which badprogram'
 
         reply = self._send_sth('setup @{id=setup} echo setup\n')
         assert reply.startswith('20')
-        setup = Setup.get_by(id=u'setup')#, test_id='test_daemon')
+        setup = Setup.get_by(id=u'setup', test_id='test_daemon')
         assert setup != None
         assert setup.command == 'echo setup'
 
         reply = self._send_sth('task @{id=task} @{run=in 3} echo task\n')
         assert reply.startswith('20')
-        task = Task.get_by(id=u'task')#, test_id='test_daemon')
+        task = Task.get_by(id=u'task', test_id='test_daemon')
         assert task != None
         assert task.command == 'echo task'
         assert task.run == 'in 3'
@@ -127,7 +126,7 @@ class TestDaemon:
         self.sock.send('file @{id=file} @{size=3}\n')
         reply = self._send_sth('123')
         assert reply.startswith('20')
-        file = File.get_by(id=u'file')#, test_id=u'test_daemon')
+        file = File.get_by(id=u'file', test_id=u'test_daemon')
         assert file != None
         assert file.size == 3
 
@@ -140,4 +139,5 @@ class TestDaemon:
         if test:
             session.delete(test)
             session.commit()
+        session.close()
 

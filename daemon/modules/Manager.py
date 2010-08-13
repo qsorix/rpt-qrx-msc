@@ -14,8 +14,7 @@ class Manager:
         self.schedulers = {}
 
     def create_test(self, parent_id, id):
-        test = Test.get_by(id=id)
-        if not test:
+        if not Test.get_by(id=id):
             test = Test(id=id)
             session.commit()
         else:
@@ -31,12 +30,9 @@ class Manager:
         self.handler.send_ok()
 
     def add_check_command(self, test_id, id, command):
-        test = Test.get_by(id=test_id)
-        cmd = Command.get_by(test=test, id=id)
-        if not cmd:
-            file = File.get_by(test=test, id=id)
-            if not file:
-                cmd = Check(test=test, id=id, command=command)
+        if not Command.get_by(test_id=test_id, id=id):
+            if not File.get_by(test_id=test_id, id=id):
+                cmd = Check(test_id=test_id, id=id, command=command)
                 session.commit()
             else:
                 raise DatabaseError("Command or file named '%s' already exists." % (id))
@@ -45,12 +41,9 @@ class Manager:
         self.handler.send_ok()
 
     def add_setup_command(self, test_id, id, command):
-        test = Test.get_by(id=test_id)
-        cmd = Command.get_by(test=test, id=id)
-        if not cmd:
-            file = File.get_by(test=test, id=id)
-            if not file:
-                cmd = Setup(test=test, id=id, command=command)
+        if not Command.get_by(test_id=test_id, id=id):
+            if not File.get_by(test_id=test_id, id=id):
+                cmd = Setup(test_id=test_id, id=id, command=command)
                 session.commit()
             else:
                 raise DatabaseError("Command or file named '%s' already exists." % (id))
@@ -59,12 +52,9 @@ class Manager:
         self.handler.send_ok()
 
     def add_task_command(self, test_id, id, run, command):
-        test = Test.get_by(id=test_id)
-        cmd = Command.get_by(test=test, id=id)
-        if not cmd:
-            file = File.get_by(test=test, id=id)
-            if not file:
-                cmd = Task(test=test, id=id, command=command, run=run)
+        if not Command.get_by(test_id=test_id, id=id):
+            if not File.get_by(test_id=test_id, id=id):
+                cmd = Task(test_id=test_id, id=id, command=command, run=run)
                 session.commit()
             else:
                 raise DatabaseError("Command or file named '%s' already exists." % (id))
@@ -73,12 +63,9 @@ class Manager:
         self.handler.send_ok()
  
     def add_clean_command(self, test_id, id, command):
-        test = Test.get_by(id=test_id)
-        cmd = Command.get_by(test=test, id=id)
-        if not cmd:
-            file = File.get_by(test=test, id=id)
-            if not file:
-                cmd = Clean(test=test, id=id, command=command)
+        if not Command.get_by(test_id=test_id, id=id):
+            if not File.get_by(test_id=test_id, id=id):
+                cmd = Clean(test_id=test_id, id=id, command=command)
                 session.commit()
             else:
                 raise DatabaseError("Command or file named '%s' already exists." % (id))
@@ -87,16 +74,13 @@ class Manager:
         self.handler.send_ok()
 
     def add_file(self, test_id, id, size):
-        test = Test.get_by(id=test_id)
-        file = File.get_by(test=test, id=id)
-        if not file:
-            cmd = Command.get_by(test=test, id=id)
-            if not cmd:
+        if not File.get_by(test_id=test_id, id=id):
+            if not Command.get_by(test_id=test_id, id=id):
                 config = ConfigParser.SafeConfigParser()
                 config.read('daemon.cfg')
                 tmpdir = config.get('Daemon', 'tmpdir')
                 path = tmpdir + '/' + test_id + '_' + id
-                file = File(test=test, id=id, size=size, path=path)
+                file = File(test_id=test_id, id=id, size=size, path=path)
                 session.commit()
                 with open(path, 'wb') as f:
                     while size > 1024:
@@ -112,11 +96,8 @@ class Manager:
         self.handler.send_ok()
 
     def delete_command_or_file(self, test_id, id):
-        test = Test.get_by(id=test_id)
-        cmd = Command.get_by(test=test, id=id)
-        if not cmd:
-            file = File.get_by(test=test, id=id)
-            if not file:
+        if not Command.get_by(test_id=test_id, id=id):
+            if not File.get_by(test_id=test_id, id=id):
                 raise DatabaseError("Command or file named '%s' doesn't exist." % (id))
             else:
                 os.remove(file.path)
@@ -127,10 +108,9 @@ class Manager:
         self.handler.send_ok()
 
     def get_results(self, test_id, id):
-        test = Test.get_by(id=test_id)
-        cmd = Command.get_by(test=test, id=id)
+        cmd = Command.get_by(test_id=test_id, id=id)
         if not cmd:
-            file = File.get_by(test=test, id=id)
+            file = File.get_by(test_id=test_id, id=id)
             if not file:
                 raise DatabaseError("Command or file named '%s' doesn't exist." % (id))
             else:
