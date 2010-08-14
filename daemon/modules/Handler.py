@@ -2,6 +2,7 @@
 # coding=utf-8
 
 import sys
+import socket
 
 from daemon.Models import *
 from modules.Parser import Parser
@@ -32,25 +33,28 @@ class Handler:
             'stop'        : manager.stop_test
         }
 
-        # FIXME Correct connection dropping
-
-        while 1:
-            line = self.receive()
-            try:
-                type, params = parser.parse(line, parent)
-                if types_and_actions.get(type):
-                    result = types_and_actions.get(type)(parent_id, **params)
-            except (LineError, ParentError, TypeError, ParamError, ValueError, DatabaseError):
-                self.send_bad_request()
-            else:
-                if type in ['test', 'results']:
-                    parent = type
-                    parent_id = params['id']
-                    self.send_ok()
-                if type.endswith('end'):
-                    parent = None
-                    parent_id = None
-                    self.send_ok()
+        try:
+            while 1:
+                line = self.receive()
+                if line == '':
+                    raise socket.error
+                try:
+                    type, params = parser.parse(line, parent)
+                    if types_and_actions.get(type):
+                        result = types_and_actions.get(type)(parent_id, **params)
+                except (LineError, ParentError, TypeError, ParamError, ValueError, DatabaseError):
+                    self.send_bad_request()
+                else:
+                    if type in ['test', 'results']:
+                        parent = type
+                        parent_id = params['id']
+                        self.send_ok()
+                    if type.endswith('end'):
+                        parent = None
+                        parent_id = None
+                        self.send_ok()
+        except socket.error, IOError:
+            print >> sys.stderr, "[%s] Connection dropped" % self.conn.client_address[0]
 
     def receive(self):
         data = self.conn.rfile.readline().strip()
@@ -70,6 +74,9 @@ class Handler:
 
     def send_bad_request(self):
         self.send('400 Bad Request')
+
+    def send_check_error(self):
+        self.send('401 Check Error')
 
     def send_end(self):
         self.send('600 The End')

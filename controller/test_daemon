@@ -26,3 +26,4 @@ bind(daemon_eth, marvin_eth0)
 create_schedule('daemon_sched')
 
 append_schedule('daemon', [('echo', at(0), shell('echo test'))])
+append_schedule('daemon', [('badone', at(1), shell('badone test'))])

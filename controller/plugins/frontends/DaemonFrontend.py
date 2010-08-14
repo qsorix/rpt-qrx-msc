@@ -24,6 +24,7 @@ class DaemonFrontend(FrontendPlugin):
         out = self.output().write
 
         # FIXME: test id
+        # TODO It's yours. I don't know what you mean.
         out('test @{id=%s}\n' % self._test_id)
         resp = self.input().readline()
 
@@ -69,18 +70,25 @@ class DaemonFrontend(FrontendPlugin):
     def wait_sanity_check(self):
         print '  -- waiting for sanity check to finish at ' + self.host().model['name'] + ' --'
         resp = self.input().readline()
-        #FIXME: check answer
+        if resp.startswith('401'):
+            print 'sanity check failed'
+            # TODO Do sth about it
 
     def start_test(self, timestamp):
-        #FIXME: Add duration/until.
-        self.output().write('start @{id=%s} @{at=%s}\n' % (self._test_id, timestamp))
+        # FIXME Fix the whole run/end/timestamp thing.
+        run = 'in 2'
+        end = 'duration 3'
+        self.output().write('start @{id=%s} @{run=%s} @{end=%s}\n' % (self._test_id, run, end))
         resp = self.input().readline()
         self.disconnect()
 
     def wait_test(self):
         print '  -- waiting for the test to finish at ' + self.host().model['name'] + ' --'
-        #FIXME: It cannot look this way (; Temp.
-        time.sleep(3)
+
+        # FIXME It should wait for 'duration' + 1 seconds unless in some other mode.
+        end = 'duration 3'
+        wait_time = end.split(' ')[1]
+        time.sleep(wait_time)
 
     def fetch_results(self):
         self.connect()
@@ -90,7 +98,7 @@ class DaemonFrontend(FrontendPlugin):
         for id in self._sent_cmds.keys():
             self.output().write('get @{id=%s}\n' % id)
 
-            #FIXME: Do it better.
+            # FIXME Put those results in some database or sth.
             reply = self.input().readline()
 
             if reply.startswith('20'):
@@ -107,12 +115,12 @@ class DaemonFrontend(FrontendPlugin):
         self.output().write('end\n')
         resp = self.input().readline()
 
-        #FIXME: Temporarily deleting test after fetching results.
+        # FIXME Temporarily deleting test after fetching results.
         self.output().write('delete @{id=%s}\n' % self._test_id)
         resp = self.input().readline()
 
         self.disconnect()
 
     def abort_test(self):
-        # FIXME: implement clean up
+        # TODO Implement aborting sanity check and test itself.
         pass
