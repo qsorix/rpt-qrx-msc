@@ -87,7 +87,7 @@ class DaemonFrontend(FrontendPlugin):
 
         # FIXME It should wait for 'duration' + 1 seconds unless in some other mode.
         end = 'duration 3'
-        wait_time = end.split(' ')[1]
+        wait_time = int(end.split(' ')[1])
         time.sleep(wait_time)
 
     def fetch_results(self):
