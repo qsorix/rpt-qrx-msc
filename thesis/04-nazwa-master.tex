@@ -84,8 +84,19 @@ korzystanie z innych języków ponieważ:
 \item instalacja jest prosta,
 \item jest przenośny,
 \item skrypty nie wymagają kompilacji,
+\item posiada mechanizmy znane z języków funkcyjnych,
+\item umożliwia przeładowywanie operatorów,
 \item jest ogólnie znany i łatwy do nauki.
 \end{itemize}
+
+Fakt, że Python umożliwia przeładowanie znaczenia operatorów oraz wspiera
+szeroką gamę technik stosowanych w programowaniu funkcyjnym powoduje, że
+łatwiej jest go użyć jako DSL, gdyż jesteśmy w stanie tworzyć nowe konstrukcje,
+które będą dokładnie odpowiadać naszym potrzebom, a jednocześnie pozostaną
+zwięzłe w opisie.
+
+Równie istotną cechą Pythona jest bogata biblioteka standardowa, z której mogą
+korzystać autorzy własnych modułów rozszerzających możliwości frameworku.
 
 Porównując z popularnymi językami: zarówno Java jak i C++ ze względu na
 silne typowanie posiadają bardzo werbalną składnię, która utrudniałaby
@@ -94,10 +105,17 @@ kompilowana po każdej zmianie. Perl jest mniej popularny i naszym zdaniem
 trudniejszy od Pythona. Bash i inne języki powłok systemowych są zbyt ubogie,
 żeby wygodnie się nimi posługiwać w tworzeniu złożonych struktur danych.
 Interesującą alternatywą byłby Lua, uznaliśmy jednak, że nie chcemy zmuszać
-użytkowników do nauki niezbyt popularnego języka.
+użytkowników do nauki mniej popularnego języka.
 
-\FIXME{dyskusja na temat niebezpieczeństw związanych z użyciem pythona (brak
-konroli nad wykonywanym kodem, itp.)}
+Przeciwnicy Pythona mogą wytknąć wadę związaną z bezpieczeństwem. Jako, że
+konfiguracja testu jest interpretowana jako kod źródłowy programu, możliwe są
+różnego rodzaju nadużycia. Uznaliśmy jednak, że nie możemy ograniczać
+użytkowników w kwestiach takich jak dostęp do dysków twardych czy sieci, gdyż
+wypaczałoby to działanie narzędzia.
+
+Ryzyko ogranicza fakt, że kod źródłowy programu jak i treść konfiguracji jest
+zapisana w postaci tekstowej i można samodzielnie skontrolować akcje
+podejmowane przez uruchamiany kod.
 
 \subsection{Format konfiguracji}
 
@@ -417,15 +435,12 @@ plan:
 
 \begin{pythoncode}
   dccp = flow('dccp',
-      server_command='iperf -s -p 1024 -t dccp',
-      client_command='iperf -c @{server.ip} -p 1024 -t dccp')
+      server_command='iperf -s -p 4099 -t dccp',
+      client_command='iperf -c @{server.ip} -p 4099 -t dccp')
 
   append_schedule('alice', dccp.server(start=0, end=30))
   append_schedule('bob',   dccp.client(start=1, end=29, server='alice'))
 \end{pythoncode}
-
-\FIXME{Polecenia pisane są z pamięci. Sprawdzić, czy iperf faktycznie przyjmuje
-takie argumenty. Port 1024 to nie jest najlepszy port ;)}
 
 Fragment ten używa pomocniczej klasy \code{flow} do wygenerowania komend
 uruchamiających i kończących aplikacje klienta i serwera. Przed testem
