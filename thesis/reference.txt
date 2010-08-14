@@ -69,3 +69,11 @@ Funkcje i metody:
 Typy:
   - RunPolicy
   - Command
+
+Reference "Global"
+==================
+parameters
+
+Metody:
+  parameters['key']
+  parameters.get_secure('password')

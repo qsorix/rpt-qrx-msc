@@ -32,6 +32,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Main.py')
     parser.add_argument('-c', '--config',   help='configuration files', required=True, nargs='+')
     parser.add_argument('-s', '--set', help='set a test parameter, the format is name=value', required=False, nargs='+', default=[])
+    parser.add_argument('--askparams', help='ask for values of missing parameters', required=False, action='store_true', default=False, dest='ask_parameters')
     parser.add_argument('--plugins', help='plugins path', required=False, nargs='+', default=[])
     parser.add_argument('--hooks', help='names of the hooks to run', required=False, nargs='+', default=[])
 
@@ -40,6 +41,7 @@ if __name__ == "__main__":
     load_plugins(plugins + args.plugins)
 
     try:
+        Global.parameters.prompt_parameters(args.ask_parameters)
         consume_parameters(args.set)
 
         c = Configuration.Configuration()
