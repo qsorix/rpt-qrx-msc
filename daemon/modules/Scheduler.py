@@ -41,17 +41,19 @@ class Scheduler:
         self.check_scheduler.run()
 
     def start(self, run, end):
-        # Create setup commands scheduler
         for cmd in self.test.commands:
+            # Setup commands:
             if isinstance(cmd, Setup):
                 self.setup_scheduler.enter(0, 1, self._run_command, [cmd])
+            # Tasks:
             if isinstance(cmd, Task):
                 type, value = self.resolv_run(cmd.run)
                 if type == 'in':
-                    self.task_scheduler.enter(value, 1, self.run_task, [cmd])
-                elif type == 'every':
-                    self.task_scheduler.enter(0, 1, self.run_task, [cmd])
+                    self.task_scheduler.enter(value, 1, self._run_task, [cmd])
+#                elif type == 'every':
+#                    self.task_scheduler.enter(0, 1, self._run_task, [cmd])
                     # TODO Run task every x seconds
+            # Clean commands:
             if isinstance(cmd, Clean):
                 self.clean_scheduler.enter(0, 1, self._run_command, [cmd])
 
@@ -62,11 +64,13 @@ class Scheduler:
             self.main_scheduler.enterabs(value, 1, self.task_scheduler.run, ())
         elif type == 'in':
             self.main_scheduler.enter(value, 1, self.task_scheduler.run, ())
-
-        # TODO Add some finishing method with clean_scheduler.run()
+        type, value = self.resolv_end(end)
+        if type == 'duration':
+            self.main_scheduler.enter(value, 1, self.clean_scheduler.run, ())
+#        elif type == 'until'... TODO
 
         # Run main scheduler
-        print '[test %s] Starting' % self.test.id
+        print '[test %s] Starting...' % self.test.id
         self.main_scheduler.run()
 
     def _run_command(self, cmd):
@@ -80,15 +84,17 @@ class Scheduler:
         print '[test %s] Running task "%s"' % (self.test.id, task.id)
 
         args = shlex.split(str(task.command))
-        print args
 
         for arg in args:
             if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', arg):
                 arg = self._subst(arg)
 
-        p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        task.pid = p.pid
-        task.output = p.stdout.read()
+        try:
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            task.pid = p.pid
+            task.output = p.stdout.read()
+        except OSError:
+            pass
 
     def _subst(self, param):
         cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test=self.test).all())
