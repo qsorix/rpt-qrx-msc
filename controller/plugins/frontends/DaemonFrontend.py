@@ -69,18 +69,21 @@ class DaemonFrontend(FrontendPlugin):
     def wait_sanity_check(self):
         print '  -- waiting for sanity check to finish at ' + self.host().model['name'] + ' --'
         resp = self.input().readline()
-        #FIXME: check answer
+        if resp.startswith('401'):
+            print 'sanity check failed'
+            # TODO Do sth about it
 
     def start_test(self, timestamp):
         #FIXME: Add duration/until.
-        self.output().write('start @{id=%s} @{at=%s}\n' % (self._test_id, timestamp))
+#        self.output().write('start @{id=%s} @{at=%s} \n' % (self._test_id, timestamp))
+        self.output().write('start @{id=%s} @{run=in 2} @{end=duration 10}\n' % (self._test_id))
         resp = self.input().readline()
         self.disconnect()
 
     def wait_test(self):
         print '  -- waiting for the test to finish at ' + self.host().model['name'] + ' --'
         #FIXME: It cannot look this way (; Temp.
-        time.sleep(3)
+        time.sleep(4)
 
     def fetch_results(self):
         self.connect()

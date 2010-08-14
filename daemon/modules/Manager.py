@@ -6,7 +6,7 @@ import ConfigParser
 
 from daemon.Models import *
 from modules.Scheduler import Scheduler
-from common.Exceptions import DatabaseError
+from common.Exceptions import DatabaseError, CheckError
 
 class Manager:
     def __init__(self, handler):
@@ -138,19 +138,20 @@ class Manager:
             raise DatabaseError("Test '%s' doesn't exist." % (id))
         if not self.schedulers.has_key(id):
             self.schedulers[id] = Scheduler(test)
-        self.schedulers[id].prepare()
-        self.handler.send_ok()
+        try:
+            self.schedulers[id].prepare()
+        except CheckError:
+            self.handler.send_check_error()
+        else:
+            self.handler.send_ok()
 
-    def start_test(self, parent_id, id):
+    def start_test(self, parent_id, id, run, end):
         test = Test.get_by(id=id)
         if not test:
             raise DatabaseError("Test '%s' doesn't exist." % (id))
         if not self.schedulers.has_key(id):
             self.schedulers[id] = Scheduler(test)
-        if params.haskey('at'):
-            self.schedulers[id].start(at_time=params['at'])
-        elif params.haskey('in'):
-            self.schedulers[id].start(in_time=params['in'])
+        self.schedulers[id].start(run, end)
         self.handler.send_ok()
 
     def stop_test(self, parent_id, id):

@@ -33,8 +33,6 @@ class Handler:
             'stop'        : manager.stop_test
         }
 
-        # TODO Not accepting connections when a test is running
-
         try:
             while 1:
                 line = self.receive()
@@ -76,6 +74,9 @@ class Handler:
 
     def send_bad_request(self):
         self.send('400 Bad Request')
+
+    def send_check_error(self):
+        self.send('401 Check Error')
 
     def send_end(self):
         self.send('600 The End')
