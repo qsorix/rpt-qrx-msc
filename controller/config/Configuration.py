@@ -5,6 +5,7 @@ import Laboratory
 import Mapping
 import Schedule
 import Resources
+import Utils
 import common.Exceptions as Exceptions
 
 import traceback
@@ -101,9 +102,17 @@ class Configuration:
             host.model = h
             host.device = h.bound()
             host.schedule = Schedule.get_schedule().host_schedule(h['name'])
-            host.resources = set(h.needed_resources())
+
+            resources = set(h.needed_resources())
             for event in host.schedule:
-                host.resources.update(event.command().needed_resources())
+                resources.update(event.command().needed_resources())
+
+            def resolve_resource(r):
+                if isinstance(r, str):
+                    return Utils.resolve_resource_name(r)
+                return r
+
+            host.resources = set(map(resolve_resource, resources))
 
             ct.hosts[h['name']] = host
 
