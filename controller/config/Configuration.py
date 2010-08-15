@@ -36,7 +36,7 @@ class ConfiguredTest:
                 raise Exceptions.SanityError("Key name is different than element's name")
 
             if not host.model.bound():
-                raise Exceptions.SanityError("Model host '%s' is not bound" % host['name'])
+                raise Exceptions.SanityError("Model host '%s' is not bound" % host.model['name'])
 
             device = host.device
 
