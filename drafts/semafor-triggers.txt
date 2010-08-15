@@ -1,0 +1,87 @@
+Do czego to?
+============
+Do informowania zainteresowanych slaves, żeby na innych coś się stało. Np.
+żeby zakończyć test torrenta po tym, jak wszyscy ściągną, albo żeby zabić
+serwer, kiedy klient skończy z nim gadać.
+
+Jak?
+====
+Na controllerze, w konfiguracji testu, tworzy się nazwane liczniki (Trigger).
+Początkowa wartość licznika jest ustalana w konfiguracji.
+
+W czasie testu slave może wysłać notify do triggera podając jego nazwę.
+Controller wtedy zmniejsza o jeden wartość licznika. Jeżeli licznik wyniesie
+zero, powiadamiane są wszystkie slaves, które są połączone.
+
+Dodatkowa praca
+===============
+Analogiczny mechanizm i tak trzeba zrobić, żeby wspierać scenariusz z
+torrentem. Zaproponowany sposób pozwoli wykorzystać ten sam mechanizm do wielu
+innych scenariuszy, więc ostatecznie będzie mniej pisania.
+
+W konfiguracji już na pewno trzeba wydzielić cześć do określania takich
+globalnych parametrów, jak sposób zakończenia testu, te triggery itp. Bo jest
+tego coraz więcej. (QRX: zrobię to)
+
+Przykład
+========
+1: create_trigger('stop-torrent', 8) # 8 to ilosc uczestnikow
+
+2: torrentschedule = [
+3:    ('ctorrent', at(0), shell('ctorrent @{torrent.path} -X @{arete-slave-poke}', use_resources=[torrent])),
+4:    ('poke', poke(), notify('stop-torrent'))
+5:    ('stop', trigger('stop-torrent'), shell('kill @{ctorrent.pid}'))
+6: ]
+
+7: append_schedule('client1', torrentschedule)
+8: append_schedule('client2', torrentschedule)
+9: ...
+
+Linia 1: tak tworzony jest trigger o nazwie stop-torrent i jego wartość
+początkowa ustawiana jest na 8.
+
+Linia 3: po prostu uruchamia ctorrenta. -X to opcja z komendą, która ma być
+wykonana po zakończeniu pobierania. Rozmawialiśmy o tym, żeby Slave pozwalał
+np. wysłać sobie SIGUSR1. Raczej nie będzie problemu, żeby ten mechanizm
+wystawić przez @{}, żeby było prościej. Można tam podstawić np. 
+  kill -SIGUSR1 pid-slave'a.
+
+Linia 4: w jakiś sposób trzeba powiedzieć, co zrobić, jak przyjdzie poke
+(SIGUSR1). Tutaj moja propozycja tego sposobu. notify() to osobny konstruktor,
+dzięki czemu można komendę wysłać winnym formacie, żeby było łatwo odróżnić,
+że nie jest to coś do wykonania w shellu, tylko wbudowana komenda frontendu.
+
+Notify wysyła do kontrolera informację, żeby zmniejszył o jeden trigger
+stop-torrent
+
+Linia 5: Akcja do wykonania po otrzymaniu trigger'a 'stop-torrent'. Rozkaz
+uruchomienia przyjdzie od kontrolera, kiedy jego licznik zejdzie do zera.
+
+Podsumowując
+============
+Slave musi implementować
+  - obsługa SIGUSR1
+  - @{jakaś-zmienna}, żeby komendy mogłby łatwo używać "poke"
+  - komendy uruchamiane przy run-policy "poke"
+  - komendy uruchamiane przy run-policy "trigger"
+  - wysyłanie do kontrolera rozkazu notify nazwa-triggera
+  - odbieranie od kontrolera rozkazu triggered nazwa-triggera
+
+Controler musi implementować:
+  - tworzenie triggerów
+  - odbieranie rozkazu notify nazwa-triggera od dowolnego frontendu w czasie
+    testu
+  - wysylanie do wszystkich rozkazu triggered nazwa-triggera
+
+Priorytet
+=========
+Zrobimy to na koniec, jak już wszystko będzie działać w klasycznych testach
+(kończonych na duration).
+
+Należy wziąć pod uwagę run-policy poke i trigger przy tworzeniu slave'a.
+Potrzebny jest też sposób przesłania "wbudowanych" komend slave'a, tzn.
+takich, których nie będzie się wykonywać w shellu.
+
+Nasłuchiwanie na wszystkich połączeniach będzie wymagać zmian w kodzie
+Controller.py - dopisanie select'a na socketach. To może być duża zmiana w
+logice tamtego klocka, bo nie chcę wprowadzać wątków.
