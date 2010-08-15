@@ -36,6 +36,7 @@ if __name__ == "__main__":
     parser.add_argument('--askparams', help='ask for values of missing parameters', required=False, action='store_true', default=False, dest='ask_parameters')
     parser.add_argument('--plugins', help='plugins path', required=False, nargs='+', default=[])
     parser.add_argument('--hooks', help='names of the hooks to run', required=False, nargs='+', default=[])
+    parser.add_argument('--map', help='allows you to specify mapping on command line in the format model:device', required=False, nargs='+', default=[])
 
     args = parser.parse_args()
 
@@ -46,7 +47,7 @@ if __name__ == "__main__":
         consume_parameters(args.set)
 
         c = Configuration.Configuration()
-        configured_test = c.read(args.config)
+        configured_test = c.read(args.config, args.map)
 
         e = Generator.Generator()
         prepared_commands = e.process( configured_test )

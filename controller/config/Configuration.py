@@ -53,11 +53,14 @@ class ConfiguredTest:
                 if not interface.bound():
                     raise Exceptions.SanityError("Interface '%s' of model host '%s' is not bound" % (iname, name))
 
+        if not Schedule.get_schedule().test_end_policy():
+            raise Exceptions.SanityError("Test end policy not specified. Use test_end_policy(<policy>) in your configuration.")
+
 class Configuration:
     def __init__(self):
         self._configured_test = []
 
-    def read(self, files):
+    def read(self, files, cmdline_mappings):
 
         globals = {}
         globals.update(Model.public_functions)
@@ -73,11 +76,27 @@ class Configuration:
             except Exception as e:
                 raise Exceptions.ConfigurationError(e, traceback=traceback.format_exc())
 
+        self._command_line_mappings(cmdline_mappings)
+
         self._sanity_check()
 
         self._combine_hosts()
 
         return self.configured_test()
+
+
+    def _command_line_mappings(self, mappings):
+        if not mappings: return
+
+        #try:
+        Mapping.create_mapping('command-line')
+        for m in mappings:
+            (model, device) = m.split(':')
+            Mapping.bind(model, device)
+
+        #except Exception as e:
+            #raise e
+            #raise Exceptions.ConfigurationError(e, "Could not parse command line mappings {0!r}".format(mappings));
 
     def _sanity_check(self):
         if not Model.get_model():
