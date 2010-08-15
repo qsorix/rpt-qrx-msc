@@ -2,6 +2,16 @@
 
 from common import Exceptions
 
+def resolve_resource_name(name):
+    base_error = "Name '{0}' cannot be used as a resource reference. Resource unknown.".format(name)
+
+    from config.Resources import resources
+
+    try:
+        return resources.resources()[name]
+    except KeyError:
+        raise Exceptions.ConfigurationError(base_error)
+
 def resolve_name(name, model=False, laboratory=False):
     if not model and not laboratory:
         model = True
