@@ -86,16 +86,15 @@ def create_schedule(name):
         raise Exceptions.ConfigurationError('You cannot create more than one schedule.')
     _schedule = Schedule(name)
 
-def get_schedule():
+def get_schedule(validate=True):
     global _schedule
+    if validate and _schedule is None:
+        raise Exceptions.ConfigurationError('These is no schedule. Did you forget to call \'create_schedule(name)\'?')
     return _schedule
 
 def append_schedule(*args, **kwargs):
-    s = get_schedule()
-    if not s:
-        raise Exceptions.ConfigurationError('These is no schedule. Did you forget to call \'create_schedule(name)\' before calling append_schedule?')
+    return get_schedule().append_schedule(*args, **kwargs)
 
-    return s.append_schedule(*args, **kwargs)
 
 public_functions = {
     'create_schedule': create_schedule,

@@ -48,15 +48,14 @@ def destroy_mapping():
 
     _mapping = None
 
-def get_mapping():
+def get_mapping(validate=True):
     global _mapping
+    if validate and _mapping is None:
+        raise Exceptions.ConfigurationError('There is no mapping. Did you forget to call \'create_mapping(name)\'?')
     return _mapping
 
 def bind(*args, **kwargs):
     m = get_mapping()
-    if m is None:
-        raise Exceptions.ConfigurationError('There is no mapping. Did you forget to call \'create_mapping(name)\' before calling bind?')
-
     return m.bind(*args, **kwargs)
 
 public_functions = {
