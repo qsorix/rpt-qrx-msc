@@ -3,6 +3,7 @@
 import sys
 import uuid
 import datetime
+import time
 
 from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
@@ -122,16 +123,14 @@ class Controller:
         for frontend in self._frontends.values():
             frontend.start_test(duration_policy)
 
-        # FIXME: during the test we have to read/write some stuff, like
-        # notification about finished tests, or triggers if they're going to be
-        # implemented
-        # this is a place to do it. think about some collective algorithm that
-        # won't break encapsulation and will work with all frontends in
-        # "parallel".
-
         # wait for the test to end
-        for frontend in self._frontends.values():
-            frontend.wait_test()
+        all_finished = False
+        while(not all_finished):
+            time.sleep(1.0)
+            all_finished = True
+            for frontend in self._frontends.values():
+                ffinished = frontend.check_test_end()
+                all_finished = all_finished and ffinished
 
     def _fetch_results(self):
         for frontend in self._frontends.values():

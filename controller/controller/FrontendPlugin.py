@@ -23,7 +23,8 @@ class FrontendPlugin:
     wait_sanity_check
     deploy_configuration
     start_test
-    wait_test
+    check_test_end
+      nonblocking call. returns true if the test has finished
     fetch_results
     abort_test
     ====================
@@ -45,6 +46,9 @@ class FrontendPlugin:
         self._host = host
         self._connection_class = connection_class
         self._connection = connection_class(self.host())
+
+    def connection(self):
+        return self._connection
 
     def output(self):
         assert self._connection

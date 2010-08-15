@@ -8,7 +8,7 @@ add_host('server')
 
 create_schedule('send-torrent')
 
-test_end_policy('duration 5.0', setup_phase_delay=5.0)
+test_end_policy('complete', setup_phase_delay=2.0)
 
 add_resource(File('serverdist', 'Server.py'))
 add_resource(File('clientdist', 'Client.py'))
