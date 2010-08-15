@@ -1,0 +1,47 @@
+from utils.resources import File
+from utils.schedule import every, shell, ClientServer
+from command.DriverPlugin import HostDriverPlugin
+
+class IPTablesCounters(HostDriverPlugin):
+    def process(self, cmd, host, attributes):
+        if 'iptables_counters' not in attributes:
+            return 
+
+        protocols = host.model['iptables_counters']
+
+        cmd.add_setup('iptables -F')
+        for proto in protocols:
+            cmd.add_setup('iptables -I INPUT -p {0}'.format(proto))
+            cmd.add_setup('iptables -I OUTPUT -p {0}'.format(proto))
+
+        cmd.add_cleanup('iptables -F')
+
+        attributes.remove('iptables_counters')
+
+
+create_model('dccp_flow')
+
+add_host('client', iptables_counters=['33', 'tcp', 'udp']) # 33 is DCCP
+add_host('server', iptables_counters=['33', 'tcp', 'udp'])
+
+create_schedule('dccp_flow')
+test_end_policy('duration 20', setup_phase_delay=1.0)
+
+dccp = ClientServer('dccp',
+    server_command='iperf -s -p 7999 -t dccp',
+    client_command='iperf -c @{server.ip} -p 7999 -t dccp')
+
+tcp = ClientServer('tcp',
+    server_command='iperf -s -p 7998 -t tcp',
+    client_command='iperf -c @{server.ip} -p 7998 -t tcp')
+
+append_schedule('server', dccp.server(start=0, end=20))
+append_schedule('client', dccp.client(start=1, end=19, server='server'))
+
+append_schedule('server', tcp.server(start=0, end=20))
+append_schedule('client', tcp.client(start=10, end=19, server='server'))
+
+append_schedule('server', [('counters', every(1), shell('iptables -L -v -n -Z -x'))])
+append_schedule('client', [('counters', every(1), shell('iptables -L -v -n -Z -x'))])
+
+# vim: ft=python
