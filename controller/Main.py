@@ -8,6 +8,7 @@ from common import Exceptions
 from common.Hooks import HookPlugin
 
 import sys
+import os
 import getopt
 import argparse
 import py.path
@@ -27,7 +28,7 @@ def consume_parameters(params):
             raise Exceptions.ConfigurationError("Could not understand --set argument '%s'. Use name=value format" % p)
 
 if __name__ == "__main__":
-    plugins = ['plugins']
+    plugins = [sys.path[0]+os.sep+'plugins']
 
     parser = argparse.ArgumentParser(prog='Main.py')
     parser.add_argument('-c', '--config',   help='configuration files', required=True, nargs='+')
