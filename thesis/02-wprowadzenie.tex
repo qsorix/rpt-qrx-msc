@@ -93,9 +93,8 @@ Pierwszy rodzaj dotyczy budowy komunikatów wymienianych między urządzeniami. 
 to testy mające na celu sprawdzić czy przesyłane dane odpowiadają założeniom.
 Badane są takie wielkości jak: długość PDU, zgodność sumy kontrolnej,
 poprawność kodowania numeru wersji itp. Kontrola jakości na tym etapie ma na
-celu zweryfikowanie, czy zbudowane PDU jest zgodne ze
-specyfikacją\footnote{\fixme{Coś tutaj było nie tak z tym zdaniem, ale nie umiem
-wymyslić co.}}. Od wykorzystywanych tu narzędzi wymaga się, aby umożliwiały
+celu zweryfikowanie, czy wygenerowane bity, reprezentują PDU zgodne ze
+specyfikacją. Od wykorzystywanych tu narzędzi wymaga się, aby umożliwiały
 sformalizowanie opisu zawartego w dokumentacji do postaci, którą można
 algorytmicznie porównać z obserwowanymi PDU.
 
@@ -218,8 +217,7 @@ Wykorzystanie formalnych metod opisu pozwala na automatyczne tworzenie koderów 
 dekoderów. W przypadku pracy z istniejącymi protokołami, PDU zwykle na stałe
 wiąże przenoszone dane z ich kodowaniem. Przykładem może być opis pakietów TCP w
 RFC 793, gdzie dane (np. numer sekwencyjny) i ich kodowanie (rozmiar i
-położenie bitów w pakiecie) określone są w tym samym miejscu\footnote{\fixme{Co
-znaczy jednocześnie?}}. Korzystanie z ASN.1 w takich wypadkach jest
+położenie bitów w pakiecie) określone są w tym samym miejscu. Nie ma więc podziału między semantyką informacji i jej bitową reprezentacją. Korzystanie z ASN.1 w takich wypadkach jest
 trudniejsze, ale możliwe dzięki ECN.
 
 ECN (Explicit Coding Notation) umożliwia formalny opis niestandardowych metod
@@ -285,9 +283,9 @@ reguł, po czym obserwować jej efektywność.
 
 \subsection{OMNeT++}
 
-OMNeT++ to biblioteka i framework\footnote{\fixme{Postanowiliśmy zdecydowanie
+OMNeT++ to biblioteka i framework\promotor{Postanowiliśmy zdecydowanie
 nie tłumaczyć tego na polski, bo mija sie to z celem. KAŻDY wie co to
-framework.}} do tworzenia symulacji sieci. Użytkownik może korzystać z
+framework.} do tworzenia symulacji sieci. Użytkownik może korzystać z
 szerokiej gamy modułów oraz tworzyć własne. Środowisko to wspiera symulacje
 sterowane zdarzeniami przesyłanymi między występującymi w realizowanej sieci
 komponentami.
@@ -332,27 +330,39 @@ rzeczywistych sieciach, gdzie problemy takie jak synchronizacja urządzeń i
 zbieranie wyników powodują, że ręczne wykonywanie wszystkich czynności staje
 się bardzo czasochłonne i uciążliwe, choć sam test jest w swojej naturze prosty.
 
-\FIXME{
-Tutaj ma powstać tabelka w której będą w pionie różne aspekty testowania, a w
-poziomie istniejące rozwiązania. W środku + i - czy dany program się nadaje do
-tego. Zrobić to tak, żeby wśród rozwiązań był nasz program i wszędzie miał +.
-Będzie ciężko, bo nasz program też ma dość specyficzne zastosowanie. Pomyśleć
-jakby to zrobić, żeby mimo wszystko wypadł w porównaniu dobrze.
+W tabeli poniżej porównujemy naszym zdaniem najistotniejsze cechy wspomnianych
+narzędzi.
 
-Tabelkę zrobiłam byle jak, żeby było. Bardziej się na texie znasz to zrób to
-ładnie.
-}
-
+\begin{small}
 \begin{center}
-   \begin{tabular}{ r | c | c | c | c }
-       & ASN.1+ECN & TTCN & OMNeT++ & NAZWA \\
+   \begin{tabular}{   p{3cm} || p{1.8cm} | p{1.8cm} | p{1.8cm} | p{1.8cm}   }
       \hline
-      cecha1 & + & + & - & + \\
+      & \small{ASN.1+ECN} & \small{TTCN} & \small{OMNeT++} & \small{Arete} \\
       \hline
-      cecha2 & - & + & + & + \\
+      Wielokrotne eksperymenty & + & + & + & + \\
       \hline
-      cecha3 & - & - & + & + \\
+      Deterministyczne wyniki & + & + & + & - \\
+      \hline
+      Uwzględnienie środowiska & - & - & - & + \\
+      \hline
+      Wykorzystanie rzeczywistych urządzen & - & - & - & + \\
+      \hline
+      Testów wydajnościowe & - & - & - & + \\
+      \hline
+      Możliwość rozwijania narzędzia & - & + & + & + \\
+      \hline
+      Dostępne darmowo & - & + & + & + \\
+      \hline
+      Łatwość nauki & - & - & + & + \\
+      \hline
   \end{tabular}
 \end{center}
+\end{small}
+
+\FIXME{Arcydziełem poligrafii to ta tabela nie jest.
+
+Poza tym należy jeszcze dobrze te +/- przemyśleć. Przy kilku warto dodać
+przypis. Z drugiej strony tekst wcześniej wyjaśnia co i jak, więc może się
+obejdzie.}
 
 \end{document}

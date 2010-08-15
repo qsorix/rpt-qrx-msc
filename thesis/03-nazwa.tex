@@ -26,28 +26,41 @@ Potrzebowaliśmy narzędzia, które zautomatyzuje najczęściej wykonywane
 czynności: skonfiguruje maszyny, przeprowadzi testy, zapamięta wyniki i
 przywróci pierwotną konfigurację.
 
-\FIXME{
-Pierwszy scenariusz nie pasuje do pozostałych. Jest zbyt ogólny. Zrobić to lepiej.
-}
-
 Najprostszy scenariusz ma miejsce w czasie tworzenia oprogramowania typu
-klient-serwer. Testując działanie na dwóch maszynach, najczęściej korzystamy z
-komputera, na którym trwa tworzenie oprogramowania, i innej wybranej maszyny
-będącej w stanie pełnić rolę serwera (lub klienta, dalej dla uproszczenia opisu
-zakładamy jednak, że jest to serwer).
+klient-serwer. Załóżmy, że tworzymy prosty program mający umożliwiać transfer
+plików. Zarówno serwer jak i klient sterowany będzie z linii poleceń. W teście
+chcemy sprawdzić czy transfer przebiegł poprawnie, tj. czy zgadza się z nazwa
+pliku i czy jego zawartość jest identyczna.
 
-Zadanie programu polega tutaj na:
+Klient łączy się z serwerem i korzystając z protokołu TCP przesyła nazwę i
+zawartość wskazanego pliku. Serwer nasłuchuje na przychodzące połączenia i
+odbiera transmitowany plik, który zapisuje w lokalnym systemie plików.
+
+Aby wykonać pomiar musimy zbudować aktualną wersję kodu źródłowego i
+przygotować pliki wykonywalne serwera do transmisji. Odpowiedni plik (np. Java
+Archive) powinien wygenerować używany przez nas skrypt budujący.
+
+Gotowe pliki trzeba przesłać na maszynę docelową i uruchomić serwer odpowiednim
+poleceniem. Pliki aplikacji klienckiej będą uruchamiane lokalnie.
+
+Aby sprawdzić poprawność tranmisji, po jej zakończeniu na obu systemach
+wykonujemy polecenia \code{ls} i \code{md5sum}.
+
+W idealnej sytuacji, wszystkie opisane wyżej czynności będą wymagały wydania
+tylko dwóch poleceń.
+
+Zadanie narzędzia polega tutaj na:
 \begin{enumerate}
 \item przesłaniu aktualnej implementacji serwera na wyznaczone urządzenie,
-\item uruchomieniu serwera i klienta,
+\item uruchomieniu serwera i klienta z odpowiednimi parametrami,
 \item zakończeniu serwera po wykonaniu testu,
-\item zapamiętaniu wyników pracy obu komponentów,
-\item usunięcie plików serwera ze zdalnej maszyny.
+\item obliczeniu sum kontrolnych plików,
+\item zapamiętaniu wyników z obu komponentów,
+\item usunięcie pliku ze zdalnej maszyny.
 \end{enumerate}
 
 Drugi scenariusz dotyczy pomiaru szybkości transferu danych przy użyciu
-protokołu DCCP (Datagram Congestion Control Protocol\footnote{\fixme{Trzeba
-ustalić co robimy ze skrótami. Może jednak słownik?}}) oraz wpływu innych
+protokołu DCCP (Datagram Congestion Control Protocol) oraz wpływu innych
 transmisji na tę szybkość. Sposób pomiaru jest prosty. Wykorzystujemy program
 \code{iperf}, który umożliwia uruchomienie serwera i klienta wybranego
 protokołu. Klient transmituje do serwera strumień losowych danych korzystając
@@ -165,39 +178,38 @@ Użytkownicy nie mają uprzywilejowanego dostępu do urządzeń i zwykle mogą
 korzystać tylko z wyznaczonych systemów, na których muszą się uwierzytelniać.
 Użytkownikom często nie wolno instalować własnego oprogramowania, a komunikacja
 sieciowa jest ograniczana. W takich warunkach korzystanie z naszego programu
-jest technicznie ograniczone do wykonywania czynności, które użytkownik ma prawo
-wykonywać. 
+jest technicznie ograniczone do czynności, które użytkownik ma prawo wykonywać. 
 
-\FIXME{
-Wyjaśnić lepiej o co chodzi z bezpieczeństwem w akapicie poniżej.
-}
+Zadbaliśmy jednak o to, aby automatyzacja nie wymagała naruszania
+bezpieczeństwa poufnych informacji. Zachęcamy użytkowników do korzystania z
+mechanizmów autoryzacji przy użyciu kluczy szyfrujących. Nie zawsze jest to
+możliwe i wtedy zwykle pozostają zwykłe hasła, zapewniliśmy jednak mechanizmy
+dzięki którym nie trzeba ich wpisywać do konfiguracji, gdzie byłyby narażone na
+dostęp przez osoby postronne.
 
-Zadbaliśmy jednak o to, aby automatyzacja takich czynności jak uwierzytelniane
-nie naruszała bezpieczeństwa poufnych informacji. Mamy tu na myśli tajne dane
-występujące w powszechnych sposobach uwierzytelniania jak hasła czy klucze
-szyfrujące.
-
-\paragraph{Architektura Master-Worker.} Ponieważ wymagane jest, aby dało się
+\paragraph{Architektura Master-Slave.} Ponieważ wymagane jest, aby dało się
 wykonywać test w sytuacji kiedy nie ma połączenia między urządzeniem, z którego
 uruchamiamy test, a innym w teście uczestniczącym, konieczne było wprowadzenie
-dodatkowej aplikacji pomocniczej. Wyróżniamy więc aplikację (Master) nadzorującą
-przebieg testu, oraz aplikacje wykonujące go (Worker), zainstalowane na
+dodatkowego programu pomocniczego. Wyróżniamy więc program nadzorujący
+przebieg testu (master), oraz programy wykonujące go (worker), zainstalowane na
 występujących w teście urządzeniach.
 
-\FIXME{
-Trzeba to napisać mniej ogólnie, a do tego trzeba ustalić co jak się nazywa i
-używać konkretnych nazw i sformułowań: narzędzie, aplikacja, program...
-}
-
-Wprowadzenie takiej architektury powoduje, że instalacja aplikacji wykonującej
-testy (Worker) zajmuje więcej czasu, trzeba ją bowiem przeprowadzić na
-wszystkich systemach.  Jest to jednak konieczne, w celu osiągnięcia
+Wprowadzenie takiej architektury powoduje, że instalacja programu wykonującego
+testy (slave) zajmuje więcej czasu, trzeba ją bowiem przeprowadzić na
+wszystkich systemach. Jest to jednak konieczne, w celu osiągnięcia
 funkcjonalności wymaganej w pewnych scenariuszach testów, jak również przydatne
-ze względów bezpieczeństwa. Aplikacja nadzorująca (Master) umożliwia również
-współpracę z urządzeniami bez zainstalowanego modułu Worker\footnote{Jak
+ze względów bezpieczeństwa. Program nadzorujący umożliwia również
+współpracę z urządzeniami bez zainstalowanego modułu slave\footnote{Jak
 np.~routery sprzętowe, gdzie instalacja własnego oprogramowania nie jest
-możliwa.}, ale może wtedy nie być możliwe wykonanie pewnych testów.
-\fixme{Tutaj przykład musi być.}
+możliwa.}, ale może wtedy nie być możliwe wykonanie pewnych scenariuszy testów.
+
+Przykładowo załóżmy, że chcemy przeprowadzić test mierzący ilość pakietów
+RIP\footnote{ang. Routing Information Protocol}, jakie routery wymieniają aby
+zapewnić poprawne tablice routingu po awarii łącza. Po połączeniu z routerem
+będziemy mieli możliwość wydania polecenia zatrzymującego wybrany interfejs.
+Jeżeli jednak jest to jednocześnie interfejs, którym się z routerem
+komunikujemy, a dane urządzenie nie będzie umożliwiać automatycznego
+przywrócenia pracy interfejsu, stracimy nad nim kontrolę.
 
 \paragraph{Synchronizacja urządzeń nie zmienia wskazań ich zegarów.}
 Najprostszym rozwiązaniem problemu synchronizacji byłoby wykorzystanie protokołu
@@ -242,26 +254,11 @@ utrudnienie, ponieważ alternatywą byłoby wymaganie, aby użytkownik nauczył 
 stosowanej przez nas, nowej składni plików konfiguracyjnych, a znajomość podstaw
 języka Python jest bardziej uniwersalna.
 
-Wybór tego, a nie innego języka Python był podyktowany jego popularnością, mamy
-więc nadzieję, że spora część użytkowników odbierze to założenia jako zaletę, a
-nie wadę produktu. Kolejną zaletą jest to, że jest on dostępny na wszystkich
-popularnych systemach operacyjnych oraz domyślnie zainstalowany na większości
-systemów Linuksowych.
-
-\FIXME{Można dopisać jeszcze trochę na temat zalet pythona. W rozdziale o
-konfiguracji też jest takie miejsce. Myślę, że tamten tekst można przenieść
-tutaj i w opisie konfiguracji powołać się na założenia.
-
-Myślę, że można napisać m.in., że python nie wymaga kompilacji, w związku z czym
-instalacja jest prostsza, a pisanie nowych modułów szybsze.
-
-Też o tym, że jest to język ze standardową biblioteką wielu funkcji, m.in.
-obsługi sieci, co się może przydać.
-
-Ponadto elementy funkcyjne języka oraz możliwość przeładowywania operatorów
-pozwalają uzyskać zwięzłą składnię poleceń, przez co dobrze się nadaje do
-pisania konfiguracji, bo kod jest krótki.
-}
+Wybór tego Pythona był podyktowany jego popularnością, mamy więc nadzieję, że
+spora część użytkowników odbierze to założenia jako zaletę, a nie wadę
+produktu. Kolejnym plusem jest to, że jest on dostępny na wszystkich popularnych
+systemach operacyjnych oraz domyślnie zainstalowany na większości systemów
+Linuksowych.
 
 Poczyniliśmy także założenia mówiące o tym, czego program robić nie będzie.
 
@@ -285,16 +282,12 @@ na komunikację sieciową ani nie monitoruje innych użytkowników sieci. Jeśli
 poprawnego przeprowadzenia pomiaru wymagane jest, aby testowany program był
 jedynym użytkownikiem sieci, osoba wykonująca test sama musi o to zadbać.
 
-\FIXME{
-Problem 'urządzeń'. Trzeba to przedyskutować. Zrobię issue na githubie.
-}
-
-\paragraph{O \fixme{urządzeniach} zakładamy jak najmniej.} Program NAZWA nie
-wymaga od \fixme{urządzeń} biorących udział w teście żadnej funkcjonalności.
+\paragraph{O urządzeniach zakładamy jak najmniej.} Program NAZWA nie
+wymaga od urządzeń biorących udział w teście żadnej funkcjonalności.
 Dzięki temu jesteśmy w stanie obsługiwać zarówno tanie urządzenia sieciowe, o
 bardzo ograniczonych możliwościach konfiguracyjnych, jak i w pełni wyposażone
 systemu Uniksowe czy dedykowane routery. To użytkownik decyduje o tym, co w
-danym teście mają robić występujące w nim \fixme{urządzenia} i tym samym stawia
+danym teście mają robić występujące w nim urządzenia i tym samym stawia
 im wymagania dotyczące zarówno funkcjonalności, jak i bezpieczeństwa.
 
 \end{document}

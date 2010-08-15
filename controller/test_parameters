@@ -1,0 +1,7 @@
+from config.Global import parameters
+
+print parameters['provided']
+print parameters['ip']
+print parameters.get_secure('password')
+
+#vim: ft=python
