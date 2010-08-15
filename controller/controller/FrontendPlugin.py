@@ -74,7 +74,7 @@ class FrontendPlugin:
     def deploy_configuration(self, host_configuration):
         pass
 
-    def start_test(self, timestamp):
+    def start_test(self, duration_policy):
         pass
 
     def wait_test(self):

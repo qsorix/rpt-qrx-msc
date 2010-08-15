@@ -28,6 +28,9 @@ class ConfiguredTest:
 
         resources - dictionary of resources (keys are names from
                     resource['name']
+
+        end_policy - information about test ending policy, this string is passed
+                     to participating frontends, they should understand it
     """
 
     def sanity_check(self):
@@ -115,6 +118,8 @@ class Configuration:
         ct = ConfiguredTest()
         ct.resources = Resources.resources.resources()
         ct.hosts = {}
+        ct.end_policy = Schedule.get_schedule().test_end_policy()
+        ct.setup_phase_delay = Schedule.get_schedule().setup_phase_delay()
 
         for h in Model.get_model().hosts():
             host = ConfiguredHost()

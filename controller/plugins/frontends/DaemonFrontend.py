@@ -1,5 +1,6 @@
 from controller.FrontendPlugin import FrontendPlugin
 
+import datetime
 import time
 
 class DaemonFrontend(FrontendPlugin):
@@ -23,8 +24,6 @@ class DaemonFrontend(FrontendPlugin):
 
         out = self.output().write
 
-        # FIXME: test id
-        # TODO It's yours. I don't know what you mean.
         out('test @{id=%s}\n' % self._test_id)
         resp = self.input().readline()
 
@@ -74,10 +73,22 @@ class DaemonFrontend(FrontendPlugin):
             print 'sanity check failed'
             # TODO Do sth about it
 
-    def start_test(self, timestamp):
-        # FIXME Fix the whole run/end/timestamp thing.
-        run = 'in 2'
-        end = 'duration 3'
+    def start_test(self, duration_policy):
+        self._duration_policy = duration_policy
+
+        start = duration_policy.start()
+        end = duration_policy.end_policy()
+
+        # TODO From start time (local) and time offset acquired during
+        # synchronization calculate remote time at which test should start
+        # start += synchronizated_offset
+
+        # NOTE: 'in' -- don't send delay, send timestamp. at this place you
+        # cannot predict how long it will take for other frontends to instruct
+        # their slaves, so always send 'at'.
+        # run = 'in 2'
+        run = 'at ' + start.isoformat()
+
         self.output().write('start @{id=%s} @{run=%s} @{end=%s}\n' % (self._test_id, run, end))
         resp = self.input().readline()
         self.disconnect()
@@ -85,10 +96,27 @@ class DaemonFrontend(FrontendPlugin):
     def wait_test(self):
         print '  -- waiting for the test to finish at ' + self.host().model['name'] + ' --'
 
-        # FIXME It should wait for 'duration' + 1 seconds unless in some other mode.
-        end = 'duration 3'
-        wait_time = end.split(' ')[1]
-        time.sleep(wait_time)
+        policy = self._duration_policy.end_policy().split()
+
+        if policy[0] == 'duration':
+            duration = datetime.timedelta(seconds=float(policy[1]))
+            start = self._duration_policy.start()
+            end   = start + duration
+            now   = datetime.datetime.now()
+
+            def total_seconds(td):
+                return (td.microseconds + (td.seconds + td.days *  24 * 3600) * 10**6) / 10**6
+
+            while (total_seconds(end - now) > 0):
+                time.sleep (total_seconds(end - now))
+                now   = datetime.datetime.now()
+
+            return
+
+        if policy[0] == 'complete':
+            # FIXME: wait untill notification about finished schedule is
+            # received
+            return
 
     def fetch_results(self):
         self.connect()
