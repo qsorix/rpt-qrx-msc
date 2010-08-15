@@ -15,12 +15,22 @@ class Every(Schedule.RunPolicy):
 
     def schedule_for_daemon(self):
         return 'every %i' % self._time
+
+class After(Schedule.RunPolicy):
+    def __init__(self, cmd):
+        self._cmd = cmd
+
+    def schedule_for_daemon(self):
+        return 'after %s' % self._cmd
     
 def at(time):
     return At(time)
 
 def every(time):
     return Every(time)
+
+def after(cmd):
+    return After(cmd)
 
 class ShellCommand(Schedule.Command):
     def __init__(self, command, resources):
