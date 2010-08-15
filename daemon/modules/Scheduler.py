@@ -56,6 +56,7 @@ class Scheduler:
             # Clean commands:
             if isinstance(cmd, Clean):
                 self.clean_scheduler.enter(0, 1, self._run_command, [cmd])
+        self.clean_scheduler.enter(0, 1, self._end, ())
 
         # Configure main scheduler
         self.main_scheduler.enter(0, 1, self.setup_scheduler.run, ())
@@ -71,7 +72,11 @@ class Scheduler:
 
         # Run main scheduler
         print '[test %s] Starting...' % self.test.id
+        self.test.started_at = datetime.now()
         self.main_scheduler.run()
+
+    def _end(self):
+        self.test.length = (datetime.now() - self.test.started_at).seconds
 
     def _run_command(self, cmd):
         print '[test %s] Running command "%s"' % (self.test.id, cmd.id)
