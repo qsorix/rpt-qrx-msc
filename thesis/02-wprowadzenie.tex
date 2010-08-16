@@ -329,39 +329,46 @@ rzeczywistych sieciach, gdzie problemy takie jak synchronizacja urządzeń i
 zbieranie wyników powodują, że ręczne wykonywanie wszystkich czynności staje
 się bardzo czasochłonne i uciążliwe, choć sam test jest w swojej naturze prosty.
 
-W tabeli poniżej porównujemy naszym zdaniem najistotniejsze cechy wspomnianych
-narzędzi.
+W tabeli \fixref{referencja} porównujemy naszym zdaniem najistotniejsze cechy wspomnianych
+narzędzi. Jak widać Arete nie jest pozbawione wad, tym samym nie jest to
+idealne narzędzie do każdego typu zastosowań. Nie jest to również narzędzie
+zdolne do samodzielnej pracy. Uważamy jednak, że dobrze uzupełnia funkcjonalne
+braki istniejących rozwiązań i razem z nimi pozwala stworzyć praktyczne i
+wygodne środowisko testowe.
 
 \begin{small}
 \begin{center}
-   \begin{tabular}{   p{3cm} || p{1.8cm} | p{1.8cm} | p{1.8cm} | p{1.8cm}   }
+   \begin{tabular}{ l || C{1.1cm} | C{1.1cm} | C{1.1cm} | C{1.1cm}   }
       \hline
-      & \small{ASN.1+ECN} & \small{TTCN} & \small{OMNeT++} & \small{Arete} \\
+      & \small{\parbox[top][2.4em][c]{1.1cm}{\centering{ASN.1+\\ECN}}} & \small{TTCN} & \small{OMNeT} & \small{Arete} \\
       \hline
-      Wielokrotne eksperymenty & + & + & + & + \\
+      Powtarzanie eksperymentów & $+$ & $+$ & $+$ & $+$ \\
       \hline
-      Deterministyczne wyniki & + & + & + & - \\
+      Deterministyczne wyniki & $+$ & $+$ & $+$ & $-$ \\
       \hline
-      Uwzględnienie środowiska & - & - & - & + \\
+      Weryfikacja wyników & $+$ & $+$ & $-$ & $-$ \\
       \hline
-      Wykorzystanie rzeczywistych urządzen & - & - & - & + \\
+      Uwzględnienie wpływu środowiska & $-$ & $-$ & $-$ & $+$ \\
       \hline
-      Testów wydajnościowe & - & - & - & + \\
+      Wykorzystanie rzeczywistych urządzeń & $-$ & $-$ & $-$ & $+$ \\
       \hline
-      Możliwość rozwijania narzędzia & - & + & + & + \\
+      Testy wymienianych PDU & $+$ & $+$ & $+$ & $-$ \\
       \hline
-      Dostępne darmowo & - & + & + & + \\
+      Testy sekwencji komunikatów & $-/+$ & $+$ & $+$ & $-/+$ \\
       \hline
-      Łatwość nauki & - & - & + & + \\
+      Testy wydajnościowe & $-$ & $+$ & $-$ & $+$ \\
       \hline
+      Brak wpływu na wydajność & $-$ & $-$ & $-$ & $+$ \\
+      \hline
+      Możliwość rozwijania narzędzia & $-$ & $-/+$ & $+$ & $+$ \\
+      \hline
+      Dostępne darmowo & $-/+$ & $-$ & $-/+$ & $+$ \\
+      \hline
+      Łatwość nauki & $-$ &  $+$ & $+$ & $+$ \\
+      \hline
+
   \end{tabular}
 \end{center}
 \end{small}
-
-\FIXME{Arcydziełem poligrafii to ta tabela nie jest.
-
-Poza tym należy jeszcze dobrze te +/- przemyśleć. Przy kilku warto dodać
-przypis. Z drugiej strony tekst wcześniej wyjaśnia co i jak, więc może się
-obejdzie.}
 
 \end{document}
