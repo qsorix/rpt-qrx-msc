@@ -4,6 +4,8 @@ from utils.resources import File
 
 create_schedule('schedule-torrent')
 
+test_end_policy('complete', setup_phase_delay=10)
+
 torrent = add_resource(File('torrent', 'test-file-1gb.torrent'))
 
 schedule = [

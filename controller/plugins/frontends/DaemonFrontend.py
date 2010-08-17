@@ -1,6 +1,7 @@
 from controller.FrontendPlugin import FrontendPlugin
 
-import time
+import datetime
+import os
 
 class DaemonFrontend(FrontendPlugin):
     frontend_type = 'daemon'
@@ -10,6 +11,7 @@ class DaemonFrontend(FrontendPlugin):
         self._sent_cmds = {}
         self._id = 0
         self._test_id = test_uuid
+        self._test_finished_flag = False
 
     def _make_id(self):
         self._id += 1
@@ -23,8 +25,6 @@ class DaemonFrontend(FrontendPlugin):
 
         out = self.output().write
 
-        # FIXME: test id
-        # TODO It's yours. I don't know what you mean.
         out('test @{id=%s}\n' % self._test_id)
         resp = self.input().readline()
 
@@ -74,21 +74,85 @@ class DaemonFrontend(FrontendPlugin):
             print 'sanity check failed'
             # TODO Do sth about it
 
-    def start_test(self, timestamp):
-        # FIXME Fix the whole run/end/timestamp thing.
-        run = 'in 2'
-        end = 'duration 3'
+    def start_test(self, duration_policy):
+        self._duration_policy = duration_policy
+
+        start = duration_policy.start()
+        end = duration_policy.end_policy()
+
+        # TODO From start time (local) and time offset acquired during
+        # synchronization calculate remote time at which test should start
+        # start += synchronizated_offset
+
+        # NOTE: 'in' -- don't send delay, send timestamp. at this place you
+        # cannot predict how long it will take for other frontends to instruct
+        # their slaves, so always send 'at'.
+        # run = 'in 2'
+        run = 'at ' + start.isoformat()
+
         self.output().write('start @{id=%s} @{run=%s} @{end=%s}\n' % (self._test_id, run, end))
         resp = self.input().readline()
-        self.disconnect()
 
-    def wait_test(self):
+        if self._disconnect_for_end_policy(end):
+            self.disconnect()
+
+    def check_test_end(self):
+        self._non_blocking_io()
+        return self._test_end()
+
+    def _non_blocking_io(self):
+        conn = self.connection()
+
+        if not conn.connected(): return
+        if not hasattr(conn, 'setblocking'): return
+
+        try:
+            conn.setblocking(False)
+            while True:
+                line = conn.input().readline()
+                self._async_input(line)
+
+        except IOError as e:
+            if e.errno not in [os.errno.EAGAIN, os.errno.EWOULDBLOCK]:
+                raise
+
+        finally:
+            conn.setblocking(True)
+
+    def _test_end(self):
         print '  -- waiting for the test to finish at ' + self.host().model['name'] + ' --'
 
-        # FIXME It should wait for 'duration' + 1 seconds unless in some other mode.
-        end = 'duration 3'
-        wait_time = int(end.split(' ')[1])
-        time.sleep(wait_time)
+        policy = self._duration_policy.end_policy().split()
+        if policy[0] == 'duration':
+            duration = datetime.timedelta(seconds=float(policy[1]))
+            start = self._duration_policy.start()
+            end   = start + duration
+            now   = datetime.datetime.now()
+
+            def total_seconds(td):
+                return (td.microseconds + (td.seconds + td.days *  24 * 3600) * 10**6) / 10**6
+
+            # True if past end time
+            return (total_seconds(end - now) < 0)
+
+        if policy[0] == 'complete':
+            return self._test_finished_flag
+
+    def _async_input(self, line):
+        line = line.strip()
+        print '  -- received {0} at {1} -- '.format(line, self.host().model['name'])
+        if line == '100 Test Finished':
+            self._test_finished_flag = True
+
+    def _disconnect_for_end_policy(self, end_policy):
+        policy = self._duration_policy.end_policy().split()
+        if policy[0] in ['duration']:
+            return True
+
+        if policy[0] in ['complete']:
+            return False
+
+        raise ConfigurationError("Unknown test end policy {0!r}".format(end_policy));
 
     def fetch_results(self):
         self.connect()

@@ -80,23 +80,18 @@ def destroy_model():
         _model.clear()
     _model = None
 
-def get_model():
+def get_model(validate=True):
     global _model
+    if validate:
+        if _model is None:
+            raise Exceptions.ConfigurationError('There is no model. Did you forget to call \'create_model(name)\'?')
     return _model
 
 def add_host(*args, **kwargs):
-    m = get_model()
-    if m is None:
-        raise Exceptions.ConfigurationError('There is no model. Did you forget to call \'create_model(name)\' before calling add_host?')
-
-    return m.add_host(*args, **kwargs)
+    return get_model().add_host(*args, **kwargs)
 
 def add_link(*args, **kwargs):
-    m = get_model()
-    if m is None:
-        raise Exceptions.ConfigurationError('There is no model. Did you forget to call \'create_model(name)\' before calling add_link?')
-
-    return m.add_link(*args, **kwargs)
+    return get_model().add_link(*args, **kwargs)
 
 public_functions = {
     'create_model': create_model,

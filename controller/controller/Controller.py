@@ -2,10 +2,46 @@
 
 import sys
 import uuid
+import datetime
+import time
 
 from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
 from common import Exceptions
+
+class TestDurationPolicy:
+    def __init__(self, start, end_policy):
+        """
+        Start is datetime.datetime instance
+
+        end_policy is passed from configuration
+        """
+        self._start = start
+        self._end_policy = end_policy
+
+    def start(self):
+        """
+        When to start the test
+
+        This returns local time, frontends must add the time offset
+        acquired during synchronization phase.
+        """
+        return self._start
+
+    def end_policy(self):
+        """
+        How should the test end?
+
+        Returns one of two strings:
+          'duration <seconds>' where <seconds> is a value convertible to float.
+            This tells that the test will end at <seconds> after start().
+
+          'complete'
+            This tells frontends must wait to receive notification from slave,
+            informing that all scheduled tasks were completed (including
+            cleanup).
+        """
+        return self._end_policy
 
 class Controller:
     def run(self, configured_test):
@@ -16,7 +52,10 @@ class Controller:
         try:
             self._send_configuration()
             self._perform_sanity_check()
-            self._perform_test()
+
+            # FIXME: at this point frontends must be synchronized with slaves.
+
+            self._perform_test(configured_test)
             self._fetch_results()
 
         except:
@@ -70,15 +109,28 @@ class Controller:
             # throws an exception in case of a problem
             frontend.wait_sanity_check()
 
-    def _perform_test(self):
+    def _perform_test(self, configured_test):
         # configuration is sane, start the test
-        start_time = '<FIXME timestamp>'
+
+        # calculate exact start moment
+        setup_delay = datetime.timedelta(seconds=configured_test.setup_phase_delay)
+        now = datetime.datetime.now()
+        start = now+setup_delay
+
+        duration_policy = TestDurationPolicy(start, configured_test.end_policy)
+
+        # instruct fronteds to start the test
         for frontend in self._frontends.values():
-            frontend.start_test(start_time)
+            frontend.start_test(duration_policy)
 
         # wait for the test to end
-        for frontend in self._frontends.values():
-            frontend.wait_test()
+        all_finished = False
+        while(not all_finished):
+            time.sleep(1.0)
+            all_finished = True
+            for frontend in self._frontends.values():
+                ffinished = frontend.check_test_end()
+                all_finished = all_finished and ffinished
 
     def _fetch_results(self):
         for frontend in self._frontends.values():

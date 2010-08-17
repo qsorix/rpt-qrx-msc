@@ -11,8 +11,11 @@ class TCPConnection(ConnectionPlugin):
         self._port = host.device['connection_port']
         self._socket = None
 
+    def connected(self):
+        return self._socket is not None
+
     def connect(self):
-        assert not self._socket
+        if self._socket: return
 
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.connect((self._ip, int(self._port)))
@@ -37,4 +40,8 @@ class TCPConnection(ConnectionPlugin):
     def output(self):
         assert self._out
         return self._out
+
+    def setblocking(self, blocking):
+        assert self._socket
+        self._socket.setblocking(blocking)
 

@@ -5,6 +5,7 @@ import Laboratory
 import Mapping
 import Schedule
 import Resources
+import Utils
 import common.Exceptions as Exceptions
 
 import traceback
@@ -27,6 +28,9 @@ class ConfiguredTest:
 
         resources - dictionary of resources (keys are names from
                     resource['name']
+
+        end_policy - information about test ending policy, this string is passed
+                     to participating frontends, they should understand it
     """
 
     def sanity_check(self):
@@ -35,7 +39,7 @@ class ConfiguredTest:
                 raise Exceptions.SanityError("Key name is different than element's name")
 
             if not host.model.bound():
-                raise Exceptions.SanityError("Model host '%s' is not bound" % host['name'])
+                raise Exceptions.SanityError("Model host '%s' is not bound" % host.model['name'])
 
             device = host.device
 
@@ -52,11 +56,14 @@ class ConfiguredTest:
                 if not interface.bound():
                     raise Exceptions.SanityError("Interface '%s' of model host '%s' is not bound" % (iname, name))
 
+        if not Schedule.get_schedule().test_end_policy():
+            raise Exceptions.SanityError("Test end policy not specified. Use test_end_policy(<policy>) in your configuration.")
+
 class Configuration:
     def __init__(self):
         self._configured_test = []
 
-    def read(self, files):
+    def read(self, files, cmdline_mappings):
 
         globals = {}
         globals.update(Model.public_functions)
@@ -72,11 +79,27 @@ class Configuration:
             except Exception as e:
                 raise Exceptions.ConfigurationError(e, traceback=traceback.format_exc())
 
+        self._command_line_mappings(cmdline_mappings)
+
         self._sanity_check()
 
         self._combine_hosts()
 
         return self.configured_test()
+
+
+    def _command_line_mappings(self, mappings):
+        if not mappings: return
+
+        #try:
+        Mapping.create_mapping('command-line')
+        for m in mappings:
+            (model, device) = m.split(':')
+            Mapping.bind(model, device)
+
+        #except Exception as e:
+            #raise e
+            #raise Exceptions.ConfigurationError(e, "Could not parse command line mappings {0!r}".format(mappings));
 
     def _sanity_check(self):
         if not Model.get_model():
@@ -95,15 +118,25 @@ class Configuration:
         ct = ConfiguredTest()
         ct.resources = Resources.resources.resources()
         ct.hosts = {}
+        ct.end_policy = Schedule.get_schedule().test_end_policy()
+        ct.setup_phase_delay = Schedule.get_schedule().setup_phase_delay()
 
         for h in Model.get_model().hosts():
             host = ConfiguredHost()
             host.model = h
             host.device = h.bound()
             host.schedule = Schedule.get_schedule().host_schedule(h['name'])
-            host.resources = set(h.needed_resources())
+
+            resources = set(h.needed_resources())
             for event in host.schedule:
-                host.resources.update(event.command().needed_resources())
+                resources.update(event.command().needed_resources())
+
+            def resolve_resource(r):
+                if isinstance(r, str):
+                    return Utils.resolve_resource_name(r)
+                return r
+
+            host.resources = set(map(resolve_resource, resources))
 
             ct.hosts[h['name']] = host
 

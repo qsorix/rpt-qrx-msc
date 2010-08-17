@@ -20,6 +20,9 @@ class ConnectionPlugin:
     And methods FIXME: describe
         connect()
         disconnect()
+        setblocking(bool)
+        input()
+        output()
         __init__(host)
     """
     needed_attributes = []

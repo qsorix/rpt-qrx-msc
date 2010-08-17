@@ -43,14 +43,15 @@ def destroy_laboratory():
 
     _laboratory = None
 
-def get_laboratory():
+def get_laboratory(validate=True):
     global _laboratory
+    if validate and _laboratory is None:
+        raise Exceptions.ConfigurationError('There is no laboratory. Did you forget to call \'create_laboratory(name)\'?')
+
     return _laboratory
 
 def add_device(*args, **kwargs):
     d = get_laboratory()
-    if d is None:
-        raise Exceptions.ConfigurationError('There is no laboratory. Did you forget to call \'create_laboratory(name)\' before calling add_device?')
     return d.add_device(*args, **kwargs)
 
 public_functions = {

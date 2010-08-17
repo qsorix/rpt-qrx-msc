@@ -47,6 +47,20 @@ class Schedule(NamedMixin):
     def __init__(self, name):
         self.rename(name)
         self._schedules = {}
+        self._test_end_policy = None
+        self._setup_phase_delay = 1.0 # 1 second default
+
+    def set_test_end_policy(self, test_end_policy):
+        self._test_end_policy = test_end_policy
+
+    def test_end_policy(self):
+        return self._test_end_policy
+
+    def set_setup_phase_delay(self, setup_phase_delay):
+        self._setup_phase_delay = setup_phase_delay
+
+    def setup_phase_delay(self):
+        return self._setup_phase_delay
 
     def host_schedule(self, host):
         if isinstance(host, str):
@@ -86,19 +100,23 @@ def create_schedule(name):
         raise Exceptions.ConfigurationError('You cannot create more than one schedule.')
     _schedule = Schedule(name)
 
-def get_schedule():
+def get_schedule(validate=True):
     global _schedule
+    if validate and _schedule is None:
+        raise Exceptions.ConfigurationError('These is no schedule. Did you forget to call \'create_schedule(name)\'?')
     return _schedule
 
 def append_schedule(*args, **kwargs):
-    s = get_schedule()
-    if not s:
-        raise Exceptions.ConfigurationError('These is no schedule. Did you forget to call \'create_schedule(name)\' before calling append_schedule?')
+    return get_schedule().append_schedule(*args, **kwargs)
 
-    return s.append_schedule(*args, **kwargs)
+def test_end_policy(end_policy, setup_phase_delay = None):
+    get_schedule().set_test_end_policy(end_policy)
+    if setup_phase_delay:
+        get_schedule().set_setup_phase_delay(setup_phase_delay)
 
 public_functions = {
     'create_schedule': create_schedule,
     'get_schedule': get_schedule,
-    'append_schedule': append_schedule
+    'append_schedule': append_schedule,
+    'test_end_policy': test_end_policy
 }

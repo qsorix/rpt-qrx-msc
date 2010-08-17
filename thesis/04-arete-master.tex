@@ -2,7 +2,7 @@
 
 \begin{document}
 
-\chapter{Moduł Master NAZWA}
+\chapter{Moduł Arete Master}
 
 \section{Konfiguracja}
 
@@ -153,7 +153,7 @@ zadań.
 
 W dalszej części opisujemy szczegółowo poszczególne fragmenty konfiguracji,
 ograniczając się jednak tylko do podstawowego interfejsu zapewnianego przez
-framework. \fixme{Odesłać do rozdziału z opisem toolsetów i pełnego API}
+framework. \fixref{Odesłać do rozdziału z opisem toolsetów i pełnego API}
 
 \subsubsection{Model}
 
@@ -169,7 +169,7 @@ i połączeń między nimi.
 Dodatkowo możliwe jest przypisanie dowolnych cech zarówno urządzeniom jak też
 ich interfejsom. Cechy te maja format par nazwa-wartość. Sposób ich
 wykorzystania zależy od użytkownika. Framework przekaże je do odpowiednich
-sterowników \fixme{ref do rozdziału o Host i Interface Drivers}, które można
+sterowników \fixref{ref do rozdziału o Host i Interface Drivers}, które można
 tworzyć samodzielnie. Cechy można wykorzystać na przykład do przypisywania
 adresów IP interfejsom, określania sztucznie generowanych opóźnień,
 sprawdzania czy system pracuje pod kontrolą danego systemu operacyjnego itp.
@@ -292,7 +292,7 @@ Konfiguracja ta mówi, że w laboratorium \code{myroom} dysponujemy komputerami
 połaczyć się z nim można korzystając z TCP, na standardowym
 porcie\footnote{decyduje o tym plugin connection typu 'tcp'}. Oba komputery
 posiadają interfejs sieciowy nazwany \code{eth0}. Przedstawione jest to na
-diagramie poniżej. \fixme{ref do diagramu}.
+diagramie poniżej. \fixref{ref do diagramu}.
 
 \begin{figure}[htb]
 \begin{center}
@@ -316,7 +316,7 @@ nawiązania komunikacji z danym urządzeniem,
 komunikacja z danym urządzeniem (protokół przesyłanych komunikatów).
 \end{itemize}
 
-Więcej na temat pluginów piszemy w rozdziale \fixme{referencja do rozdziału o
+Więcej na temat pluginów piszemy w rozdziale \fixref{referencja do rozdziału o
 pluginach}.
 
 Framework nie wymaga podawania parametru \code{ip}. Jest to atrybut, z którego
@@ -330,7 +330,7 @@ platformie do identyfikacji interfejsu, ponieważ nazwy te mogą pojawić się w
 generowanych komendach.
 
 Urządzenie może posiadać więcej interfejsów niż wymaga tego model, więcej na
-ten temat w rozdziale o mapowaniu. \fixme{ref do rozdziału o mapowaniu}
+ten temat w rozdziale o mapowaniu. \fixref{ref do rozdziału o mapowaniu}
 
 W przypadku laboratorium nie definiuje się połaczeń między urządzeniami. Nie
 miałoby to sensu ponieważ połaczenia te muszą istnieć w rzeczywistości.
@@ -363,7 +363,7 @@ Warto zwrócić uwagę, że zmienne utworzone w dwóch poprzednich częściach
 konfiguracji są dostępne w czasie wczytywania pliku z mapowaniem, dzięki czemu
 odwoływanie się do stworzonych wcześniej obiektów jest łatwiejsze.
 
-Stworzone mapowanie podsumowuje diagram \fixme{ref do rysunku}.
+Stworzone mapowanie podsumowuje diagram \fixref{ref do rysunku}.
 
 \begin{figure}[htb]
 \begin{center}
@@ -398,11 +398,10 @@ zapewnienia, że użyjemy tylko jednego planu.
 Wywołanie funkcji \code{append\_schedule} jest bardziej złożone, poświęcimy mu
 zatem więcej czasu.
 
-Pierwszy argument to nazwa hosta z modelu\footnote{\fixme{czy w kodzie jest
-test, który sprawdza, że dany host istnieje w momencie tworzenia planu?}}, na
-którym wykonane maja zostać przekazywane polecenia. Z tego powodu plan jest
-związany z konkretnym modelem i, jeśli na jednym modelu realizujemy tylko jeden
-plan, często będzie definiowany w tym samym pliku.
+Pierwszy argument to nazwa hosta z modelu, na którym wykonane maja zostać
+przekazywane polecenia. Z tego powodu plan jest związany z konkretnym modelem
+i, jeśli na jednym modelu realizujemy tylko jeden plan, często będzie
+definiowany w tym samym pliku.
 
 Drugi argument to lista trójek składających się z:
 \begin{itemize}
@@ -420,7 +419,7 @@ Strategie muszą być wybierane z uwzględnieniem możliwości wybranego fronten
 (patrz opis laboratorium). Konstruktor \code{at} tworzy obiekt typu
 \code{RunPolicy}. Użytkownik może definiować własne strategie. Opis dostępnych
 strategii, a także informacje o ich tworzeniu znajdują się w rozdziale
-\fixme{ref do rozdziału}.
+\fixref{ref do rozdziału}.
 
 Ostatni element trójki to komenda do wykonania. Jest ona enkapsulowana w
 obiekcie typu \code{Command}, którego klasa dostarcza interfejsu
@@ -451,7 +450,7 @@ hoście \code{alice}, klient natomiast połączy się z nim w 1 sekundzie i roz�
 w 29.
 
 Inne przykłady definicji planów można znaleźć w rozdziale prezentującym
-zastosowania \fixme{ref do rozdziału}. Ich lektura pozwoli lepiej zrozumieć
+zastosowania \fixref{ref do rozdziału}. Ich lektura pozwoli lepiej zrozumieć
 w jaki sposób wykorzystać dostępny interfejs.
 
 \subsection{Podsumowanie}

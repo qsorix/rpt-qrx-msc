@@ -7,3 +7,6 @@ thesis/*.pdf
 thesis/output
 .lock-wscript
 .waf-*
+/daemon/daemon.cfg
+/daemon/daemon.db
+/daemon/tmp

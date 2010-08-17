@@ -12,6 +12,8 @@
 \usepackage{graphicx}
 \DeclareGraphicsExtensions{.eps}
 \graphicspath{{./diagrams/}}
+\usepackage{array}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 
 % automatic conversion from .eps to .pdf so pdflatex can be used
 \usepackage{epstopdf}
@@ -31,7 +33,9 @@
   \vspace{0.2cm}}
 \newcommand{\fixme}[1] {\textcolor{red}{#1}}
 
-\newcommand{\promotor}[1]{\footnote{\fixme{#1}}}
+\newcommand{\fixref}[1] {\textit{#1}}
+
+\newcommand{\promotor}[1]{\footnote{\textcolor{blue}{#1}}}
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{1ex}
@@ -48,7 +52,7 @@
 
 \subfile{01-przedmowa}
 \subfile{02-wprowadzenie}
-\subfile{03-nazwa}
-\subfile{04-nazwa-master}
+\subfile{03-arete}
+\subfile{04-arete-master}
 
 \end{document}

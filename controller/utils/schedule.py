@@ -2,32 +2,32 @@
 
 from config import Schedule
 
-class At(Schedule.RunPolicy):
+class at(Schedule.RunPolicy):
     def __init__(self, time):
         self._time = time
 
     def schedule_for_daemon(self):
         return 'at %i' % self._time
 
-class Every(Schedule.RunPolicy):
+class every(Schedule.RunPolicy):
     def __init__(self, time):
         self._time = time
 
     def schedule_for_daemon(self):
         return 'every %i' % self._time
+
+class after(Schedule.RunPolicy):
+    def __init__(self, cmd):
+        self._cmd = cmd
+
+    def schedule_for_daemon(self):
+        return 'after %s' % self._cmd
     
-def at(time):
-    return At(time)
-
-def every(time):
-    return Every(time)
-
-class ShellCommand(Schedule.Command):
-    def __init__(self, command, resources):
+class shell(Schedule.Command):
+    def __init__(self, command, use_resources=[]):
         self._command = command
-        self._resources = resources
         self._binary = command.split()[0]
-        self._resources = resources
+        self._resources = use_resources
 
     def accept_transformation(self, transformation):
         self._command = transformation(self._command)
@@ -41,6 +41,29 @@ class ShellCommand(Schedule.Command):
     def needed_resources(self):
         return self._resources
 
-def shell(command, use_resources=[]):
-    return ShellCommand(command, use_resources)
+class ClientServer:
+    def __init__(self, name, server_command, client_command):
+        self._sname = name+'_server'
+        self._cname = name+'_client'
+        self._scmd = server_command
+        self._ccmd = client_command
+
+    def server(self, start, end):
+        start_policy = at(start)
+        end_policy = at(end)
+        return [
+            (self._sname, start_policy, shell(self._scmd)),
+            (self._sname+'_kill', end_policy, shell('kill @{%s.pid}' % self._sname))
+        ]
+
+    def client(self, start, end, server):
+        start_policy = at(start)
+        end_policy = at(end)
+
+        ccmd = self._ccmd.replace('@{server', '@{%s' % server)
+
+        return [
+            (self._cname, start_policy, shell(ccmd)),
+            (self._cname+'_kill', end_policy, shell('kill @{%s.pid}' % self._cname))
+        ]
 
