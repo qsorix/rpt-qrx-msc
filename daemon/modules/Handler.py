@@ -26,6 +26,7 @@ class Handler:
             'test_clean'  : manager.add_clean_command,
             'test_file'   : manager.add_file,
             'test_delete' : manager.delete_command_or_file,
+            'results'     : manager.open_results,
             'results_get' : manager.get_results,
             'delete'      : manager.delete_test,
             'prepare'     : manager.prepare_test,
@@ -42,7 +43,8 @@ class Handler:
                     type, params = parser.parse(line, parent)
                     if types_and_actions.get(type):
                         result = types_and_actions.get(type)(parent_id, **params)
-                except (LineError, ParentError, TypeError, ParamError, ValueError, DatabaseError):
+                except DaemonError as de:
+                    print >> sys.stderr, e
                     self.send_bad_request()
                 else:
                     if type in ['test', 'results']:
