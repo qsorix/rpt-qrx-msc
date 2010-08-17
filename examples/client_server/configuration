@@ -6,7 +6,7 @@ create_model('client-server')
 add_host('client')
 add_host('server')
 
-create_schedule('send-torrent')
+create_schedule('client-server-test')
 
 test_end_policy('complete', setup_phase_delay=2.0)
 
