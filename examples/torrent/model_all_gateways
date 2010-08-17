@@ -1,0 +1,7 @@
+# load this after configuration_common
+
+# in this test hosts in network west have gateway set as normal
+for host in west:
+    host.set_attributes(gateway='10.0.2.1')
+
+# vim: ft=python
