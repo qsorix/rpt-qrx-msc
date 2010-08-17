@@ -7,7 +7,7 @@ class At(Schedule.RunPolicy):
         self._time = time
 
     def schedule_for_daemon(self):
-        return 'in %i' % self._time
+        return 'at %i' % self._time
 
 class Every(Schedule.RunPolicy):
     def __init__(self, time):
