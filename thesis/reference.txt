@@ -17,7 +17,9 @@ Funkcje i metody:
 Typy:
 
   - Host
+     - set_attributes
   - Interface
+     - set_attributes
   - Link
 
 #FIXME: schemat UML
@@ -41,7 +43,9 @@ Funkcje i metody:
 Typy:
 
   - Device
+     - set_attributes
   - Interface
+     - set_attributes
 
 #FIXME: schemat UML
   - Device
