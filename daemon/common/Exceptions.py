@@ -26,6 +26,8 @@ class ParamError(DaemonError):
 class ValueError(DaemonError):
     pass
 
-class DatabaseError(Exception):
+class DatabaseError(DaemonError):
     pass
 
+class SchedulerError(DaemonError):
+    pass
