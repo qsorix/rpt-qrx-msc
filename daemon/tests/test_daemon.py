@@ -7,8 +7,8 @@ import os
 import thread
 import time
 
-from daemon.Daemon import *
-from daemon.Models import *
+from modules.Daemon import *
+from database.Models import *
 
 class TestDaemon:
     def _send_sth(self, sth):
@@ -17,14 +17,9 @@ class TestDaemon:
 
     @classmethod
     def setUpClass(self):
-        setup_database()
-        setup_config()
-
         def run_daemon():
-            HOST, PORT = 'localhost', 9876
-            SocketServer.TCPServer.allow_reuse_address = True
-            daemon = SocketServer.TCPServer((HOST, PORT), DaemonHandler)
-            daemon.serve_forever()
+            daemon = Daemon(port=9876)
+            daemon.run()
 
         self.daemon = thread.start_new_thread(run_daemon, ())
         time.sleep(0.3)
@@ -108,12 +103,12 @@ class TestDaemon:
         assert setup != None
         assert setup.command == u'echo setup'
 
-        reply = self._send_sth('task @{id=task} @{run=in 3} echo task\n')
+        reply = self._send_sth('task @{id=task} @{run=at 3} echo task\n')
         assert reply.startswith('20')
         task = Task.get_by(id=u'task', test_id=u'test_daemon')
         assert task != None
         assert task.command == u'echo task'
-        assert task.run == u'in 3'
+        assert task.run == u'at 3'
 
         reply = self._send_sth('end\n')
         assert reply.startswith('20')
