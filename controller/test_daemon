@@ -7,7 +7,6 @@ daemon_eth = daemon.add_interface('eth', ip='127.0.0.1')
 
 connection = {
     'connection': 'tcp',
-#    'connection': 'dummy',
     'connection_port': '4567',
     'frontend': 'daemon',
     'shell': 'linux_shell'
@@ -25,5 +24,7 @@ bind(daemon_eth, marvin_eth0)
 
 create_schedule('daemon_sched')
 
-append_schedule('daemon', [('echo', at(0), shell('echo test'))])
-append_schedule('daemon', [('badone', at(1), shell('badone test'))])
+append_schedule('daemon', [('echo1', at(0), shell('echo test1'))])
+append_schedule('daemon', [('echo2', at(3), shell('echo test2'))])
+
+test_end_policy('duration 6')
