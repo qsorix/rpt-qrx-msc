@@ -159,15 +159,14 @@ class Scheduler:
 
         return re.sub('@{(?P<ref>[a-zA-Z0-9\._]+)}', resolve_ref, param)
 
-    def resolv_run(self, run):
-        run = run.split(' ')
-        if run[0] in ['every', 'in']:
-            return (run[0], int(run[1]))
-        elif run[0] in ['at']:
-            return (run[0], datetime.strptime(run[1], '%Y-%m-%d %H:%M:%S'))
+    def _resolv_task_run(self, run):
+        t = run.split(' ')
+        if t[0] in ['every', 'at']:
+            return (t[0], int(t[1]))
+        elif t[0] in ['after']:
+            return (t[0], t[1])
 
-    def resolv_end(self, end):
-        end = end.split(' ')
-        if end[0] in ['duration']:
-            return (end[0], int(end[1]))
-
+    def still_running(self):
+        running = len([th for th in self.task_threads.values() if th.is_alive()]) != 0
+        return running or not self.task_scheduler.empty()
+    

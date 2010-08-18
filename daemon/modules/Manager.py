@@ -109,27 +109,90 @@ class Manager:
     def prepare_test(self, parent_id, id):
         if not Test.get_by(id=id):
             raise DatabaseError("Test '%s' doesn't exist." % (id))
-        if not self.schedulers.has_key(id):
-            self.schedulers[id] = Scheduler(test)
-        try:
-            self.schedulers[id].prepare()
-        except CheckError:
-            self.handler.send_check_error()
-        else:
-            self.handler.send_ok()
+        self._run_commands(Check.query.filter_by(test_id=id).all())
+
+    def _setup_test(self, test_id):
+        print '[test %s] Setup' % (test_id)
+        self._run_commands(Setup.query.filter_by(test_id=test_id).all())
+        # FIXME What if setup commands will fail?
 
     def start_test(self, parent_id, id, run, end):
         if not Test.get_by(id=id):
             raise DatabaseError("Test '%s' doesn't exist." % (id))
-        if not self.schedulers.has_key(id):
-            self.schedulers[id] = Scheduler(test)
-        self.schedulers[id].start(run, end)
-        self.handler.send_ok()
+       
+        # CREATE TASK SCHEDULER (to run in 4 seconds)
+        run_type, run_value = self._resolv_test_run(run)
+        run_value += 4
+        print 'should start at:', datetime.fromtimestamp(run_value)
+        
+        end_type, end_value = self._resolv_test_end(end)
+        global_condition = threading.Condition()
+        if end_type == 'duration':
+            task_sched = Scheduler(id, run_value, global_condition, duration=end_value)
+        else:
+            task_sched = Scheduler(id, run_value)
+        self.schedulers[id] = task_sched
+
+        # RUN SETUP        
+        self._setup_test(id)
+                
+        print '[test %s] Tasks' % (id)       
+        task_sched.run()
+
+        if end_type == 'duration':
+            global_condition.acquire()
+            while False:
+                global_condition.wait()
+            global_condition.release()
+
+#        time.sleep(0.01)
+#        while task_sched.still_running():
+#            time.sleep(0.01)
+            
+        print '[test %s] Ended @ %s' % (id, datetime.fromtimestamp(time.time()))
+        print 'duration:', time.time() - run_value
+            
+        # RUN CLEAN UP
+        self._clean_test(id)
+        
+#        print "after cleanup:", self.time_from_start()
+
+    def _clean_test(self, test_id):
+        print '[test %s] Clean' % (test_id)
+        self._run_commands(Clean.query.filter_by(test_id=test_id).all())
 
     def stop_test(self, parent_id, id):
         test = Test.get_by(id=id)
         if not test:
             raise DatabaseError("Test '%s' doesn't exist." % (id))
-        self.scheduler.stop()
-        self.handler.send_ok()
+#        self.scheduler.stop()
 
+    def _run_commands(self, commands):
+        for cmd in commands:
+            args = shlex.split(str(cmd.command))
+            print '[test %s] Running command "%s"' % (cmd.test_id, cmd.id)            
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            p.wait()
+            cmd.output = p.stdout.read()
+            cmd.returncode = p.returncode
+            session.commit()
+            if p.returncode != 0 and isinstance(cmd, Check):
+                raise CheckError("Command '%s' ended badly." % (cmd.id))
+                # FIXME Should remaining commands be executed?
+                # FIXME Should Master know which command ended badly?
+                # FIXME Should it be only for Check commands?
+
+    def _resolv_test_run(self, run):
+        run = run.split(' ')
+#        if run[0] in ['in']:
+#            return (run[0], int(run[1]))
+        if run[0] in ['at']:
+            dt = datetime.strptime(run[1], '%Y-%m-%dT%H:%M:%S.%f')
+            epoch = time.mktime(dt.timetuple()) + float(dt.microsecond)/10**6
+            return (run[0], epoch)
+
+    def _resolv_test_end(self, end):
+        end = end.split(' ')
+        if end[0] in ['duration']:
+            return (end[0], int(end[1]))
+        # TODO Do sth about other possible ends in here
