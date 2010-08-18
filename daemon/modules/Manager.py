@@ -3,14 +3,19 @@
 
 import os
 import ConfigParser
+import subprocess
+import sched
+import shlex
+import time
+import threading
+from datetime import datetime, timedelta
 
-from daemon.Models import *
+from database.Models import *
 from modules.Scheduler import Scheduler
-from common.Exceptions import DatabaseError, CheckError
+from common.Exceptions import DatabaseError, CheckError, SchedulerError
 
 class Manager:
-    def __init__(self, handler):
-        self.handler = handler
+    def __init__(self):
         self.schedulers = {}
 
     def create_test(self, parent_id, id):

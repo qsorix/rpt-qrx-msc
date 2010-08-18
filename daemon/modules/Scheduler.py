@@ -3,107 +3,136 @@
 
 import sched
 import commands
-import os
-import sys
-import signal
 import subprocess
-from time import time, sleep
+import time
 from datetime import datetime
 import ConfigParser
-import thread
-import threading
 import re
 import shlex
+import threading
+import os
+import signal
 
-from daemon.Models import *
+from database.Models import *
 from common.Exceptions import CheckError, ResolvError
 
-# TODO Parameters substitution
-
 class Scheduler:
-    def __init__(self, test):
-        self.test = test
+    def __init__(self, test_id, start_time, condition, duration=None):
+        self.test_id = test_id
+        self.task_scheduler  = sched.scheduler(time.time, time.sleep)
         
-        # Start in 2 seconds
-#        self.s.enterabs(time()+2, 1, self.start_scheduler, ())
-#        self.s.enterabs(mktime(self.test.start), 1, start_scheduler, ())
+        self.conditions = {}
+        self.task_threads = {}
+        self.pids = {}
+#        self.every_count = {}
         
-        self.main_scheduler  = sched.scheduler(time, sleep)
-        self.check_scheduler = sched.scheduler(time, sleep)
-        self.setup_scheduler = sched.scheduler(time, sleep)
-        self.task_scheduler  = sched.scheduler(time, sleep)
-        self.clean_scheduler = sched.scheduler(time, sleep)
+        for task in Task.query.filter_by(test_id=self.test_id).all():
+            type, value = self._resolv_task_run(task.run)
+            if type == 'after' and Task.get_by(id=value):
+                self.conditions[value] = threading.Condition()
+                        
+        for task in Task.query.filter_by(test_id=self.test_id).all():
+            type, value = self._resolv_task_run(task.run)
+            if type == 'at':
+                args = (task.id, self._get_notify_next(task.id))
+                task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
+                self.task_threads[task.id] = task_thread
+                print task.id, 'should run at:', datetime.fromtimestamp(start_time+value)
+                self.task_scheduler.enterabs(start_time+value, 1, task_thread.start, ())
+            elif type == 'every':
+                # TODO
+                pass
+#                self.every_count[task.id] = 0
+            elif type == 'after':
+                after_condition = self._get_run_after(value)
+                if after_condition:
+                    type, value = self._resolv_task_run(Task.get_by(id=value).run)
+                    args = (task.id, None, after_condition)
+                    task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
+                    self.task_threads[task.id] = task_thread
+                    self.task_scheduler.enterabs(start_time+value+0.01, 1, task_thread.start, ())
+        if duration:
+            self.task_scheduler.enterabs(start_time+duration, 1, self.end, (condition, ))          
+    
+    def run(self):
+        self.task_scheduler.run()
+    
+    def end(self, condition):
+        condition.acquire()
 
-    def prepare(self):
-        for cmd in self.test.commands:
-            if isinstance(cmd, Check):
-                self.check_scheduler.enter(0, 1, self._run_command, [cmd])
-        self.check_scheduler.run()
+        for event in self.task_scheduler.queue:
+            self.task_scheduler.cancel(event)
 
-    def start(self, run, end):
-        for cmd in self.test.commands:
-            # Setup commands:
-            if isinstance(cmd, Setup):
-                self.setup_scheduler.enter(0, 1, self._run_command, [cmd])
-            # Tasks:
-            if isinstance(cmd, Task):
-                type, value = self.resolv_run(cmd.run)
-                if type == 'in':
-                    self.task_scheduler.enter(value, 1, self._run_task, [cmd])
-#                elif type == 'every':
-#                    self.task_scheduler.enter(0, 1, self._run_task, [cmd])
-                    # TODO Run task every x seconds
-            # Clean commands:
-            if isinstance(cmd, Clean):
-                self.clean_scheduler.enter(0, 1, self._run_command, [cmd])
-        self.clean_scheduler.enter(0, 1, self._end, ())
+        for id in self.task_threads.keys():
+            if self.task_threads[id].is_alive():
+                if self.pids.has_key(id):
+                    os.kill(self.pids[id], signal.SIGKILL)
+                else:
+                    pass
 
-        # Configure main scheduler
-        self.main_scheduler.enter(0, 1, self.setup_scheduler.run, ())
-        type, value = self.resolv_run(run)
-        if type == 'at':
-            self.main_scheduler.enterabs(value, 1, self.task_scheduler.run, ())
-        elif type == 'in':
-            self.main_scheduler.enter(value, 1, self.task_scheduler.run, ())
-        type, value = self.resolv_end(end)
-        if type == 'duration':
-            self.main_scheduler.enter(value, 1, self.clean_scheduler.run, ())
-#        elif type == 'until'... TODO
+        condition.notify()
+        condition.release()
+    
+    def _get_notify_next(self, id):
+        if self.conditions.has_key(id):
+            return self.conditions[id]
+        return None
+    
+    def _get_run_after(self, id):
+        if self.conditions.has_key(id):
+            return self.conditions[id]
+        return None
+    
+#    def start(self):
 
-        # Run main scheduler
-        print '[test %s] Starting...' % self.test.id
-        self.test.started_at = datetime.now()
-        self.main_scheduler.run()
+#        self.start_time = datetime.now()
+#        self.task_scheduler.run()
+        
+#        test = Test.get_by(id=self.test_id) 
+#        test.started_at = self.start_time 
+#        now = (datetime.now() - self.start_time)
+#        test.length = now.seconds
+#        session.commit()
 
-    def _end(self):
-        self.test.length = (datetime.now() - self.test.started_at).seconds
+    def _run_task(self, task_id, notify_next=None, run_after=None, every=None):       
+#        if notify_next:
+#            notify_next.acquire()
+#        if run_after:
+#            run_after.acquire()
+#            while False:
+#                run_after.wait()
+                        
+        print '[test %s] Running task "%s" @ %s' % (self.test_id, task_id, datetime.fromtimestamp(time.time()))
 
-    def _run_command(self, cmd):
-        print '[test %s] Running command "%s"' % (self.test.id, cmd.id)
-        status, output = commands.getstatusoutput(cmd.command)
-        cmd.output = output
-        if isinstance(cmd, Check) and status is not 0:
-            raise CheckError("Command '%s' ended badly." % (cmd.id))
+#        if every:
+#            self.every_count[task.id] += 1
+#            self.task_scheduler.enter(self.every_count[task.id]*every, 1, self._run_task, [task, every=every])
 
-    def _run_task(self, task):
-        print '[test %s] Running task "%s"' % (self.test.id, task.id)
-
-        args = shlex.split(str(task.command))
-
-        for arg in args:
-            if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', arg):
-                arg = self._subst(arg)
+        args = shlex.split(str(Command.get_by(test_id=self.test_id, id=task_id).command))
 
         try:
-            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            task.pid = p.pid
-            task.output = p.stdout.read()
-        except OSError:
-            pass
+            for arg in args:
+                if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', arg):
+                    arg = self._subst(arg)
 
+            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            task = Task.get_by(test_id=self.test_id, id=task_id)
+            self.pids[task_id] = p.pid
+            task.pid = p.pid
+            session.commit()
+            p.wait()
+            task.output = p.stdout.read()
+            session.commit()
+        except OSError, ResolvError:
+            pass
+        
+ #       if notify_next:
+ #           notify_next.notify_all()
+ #           notify_next.release()
+            
     def _subst(self, param):
-        cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test=self.test).all())
-        file_ids = list(file.id for file in File.query.filter_by(test=self.test).all())
+        cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test_id=self.test_id).all())
+        file_ids = list(file.id for file in File.query.filter_by(test_id=self.test_id).all())
 
         def resolve_ref(matchobj):
             to_resolv = matchobj.group('ref')

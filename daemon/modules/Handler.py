@@ -3,21 +3,20 @@
 
 import sys
 import socket
+import SocketServer
 
-from daemon.Models import *
-from modules.Parser import Parser
-from modules.Manager import Manager
+from modules.Parser import parse
 from common.Exceptions import *
 
-class Handler:
-    def __init__(self, conn):
-        self.conn = conn
-
+class Handler(SocketServer.StreamRequestHandler):       
     def handle(self):
-        parser = Parser()
+        print >> sys.stderr, "[%s] Handling..." % self.client_address[0]
         parent = None
         parent_id = None
-        manager = Manager(self)
+        
+        from modules.Daemon import Daemon
+        manager = Daemon.get_manager()
+        
         types_and_actions = {
             'test'        : manager.create_test,
             'test_check'  : manager.add_check_command,
@@ -40,38 +39,50 @@ class Handler:
                 if line == '':
                     raise socket.error
                 try:
-                    type, params = parser.parse(line, parent)
+                    type, params = parse(line, parent)
                     if types_and_actions.get(type):
                         result = types_and_actions.get(type)(parent_id, **params)
                 except DaemonError as de:
-                    print >> sys.stderr, e
-                    self.send_bad_request()
+                    print >> sys.stderr, de
+                    if isinstance(de, CheckError):
+                        self.send_check_error()
+                    else:
+                        self.send_bad_request()
                 else:
                     if type in ['test', 'results']:
                         parent = type
                         parent_id = params['id']
-                        self.send_ok()
                     if type.endswith('end'):
                         parent = None
                         parent_id = None
+                    if type == 'test_file':
+                        path = result[0]
+                        size = result[1]
+                        with open(path, 'wb') as f:
+                            f.write(self.request.recv(size))
+                    if type == 'results_get':
+                        output = result
+                        self.send_ok(size=len(output))
+                        self.wfile.write(output)
+                    else:
                         self.send_ok()
         except socket.error, IOError:
-            print >> sys.stderr, "[%s] Connection dropped" % self.conn.client_address[0]
+            print >> sys.stderr, "[%s] Connection dropped" % self.client_address[0]
 
     def receive(self):
-        data = self.conn.rfile.readline().strip()
+        data = self.rfile.readline().strip()
         if data:
-            print >> sys.stderr, "[%s] Received: %s" % (self.conn.client_address[0], data)
+            print >> sys.stderr, "[%s] Received: %s" % (self.client_address[0], data)
         return data
 
     def send(self, msg):
-        print >> sys.stderr, "[%s] Sending: %s" % (self.conn.client_address[0], msg)
-        self.conn.wfile.write(msg + '\n')
+        print >> sys.stderr, "[%s] Sending: %s" % (self.client_address[0], msg)
+        self.wfile.write(msg + '\n')
 
     def send_ok(self, size=None):
         msg = '200 OK'
         if size:
-            msg += ' ' + str(size)
+            msg += ' %d' % size
         self.send(msg)
 
     def send_bad_request(self):
