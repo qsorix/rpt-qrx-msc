@@ -39,6 +39,7 @@ class Command(Entity):
     id = Field(Unicode(128), required=True, primary_key=True)
     command = Field(Unicode(128), required=True)
     output = Field(LargeBinary, default=None)
+    returncode = Field(Integer, default=None)
 
     test = ManyToOne('Test', primary_key=True)
 
@@ -69,6 +70,11 @@ class Task(Command):
     
     def __repr__(self):
         return '<Task "%s": %s>' % (self.id, self.command)
+
+    def get_subst_params(self):
+        return {'id': self.id,
+                'pid': self.pid,
+                'command': self.command}
 
 class Clean(Command):
     using_options(inheritance='multi', tablename='clean_commands')

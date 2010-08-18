@@ -1,5 +1,5 @@
 from utils.model import interface
-from utils.schedule import at, shell
+from utils.schedule import at, shell, after
 
 create_model('daemon_model')
 daemon = add_host('daemon')
@@ -25,6 +25,6 @@ bind(daemon_eth, marvin_eth0)
 create_schedule('daemon_sched')
 
 append_schedule('daemon', [('echo1', at(0), shell('echo test1'))])
-append_schedule('daemon', [('echo2', at(3), shell('echo test2'))])
+append_schedule('daemon', [('echo2', after('echo1'), shell('echo test2'))])
 
 test_end_policy('duration 6')

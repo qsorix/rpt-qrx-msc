@@ -167,12 +167,6 @@ class DaemonFrontend(FrontendPlugin):
 
             if reply.startswith('20'):
                 size = int(reply.split(' ')[2])
-
-                received = 0
-                while received + 1024 < size:
-                    data = self.input().read(1024)
-                    received += 1024
-                    print data
                 data = self.input().read(size)
                 print data
 

@@ -1,0 +1,38 @@
+from utils.model import interface
+from utils.schedule import at, shell
+
+create_model('daemon_model')
+daemon1 = add_host('daemon1')
+daemon2 = add_host('daemon2')
+daemon1_eth = daemon1.add_interface('eth', ip='127.0.0.1')
+daemon2_eth = daemon2.add_interface('eth', ip='127.0.0.1')
+
+connection = {
+    'connection': 'tcp',
+    'frontend': 'daemon',
+    'shell': 'linux_shell'
+}
+
+create_laboratory('daemon_lab')
+
+marvin1 = add_device('marvin1', ip='127.0.0.1', connection_port='4567', **connection)
+marvin2 = add_device('marvin2', ip='127.0.0.1', connection_port='5678', **connection)
+marvin1_eth0 = marvin1.add_interface('eth0')
+marvin2_eth0 = marvin2.add_interface('eth0')
+
+create_mapping('daemon_map')
+
+bind(daemon1, marvin1)
+bind(daemon2, marvin2)
+bind(daemon1_eth, marvin1_eth0)
+bind(daemon2_eth, marvin2_eth0)
+
+create_schedule('daemon_sched')
+
+append_schedule('daemon1', [('echo1', at(0), shell('echo test1'))])
+append_schedule('daemon1', [('echo2', at(3), shell('echo test2'))])
+
+append_schedule('daemon2', [('echo1', at(0), shell('echo test1'))])
+append_schedule('daemon2', [('echo2', at(3), shell('echo test2'))])
+
+test_end_policy('duration 6')
