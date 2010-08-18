@@ -143,9 +143,11 @@ class Scheduler:
                 if id in cmd_ids:
                     cmd = Command.get_by(id=id)
                     value_map = cmd.get_subst_params()
-                    if cmd.row_type is 'task' and cmd.pid is not None:
-                        # TODO Check those pids later
-                        values_map['pid'] = cmd.pid
+                    if cmd.row_type is 'task':
+                        if cmd.pid is not None:
+                            values_map['pid'] = cmd.pid
+                        else:
+                            raise ResolvError("Task '%s' has no pid." % (cmd.id))
                     if param in value_map.keys():
                         return value_map[param]
                 elif id in file_ids:
