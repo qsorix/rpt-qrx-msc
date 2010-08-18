@@ -1,0 +1,26 @@
+create_schedule('torrent-distribution-time')
+    
+test_end_policy('complete', setup_phase_delay=1.0)
+
+# east[0] will be seeding. All other hosts just download
+
+torrent = add_resource(File('torrent', 'big-data-file.torrent'))
+data    = add_resource(File('data',    'big-data-file'))
+
+seed_schedule = [
+    # FIXME 1: tracker missing
+    ('tracker', at(0), shell('FIXME', use_resources=[torrent, data]))
+]
+
+peer_schedule = [
+    # FIXME 2: get commands from semafor-triggers proposal if they get
+    # implemented. if not, this test won't work :-(
+    ('ctorrent', at(1), shell('ctorrent @{torrent.path} -X @{arete_slave_poke}', use_resources=[torrent]))
+]
+
+append_schedule(east[0], seed_schedule)
+
+for host in west + east:
+    append_schedule(host, peer_schedule)
+
+# vim: ft=python

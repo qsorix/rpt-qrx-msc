@@ -464,4 +464,124 @@ Podział konfiguracji na model, laboratorium, mapowanie i plan umożliwia
 wielokrotne użycie tych samych definicji bez konieczności powtarzania się. W
 wyraźny sposób odziela to też koncepcję testu, od jego sprzętowej realizacji.
 
+\section{Wykonawcza część frameworku}
+
+Zdefiniowany w konfiguracji test jest wykonywany przez moduł Master. Odpowiada
+on za wczytanie i walidację konfiguracji, połączenie z występującymi w teście
+urządzeniami, przesłanie im przygotowanej konfiguracji, uruchomienie i
+nadzorowanie testu, aż wreszcie pobranie wyników. Tam, gdzie działanie zależne
+jest od specyficznej konfiguracji testu, użytkownik ma możliwość dostarczenia
+własnej implementacji potrzebnych algorytmów za pomocą mechanizum pluginów.
+
+W dalszej części omawiamy te miejsca i wyjaśniamy w jaki sposób zaimplementować
+własny plugin realizujący odpowiednią funkcjonalność.
+
+\subsection{Komunikacja z modułem Slave}
+
+Moduł Master w czasie testu kontroluje pracę uczestniczących w nim urządzeń.
+Dialog z nimi odbywa się za pośrednictwem klas implementujących interfejs
+\code{FrontendPlugin}. Obiekty Frontend mają za zadanie enkapsulować rzeczywisty
+protokół komunikacji i sposób pracy urządzenia, udostępniając modułowi Master
+spójnego sposobu nadzoru nad każdym rodzajem urządzenia.
+
+Zadania frontendu to między innymi: synchronizacja z urządzeniem, przesłanie
+konfiguracji testu, pobieranie wyników. Wykonywanie tych czynności jest zlecane
+przez moduł Master, frontend tłumaczy te rozkazy na protokół zrozumiały przez
+kontrolowane urządzenie i przesyła mu odpowiednie instrukcje.
+
+Sam sposób dostarczania rozkazów jest poza zasięgiem klas \code{FrontendPlugin}.
+Odpowiadają za to pluginy typu \code{ConnectionPlugin}. Frontend nie musi
+wiedzieć, że rozkazy przesłane będą połączeniem TCP, wystarczy, że od niższej
+warstwy otrzyma interfejs do wysyłania i odbierania danych. Więcej informacji o
+interfejsie \code{ConnectionPlugin} dostępnych jest w dalszej części tego
+rozdziału.
+
+\FIXME{
+Reszta opisu FrontendPlugin.
+
+Najpierw diagram sekwencji przedstawiający interakcję Master i dwóch frontend.
+Omówienie algorytmu przeprowadzania testu.
+
+Następnie omówienie zadań każdej występującej na diagramie metody.
+
+Dokładny opis metod będzie w Reference. Odesłać tam.
+}
+
+\subsection{Połączenie ze zdalnym urządzeniem}
+
+Przez połączenie ze zdalnym urządzeniem będziemy tutaj rozumieć kanał
+komunikacyjny pomiędzy Frontendem i kontrolowanym przez niego urządzeniem. W
+typowych zastosowaniach połączenie po prostu zestawia komunikację z modułem
+Arete Slave.  
+
+Najprostszym przykładem takiego połączenia może być połączenie TCP. Nieco
+trudniejszy technicznie, choć koncepcyjnie identyczny, jest tunel SSH.
+Najważniejsze, żeby możliwe było wysyłanie i odbiór danych.
+
+We frameworku Arete połączenia modelowane są przez pluginy implementujące
+interfejs \code{ConnectionPlugin}. Jedyne zadanie tego interfejsu to
+dostarczanie i odbiór danych z kontrolującego go Frontendu. Otrzymuje on także
+pomocnicze rozkazy określające moment, w którym można nawiązać fizyczne
+połączenie oraz kiedy należy je przerwać.
+
+\FIXME{
+Diagram sekwencji interakcji Frontend i Connection w czasie testu.
+
+Omówienie connect, disconnect, output, input.
+
+Omówić znaczenie setblocking!
+}
+
+\subsection{Sterowniki parametrów}
+
+W tym fragmencie pracy wracamy do kwestii poruszonych w opisie konfiguracji.
+Najpierw przypomnijmy, że host, urządzenie oraz interfejs mogły mieć określone
+pewne -- dowolne -- atrybuty. Atrybuty te mają na celu w zwięzły sposób opisać
+cechy jakich od elementu będziemy oczekiwać. Samo ich podanie niczego jednak nie
+powoduje, framework musi jeszcze zostać poinformowany o ich znaczeniu.
+
+Sterowniki parametrów\footnote{\fixme{kiepska nazwa}} służą do przetłumaczenia
+wartości atrybutów na odpowiednie akcje. Co to będą za akcje zależy od atrybutu.
+Dla przykładu, określenie atrybutu \code{ip} powinno owocować wykonaniem komend,
+które na docelowym urządzeniu odpowiednio skonfigurują interfejs sieciowy.
+
+\FIXME {
+Różnica między HostDriverPlugin i InterfaceDriverPlugin.
+
+Prosty przykład.
+
+Zaznaczyć, że to co w host ma być konfigurowane, a to co w device jest teraz i
+służy realizacji. Np. host.ip mówi, jakie IP ustawić. device.ip mówi, pod jakim
+IP można się z urządzeniem w tym momencie połączyć.
+
+Omówienie grup komend (check, setup, task, clean) -- btw, to dokładnie powinno
+być omówione wcześniej. W opisie architektury systemu.
+}
+
+\subsection{Przesyłanie zasobów}
+
+Komendy wykonywanie w czasie testu często wymagać będą pewnych zewnętrznych
+danych, jak na przykład plik konfiguracyjny. Framework zapewnia możliwość
+przesłania tego typu zasobów na urządzenia, gdzie będą one potrzebne.
+
+Transfer danych realizowany jest przez klasę implementującą interfejs
+\code{Resource}. Klasa ta musi umożliwiać transfer poprzez Frontend kontrolujący
+dane urządzenie. Poniżej znajduje się przykład algorytmu, który pozwala przesłać
+plik do modułu Arete Slave.
+
+\FIXME{
+
+Copy-paste klasę File i omówić kod.
+
+Odesłać do metod w reference, które dotyczą zasobów. add\_resource, ale też
+wszystkich miejsc, gdzie można powiedzieć, że zasób jest potrzebny (chyba tylko
+Command i Host).
+
+}
+
+\section{Przechowywanie wyników}
+
+\FIXME{RPT: Miłej zabawy ;->}
+
+
 \end{document}
