@@ -79,7 +79,15 @@ class Manager:
         else:
             session.delete(cmd)
         session.commit()
-        self.handler.send_ok()
+
+    def open_results(self, parent_id, id):
+        if not Test.get_by(id=id):
+            raise DatabaseError("Test '%s' doesn't exist." % (id))
+        # FIXME Only allow getting results if the test ended.
+        if not self.schedulers.has_key(id):
+            raise SchedulerError("Test '%s' hasn't been started yet." % (id))
+        elif self.schedulers[id].still_running():
+            raise SchedulerError("Test '%s' is still running." % (id))
 
     def get_results(self, test_id, id):
         cmd = Command.get_by(test_id=test_id, id=id)
