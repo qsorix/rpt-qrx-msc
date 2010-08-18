@@ -6,9 +6,9 @@ import re
 from common.Exceptions import LineError, ParentError, TypeError, ParamError, ValueError
 
 main_regex        = r'^(?P<type>\w+)(?P<parameters>(\s\@\{\w+\=.+\})*)(?P<command>\s.+)?\s*$'
-start_run_regex   = r'^(at\s[0-9]{4}-[0-9]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2}:[0-9]{2})|(in\s\d)$'
+start_run_regex   = r'^(at\s[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6})|(in\s\d)$'
 start_end_regex   = r'^(duration\s[0-9]+)$'
-task_run_regex    = r'^(in\s\d)|(every\s\d)$'
+task_run_regex    = r'^(at\s\d)|(after\s.+)|(every\s\d)$'
 
 main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete']
 test_sub_types    = ['file', 'check', 'setup', 'task', 'clean', 'delete', 'end']
