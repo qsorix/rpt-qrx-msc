@@ -61,7 +61,13 @@ class Manager:
     def add_file(self, test_id, id, size):
         if self._id_exists(test_id, id):
             raise DatabaseError("File or command named '%s' already exists." % (id))
-        self.handler.send_ok()
+        config = ConfigParser.SafeConfigParser()
+        config.read('daemon.cfg')
+        tmpdir = config.get('Daemon', 'tmpdir')
+        path = tmpdir + '/' + test_id + '_' + id
+        file = File(test_id=test_id, id=id, size=size, path=path)
+        session.commit()
+        return (path, size)
 
     def delete_command_or_file(self, test_id, id):
         if not Command.get_by(test_id=test_id, id=id):
@@ -83,22 +89,14 @@ class Manager:
                 raise DatabaseError("Command or file named '%s' doesn't exist." % (id))
             else:
                 size = int(os.path.getsize(file.path))
-                self.handler.send_ok(size=size)
                 with open(file.path, 'rb') as f:
                     # TODO File doesn't exist.
-                    while size > 1024:
-                        data = f.read(1024)
-                        self.handler.conn.wfile.write(data)
-                        size -= 1024
-                    data = f.read(1024)
-                    self.handler.conn.wfile.write(data)
+                    return f.read()
         else:
             if cmd.output:
-                self.handler.send_ok(size=len(cmd.output))
-                self.handler.conn.wfile.write(cmd.output)
+                return cmd.output
             else:
                 raise DatabaseError("Output for command named '%s' doesn't exist." % (id))
-                self.handler.send_bad_request()
 
     def prepare_test(self, parent_id, id):
         if not Test.get_by(id=id):
