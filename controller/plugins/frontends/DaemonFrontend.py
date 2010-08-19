@@ -3,6 +3,10 @@ from controller.FrontendPlugin import FrontendPlugin
 import datetime
 import os
 
+# FIXME: if anything goes wrong, raise an exception. It is catched in
+# Controller.py, where it causes all frontends to abort_test()
+# Then the exception is propagated do Main.
+
 class DaemonFrontend(FrontendPlugin):
     frontend_type = 'daemon'
 
@@ -35,6 +39,7 @@ class DaemonFrontend(FrontendPlugin):
             id = self._make_id()
             out('check @{id=%i} %s\n' % (id, c))
             resp = self.input().readline()
+            #FIXME: resp.startswith('200')
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
@@ -42,6 +47,7 @@ class DaemonFrontend(FrontendPlugin):
             id = self._make_id()
             out('setup @{id=%i} %s\n' % (id, c))
             resp = self.input().readline()
+            #FIXME: resp.startswith('200')
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
@@ -49,6 +55,7 @@ class DaemonFrontend(FrontendPlugin):
             id = self._make_id()
             out('clean @{id=%i} %s\n' % (id, c))
             resp = self.input().readline()
+            #FIXME: resp.startswith('200')
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
@@ -58,11 +65,13 @@ class DaemonFrontend(FrontendPlugin):
                  'run': c.run_policy().schedule_for_daemon(),
                  'cmd': c.command().command()})
             resp = self.input().readline()
+            #FIXME: resp.startswith('200')
             assert c['name'] not in self._sent_cmds
             self._sent_cmds[c['name']] = c
 
         out('end\n')
         resp = self.input().readline()
+        #FIXME: resp.startswith('200')
 
     def start_sanity_check(self):
         self.output().write('prepare @{id=%s}\n' % self._test_id)
@@ -70,6 +79,7 @@ class DaemonFrontend(FrontendPlugin):
     def wait_sanity_check(self):
         print '  -- waiting for sanity check to finish at ' + self.host().model['name'] + ' --'
         resp = self.input().readline()
+        #FIXME: resp.startswith('200')
         if resp.startswith('401'):
             print 'sanity check failed'
             # TODO Do sth about it
@@ -92,6 +102,7 @@ class DaemonFrontend(FrontendPlugin):
 
         self.output().write('start @{id=%s} @{run=%s} @{end=%s}\n' % (self._test_id, run, end))
         resp = self.input().readline()
+        #FIXME: resp.startswith('200')
 
         if self._disconnect_for_end_policy(end):
             self.disconnect()
@@ -159,6 +170,7 @@ class DaemonFrontend(FrontendPlugin):
 
         self.output().write('results @{id=%s}\n' % self._test_id)
         resp = self.input().readline()
+        #FIXME: resp.startswith('200')
         if not resp.startswith('40'):
             for id in self._sent_cmds.keys():
                 self.output().write('get @{%s.output}\n' % id)
