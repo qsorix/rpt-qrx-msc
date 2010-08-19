@@ -7,8 +7,8 @@ import os
 # Controller.py, where it causes all frontends to abort_test()
 # Then the exception is propagated do Main.
 
-class DaemonFrontend(FrontendPlugin):
-    frontend_type = 'daemon'
+class AreteSlaveFrontend(FrontendPlugin):
+    frontend_type = 'arete_slave'
 
     def __init__(self, host, connection, test_uuid):
         FrontendPlugin.__init__(self, host, connection)
@@ -33,7 +33,7 @@ class DaemonFrontend(FrontendPlugin):
         resp = self.input().readline()
 
         for r in resources:
-            r.transfer_with_daemon(self)
+            r.transfer_with_arete_slave(self)
 
         for c in host_commands.check():
             id = self._make_id()
@@ -62,7 +62,7 @@ class DaemonFrontend(FrontendPlugin):
         for c in host_commands.schedule():
             out('task @{id=%(id)s} @{run=%(run)s} %(cmd)s\n' %
                 {'id': c['name'],
-                 'run': c.run_policy().schedule_for_daemon(),
+                 'run': c.run_policy().schedule_for_arete_slave(),
                  'cmd': c.command().command()})
             resp = self.input().readline()
             #FIXME: resp.startswith('200')

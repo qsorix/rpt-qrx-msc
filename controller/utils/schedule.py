@@ -6,21 +6,21 @@ class at(Schedule.RunPolicy):
     def __init__(self, time):
         self._time = time
 
-    def schedule_for_daemon(self):
+    def schedule_for_arete_slave(self):
         return 'at %i' % self._time
 
 class every(Schedule.RunPolicy):
     def __init__(self, time):
         self._time = time
 
-    def schedule_for_daemon(self):
+    def schedule_for_arete_slave(self):
         return 'every %i' % self._time
 
 class after(Schedule.RunPolicy):
     def __init__(self, cmd):
         self._cmd = cmd
 
-    def schedule_for_daemon(self):
+    def schedule_for_arete_slave(self):
         return 'after %s' % self._cmd
     
 class shell(Schedule.Command):

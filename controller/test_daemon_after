@@ -8,7 +8,7 @@ daemon_eth = daemon.add_interface('eth', ip='127.0.0.1')
 connection = {
     'connection': 'tcp',
     'connection_port': '4567',
-    'frontend': 'daemon',
+    'frontend': 'arete_slave',
     'shell': 'linux_shell'
 }
 

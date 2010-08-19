@@ -2,7 +2,7 @@ standard_connection = {
     # 'connection': 'tcp',
     'connection': 'dummy',
     'connection_port': '4564',
-    'frontend': 'daemon',
+    'frontend': 'arete_slave',
     'shell': 'linux_shell'}
 
 counter = 1

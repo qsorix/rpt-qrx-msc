@@ -6,8 +6,8 @@ class Resource(NamedMixin):
     """Base class for resources.
 
     Implement transfer_with_<frontend> in your subclasses."""
-    def transfer_with_daemon(self, daemon):
-        raise NotImplementedError('Implement transfer_with_daemon method in your subclasses.')
+    def transfer_with_arete_slave(self, frontend):
+        raise NotImplementedError('Implement transfer_with_arete_slave method in your subclasses.')
 
 
 class Resources:

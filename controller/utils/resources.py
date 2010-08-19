@@ -37,12 +37,12 @@ class File(Resources.Resource):
     def path(self):
         return self._path
 
-    def transfer_with_daemon(self, daemon):
+    def transfer_with_arete_slave(self, frontend):
         with open(self._path, 'rb') as file:
-            daemon.output().write('file @{id=%(id)s} @{size=%(size)s}\n' % {'id':self['name'], 'size':self._size})
-            daemon.output().write(file.read())
+            frontend.output().write('file @{id=%(id)s} @{size=%(size)s}\n' % {'id':self['name'], 'size':self._size})
+            frontend.output().write(file.read())
 
-            resp = daemon.input().readline().strip()
+            resp = frontend.input().readline().strip()
             if resp != 'ok':
                 raise RuntimeError('Wrong response while transfering file')
 
