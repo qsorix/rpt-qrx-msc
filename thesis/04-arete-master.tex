@@ -558,20 +558,20 @@ zamieszczony jest przykład prostego sterownika parametrów interfejsu,
 konfigurującego właśnie adres IP.
 
 \begin{pythoncode}
-class InterfaceIP(InterfaceDriverPlugin):
-    def process_interface(self, cmd, host, interface, attributes):
-        if 'ip' not in attributes:
-            return
-
-        ip = interface['ip']
-        cmd.add_check('which ip')
-
-        args = {'ip': interface['ip'],
-                'dev': interface.bound()['name']}
-        cmd.add_setup('ip addr add {ip} dev {dev}'.format(**args))
-        cmd.add_cleanup('ip addr del {ip} dev {dev}'.format(**args))
-
-        attributes.remove('ip')
+  class InterfaceIP(InterfaceDriverPlugin):
+      def process_interface(self, cmd, host, interface, attributes):
+          if 'ip' not in attributes:
+              return
+  
+          ip = interface['ip']
+          cmd.add_check('which ip')
+  
+          args = {'ip': interface['ip'],
+                  'dev': interface.bound()['name']}
+          cmd.add_setup('ip addr add {ip} dev {dev}'.format(**args))
+          cmd.add_cleanup('ip addr del {ip} dev {dev}'.format(**args))
+  
+          attributes.remove('ip')
 
 \end{pythoncode}
 
@@ -605,20 +605,72 @@ Komendy wykonywanie w czasie testu często wymagać będą pewnych zewnętrznych
 danych, jak na przykład plik konfiguracyjny. Framework zapewnia możliwość
 przesłania tego typu zasobów na urządzenia, gdzie będą one potrzebne.
 
+W konfiguracji zasoby definiuje się funkcją \code{add\_resource}, której
+argumentem jest obiekt implementujący interfejs \code{Resource}. Sama definicja
+zasobu nie będzie wystarczająca, należy jeszcze podać, na których hostach ma on
+być dostępny. W tym celu należy skorzystać z metody \code{use\_resource} klasy
+\code{Model.Host}. Przedstawia to przykład poniżej.
+
+\begin{pythoncode}
+  torrent = add_resource(File('torrent', 'test-file.torrent'))
+  alice.use_resource(torrent)
+  bob.use_resource(torrent)
+\end{pythoncode}
+
+Taka konfiguracja spowoduje, że na hosty \code{alice} i \code{bob} razem z
+konfiguracją testu zostanie przesłany lokalny plik \code{test-file.torrent}.
+
 Transfer danych realizowany jest przez klasę implementującą interfejs
 \code{Resource}. Klasa ta musi umożliwiać transfer poprzez Frontend kontrolujący
 dane urządzenie. Poniżej znajduje się przykład algorytmu, który pozwala przesłać
-plik do modułu Arete Slave.
+plik do modułu Arete Slave. Kod nie jest kompletny, służy tylko zobrazowaniu
+sposobu działania.
 
-\FIXME{
+\begin{pythoncode}
+  class File(Resources.Resource):
+      def __init__(self, ...)
+          ...
+  
+      def transfer_with_arete_slave(self, frontend):
+          with open(self._path, 'rb') as file:
+              frontend.output().write('file @{id=%(id)s} @{size=%(size)s}\n' %
+                  {'id':self['name'], 'size':self._size})
+              frontend.output().write(file.read())
+  
+              response = frontend.input().readline().strip()
+              if not resp.startswith('200'):
+                  raise RuntimeError('Wrong response while transfering file')
+\end{pythoncode}
 
-Copy-paste klasę File i omówić kod.
+Klasa implementująca interfejs \code{Resource} powinna dostarczać metod
+\code{transfer\_with} dla każdego frontendu z jakim będzie używana. Nazwa
+metody jest właściwie dowolna ponieważ uruchamiana jest ona z frontendu -- obie
+klasy implementuje więc użytkownik, zalecamy jednak stosowanie schematu
+\code{transfer\_with\_<frontend\_type>}.
 
-Odesłać do metod w reference, które dotyczą zasobów. add\_resource, ale też
-wszystkich miejsc, gdzie można powiedzieć, że zasób jest potrzebny (chyba tylko
-Command i Host).
+Jeśli przed użyciem zasobu chcemy go jeszcze przygotować, framework Arete
+pozwala zdefiniować potrzebne do tego komendy. Może to być użyteczne na
+przykład przy pracy z archiwami, które przed testem będziemy chcięli
+rozpakować. Aby skorzystać z tej możliwości należy zaimplementować metodę
+\code{generate\_commands}.
 
-}
+\begin{pythoncode}
+  class Archive(Resources.Resource):
+      ...
+
+      def generate_commands(self, cmd, host):
+          cmd.add_setup('tar zxf ...')
+	  ...
+\end{pythoncode}
+
+Metoda ta w argumentach otrzymuje instację klasy \code{HostCommands}, do której
+może dodać nowe komendy. Dzięki przekazaniu argumentu \code{host} możliwe jest
+sprawdzenie atrybutów zdefiniowanych w konfiguracji. Można w ten sposób
+określić np. system operacyjny docelowego urządzenia i wygenerować komendy w
+odpowiednim formacie.
+
+Szersze omówienie interfejsu \code{Resource} znajduje się w rozdziale
+\fixref{Reference}.
 
 \section{Przechowywanie wyników}
 
