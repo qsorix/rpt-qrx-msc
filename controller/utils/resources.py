@@ -46,3 +46,9 @@ class File(Resources.Resource):
             if resp != 'ok':
                 raise RuntimeError('Wrong response while transfering file')
 
+
+# FIXME: just a test of generate_commands. not production ready
+class TarBall(File):
+    def generate_commands(self, cmd, host):
+        cmd.add_check('which tar')
+        cmd.add_setup('tar zxf @{' + self['name'] + '.path}')
