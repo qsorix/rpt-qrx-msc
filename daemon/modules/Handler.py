@@ -10,7 +10,7 @@ from common.Exceptions import *
 
 class Handler(SocketServer.StreamRequestHandler):       
     def handle(self):
-        print >> sys.stderr, "[%s] Handling..." % self.client_address[0]
+        print >> sys.stderr, "[%s] Handling connection" % self.client_address[0]
         parent = None
         parent_id = None
         
