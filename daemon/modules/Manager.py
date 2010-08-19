@@ -137,15 +137,13 @@ class Manager:
         self._run_commands(Check.query.filter_by(test_id=id).all())
 
     def _setup_test(self, test_id):
-        print '[test %s] Setup' % (test_id)
         self._run_commands(Setup.query.filter_by(test_id=test_id).all())
-        # FIXME What if setup commands will fail?
 
     def start_test(self, parent_id, id, run, end):
         if not Test.get_by(id=id):
             raise DatabaseError("Test '%s' doesn't exist." % (id))
        
-        # CREATE TASK SCHEDULER (to run in 4 seconds)
+        # FIXME Now it's running in 4 seconds
         run_type, run_value = self._resolv_test_run(run)
         run_value += 4
         print 'should start at:', datetime.fromtimestamp(run_value)
@@ -158,10 +156,9 @@ class Manager:
             task_sched = Scheduler(id, run_value)
         self.schedulers[id] = task_sched
 
-        # RUN SETUP        
+       
         self._setup_test(id)
-                
-        print '[test %s] Tasks' % (id)       
+                      
         task_sched.run()
 
         if end_type == 'duration':
@@ -169,21 +166,13 @@ class Manager:
             while False:
                 global_condition.wait()
             global_condition.release()
-
-#        time.sleep(0.01)
-#        while task_sched.still_running():
-#            time.sleep(0.01)
             
         print '[test %s] Ended @ %s' % (id, datetime.fromtimestamp(time.time()))
-        print 'duration:', time.time() - run_value
+        print '[test %s] Duration: %f' % (id, time.time() - run_value)
             
-        # RUN CLEAN UP
         self._clean_test(id)
-        
-#        print "after cleanup:", self.time_from_start()
 
     def _clean_test(self, test_id):
-        print '[test %s] Clean' % (test_id)
         self._run_commands(Clean.query.filter_by(test_id=test_id).all())
 
     def stop_test(self, parent_id, id):
@@ -201,11 +190,8 @@ class Manager:
             cmd.output = p.stdout.read()
             cmd.returncode = p.returncode
             session.commit()
-            if p.returncode != 0 and isinstance(cmd, Check):
-                raise CheckError("Command '%s' ended badly." % (cmd.id))
-                # FIXME Should remaining commands be executed?
-                # FIXME Should Master know which command ended badly?
-                # FIXME Should it be only for Check commands?
+            if p.returncode != 0:
+                raise CommandError("Command '%s' ended badly." % (cmd.id), cmd.id)
 
     def _resolv_test_run(self, run):
         run = run.split(' ')
