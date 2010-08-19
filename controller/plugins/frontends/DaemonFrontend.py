@@ -159,19 +159,21 @@ class DaemonFrontend(FrontendPlugin):
 
         self.output().write('results @{id=%s}\n' % self._test_id)
         resp = self.input().readline()
-        for id in self._sent_cmds.keys():
-            self.output().write('get @{id=%s}\n' % id)
-
-            # FIXME Put those results in some database or sth.
-            reply = self.input().readline()
-
-            if reply.startswith('20'):
-                size = int(reply.split(' ')[2])
-                data = self.input().read(size)
-                print data
-
-        self.output().write('end\n')
-        resp = self.input().readline()
+        if not resp.startswith('40'):
+            for id in self._sent_cmds.keys():
+                self.output().write('get @{%s.output}\n' % id)
+    
+                # FIXME Put those results in some database or sth.
+                reply = self.input().readline()
+    
+                if reply.startswith('20'):
+                    sizes = reply.split(' ')[2:]
+                    for size in sizes:
+                        data = self.input().read(int(size)).strip()
+                        print data
+    
+            self.output().write('end\n')
+            resp = self.input().readline()
 
         # FIXME Temporarily deleting test after fetching results.
         self.output().write('delete @{id=%s}\n' % self._test_id)
