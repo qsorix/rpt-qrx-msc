@@ -25,6 +25,7 @@ class TestParser:
         assert dict['id'] == 'task'
         assert 'run' in dict
         assert dict['run'] == 'at 5'
+        assert 'command' in dict
         assert dict['command'] == 'ls -al *()!#$%^&'
 
     def test_correct_start(self):
@@ -38,10 +39,10 @@ class TestParser:
         assert dict['end'] == 'duration 10'
 
     def test_correct_task_results(self):
-        type, dict = parse('get @{id=task}', parent='results')
+        type, dict = parse('get @{task.output}', parent='results')
         assert type == 'results_get'
-        assert 'id' in dict
-        assert dict['id'] == 'task'
+        assert 'command' in dict
+        assert dict['command'] == '@{task.output}'
 
     def test_correct_test_end(self):
         type, dict = parse('end', parent='test')
