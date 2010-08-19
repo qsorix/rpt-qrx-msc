@@ -187,10 +187,10 @@ class Manager:
     def _run_commands(self, commands):
         for cmd in commands:
             args = shlex.split(str(cmd.command))
-            print '[test %s] Running command "%s"' % (cmd.test_id, cmd.id)            
+            print '[test %s] Running %s command "%s"' % (cmd.test_id, cmd.row_type, cmd.id)            
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             p.wait()
-            cmd.output = p.stdout.read()
+            Output(command = cmd, content = p.stdout.read())
             cmd.returncode = p.returncode
             session.commit()
             if p.returncode != 0:
