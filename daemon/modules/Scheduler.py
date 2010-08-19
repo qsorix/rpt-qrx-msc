@@ -14,17 +14,19 @@ import os
 import signal
 
 from database.Models import *
-from common.Exceptions import CheckError, ResolvError
+from common.Exceptions import ResolvError
 
 class Scheduler:
     def __init__(self, test_id, start_time, condition, duration=None):
         self.test_id = test_id
         self.task_scheduler  = sched.scheduler(time.time, time.sleep)
+        self.active = True
+        self.start_time = start_time
         
         self.conditions = {}
         self.task_threads = {}
         self.pids = {}
-#        self.every_count = {}
+        self.every_count = {}
         
         for task in Task.query.filter_by(test_id=self.test_id).all():
             type, value = self._resolv_task_run(task.run)
@@ -33,21 +35,24 @@ class Scheduler:
                         
         for task in Task.query.filter_by(test_id=self.test_id).all():
             type, value = self._resolv_task_run(task.run)
-            if type == 'at':
+            if type == 'at' and value < duration:
                 args = (task.id, self._get_notify_next(task.id))
                 task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
                 self.task_threads[task.id] = task_thread
-                print task.id, 'should run at:', datetime.fromtimestamp(start_time+value)
+#                print task.id, 'should run at:', datetime.fromtimestamp(start_time+value)
                 self.task_scheduler.enterabs(start_time+value, 1, task_thread.start, ())
             elif type == 'every':
-                # TODO
-                pass
-#                self.every_count[task.id] = 0
+                self.every_count[task.id] = 0
+                args = (task.id, None, None, value)
+                task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
+                self.task_threads[task.id+repr(0)] = task_thread
+#                print task.id, 'should run at:', datetime.fromtimestamp(start_time), 'for the', self.every_count[task.id]+1, 'time'
+                self.task_scheduler.enterabs(start_time, 1, task_thread.start, ())
             elif type == 'after':
                 after_condition = self._get_run_after(value)
                 if after_condition:
-                    type, value = self._resolv_task_run(Task.get_by(id=value).run)
-                    args = (task.id, None, after_condition)
+                    type, value = self._resolv_task_run(Task.get_by(test_id=self.test_id, id=value).run)
+                    args = (task.id, self._get_notify_next(task.id), after_condition)
                     task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
                     self.task_threads[task.id] = task_thread
                     self.task_scheduler.enterabs(start_time+value+0.01, 1, task_thread.start, ())
@@ -60,6 +65,8 @@ class Scheduler:
     def end(self, condition):
         condition.acquire()
 
+        self.active = False
+
         for event in self.task_scheduler.queue:
             self.task_scheduler.cancel(event)
 
@@ -67,8 +74,6 @@ class Scheduler:
             if self.task_threads[id].is_alive():
                 if self.pids.has_key(id):
                     os.kill(self.pids[id], signal.SIGKILL)
-                else:
-                    pass
 
         condition.notify()
         condition.release()
@@ -94,22 +99,33 @@ class Scheduler:
 #        test.length = now.seconds
 #        session.commit()
 
-    def _run_task(self, task_id, notify_next=None, run_after=None, every=None):       
-#        if notify_next:
-#            notify_next.acquire()
-#        if run_after:
-#            run_after.acquire()
-#            while False:
-#                run_after.wait()
-                        
+    def _run_task(self, task_id, notify_next=None, run_after=None, every=None):
+        if notify_next:
+            notify_next.acquire()
+        if run_after:
+            run_after.acquire()
+            while False:
+                run_after.wait()
+
+        if self.active:   
+            if every != None:
+                while self.active:
+                    t = time.time()
+                    self._shell_command_execution(task_id)
+                    left = every - (time.time() - t)
+                    if left > 0:
+                        time.sleep(left)
+                    # FIXME Command for 'every' can't last longer then 'every' value.
+            else:                
+                self._shell_command_execution(task_id)
+            
+        if notify_next:
+            notify_next.notify_all()
+            notify_next.release()
+
+    def _shell_command_execution(self, task_id):
         print '[test %s] Running task "%s" @ %s' % (self.test_id, task_id, datetime.fromtimestamp(time.time()))
-
-#        if every:
-#            self.every_count[task.id] += 1
-#            self.task_scheduler.enter(self.every_count[task.id]*every, 1, self._run_task, [task, every=every])
-
         args = shlex.split(str(Command.get_by(test_id=self.test_id, id=task_id).command))
-
         try:
             for arg in args:
                 if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', arg):
@@ -117,18 +133,15 @@ class Scheduler:
 
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             task = Task.get_by(test_id=self.test_id, id=task_id)
-            self.pids[task_id] = p.pid
+            self.pids[task_id] = p.pid               
             task.pid = p.pid
             session.commit()
             p.wait()
-            task.output = p.stdout.read()
+            Output(command=task, content=p.stdout.read())
+            task.returncode = p.returncode
             session.commit()
         except OSError, ResolvError:
             pass
-        
- #       if notify_next:
- #           notify_next.notify_all()
- #           notify_next.release()
             
     def _subst(self, param):
         cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test_id=self.test_id).all())
@@ -159,6 +172,7 @@ class Scheduler:
                 pass
             raise ResolvError("Cannot resolve '%s'." % (to_resolv))
 
+        session.close()
         return re.sub('@{(?P<ref>[a-zA-Z0-9\._]+)}', resolve_ref, param)
 
     def _resolv_task_run(self, run):
