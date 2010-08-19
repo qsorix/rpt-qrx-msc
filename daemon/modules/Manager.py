@@ -2,6 +2,7 @@
 # coding=utf-8
 
 import os
+import re
 import ConfigParser
 import subprocess
 import sched
@@ -12,7 +13,7 @@ from datetime import datetime, timedelta
 
 from database.Models import *
 from modules.Scheduler import Scheduler
-from common.Exceptions import DatabaseError, CheckError, SchedulerError
+from common.Exceptions import DatabaseError, CommandError, SchedulerError, ResolvError
 
 class Manager:
     def __init__(self):
@@ -83,28 +84,52 @@ class Manager:
     def open_results(self, parent_id, id):
         if not Test.get_by(id=id):
             raise DatabaseError("Test '%s' doesn't exist." % (id))
-        # FIXME Only allow getting results if the test ended.
         if not self.schedulers.has_key(id):
             raise SchedulerError("Test '%s' hasn't been started yet." % (id))
         elif self.schedulers[id].still_running():
             raise SchedulerError("Test '%s' is still running." % (id))
 
-    def get_results(self, test_id, id):
-        cmd = Command.get_by(test_id=test_id, id=id)
-        if not cmd:
-            file = File.get_by(test_id=test_id, id=id)
-            if not file:
-                raise DatabaseError("Command or file named '%s' doesn't exist." % (id))
-            else:
-                size = int(os.path.getsize(file.path))
-                with open(file.path, 'rb') as f:
-                    # TODO File doesn't exist.
-                    return f.read()
+    def get_results(self, test_id, command):
+        if re.match('@{([a-zA-Z0-9\._]+)}', command):
+            match = re.match('@{(?P<ref>[a-zA-Z0-9\._]+)}', command)
+            cmd_ids  = [cmd.id for cmd in Command.query.filter_by(test_id=test_id).all()]
+            file_ids = [file.id for file in File.query.filter_by(test_id=test_id).all()]
+
+            ref = match.group('ref').split('.')
+            if len(ref) is 2:
+                id    = ref[0]
+                param = ref[1]
+                if id in cmd_ids:
+                    cmd = Command.get_by(test_id=test_id, id=id)
+                    if param == 'output':
+                        number = len(cmd.outputs)
+                        if number > 0:
+                            return (number, [output.content for output in cmd.outputs])
+                        else:
+                            raise DatabaseError("Output for command '%s' doesn't exist." % (id))
+                    elif param == 'returncode':
+                        if cmd.returncode:
+                            return cmd.returncode
+                        else:
+                            raise DatabaseError("Returncode for command '%s' doesn't exist." % (id))
+#                elif id in file_ids:
+#                    file = File.get_by(test_id=test_id, id=id)
+#                    if param == 'output':
+#                        with open(file.path, 'rb') as f:
+#                            # FIXME File doesn't exist.
+#                            return f.read()
+                else:
+#                    raise DatabaseError("Command or file named '%s' doesn't exist." % (id))
+                    raise DatabaseError("Command named '%s' doesn't exist." % (id))
+            elif len(ref) is 1:
+                param = ref[0]
+                if param in ['checks', 'setups', 'tasks', 'cleans']:
+                    cmd_with_output_list = [cmd.id for cmd in Command.query.filter_by(test_id=test_id).all() if cmd.output]
+                    print cmd_with_output_list
+                    return cmd_with_output_list
+            raise ResolvError("Cannot resolve '%s'." % (to_resolv))
         else:
-            if cmd.output:
-                return cmd.output
-            else:
-                raise DatabaseError("Output for command named '%s' doesn't exist." % (id))
+            raise ParamError("You won't get your results that way.")
 
     def prepare_test(self, parent_id, id):
         if not Test.get_by(id=id):
