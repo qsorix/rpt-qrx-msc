@@ -58,7 +58,7 @@ def parse(line, parent=None):
 
     # Check required parameters
     req = []
-    if type != 'end':
+    if not type in ['end', 'get']:
         req.append('id')
     if globals().has_key(type+'_required'):
         req += globals()[type+'_required']
