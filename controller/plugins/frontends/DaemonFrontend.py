@@ -175,10 +175,6 @@ class DaemonFrontend(FrontendPlugin):
             self.output().write('end\n')
             resp = self.input().readline()
 
-        # FIXME Temporarily deleting test after fetching results.
-        self.output().write('delete @{id=%s}\n' % self._test_id)
-        resp = self.input().readline()
-
         self.disconnect()
 
     def abort_test(self):
