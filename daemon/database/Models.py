@@ -8,7 +8,7 @@ class Test(Entity):
 
     id = Field(Unicode(128), required=True, primary_key=True)
     started_at = Field(DateTime, required=False)
-    length = Field(Integer, required=False)
+    duration = Field(Integer, required=False)
 
     files = OneToMany('File', cascade='delete')
     commands = OneToMany('Command', cascade='delete')
@@ -28,27 +28,28 @@ class File(Entity):
     def __repr__(self):
         return '<File "%s" (%d)>' % (self.id, self.size)
 
-    def get_subst_params(self):
-        return {'id': self.id,
-                'size': self.size,
-                'path': self.path}
+class Output(Entity):
+    using_options(tablename='outputs')
+
+    content = Field(LargeBinary, default=None)
+    
+    command = ManyToOne('Command')
+    
+    def __repr__(self):
+        return '<Output for "%s">' % (self.command.id)
 
 class Command(Entity):
     using_options(tablename='commands')
 
     id = Field(Unicode(128), required=True, primary_key=True)
     command = Field(Unicode(128), required=True)
-    output = Field(LargeBinary, default=None)
     returncode = Field(Integer, default=None)
 
     test = ManyToOne('Test', primary_key=True)
+    outputs = OneToMany('Output')
 
     def __repr__(self):
         return '<Command "%s": %s >' % (self.id, self.command)
-
-    def get_subst_params(self):
-        return {'id': self.id,
-                'command': self.command}
 
 class Check(Command):
     using_options(inheritance='multi', tablename='check_commands')
@@ -67,14 +68,11 @@ class Task(Command):
 
     run = Field(Unicode(128), required=True)
     pid = Field(Integer, default=None)
+    started_at = Field(DateTime, required=False)
+    duration = Field(Integer, required=False)
     
     def __repr__(self):
         return '<Task "%s": %s>' % (self.id, self.command)
-
-    def get_subst_params(self):
-        return {'id': self.id,
-                'pid': self.pid,
-                'command': self.command}
 
 class Clean(Command):
     using_options(inheritance='multi', tablename='clean_commands')
