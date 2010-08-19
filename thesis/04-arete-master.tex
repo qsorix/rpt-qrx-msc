@@ -545,18 +545,59 @@ wartości atrybutów na odpowiednie akcje. Co to będą za akcje zależy od atry
 Dla przykładu, określenie atrybutu \code{ip} powinno owocować wykonaniem komend,
 które na docelowym urządzeniu odpowiednio skonfigurują interfejs sieciowy.
 
-\FIXME {
-Różnica między HostDriverPlugin i InterfaceDriverPlugin.
+Użytkownik ma pełną swobodę w definiowaniu atrybutów i określaniu ich
+znaczenia. Konfiguracja jest jednak przewidziana w taki sposób, aby atrybuty
+urządzeń laboratorium dotyczyły ich bieżącej konfiguracji, a te z modelu
+opisywały stan, jaki chcemy osiągnąć. Przykładowo atrybut \code{ip} w modelu
+będzie mówił, że w czasie testu dany interfejs ma mieć taki adres IP. W
+przypadku interfejsu urządzenia, atrybut \code{ip} określa aktualny adres, w
+zastanej konfiguracji sprzętowej.
 
-Prosty przykład.
+Framework do sterowników przekazuje więc atrybuty określone w modelu. Poniżej
+zamieszczony jest przykład prostego sterownika parametrów interfejsu,
+konfigurującego właśnie adres IP.
 
-Zaznaczyć, że to co w host ma być konfigurowane, a to co w device jest teraz i
-służy realizacji. Np. host.ip mówi, jakie IP ustawić. device.ip mówi, pod jakim
-IP można się z urządzeniem w tym momencie połączyć.
+\begin{pythoncode}
+class InterfaceIP(InterfaceDriverPlugin):
+    def process_interface(self, cmd, host, interface, attributes):
+        if 'ip' not in attributes:
+            return
 
-Omówienie grup komend (check, setup, task, clean) -- btw, to dokładnie powinno
-być omówione wcześniej. W opisie architektury systemu.
-}
+        ip = interface['ip']
+        cmd.add_check('which ip')
+
+        args = {'ip': interface['ip'],
+                'dev': interface.bound()['name']}
+        cmd.add_setup('ip addr add {ip} dev {dev}'.format(**args))
+        cmd.add_cleanup('ip addr del {ip} dev {dev}'.format(**args))
+
+        attributes.remove('ip')
+
+\end{pythoncode}
+
+Dla każdego interfejsu wykonywane są wszystkie zarejestrowane sterowniki, aż
+lista jego atrybutów będzie pusta. W ten sposób sterowniki mogą w czasie
+wykonania decydować, czy dysponując dostarczonymi atrybutami są w stanie
+wygenerować komendy. Aby realizować ten prosty algorytm, sterownik na początku
+funkcji \code{process\_interface} sprawdza czy \code{'ip'} należy do listy
+nieprzetworzonych atrybutów, a na końcu ten element z listy usuwa.
+
+Parametr \code{cmd} to obiekt, w którym gromadzone są tworzone komendy. W fazie
+przygotowania\footnote{\fixme{zakładam, że fazy testu i grupy komend będą
+omówione wcześniej, w architekturze systemu}} za pomocą polecenia \code{which}
+zostanie sprawdzone, czy program \code{ip} jest dostępny. W fazie konfiguracji
+odpowiedni adres zostanie dodany, a po zakończeniu testu usunięty z interfejsu.
+
+Metoda \code{interface.bound()} zwraca związany (poprzez zdefiniowane
+mapowanie) z tym interfejsem interfejs urządzenia. Dzięki temu mamy dostęp do
+jego nazwy w rzeczywistym urządzeniu i możemy podać argument wymaganay przez
+program \code{ip}.
+
+Dokładne wyjaśnienie znaczenia każdej funkcji znajduje się w \fixref{rozdział
+Reference}. Tutaj dodamy jeszcze tylko, że sterowniki dzielą się na te
+przetwarzające argumenty hostów i te, które przetwarzają argumenty interfejsów.
+Pluginy dziedziczą odpowiednio z klas \code{HostDriverPlugin} i
+\code{InterfaceDriverPlugin}.
 
 \subsection{Przesyłanie zasobów}
 
