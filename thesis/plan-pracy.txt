@@ -32,7 +32,9 @@
 
   4 strony. Budowa aplikacji, podział na moduły i ich funkcje. Przedstawienie
   nazewnictwa i roli występujących komponentów. Omówienie zalet takiego
-  sposobu rozwiazania problemu.
+  sposobu rozwiazania problemu. Przedstawienie ogólnego przebiegu testu.
+  Omówienie podziału zadań na 4 grupy (check, setup, task, cleanup).
+  Zwięzłe omówienie bazy danych.
 
 3.3. Instalacja
 
@@ -112,11 +114,6 @@
   o konfiguracji i architekturze, a tym samym zamknąć opis dynamicznej części
   aplikacji.
 
-6.2. Reference
-
-  X stron. Dokumentacja techniczna całego API frameworku i standardowo
-  dostarczanych utilities. 
-
 6.3. Przykład użycia
 
   1 strona. Dwa słowa wstępu do przykładów. Dlaczego właśnie takie, a nie
@@ -142,6 +139,12 @@
   wprowadzane są duże straty pakietów i opóźnienia transmisji. Mierzony jest
   czas dystrybucji pliku.
 
-7. Podsumowanie
+7. Reference
+
+  X stron. Dokumentacja techniczna całego API frameworku i standardowo
+  dostarczanych utilities. Dokładny opis bazy danych.
+
+
+8. Podsumowanie
 
   1 strona. Podsumowanie ;-)
