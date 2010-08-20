@@ -5,7 +5,7 @@ import re
 
 from common.Exceptions import LineError, ParentError, TypeError, ParamError, ValueError
 
-main_regex        = r'^(?P<type>\w+)(?P<parameters>(\s\@\{\w+\=.+\})*)(?P<command>\s.+)?\s*$'
+main_regex        = r'^(?P<type>\w+)(?P<parameters>( \@\{\w+\=[a-zA-Z0-9 -_\.]+\})*)(?P<command> .+)?\s*$'
 start_run_regex   = r'^(at\s[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6})|(in\s\d)$'
 start_end_regex   = r'^(duration\s[0-9]+)$'
 task_run_regex    = r'^(at\s\d)|(after\s.+)|(every\s\d)$'
