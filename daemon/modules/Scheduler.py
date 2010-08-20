@@ -15,12 +15,13 @@ import signal
 
 from database.Models import *
 from common.Exceptions import ResolvError
+from apscheduler.util import timedelta_seconds
 
 class Scheduler:
     def __init__(self, test_id, start_time, condition=None, duration=None):
         self.test_id = test_id
         self.task_scheduler  = sched.scheduler(time.time, time.sleep)
-        self.active = False
+        self.active = True
         self.start_time = start_time
         self.started_at = None
         
@@ -65,7 +66,6 @@ class Scheduler:
         self.task_scheduler.run()
     
     def start(self):
-        self.active = True
         self.started_at = datetime.now()
         test = Test.get_by(id=self.test_id)
         test.started_at = self.started_at
