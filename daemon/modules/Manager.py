@@ -104,22 +104,22 @@ class Manager:
                     if param == 'output':
                         number = len(cmd.outputs)
                         if number > 0:
-                            return (number, [output.content for output in cmd.outputs])
+                            return ('multi', (number, [output.content for output in cmd.outputs]))
                         else:
                             raise DatabaseError("Output for command '%s' doesn't exist." % (id))
                     elif param == 'returncode':
                         if cmd.returncode != None:
-                            return str(cmd.returncode)
+                            return ('single', str(cmd.returncode))
                         else:
                             raise DatabaseError("Returncode for command '%s' doesn't exist." % (id))
                     elif param == 'started_at':
                         if cmd.started_at:
-                            return cmd.started_at.isoformat()
+                            return ('single', cmd.started_at.isoformat())
                         else:
                             raise DatabaseError("Start datetime for command '%s' doesn't exist." % (id))
                     elif param == 'duration':
                         if cmd.duration != None:
-                            return str(cmd.duration)
+                            return ('single', str(cmd.duration))
                         else:
                             raise DatabaseError("Duration for command '%s' doesn't exist." % (id))                        
 #                elif id in file_ids:
@@ -135,11 +135,11 @@ class Manager:
                 param = ref[0]
                 if param in ['checks', 'setups', 'tasks', 'cleans']:
                     list = [cmd.id for cmd in Command.query.filter_by(test_id=test_id, row_type=param[:-1]).all() if len(cmd.outputs) > 0]
-                    return list
+                    return ('list', list)
                 elif param == 'started_at':
-                    return Test.get_by(id=test_id).started_at.isoformat()
+                    return ('single', Test.get_by(id=test_id).started_at.isoformat())
                 elif param == 'duration':
-                    return str(Test.get_by(id=test_id).duration)
+                    return ('single', str(Test.get_by(id=test_id).duration))
             raise ResolvError("Cannot resolve '%s'." % (to_resolv))
         else:
             raise ParamError("You won't get your results that way.")
@@ -212,7 +212,7 @@ class Manager:
             p.wait()
             td = datetime.now() - dt
             duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-            Output(command = cmd, content = p.stdout.read())
+            Output(command = cmd, content = p.stdout.read().strip())
             cmd.started_at = dt
             cmd.duration = duration
             cmd.returncode = p.returncode

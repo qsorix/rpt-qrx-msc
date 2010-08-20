@@ -150,7 +150,7 @@ class Scheduler:
             p.wait()
             td = datetime.now() - dt
             duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-            Output(command=task, content=p.stdout.read())
+            Output(command=task, content=p.stdout.read().strip())
             task.started_at = dt
             task.duration = duration
             task.returncode = p.returncode

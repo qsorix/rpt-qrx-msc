@@ -189,11 +189,11 @@ class AreteSlaveFrontend(FrontendPlugin):
         self.disconnect()
 
     def _get_list(self, list_name):
-         self.output().write('get @{%s}\n' % (list_name))
-         reply = self.input().readline().strip()
-         if reply.startswith('201'):
-            ids = reply.split(' ')[2:]
-            return ids
+        self.output().write('get @{%s}\n' % (list_name))
+        reply = self.input().readline().strip()
+        if reply.startswith('201'):
+           ids = reply.split(' ')[2:]
+           return ids
 
     def _get_param(self, param, task_id=None):
         if task_id:
@@ -202,11 +202,15 @@ class AreteSlaveFrontend(FrontendPlugin):
             self.output().write('get @{%s}\n' % (param))
         reply = self.input().readline().strip()
         if reply.startswith('200'):
+            data_list = []
             sizes = reply.split(' ')[2:]
             for size in sizes:
                 data = self.input().read(int(size)).strip()
-                return data
-                print data
+                data_list.append(data)
+            if len(data_list) == 1:
+                return data_list[0]
+            else:
+                return data_list
                     
     def abort_test(self):
         # TODO Implement aborting sanity check and test itself.

@@ -61,20 +61,24 @@ class Handler(SocketServer.StreamRequestHandler):
                         with open(path, 'wb') as f:
                             f.write(self.request.recv(size))
                     if type == 'results_get':
-                        if isinstance(result, tuple):
-                            number = result[0]
-                            output_list = result[1]
+                        type = result[0]
+                        to_send = result[1]
+                        if type == 'multi':
+                            number = to_send[0]
+                            output_list = to_send[1]
                             size_list = [len(output) for output in output_list]
                             self.send_ok(sizes=size_list)
                             for output in output_list:
                                 self.wfile.write(output)
-                        elif isinstance(result, list):
-                            self.send_list(result)
+                        elif type == 'list':
+                            self.send_list(to_send)
                         else:
-                            self.send_ok(sizes=[len(result)])
-                            self.wfile.write(result)
+                            self.send_ok(sizes=[len(to_send)])
+                            self.wfile.write(to_send)
                     else:
                         self.send_ok()
+                        if type == 'start':
+                            manager.start_tasks(parent_id, **params)
         except socket.error, IOError:
             print >> sys.stderr, "[%s] Connection dropped" % self.client_address[0]
 
