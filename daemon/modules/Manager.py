@@ -194,18 +194,19 @@ class Manager:
         print '[test %s] Duration: %f' % (id, test.duration)
         session.commit()
         
-        self._clean_test(id)
+        self.clean_test(id)
 
-    def _clean_test(self, test_id):
+    def clean_test(self, test_id):
         self._run_commands(Clean.query.filter_by(test_id=test_id).all())
 
     def stop_test(self, parent_id, id):
-        # TODO Stop scheduler, empty queue, kill tasks, run _clean_test
+        # FIXME See if that works.
         test = Test.get_by(id=id)
         if not test:
             raise DatabaseError("Test '%s' doesn't exist." % (id))
         if not self.schedulers.has_key(id):
             raise SchedulerError("Test '%s' hasn't been started yet." % (id))
+        self.clean_test(id)
         self.schedulers[id].end()
 
     def _run_commands(self, commands):

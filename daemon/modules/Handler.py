@@ -47,9 +47,11 @@ class Handler(SocketServer.StreamRequestHandler):
                     if isinstance(e, CommandError):
                        self.send_cmd_error(e.cmd_id)
                     elif isinstance(e, SetupTooLongError):
-                       self.send_setup_too_long()                     
+                       self.send_setup_too_long()
                     else:
                         self.send_bad_request()
+                    if type == 'start':
+                        manager.clean_test(params['id'])
                 else:
                     if type in ['test', 'results']:
                         parent = type
