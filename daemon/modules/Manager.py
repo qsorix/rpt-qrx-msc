@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 from database.Models import *
 from modules.Scheduler import Scheduler
-from common.Exceptions import DatabaseError, CommandError, SchedulerError, ResolvError
+from common.Exceptions import *
 
 class Manager:
     def __init__(self):
@@ -160,20 +160,16 @@ class Manager:
         
         self._setup_test(id)
         
-        if time.time() - run_value <= 0:
+        if (run_value - time.time()) <= 0.5:
             raise SetupTooLongError("Setup for '%s' took too much time." % (id))
  
     def start_tasks(self, parent_id, id, run, end):
-        # FIXME Now it's running in 4 seconds
         run_type, run_value = self._resolv_test_run(run)
-        run_value += 4
-#        print 'should start at:', datetime.fromtimestamp(run_value)
-        
         end_type, end_value = self._resolv_test_end(end)
         global_condition = threading.Condition()
         if end_type == 'duration':
-            task_sched = Scheduler(id, run_value, global_condition, duration=end_value)
-        else:
+            task_sched = Scheduler(id, run_value, condition=global_condition, duration=end_value)
+        elif end_type == 'complete':
             task_sched = Scheduler(id, run_value)
         self.schedulers[id] = task_sched
                       
@@ -184,6 +180,10 @@ class Manager:
             while False:
                 global_condition.wait()
             global_condition.release()
+        elif end_type == 'complete':
+            time.sleep(0.01)
+            while self.schedulers[id].still_running():
+                time.sleep(0.01)
         
         end_time = datetime.now()
         td = end_time - self.schedulers[id].started_at
@@ -231,10 +231,13 @@ class Manager:
         if run[0] in ['at']:
             dt = datetime.strptime(run[1], '%Y-%m-%dT%H:%M:%S.%f')
             epoch = time.mktime(dt.timetuple()) + float(dt.microsecond)/10**6
+            # FIXME Now it's running in 4 seconds from what it received from Master
+            epoch += 4
             return (run[0], epoch)
 
     def _resolv_test_end(self, end):
         end = end.split(' ')
-        if end[0] in ['duration']:
+        if end[0] == 'duration':
             return (end[0], int(end[1]))
-        # TODO Do sth about other possible ends in here
+        elif end[0] == 'complete':
+            return (end[0], None)

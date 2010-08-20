@@ -17,7 +17,7 @@ from database.Models import *
 from common.Exceptions import ResolvError
 
 class Scheduler:
-    def __init__(self, test_id, start_time, condition, duration=None):
+    def __init__(self, test_id, start_time, condition=None, duration=None):
         self.test_id = test_id
         self.task_scheduler  = sched.scheduler(time.time, time.sleep)
         self.active = False
@@ -25,6 +25,7 @@ class Scheduler:
         self.started_at = None
         
         self.conditions = {}
+        self.global_condition = condition
         self.task_threads = {}
         self.pids = {}
         self.every_count = {}
@@ -37,18 +38,17 @@ class Scheduler:
         self.task_scheduler.enterabs(start_time, 1, self.start, ())   
         for task in Task.query.filter_by(test_id=self.test_id).all():
             type, value = self._resolv_task_run(task.run)
-            if type == 'at' and value < duration:
-                args = (task.id, self._get_notify_next(task.id))
-                task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
-                self.task_threads[task.id] = task_thread
-#                print task.id, 'should run at:', datetime.fromtimestamp(start_time+value)
-                self.task_scheduler.enterabs(start_time+value, 1, task_thread.start, ())
+            if type == 'at':
+                if (duration and value < duration) or not duration:
+                    args = (task.id, self._get_notify_next(task.id))
+                    task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
+                    self.task_threads[task.id] = task_thread
+                    self.task_scheduler.enterabs(start_time+value, 1, task_thread.start, ())
             elif type == 'every':
                 self.every_count[task.id] = 0
                 args = (task.id, None, None, value)
                 task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
                 self.task_threads[task.id+repr(0)] = task_thread
-#                print task.id, 'should run at:', datetime.fromtimestamp(start_time), 'for the', self.every_count[task.id]+1, 'time'
                 self.task_scheduler.enterabs(start_time, 1, task_thread.start, ())
             elif type == 'after':
                 after_condition = self._get_run_after(value)

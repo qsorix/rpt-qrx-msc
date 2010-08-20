@@ -83,6 +83,8 @@ class Handler(SocketServer.StreamRequestHandler):
                         self.send_ok()
                         if type == 'start':
                             manager.start_tasks(parent_id, **params)
+                            if params['end'] == 'complete':
+                                self.send_test_finished()
         except socket.error, IOError:
             print >> sys.stderr, "[%s] Connection dropped" % self.client_address[0]
 
