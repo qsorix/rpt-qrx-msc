@@ -133,13 +133,15 @@ class Scheduler:
             notify_next.release()
 
     def _shell_command_execution(self, task_id):
-        print '[test %s] Running task "%s" @ %s' % (self.test_id, task_id, datetime.fromtimestamp(time.time()))
-        args = shlex.split(str(Command.get_by(test_id=self.test_id, id=task_id).command))
-        try:
-            for arg in args:
-                if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', arg):
-                    arg = self._subst(arg)
+        dt = datetime.now()
+        print '[test %s] Running task "%s" @ %s' % (self.test_id, task_id, dt)
 
+        try:
+            command = str(Command.get_by(test_id=self.test_id, id=task_id).command)
+            if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
+                command = self._subst(command)
+            args = shlex.split(command)
+            
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             task = Task.get_by(test_id=self.test_id, id=task_id)
             self.pids[task_id] = p.pid               
@@ -167,22 +169,28 @@ class Scheduler:
                 id    = ref[0]
                 param = ref[1]
                 if id in cmd_ids:
-                    cmd = Command.get_by(id=id)
-                    value_map = cmd.get_subst_params()
-                    if cmd.row_type is 'task':
+                    cmd = Command.get_by(id=unicode(id))
+                    param_map = {}
+                    param_map['returncode'] = cmd.returncode
+                    if cmd.row_type == u'task':
                         if cmd.pid is not None:
-                            values_map['pid'] = cmd.pid
+                            param_map['pid'] = cmd.pid
                         else:
-                            raise ResolvError("Task '%s' has no pid." % (cmd.id))
-                    if param in value_map.keys():
-                        return value_map[param]
+                            raise ResolvError("Task '%s' hasn't been run yet." % (cmd.id))
+                    if param in param_map.keys():
+                        return str(param_map[param])
                 elif id in file_ids:
-                    file = File.get_by(id=id)
-                    value_map = file.get_subst_params()
-                    if param in value_map.keys():
-                        return value_map[param]
-            elif len(ref) is 1 and ref[0] in ['tmpdir']:
-                pass
+                    file = File.get_by(id=unicode(id))
+                    param_map = {}
+                    param_map['size'] = file.size
+                    param_map['path'] = file.path
+                    if param in param_map.keys():
+                        return str(param_map[param])
+#            elif len(ref) is 1 and ref[0] in ['tmpdir', 'dbfile']:
+#                param = ref[0]
+#                config = ConfigParser.SafeConfigParser()
+#                config.read('aretes.cfg')
+#                return config.get('AreteS', param)
             raise ResolvError("Cannot resolve '%s'." % (to_resolv))
 
         session.close()
