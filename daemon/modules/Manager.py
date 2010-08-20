@@ -147,10 +147,10 @@ class Manager:
     def prepare_test(self, parent_id, id):
         if not Test.get_by(id=id):
             raise DatabaseError("Test '%s' doesn't exist." % (id))
-        self._run_commands(Check.query.filter_by(test_id=id).all())
+        self._run_commands(Check.query.filter_by(test_id=id).all(), id)
 
     def _setup_test(self, test_id):
-        self._run_commands(Setup.query.filter_by(test_id=test_id).all())
+        self._run_commands(Setup.query.filter_by(test_id=test_id).all(), test_id)
 
     def start_test(self, parent_id, id, run, end):
         if not Test.get_by(id=id):
@@ -197,7 +197,7 @@ class Manager:
         self.clean_test(id)
 
     def clean_test(self, test_id):
-        self._run_commands(Clean.query.filter_by(test_id=test_id).all())
+        self._run_commands(Clean.query.filter_by(test_id=test_id).all(), test_id)
 
     def stop_test(self, parent_id, id):
         # FIXME See if that works.
@@ -209,14 +209,14 @@ class Manager:
         self.clean_test(id)
         self.schedulers[id].end()
 
-    def _run_commands(self, commands):
+    def _run_commands(self, commands, test_id):
         for cmd in commands:
             try:
                 command = str(cmd.command)
                 if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
                     command = Scheduler.subst(command, test_id)
                 args = shlex.split(command)
-                print '[test %s] Running %s command "%s"' % (cmd.test_id, cmd.row_type, cmd.id)
+                print '[test %s] Running %s command "%s" : %s' % (cmd.test_id, cmd.row_type, cmd.id, command)
                 dt = datetime.now()            
                 p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 p.wait()

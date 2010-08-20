@@ -115,7 +115,7 @@ class Scheduler:
             while False:
                 run_after.wait()
 
-        if self.active:   
+        if self.active:
             if every != None:
                 while self.active:
                     t = time.time()
@@ -133,13 +133,14 @@ class Scheduler:
 
     def _shell_command_execution(self, task_id):
         dt = datetime.now()
-        print '[test %s] Running task "%s" @ %s' % (self.test_id, task_id, dt)
 
         try:
             command = str(Command.get_by(test_id=self.test_id, id=task_id).command)
             if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
-                command = self._subst(command)
+                command = Scheduler.subst(command, self.test_id)
             args = shlex.split(command)
+            
+            print '[test %s] Running task "%s" : %s @ %s' % (self.test_id, task_id, command, dt)
             
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             task = Task.get_by(test_id=self.test_id, id=task_id)
@@ -156,10 +157,11 @@ class Scheduler:
             session.commit()
         except (OSError, ResolvError) as e:
             print '[Arete Slave]', e
-            
-    def _subst(self, param):
-        cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test_id=self.test_id).all())
-        file_ids = list(file.id for file in File.query.filter_by(test_id=self.test_id).all())
+    
+    @staticmethod     
+    def subst(param, test_id):
+        cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test_id=test_id).all())
+        file_ids = list(file.id for file in File.query.filter_by(test_id=test_id).all())
 
         def resolve_ref(matchobj):
             to_resolv = matchobj.group('ref')
@@ -168,7 +170,7 @@ class Scheduler:
                 id    = ref[0]
                 param = ref[1]
                 if id in cmd_ids:
-                    cmd = Command.get_by(id=unicode(id))
+                    cmd = Command.get_by(test_id=test_id, id=unicode(id))
                     param_map = {}
                     param_map['returncode'] = cmd.returncode
                     if cmd.row_type == u'task':
@@ -179,7 +181,7 @@ class Scheduler:
                     if param in param_map.keys():
                         return str(param_map[param])
                 elif id in file_ids:
-                    file = File.get_by(id=unicode(id))
+                    file = File.get_by(test_id=test_id, id=unicode(id))
                     param_map = {}
                     param_map['size'] = file.size
                     param_map['path'] = file.path
