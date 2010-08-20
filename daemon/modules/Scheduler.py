@@ -15,7 +15,6 @@ import signal
 
 from database.Models import *
 from common.Exceptions import ResolvError
-from apscheduler.util import timedelta_seconds
 
 class Scheduler:
     def __init__(self, test_id, start_time, condition=None, duration=None):
