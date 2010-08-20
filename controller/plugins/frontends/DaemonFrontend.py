@@ -155,24 +155,48 @@ class DaemonFrontend(FrontendPlugin):
 
         self.output().write('results @{id=%s}\n' % self._test_id)
         resp = self.input().readline()
-        if not resp.startswith('40'):
-            for id in self._sent_cmds.keys():
-                self.output().write('get @{%s.output}\n' % id)
-    
-                # FIXME Put those results in some database or sth.
-                reply = self.input().readline()
-    
-                if reply.startswith('20'):
-                    sizes = reply.split(' ')[2:]
-                    for size in sizes:
-                        data = self.input().read(int(size)).strip()
-                        print data
-    
+        if resp.startswith('20'):
+
+            # FIXME Put those results in some database or sth.
+            started_at = self._get_param('started_at')
+            duration = self._get_param('duration')
+            print 'test', self._test_id, ':', started_at, duration
+
+            for list in ['checks', 'setups', 'tasks', 'cleans']:
+                ids = self._get_list(list)
+                print list, ':'
+                for id in ids:
+                    returncode = self._get_param('returncode', id)
+                    output = self._get_param('output', id)
+                    started_at = self._get_param('started_at', id)
+                    duration = self._get_param('duration', id)
+                    print id, ':', returncode, output, started_at, duration
+               
             self.output().write('end\n')
             resp = self.input().readline()
 
         self.disconnect()
 
+    def _get_list(self, list_name):
+         self.output().write('get @{%s}\n' % (list_name))
+         reply = self.input().readline().strip()
+         if reply.startswith('201'):
+            ids = reply.split(' ')[2:]
+            return ids
+
+    def _get_param(self, param, task_id=None):
+        if task_id:
+            self.output().write('get @{%s.%s}\n' % (task_id, param))
+        else:
+            self.output().write('get @{%s}\n' % (param))
+        reply = self.input().readline().strip()
+        if reply.startswith('200'):
+            sizes = reply.split(' ')[2:]
+            for size in sizes:
+                data = self.input().read(int(size)).strip()
+                return data
+                print data
+                    
     def abort_test(self):
         # TODO Implement aborting sanity check and test itself.
         pass
