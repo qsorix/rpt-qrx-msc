@@ -20,6 +20,10 @@ class HostCommands:
     def add_check(self, cmd):
         self._check.append(cmd)
 
+    def add_check_unique(self, cmd):
+        if cmd not in self._check:
+            self.add_check(cmd)
+
     def add_setup(self, cmd):
         self._setup.append(cmd)
 
@@ -89,7 +93,7 @@ class Generator:
 
     def _generate_for_event(self, cmd, host, event):
         for s in event.command().sanity_checks():
-            cmd.add_check(s)
+            cmd.add_check_unique(s)
 
         cmd.add_schedule(event)
     
