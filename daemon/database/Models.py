@@ -7,8 +7,8 @@ class Test(Entity):
     using_options(tablename='tests')
 
     id = Field(Unicode(128), required=True, primary_key=True)
-    started_at = Field(DateTime, required=False)
-    duration = Field(Integer, required=False)
+    started_at = Field(DateTime, default=None, required=False)
+    duration = Field(Integer, default=None, required=False)
 
     files = OneToMany('File', cascade='delete')
     commands = OneToMany('Command', cascade='delete')
@@ -43,7 +43,9 @@ class Command(Entity):
 
     id = Field(Unicode(128), required=True, primary_key=True)
     command = Field(Unicode(128), required=True)
-    returncode = Field(Integer, default=None)
+    returncode = Field(Integer, default=None, required=False)
+    started_at = Field(DateTime, default=None, required=False)
+    duration = Field(Integer, default=None, required=False)
 
     test = ManyToOne('Test', primary_key=True)
     outputs = OneToMany('Output')
@@ -68,8 +70,6 @@ class Task(Command):
 
     run = Field(Unicode(128), required=True)
     pid = Field(Integer, default=None)
-    started_at = Field(DateTime, required=False)
-    duration = Field(Integer, required=False)
     
     def __repr__(self):
         return '<Task "%s": %s>' % (self.id, self.command)
@@ -79,4 +79,3 @@ class Clean(Command):
 
     def __repr__(self):
         return '<Clean "%s": %s>' % (self.id, self.command)
-
