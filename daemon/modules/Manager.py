@@ -237,8 +237,6 @@ class Manager:
         if run[0] in ['at']:
             dt = datetime.strptime(run[1], '%Y-%m-%dT%H:%M:%S.%f')
             epoch = time.mktime(dt.timetuple()) + float(dt.microsecond)/10**6
-            # FIXME Now it's running in 4 seconds from what it received from Master
-            epoch += 4
             return (run[0], epoch)
 
     def _resolv_test_end(self, end):
