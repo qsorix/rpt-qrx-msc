@@ -53,7 +53,8 @@ class Scheduler:
             elif type == 'after':
                 after_condition = self._get_run_after(value)
                 if after_condition:
-                    type, value = self._resolv_task_run(Task.get_by(test_id=self.test_id, id=value).run)
+                    while isinstance(value, str) or isinstance(value, unicode):
+                        type, value = self._resolv_task_run(Task.get_by(test_id=self.test_id, id=value).run)
                     args = (task.id, self._get_notify_next(task.id), after_condition)
                     task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
                     self.task_threads[task.id] = task_thread
