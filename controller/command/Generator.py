@@ -79,7 +79,13 @@ class Generator:
         for event in host.schedule:
             self._generate_for_event(cmd, host, event)
 
+        for resource in host.resources:
+            self._generate_for_resource(cmd, host, resource)
+
         return cmd
+
+    def _generate_for_resource(self, cmd, host, resource):
+        resource.generate_commands(cmd, host)
 
     def _generate_for_event(self, cmd, host, event):
         for s in event.command().sanity_checks():

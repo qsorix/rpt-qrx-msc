@@ -3,8 +3,12 @@ from controller.FrontendPlugin import FrontendPlugin
 import datetime
 import os
 
-class DaemonFrontend(FrontendPlugin):
-    frontend_type = 'daemon'
+# FIXME: if anything goes wrong, raise an exception. It is catched in
+# Controller.py, where it causes all frontends to abort_test()
+# Then the exception is propagated do Main.
+
+class AreteSlaveFrontend(FrontendPlugin):
+    frontend_type = 'arete_slave'
 
     def __init__(self, host, connection, test_uuid):
         FrontendPlugin.__init__(self, host, connection)
@@ -29,12 +33,13 @@ class DaemonFrontend(FrontendPlugin):
         resp = self.input().readline()
 
         for r in resources:
-            r.transfer_with_daemon(self)
+            r.transfer_with_arete_slave(self)
 
         for c in host_commands.check():
             id = self._make_id()
             out('check @{id=%i} %s\n' % (id, c))
             resp = self.input().readline()
+            #FIXME: resp.startswith('200')
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
@@ -42,6 +47,7 @@ class DaemonFrontend(FrontendPlugin):
             id = self._make_id()
             out('setup @{id=%i} %s\n' % (id, c))
             resp = self.input().readline()
+            #FIXME: resp.startswith('200')
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
@@ -49,20 +55,23 @@ class DaemonFrontend(FrontendPlugin):
             id = self._make_id()
             out('clean @{id=%i} %s\n' % (id, c))
             resp = self.input().readline()
+            #FIXME: resp.startswith('200')
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
         for c in host_commands.schedule():
             out('task @{id=%(id)s} @{run=%(run)s} %(cmd)s\n' %
                 {'id': c['name'],
-                 'run': c.run_policy().schedule_for_daemon(),
+                 'run': c.run_policy().schedule_for_arete_slave(),
                  'cmd': c.command().command()})
             resp = self.input().readline()
+            #FIXME: resp.startswith('200')
             assert c['name'] not in self._sent_cmds
             self._sent_cmds[c['name']] = c
 
         out('end\n')
         resp = self.input().readline()
+        #FIXME: resp.startswith('200')
 
     def start_sanity_check(self):
         self.output().write('prepare @{id=%s}\n' % self._test_id)
@@ -70,6 +79,7 @@ class DaemonFrontend(FrontendPlugin):
     def wait_sanity_check(self):
         print '  -- waiting for sanity check to finish at ' + self.host().model['name'] + ' --'
         resp = self.input().readline()
+        #FIXME: resp.startswith('200')
         if resp.startswith('401'):
             print 'sanity check failed'
             # TODO Do sth about it
@@ -88,6 +98,7 @@ class DaemonFrontend(FrontendPlugin):
 
         self.output().write('start @{id=%s} @{run=%s} @{end=%s}\n' % (self._test_id, run, end))
         resp = self.input().readline()
+        #FIXME: resp.startswith('200')
 
         if self._disconnect_for_end_policy(end):
             self.disconnect()
@@ -155,7 +166,7 @@ class DaemonFrontend(FrontendPlugin):
 
         self.output().write('results @{id=%s}\n' % self._test_id)
         resp = self.input().readline()
-        if resp.startswith('20'):
+        if resp.startswith('200'):
 
             # FIXME Put those results in some database or sth.
             started_at = self._get_param('started_at')

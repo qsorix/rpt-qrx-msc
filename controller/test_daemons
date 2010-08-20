@@ -9,7 +9,7 @@ daemon2_eth = daemon2.add_interface('eth', ip='127.0.0.1')
 
 connection = {
     'connection': 'tcp',
-    'frontend': 'daemon',
+    'frontend': 'arete_slave',
     'shell': 'linux_shell'
 }
 
