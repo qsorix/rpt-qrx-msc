@@ -179,10 +179,16 @@ class Manager:
             while False:
                 global_condition.wait()
             global_condition.release()
-            
-        print '[test %s] Ended @ %s' % (id, datetime.fromtimestamp(time.time()))
-        print '[test %s] Duration: %f' % (id, time.time() - run_value)
-            
+        
+        end_time = datetime.now()
+        td = end_time - self.schedulers[id].started_at
+        duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+        test = Test.get_by(id=id)
+        test.duration = duration
+        print '[test %s] Ended @ %s' % (id, end_time)
+        print '[test %s] Duration: %f' % (id, test.duration)
+        session.commit()
+        
         self._clean_test(id)
 
     def _clean_test(self, test_id):
@@ -200,10 +206,15 @@ class Manager:
     def _run_commands(self, commands):
         for cmd in commands:
             args = shlex.split(str(cmd.command))
-            print '[test %s] Running %s command "%s"' % (cmd.test_id, cmd.row_type, cmd.id)            
+            print '[test %s] Running %s command "%s"' % (cmd.test_id, cmd.row_type, cmd.id)
+            dt = datetime.now()            
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             p.wait()
+            td = datetime.now() - dt
+            duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
             Output(command = cmd, content = p.stdout.read())
+            cmd.started_at = dt
+            cmd.duration = duration
             cmd.returncode = p.returncode
             session.commit()
             if p.returncode != 0:

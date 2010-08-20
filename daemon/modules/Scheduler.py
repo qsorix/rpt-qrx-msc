@@ -20,8 +20,9 @@ class Scheduler:
     def __init__(self, test_id, start_time, condition, duration=None):
         self.test_id = test_id
         self.task_scheduler  = sched.scheduler(time.time, time.sleep)
-        self.active = True
+        self.active = False
         self.start_time = start_time
+        self.started_at = None
         
         self.conditions = {}
         self.task_threads = {}
@@ -32,7 +33,8 @@ class Scheduler:
             type, value = self._resolv_task_run(task.run)
             if type == 'after' and Task.get_by(id=value):
                 self.conditions[value] = threading.Condition()
-                        
+
+        self.task_scheduler.enterabs(start_time, 1, self.start, ())   
         for task in Task.query.filter_by(test_id=self.test_id).all():
             type, value = self._resolv_task_run(task.run)
             if type == 'at' and value < duration:
@@ -61,6 +63,13 @@ class Scheduler:
     
     def run(self):
         self.task_scheduler.run()
+    
+    def start(self):
+        self.active = True
+        self.started_at = datetime.now()
+        test = Test.get_by(id=self.test_id)
+        test.started_at = self.started_at
+        session.commit()
     
     def end(self, condition):
         condition.acquire()
@@ -137,7 +146,11 @@ class Scheduler:
             task.pid = p.pid
             session.commit()
             p.wait()
+            td = datetime.now() - dt
+            duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
             Output(command=task, content=p.stdout.read())
+            task.started_at = dt
+            task.duration = duration
             task.returncode = p.returncode
             session.commit()
         except OSError, ResolvError:
