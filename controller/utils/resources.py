@@ -5,8 +5,9 @@ import os
 import inspect
 
 class File(Resources.Resource):
-    def __init__(self, name, path):
+    def __init__(self, name, path, chmod=None):
         self.rename(name)
+        self._chmod = chmod
 
         try:
             self._stat_path(path)
@@ -46,6 +47,10 @@ class File(Resources.Resource):
             if not resp.startswith('200'):
                 raise RuntimeError('Wrong response while transfering file')
 
+    def generate_commands(self, cmd, host):
+        if self._chmod:
+            cmd.add_check_unique('which chmod')
+            cmd.add_setup('chmod ' + self._chmod + ' @{' + self['name'] + '.path}')
 
 # FIXME: just a test of generate_commands. not production ready
 class TarBall(File):

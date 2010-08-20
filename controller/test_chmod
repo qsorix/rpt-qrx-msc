@@ -1,0 +1,29 @@
+from utils.model import interface
+from utils.schedule import at, shell, every, after
+from utils.resources import File
+
+create_model('daemon_model')
+daemon = add_host('daemon')
+
+connection = {
+    'connection': 'tcp',
+    'connection_port': '4567',
+    'frontend': 'arete_slave',
+    'shell': 'linux_shell'
+}
+
+create_laboratory('daemon_lab')
+marvin = add_device('marvin', ip = '127.0.0.1', **connection)
+
+create_mapping('daemon_map')
+bind(daemon, marvin)
+
+create_schedule('daemon_sched')
+
+file = File('file', 'test-skrypt.sh', chmod='+x')
+
+append_schedule('daemon', [('run', at(0), shell('@{file.path}', use_resources=[file]))])
+
+test_end_policy('duration 2')
+
+# vim: ft=python
