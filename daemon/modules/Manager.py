@@ -211,20 +211,26 @@ class Manager:
 
     def _run_commands(self, commands):
         for cmd in commands:
-            args = shlex.split(str(cmd.command))
-            print '[test %s] Running %s command "%s"' % (cmd.test_id, cmd.row_type, cmd.id)
-            dt = datetime.now()            
-            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            p.wait()
-            td = datetime.now() - dt
-            duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-            Output(command = cmd, content = p.stdout.read().strip())
-            cmd.started_at = dt
-            cmd.duration = duration
-            cmd.returncode = p.returncode
-            session.commit()
-            if p.returncode != 0:
-                raise CommandError("Command '%s' ended badly." % (cmd.id), cmd.id)
+            try:
+                command = str(cmd.command)
+                if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
+                    command = Scheduler.subst(command, test_id)
+                args = shlex.split(command)
+                print '[test %s] Running %s command "%s"' % (cmd.test_id, cmd.row_type, cmd.id)
+                dt = datetime.now()            
+                p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                p.wait()
+                td = datetime.now() - dt
+                duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+                Output(command = cmd, content = p.stdout.read().strip())
+                cmd.started_at = dt
+                cmd.duration = duration
+                cmd.returncode = p.returncode
+                session.commit()
+                if p.returncode != 0:
+                    raise CommandError("Command '%s' ended badly." % (cmd.id), cmd.id)
+            except (OSError, ResolvError) as e:
+                print '[Arete Slave]', e
 
     def _resolv_test_run(self, run):
         run = run.split(' ')
