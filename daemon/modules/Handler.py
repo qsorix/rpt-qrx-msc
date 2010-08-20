@@ -68,6 +68,8 @@ class Handler(SocketServer.StreamRequestHandler):
                             self.send_ok(sizes=size_list)
                             for output in output_list:
                                 self.wfile.write(output)
+                        elif isinstance(result, list):
+                            self.send_list(result)
                         else:
                             self.send_ok(sizes=[len(result)])
                             self.wfile.write(result)
@@ -91,6 +93,12 @@ class Handler(SocketServer.StreamRequestHandler):
         if sizes:
             for size in sizes:
                 msg += ' %d' % size
+        self.send(msg)
+        
+    def send_list(self, list):
+        msg = '201 List'
+        for e in list:
+            msg += ' %s' % str(e)
         self.send(msg)
 
     def send_bad_request(self):

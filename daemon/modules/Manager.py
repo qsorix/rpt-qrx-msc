@@ -124,9 +124,12 @@ class Manager:
             elif len(ref) is 1:
                 param = ref[0]
                 if param in ['checks', 'setups', 'tasks', 'cleans']:
-                    cmd_with_output_list = [cmd.id for cmd in Command.query.filter_by(test_id=test_id).all() if cmd.output]
-                    print cmd_with_output_list
-                    return cmd_with_output_list
+                    list = [cmd.id for cmd in Command.query.filter_by(test_id=test_id, row_type=param[:-1]).all() if len(cmd.outputs) > 0]
+                    return list
+                elif param == 'started_at':
+                    return Test.get_by(id=test_id).started_at.isoformat()
+                elif param == 'duration':
+                    return str(Test.get_by(id=test_id).duration)
             raise ResolvError("Cannot resolve '%s'." % (to_resolv))
         else:
             raise ParamError("You won't get your results that way.")
