@@ -155,11 +155,14 @@ class Manager:
     def start_test(self, parent_id, id, run, end):
         if not Test.get_by(id=id):
             raise DatabaseError("Test '%s' doesn't exist." % (id))
-       
+
+        self._setup_test(id)
+ 
+    def start_tasks(self, parent_id, id, run, end):
         # FIXME Now it's running in 4 seconds
         run_type, run_value = self._resolv_test_run(run)
         run_value += 4
-        print 'should start at:', datetime.fromtimestamp(run_value)
+#        print 'should start at:', datetime.fromtimestamp(run_value)
         
         end_type, end_value = self._resolv_test_end(end)
         global_condition = threading.Condition()
@@ -168,9 +171,6 @@ class Manager:
         else:
             task_sched = Scheduler(id, run_value)
         self.schedulers[id] = task_sched
-
-       
-        self._setup_test(id)
                       
         task_sched.run()
 
