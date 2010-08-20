@@ -153,8 +153,8 @@ class Scheduler:
             task.duration = duration
             task.returncode = p.returncode
             session.commit()
-        except OSError, ResolvError:
-            pass
+        except (OSError, ResolvError) as e:
+            print '[Arete Slave]', e
             
     def _subst(self, param):
         cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test_id=self.test_id).all())

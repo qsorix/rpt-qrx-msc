@@ -43,7 +43,7 @@ class Handler(SocketServer.StreamRequestHandler):
                     if types_and_actions.get(type):
                         result = types_and_actions.get(type)(parent_id, **params)
                 except (DaemonError, CommandError) as e:
-                    print >> sys.stderr, e
+                    print '[Arete Slave]', e
                     if isinstance(e, CommandError):
                        self.send_cmd_error(e.cmd_id)
                     else:
