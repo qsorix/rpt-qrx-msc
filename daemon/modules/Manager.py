@@ -62,10 +62,10 @@ class Manager:
     def add_file(self, test_id, id, size):
         if self._id_exists(test_id, id):
             raise DatabaseError("File or command named '%s' already exists." % (id))
-        config = ConfigParser.SafeConfigParser()
-        config.read('daemon.cfg')
-        tmpdir = config.get('Daemon', 'tmpdir')
-        path = tmpdir + '/' + test_id + '_' + id
+#        config = ConfigParser.SafeConfigParser()
+#        config.read('aretes.cfg')
+#        tmpdir = config.get('AreteS', 'tmpdir')
+        path = './tmp/' + test_id + '_' + id
         file = File(test_id=test_id, id=id, size=size, path=path)
         session.commit()
         return (path, size)

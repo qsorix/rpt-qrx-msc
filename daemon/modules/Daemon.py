@@ -17,7 +17,7 @@ class Daemon:
         self.config_filename = config
         self.database_filename = database
         self._setup_database()
-        self._setup_config()
+#        self._setup_config()
         
         from modules.Handler import Handler
         SocketServer.TCPServer.allow_reuse_address = True
@@ -62,12 +62,5 @@ class Daemon:
     
     @classmethod
     def get_manager(self):
-        return self.manager
-    
-    @classmethod
-    def get_config_parameter(self, param):
-        config = ConfigParser.SafeConfigParser()
-        config.read(self.config_filename)
-        
-        return config.get('AreteS', param)
+        return self.manager        
         
