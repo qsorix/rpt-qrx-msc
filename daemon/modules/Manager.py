@@ -227,8 +227,6 @@ class Manager:
 
     def _resolv_test_run(self, run):
         run = run.split(' ')
-#        if run[0] in ['in']:
-#            return (run[0], int(run[1]))
         if run[0] in ['at']:
             dt = datetime.strptime(run[1], '%Y-%m-%dT%H:%M:%S.%f')
             epoch = time.mktime(dt.timetuple()) + float(dt.microsecond)/10**6
