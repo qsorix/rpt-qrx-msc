@@ -108,10 +108,20 @@ class Manager:
                         else:
                             raise DatabaseError("Output for command '%s' doesn't exist." % (id))
                     elif param == 'returncode':
-                        if cmd.returncode:
-                            return cmd.returncode
+                        if cmd.returncode != None:
+                            return str(cmd.returncode)
                         else:
                             raise DatabaseError("Returncode for command '%s' doesn't exist." % (id))
+                    elif param == 'started_at':
+                        if cmd.started_at:
+                            return cmd.started_at.isoformat()
+                        else:
+                            raise DatabaseError("Start datetime for command '%s' doesn't exist." % (id))
+                    elif param == 'duration':
+                        if cmd.duration != None:
+                            return str(cmd.duration)
+                        else:
+                            raise DatabaseError("Duration for command '%s' doesn't exist." % (id))                        
 #                elif id in file_ids:
 #                    file = File.get_by(test_id=test_id, id=id)
 #                    if param == 'output':
