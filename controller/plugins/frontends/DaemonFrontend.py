@@ -84,10 +84,6 @@ class DaemonFrontend(FrontendPlugin):
         # synchronization calculate remote time at which test should start
         # start += synchronizated_offset
 
-        # NOTE: 'in' -- don't send delay, send timestamp. at this place you
-        # cannot predict how long it will take for other frontends to instruct
-        # their slaves, so always send 'at'.
-        # run = 'in 2'
         run = 'at ' + start.isoformat()
 
         self.output().write('start @{id=%s} @{run=%s} @{end=%s}\n' % (self._test_id, run, end))
