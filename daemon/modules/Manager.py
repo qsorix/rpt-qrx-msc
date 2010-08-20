@@ -156,7 +156,12 @@ class Manager:
         if not Test.get_by(id=id):
             raise DatabaseError("Test '%s' doesn't exist." % (id))
 
+        run_type, run_value = self._resolv_test_run(run)
+        
         self._setup_test(id)
+        
+        if time.time() - run_value <= 0:
+            raise SetupTooLongError("Setup for '%s' took too much time." % (id))
  
     def start_tasks(self, parent_id, id, run, end):
         # FIXME Now it's running in 4 seconds

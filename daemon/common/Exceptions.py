@@ -33,3 +33,6 @@ class DatabaseError(DaemonError):
 
 class SchedulerError(DaemonError):
     pass
+
+class SetupTooLongError(DaemonError):
+    pass

@@ -46,6 +46,8 @@ class Handler(SocketServer.StreamRequestHandler):
                     print '[Arete Slave]', e
                     if isinstance(e, CommandError):
                        self.send_cmd_error(e.cmd_id)
+                    elif isinstance(e, SetupTooLongError):
+                       self.send_setup_too_long()                     
                     else:
                         self.send_bad_request()
                 else:
@@ -110,6 +112,9 @@ class Handler(SocketServer.StreamRequestHandler):
 
     def send_cmd_error(self, cmd_id):
         self.send('401 Command Failed: %s' % cmd_id)
+        
+    def send_setup_too_long(self):
+        self.send('402 Setup Too Long')
 
     # TODO: send this if test end policy is set to 'complete' and scheduler has executed all tasks
     def send_test_finished(self):
