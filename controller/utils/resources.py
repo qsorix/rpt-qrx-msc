@@ -43,6 +43,6 @@ class File(Resources.Resource):
             daemon.output().write(file.read())
 
             resp = daemon.input().readline().strip()
-            if resp != 'ok':
+            if not resp.startswith('200'):
                 raise RuntimeError('Wrong response while transfering file')
 
