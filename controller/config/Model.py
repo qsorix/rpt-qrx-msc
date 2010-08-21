@@ -87,8 +87,12 @@ def get_model(validate=True):
             raise Exceptions.ConfigurationError('There is no model. Did you forget to call \'create_model(name)\'?')
     return _model
 
-def add_host(*args, **kwargs):
-    return get_model().add_host(*args, **kwargs)
+def add_host(name, **kwargs):
+    """
+    Creates new host with given *name* and adds it to the model. All *kwargs*
+    will be set for that host. Returns created host.
+    """
+    return get_model().add_host(name, **kwargs)
 
 def add_link(*args, **kwargs):
     return get_model().add_link(*args, **kwargs)

@@ -5,6 +5,13 @@ import os
 import inspect
 
 class File(Resources.Resource):
+    """
+    Constructs resource representing specified *name*
+
+    :param name: name for this resource
+    :param path: path of the file
+    :param chmod: if passed, chmod will be called with given value
+    """
     def __init__(self, name, path, chmod=None):
         self.rename(name)
         self._chmod = chmod
@@ -48,6 +55,9 @@ class File(Resources.Resource):
                 raise RuntimeError('Wrong response while transfering file')
 
     def generate_commands(self, cmd, host):
+        """
+        If chmod was set, will call chmod
+        """
         if self._chmod:
             cmd.add_check_unique('which chmod')
             cmd.add_setup('chmod ' + self._chmod + ' @{' + self['name'] + '.path}')
