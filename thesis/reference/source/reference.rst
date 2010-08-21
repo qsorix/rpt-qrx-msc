@@ -88,8 +88,6 @@ Schedule
 
 .. automodule:: config.Schedule
    :members:
-   :inherited-members:
-   :undoc-members:
 
 Global
 -------
