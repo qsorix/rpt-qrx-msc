@@ -5,16 +5,44 @@ import getpass
 import sys
 from common import Exceptions
 
-# Used to pass test parameters given on command line to the configuration files
+parameters = None
+"""Globalny obiekt udostępniający parametry podane w linii polecenia
+programu.
+"""
+
 class Parameters(dict):
+    """Parametry testu.
+
+    Klasa udostępnia możliwość pytania o parametry, które nie zostały podane
+    przy uruchamianiu programu.
+
+    .. method:: parameters[key]
+                get(key)
+
+       Pobierz wartość parametru `key`.
+    """
+
     def __init__(self):
         self._prompt_parameters = False
 
-    def prompt_parameters(self, set = True):
-        self._prompt_parameters = set
-
     def get_secure(self, key):
+        """ Pobierz wartość parametru `key` w bezpieczny sposób.
+
+        Od zwykłego :meth:`get` różni się to tym, że na terminalach, które to
+        obsługują, nie zostanie wyświetlona wartość wprowadzana przez
+        użytkownika.
+        """
         return self._get_param(key, secure=True)
+
+    def prompt_parameters(self, set = True):
+        """
+        Włącz pytanie o brakujące parametry. Lub wyłącz, jeśli `set` jest równe
+        ``False``.
+
+        Użytkownik będzie miał możliwość wprowadzenia wartości poprzez
+        terminal, w którym uruchomił program.
+        """
+        self._prompt_parameters = set
 
 
     def __getitem__(self, key):

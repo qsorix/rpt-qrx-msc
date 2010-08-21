@@ -93,10 +93,7 @@ Global
 -------
 
 .. automodule:: config.Global
-   :show-inheritance:
    :members:
-   :undoc-members:
-
 
 Indices and tables
 ==================
