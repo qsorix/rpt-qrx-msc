@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding=utf-8
+
 from command.Generator import Generator, HostCommands
 from config.Configuration import ConfiguredHost, ConfiguredTest
 from config.Model import Host

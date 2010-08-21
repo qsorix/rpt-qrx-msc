@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# coding=utf-8
 
 class PluginMount(type):
     def __init__(cls, name, bases, attrs):

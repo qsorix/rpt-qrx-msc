@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding=utf-8
+
 import config.Model as Model
 import config.Laboratory as Laboratory
 

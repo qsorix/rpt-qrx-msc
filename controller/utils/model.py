@@ -1,4 +1,5 @@
-#!/usr/bin/evn python
+#!/usr/bin/env python
+# coding=utf-8
 
 from config.Model import add_host, add_link, get_model
 import itertools

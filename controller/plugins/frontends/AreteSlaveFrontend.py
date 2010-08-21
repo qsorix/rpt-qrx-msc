@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding=utf-8
+
 from controller.FrontendPlugin import FrontendPlugin
 
 import datetime

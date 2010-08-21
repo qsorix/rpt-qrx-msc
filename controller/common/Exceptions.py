@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding=utf-8
 
 class ConfigurationError(Exception):
     def __init__(self, exception, traceback=None):

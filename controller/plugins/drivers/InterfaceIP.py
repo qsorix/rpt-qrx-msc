@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding=utf-8
+
 from command.DriverPlugin import InterfaceDriverPlugin
 
 class InterfaceIP(InterfaceDriverPlugin):

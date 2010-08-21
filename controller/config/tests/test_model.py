@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding=utf-8
+
 from config.Model import destroy_model, create_model, get_model, add_host, add_link, Host
 from common import Exceptions
 

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding=utf-8
+
 from common.PluginMount import PluginMount
 
 class FrontendPlugin:

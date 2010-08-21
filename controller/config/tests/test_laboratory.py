@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding=utf-8
+
 from config.Laboratory import create_laboratory, destroy_laboratory, get_laboratory, add_device, Device
 from common import Exceptions
 

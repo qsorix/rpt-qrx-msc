@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding=utf-8
+
 from config.Model import destroy_model, create_model, add_host
 from config.Laboratory import destroy_laboratory, create_laboratory, add_device
 from config.Utils import resolve_host_name, resolve_device_name, resolve_interface_name, resolve_name
