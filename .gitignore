@@ -10,3 +10,4 @@ thesis/output
 /daemon/daemon.cfg
 /daemon/daemon.db
 /daemon/tmp
+/thesis/reference/build
