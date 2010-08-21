@@ -6,11 +6,20 @@ from common import Exceptions
 import Utils
 
 class Mapping(NamedMixin):
+    """Mapowanie między modelem a laboratorium."""
+
     def __init__(self, name):
         self.rename(name)
         self._bindings = set()
 
     def bind(self, model_object, laboratory_object):
+        """Powiąż obiekt z modelu z obiektem z laboratorium.
+
+        Obiekty mogą być przekazane przez nazwy podane przy ich tworzeniu.
+        Nazwy interfejsów należy podawać z kropką np. ``"<nazwa
+        urządzenia>.<nazwa interfejsu>"``.
+
+        """
         if isinstance(model_object, str):
             model_object = Utils.resolve_name(model_object, model=True)
 
@@ -26,9 +35,12 @@ class Mapping(NamedMixin):
         b = tuple(sorted([model_object, laboratory_object]))
         self.bindings().add(b)
 
-    def bindings(self): return self._bindings
+    def bindings(self):
+        """Zwróć zdefiniowane powiązania."""
+        return self._bindings
 
     def clear(self):
+        """Usuń zdefiniowane powiązania."""
         for (a, b) in self._bindings:
             a.unbind()
             b.unbind()
@@ -37,6 +49,11 @@ class Mapping(NamedMixin):
 _mapping = None
 
 def create_mapping(name):
+    """Stwórz mapowanie o nazwie `name`.
+
+    Obecna implementacja dopuszcza w konfiguracji istnienie tylko jednego
+    mapowania.
+    """
     global _mapping
     if _mapping:
         raise Exceptions.ConfigurationError('You cannot create more than one mapping.')
@@ -50,12 +67,22 @@ def destroy_mapping():
     _mapping = None
 
 def get_mapping(validate=True):
+    """Zwróć mapowanie.
+
+    Funkcja rzuca wyjątek, jeśli mapowanie nie zostało utworzone. Jeśli w argumencie
+    `validate` przekazano ``False`` wyjątek nie będzie rzucony i funkcja zwróci None.
+
+    """
     global _mapping
     if validate and _mapping is None:
         raise Exceptions.ConfigurationError('There is no mapping. Did you forget to call \'create_mapping(name)\'?')
     return _mapping
 
 def bind(*args, **kwargs):
+    """Powiąż obiekty.
+
+    Patrz :meth:`Mapping.bind() <config.Mapping.Mapping.bind>`.
+    """
     m = get_mapping()
     return m.bind(*args, **kwargs)
 

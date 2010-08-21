@@ -74,12 +74,14 @@ Laboratory
 Mapping
 --------
 
-.. automodule:: config.Mapping
-   :members:
-   :inherited-members:
-   :undoc-members:
-
 #FIXME: schemat UML ?
+
+.. autoclass:: config.Mapping.Mapping
+   :members:
+
+.. autofunction:: config.Mapping.create_mapping
+.. autofunction:: config.Mapping.get_mapping
+.. autofunction:: config.Mapping.bind
 
 Schedule
 ---------
