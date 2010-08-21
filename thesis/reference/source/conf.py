@@ -28,6 +28,7 @@ sys.path.insert(0, os.path.abspath('../../../controller'))
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.autosummary']
 
 autodoc_member_order = 'bysource'
+autoclass_content = 'both'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['sphinx_templates']

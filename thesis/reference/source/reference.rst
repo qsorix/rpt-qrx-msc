@@ -27,29 +27,44 @@ Configuration
 
 Model
 ------
-.. autoclass:: config.Model.Host
-
-.. automodule:: config.Model
-   :members:
-   :inherited-members:
-   :undoc-members:
-
 #FIXME: schemat UML
   - Host
   - Interface (agregacja w Host)
   - Link (Klasa powiązania na połączeniu Interface-Interface)
 
+.. autoclass:: config.Model.Model
+   :members:
+
+.. autoclass:: config.Model.Host
+   :members:
+   :inherited-members:
+
+   .. method:: host[key]
+
+      Zwróć wartość atrybutu `key`.
+
+      Zwróci ``None`` jeśli podany atrybut nie został określony.
+
+.. autoclass:: config.Model.Link
+   :members:
+   :inherited-members:
+
+.. autofunction:: config.Model.create_model
+.. autofunction:: config.Model.get_model
+.. autofunction:: config.Model.add_host
+.. autofunction:: config.Model.add_link
+
 Laboratory
 -----------
+#FIXME: schemat UML
+  - Device
+  - Interface (agregacja w Device)
+
 
 .. automodule:: config.Laboratory
    :members:
    :inherited-members:
    :undoc-members:
-
-#FIXME: schemat UML
-  - Device
-  - Interface (agregacja w Device)
 
 Mapping
 --------
