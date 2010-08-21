@@ -132,7 +132,7 @@ def get_model(validate=True):
     """Zwróć model.
 
     Funkcja rzuca wyjątek, jeśli model nie został utworzony. Jeśli w argumencie
-    `validate` przekazano ``False``, w takim wypadku zwróci None.
+    `validate` przekazano ``False`` wyjątek nie będzie rzucony i funkcja zwróci None.
 
     """
     global _model

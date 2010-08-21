@@ -60,11 +60,16 @@ Laboratory
   - Device
   - Interface (agregacja w Device)
 
+.. autoclass:: config.Laboratory.Laboratory
+   :members:
 
-.. automodule:: config.Laboratory
+.. autoclass:: config.Laboratory.Device
    :members:
    :inherited-members:
-   :undoc-members:
+
+.. autofunction:: config.Laboratory.create_laboratory
+.. autofunction:: config.Laboratory.get_laboratory
+.. autofunction:: config.Laboratory.add_device
 
 Mapping
 --------
