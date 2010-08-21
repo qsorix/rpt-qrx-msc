@@ -6,8 +6,6 @@
 Welcome to Arete's documentation!
 =================================
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 
@@ -16,6 +14,8 @@ Master
 
 Configuration
 --------------
+.. module:: config.Configuration
+
 .. autoclass:: config.Configuration.ConfiguredHost
    :members:
 
@@ -27,6 +27,8 @@ Configuration
 
 Model
 ------
+.. module:: config.Model
+
 #FIXME: schemat UML
   - Host
   - Interface (agregacja w Host)
@@ -56,6 +58,8 @@ Model
 
 Laboratory
 -----------
+.. module:: config.Laboratory
+
 #FIXME: schemat UML
   - Device
   - Interface (agregacja w Device)
@@ -73,6 +77,7 @@ Laboratory
 
 Mapping
 --------
+.. module:: config.Mapping
 
 #FIXME: schemat UML ?
 
@@ -85,13 +90,11 @@ Mapping
 
 Schedule
 ---------
-
 .. automodule:: config.Schedule
    :members:
 
 Global
 -------
-
 .. automodule:: config.Global
    :members:
 

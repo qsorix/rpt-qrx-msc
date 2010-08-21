@@ -182,7 +182,7 @@ htmlhelp_basename = 'Aretedoc'
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
   ('reference', 'Reference.tex', u'Arete Documentation',
-   u'rpt\\&qrx', 'manual'),
+   u'rpt\\&qrx', 'howto'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
