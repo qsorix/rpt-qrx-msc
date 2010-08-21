@@ -17,3 +17,6 @@ Bibliografia
  * http://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One
  * http://en.wikipedia.org/wiki/Encoding_Control_Notation
  * http://www.ttcn-3.org/
+
+http://www.python.org/dev/peps/pep-0008/
+http://www.python.org/dev/peps/pep-0257/
