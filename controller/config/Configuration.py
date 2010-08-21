@@ -12,6 +12,37 @@ import common.Exceptions as Exceptions
 import traceback
 
 class ConfiguredHost:
+    """ Konfiguracja dotycząca hosta występującego w teście.
+
+    Każdy obiekt odpowiada jednemu hostowi ze zdefiniowanego modelu. Nie
+    powinieneś modyfikować udostępnianych wartości. Wyjątkiem jest sytuacja, w
+    której tworzysz plugin generujący komendy i obiekt tej klasy jest
+    argumentem metod pluginu.
+
+    Zależnie od stadium przetwarzania, nie wszystkie atrybuty będą wypełnione.
+
+    .. attribute:: model
+
+       Host (:class:`~config.Model.Host`), któremu ten obiekt odpowiada.
+
+    .. attribute:: device
+
+       Urządzenie (:class:`~config.Laboratory.Device`), które zostało zmapowane
+       z tym hostem.
+
+    .. attribute:: schedule
+
+       Plan testu (:class:`~config.Schedule.HostSchedule`) przypisany do hosta.
+
+    .. attribute:: resources
+
+       Lista zasobów używanych na hoście.
+
+    .. attribute:: commands
+
+       Komendy (:class:`~command.Generator.HostCommands`) utworzone dla hosta.
+
+    """
     def __init__(self):
         self.model = None
         self.device = None
@@ -20,21 +51,41 @@ class ConfiguredHost:
         self.commands = None
 
 class ConfiguredTest:
-    """
-    Structure to easily pass test configuration.
+    """ Pełna konfiguracja testu.
 
-    attributes:
-        hosts - dictionary of ConfiguredHost objects (keys are names from
-                Host.model['name']
+    Obiekt gromadzi całą wiedzę o teście odczytaną z plików konfiguracyjnych
+    oraz komendy wygenerowane przez uruchomione pluginy.
 
-        resources - dictionary of resources (keys are names from
-                    resource['name']
+    Zależnie od stadium przetwarzania, nie wszystkie atrybuty będą wypełnione.
 
-        end_policy - information about test ending policy, this string is passed
-                     to participating frontends, they should understand it
+    .. attribute:: hosts
+       
+       Słownik obiektów typu :class:`~config.Configuration.ConfiguredHost`
+       czyli wszystkich hostów występujących w teście. Kluczami są nazwy hostów
+       z modelu.
+
+    .. attribute:: resources
+
+       Słownik zdefiniowanych zasobów (:class:`~config.Resources.Resource`).
+       Kluczami są nazwy podane przy tworzeniu zasobu.
+
+    .. attribute:: end_policy
+
+       Wartość określająca sposób, w jaki powinien zakończyć się test.
+       Framework przekazuje ją z konfiguracji do wszystkich występujących w
+       teście :class:`frontendów <Fronted>`.
+
     """
 
     def sanity_check(self):
+        """ Sprawdź poprawność konfiguracji.
+
+        Sprawdzane są tylko podstawowe typy błędów jak np. brak wymaganego
+        mapowania urządzeń. Metoda ma wyeliminować część błędów przed
+        uruchomieniem testu, nie gwarantuje jednak, że konfiguracja pozwala
+        poprawnie wykonać test.
+
+        """
         for (name, host) in self.hosts.items():
             if name != host.model['name']:
                 raise Exceptions.SanityError("Key name is different than element's name")
@@ -61,10 +112,27 @@ class ConfiguredTest:
             raise Exceptions.SanityError("Test end policy not specified. Use test_end_policy(<policy>) in your configuration.")
 
 class Configuration:
+    """ Odczytywanie konfiguracji.
+
+    Klasa implementuje metody pozwalajace odczytać konfigurację definiowana w plikach.
+
+    """
     def __init__(self):
         self._configured_test = []
 
-    def read(self, files, cmdline_mappings):
+    def read(self, files, cmdline_mappings = []):
+        """ Wczytaj konfigurację z plików.
+
+        .. attribute:: files
+        
+           Lista plików z konfiguracją. Zostaną one przetworzone w zadanej kolejności.
+
+        .. attribute:: cmdline_mappings
+
+           Lista mapowań zdefiniowanych w linii polecenia programu. Mapowania
+           są postaci ``host:device`` lub ``host.interface:device.interface``.
+
+       """
 
         globals = {}
         globals.update(Model.public_functions)
@@ -87,6 +155,10 @@ class Configuration:
         self._combine_hosts()
 
         return self.configured_test()
+
+    def configured_test(self):
+        """ Zwróć odczytaną konfigurację. """
+        return self._configured_test
 
 
     def _command_line_mappings(self, mappings):
@@ -144,7 +216,4 @@ class Configuration:
         ct.sanity_check()
 
         self._configured_test = ct
-
-    def configured_test(self):
-        return self._configured_test
 
