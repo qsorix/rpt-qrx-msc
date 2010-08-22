@@ -120,10 +120,6 @@ class Handler(SocketServer.StreamRequestHandler):
     def send_setup_too_long(self):
         self.send('402 Setup Too Long')
 
-    # TODO: send this if test end policy is set to 'complete' and scheduler has executed all tasks
     def send_test_finished(self):
         self.send('100 Test Finished')
-
-    def send_end(self):
-        self.send('600 The End')
 
