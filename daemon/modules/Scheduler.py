@@ -68,7 +68,7 @@ class Scheduler:
     def start(self):
         self.started_at = datetime.now()
         test = Test.get_by(id=self.test_id)
-        test.started_at = self.started_at
+        test.start_time = self.started_at
         session.commit()
     
     def end(self, condition):
@@ -97,17 +97,6 @@ class Scheduler:
             return self.conditions[id]
         return None
     
-#    def start(self):
-
-#        self.start_time = datetime.now()
-#        self.task_scheduler.run()
-        
-#        test = Test.get_by(id=self.test_id) 
-#        test.started_at = self.start_time 
-#        now = (datetime.now() - self.start_time)
-#        test.length = now.seconds
-#        session.commit()
-
     def _run_task(self, task_id, notify_next=None, run_after=None, every=None):
         if notify_next:
             notify_next.acquire()
@@ -152,9 +141,9 @@ class Scheduler:
             td = datetime.now() - dt
             duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
             Output(command=task, content=p.stdout.read().strip())
-            task.started_at = dt
-            task.duration = duration
-            task.returncode = p.returncode
+            StartTime(command=task, content=dt)
+            Duration(command=task, content=duration)
+            Returncode(command=task, content=p.returncode)
             session.commit()
         except (OSError, ResolvError) as e:
             print '[Arete Slave]', e
@@ -173,6 +162,7 @@ class Scheduler:
                 if id in cmd_ids:
                     cmd = Command.get_by(test_id=test_id, id=unicode(id))
                     param_map = {}
+                    # FIXME There are multiple returncodes now
                     param_map['returncode'] = cmd.returncode
                     if cmd.row_type == u'task':
                         if cmd.pid is not None:

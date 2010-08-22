@@ -172,7 +172,7 @@ class AreteSlaveFrontend(FrontendPlugin):
         if resp.startswith('200'):
 
             # FIXME Put those results in some database or sth.
-            started_at = self._get_param('started_at')
+            started_at = self._get_param('start_time')
             duration = self._get_param('duration')
             print 'test', self._test_id, ':', started_at, duration
 
@@ -182,7 +182,7 @@ class AreteSlaveFrontend(FrontendPlugin):
                 for id in ids:
                     returncode = self._get_param('returncode', id)
                     output = self._get_param('output', id)
-                    started_at = self._get_param('started_at', id)
+                    started_at = self._get_param('start_time', id)
                     duration = self._get_param('duration', id)
                     print id, ':', returncode, output, started_at, duration
                

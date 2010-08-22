@@ -7,7 +7,7 @@ class Test(Entity):
     using_options(tablename='tests')
 
     id = Field(Unicode(128), required=True, primary_key=True)
-    started_at = Field(DateTime, default=None, required=False)
+    start_time = Field(DateTime, default=None, required=False)
     duration = Field(Integer, default=None, required=False)
 
     files = OneToMany('File', cascade='delete')
@@ -37,18 +37,48 @@ class Output(Entity):
     
     def __repr__(self):
         return '<Output for "%s">' % (self.command.id)
+    
+class Returncode(Entity):
+    using_options(tablename='returncodes')
+
+    content = Field(Integer, default=None)
+    
+    command = ManyToOne('Command')
+    
+    def __repr__(self):
+        return '<Returncode for "%s">' % (self.command.id)
+    
+class StartTime(Entity):
+    using_options(tablename='start_times')
+
+    content = Field(DateTime, default=None)
+    
+    command = ManyToOne('Command')
+    
+    def __repr__(self):
+        return '<Start time for "%s">' % (self.command.id)
+    
+class Duration(Entity):
+    using_options(tablename='durations')
+
+    content = Field(Integer, default=None)
+    
+    command = ManyToOne('Command')
+    
+    def __repr__(self):
+        return '<Duration for "%s">' % (self.command.id)
 
 class Command(Entity):
     using_options(tablename='commands')
 
     id = Field(Unicode(128), required=True, primary_key=True)
     command = Field(Unicode(128), required=True)
-    returncode = Field(Integer, default=None, required=False)
-    started_at = Field(DateTime, default=None, required=False)
-    duration = Field(Integer, default=None, required=False)
 
     test = ManyToOne('Test', primary_key=True)
     outputs = OneToMany('Output')
+    returncodes = OneToMany('Returncode')
+    start_times = OneToMany('StartTime')
+    durations = OneToMany('Duration')
 
     def __repr__(self):
         return '<Command "%s": %s >' % (self.id, self.command)
