@@ -16,7 +16,7 @@ add_resource(File('testfile', 'datafile.txt'))
 
 append_schedule('server', [
     ('server',  at(0),           shell('@{serverdist.path} 0.0.0.0 9999', use_resources=['serverdist'])),
-    ('ksever',  at(3),           shell('kill -9 @{server.pid}')),
+    ('kserver', at(3),           shell('kill -9 @{server.pid}')),
     ('ls',      after('server'), shell('ls')),
     ('md5sum',  after('ls'),     shell('md5sum dest_path'))
 ])
