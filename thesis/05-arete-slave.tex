@@ -1,0 +1,137 @@
+\documentclass[00-praca-magisterska.tex]{subfiles}
+
+\begin{document}
+
+\chapter{Moduł Arete Slave}
+
+Arete Slave jest programem służącym do wykonywania testów na komputerach
+\fixme{nie wiem jak to napisać}.
+
+\section{Architektura}
+
+W skład architektury programu Arete Slave wchodzi pięć modułów oraz baza danych
+służąca do przechowywania informacji o uruchamianych testach.
+
+\FIXME{
+Opis modułów:
+
+Daemon - konfiguracja bazy danych, server TCP
+
+Handler - obsługa przychodzących połączeń, komunikacja z Arete Master
+
+Parser - parsowanie przychodzących komunikatów
+
+Manager - zarządzanie konfiguracją, dodawanie wpisów do bazy, uruchamianie
+testów, zapisywanie wyników...
+
+Scheduler - uruchamianie komend wchodzących w skład testu w odpowiednim momencie
+}
+
+\subsection{Przechowywanie danych}
+
+\FIXME{Schemat i opis bazy danych.}
+
+\section{Protokół komunikacji z Arete Master}
+
+\FIXME{Czy można to nazwać protokołem?}
+
+Do komunikacji między modułami Master i Slave zastosowaliśmy prosty protokół
+opisany poniżej. Wymiana komunikatów składa się z trzech głównych faz. Na
+początku tworzony jest test i odbierane są komendy które zostaną uruchomione.
+Następnie wywoływane są polecenia zarządzające wykonaniem testu.  Na koniec
+wyniki przeprowadzonego testu są wysyłane do modułu Master. 
+
+Do przesyłania poleceń wykorzystaliśmy następujący format:
+
+\code{<polecenie> @\{<parametr>=<wartość>\} <komenda>}
+
+\fixme{Opisać go...}
+
+\subsection{Odbieranie planu testu}
+
+Do stworzenia testu oraz odebrania komend wchodzących w jego skład wykorzystane
+są następujące polecenia:
+
+\code{test @\{id=<identyfikator>\}} - tworzy nowy test o podanym
+identyfikatorze. Odebranie tego polecenia powoduje przejście w tryb testu, w
+którym możemy dodawać oraz usuwać komendy jednego z czterech typów.
+
+\code{check @\{id=<identyfikator>\} <komenda>} - dodaje do testu komendę
+sprawdzającą o podanym identyfikatorze. Komendy te wywoływane są przez testem
+korzystając z polecenia \code{prepare}.
+
+\code{setup @\{id=<identyfikator>\} <komenda>} - dodaje do testu komendę
+konfiguracyjną o podanym identyfikatorze. Komendy te uruchamiane są po odebraniu
+polecenia \code{setup}.
+
+\code{task @\{id=<identyfikator>\} @\{run=<tryb uruchomienia>\} <komenda>} -
+dodaje do testu komendę o podanym identyfikatorze uruchamianą w czasie
+wykonywania testu zgodnie z parametrem określającym tryp uruchomienia. Dostępne
+są 3 tryby uruchamiania.
+
+\begin{itemize} \item{\code{at <sekunda>} - uruchamia komendę w podanej
+sekundzie testu licząc od daty rozpoczęcia testu.} \item{\code{after
+<identyfikator>} - uruchamia komendę po wykonaniu komendy o podanym
+identyfikatorze.} \item{\code{every <sekund>} - uruchamia komendę cyklicznie co
+podaną liczbę sekund licząc od daty rozpoczęcia testu.} \end{itemize}
+
+\code{clean @\{id=<identyfikator>\} <komenda>} - dodaje do testu komendę
+czyszczącą o podanym identyfikatorze. Komendy te uruchamiane są po zakończeniu
+test.
+
+\code{file @\{id=<identyfikator>\} @\{size=<rozmiar pliku>\}} - dodaje do testu
+plik o podanym identyfikatorze i rozmiarze. Pliki przechowywane są w katalogu
+\code{tmp} i mogą być wykorzystywane jako parametry komend wykonywanych podczas
+testu.
+
+\code{end} - powoduje wyjście z trybu testu.
+
+\subsubsection{Podstawianie parametrów}
+
+Komendy przesyłane do modułu Slave w ramach testu mogą korzystać z parametrów
+innych komend wchodzących w skład tego samego testu.
+
+\code{@\{<identyfikator>.returncode\}} 
+
+\code{@\{<identyfikator>.pid\}} - tylko task
+
+\code{@\{<identyfikator>.size\}} - tylko plik
+
+\code{@\{<identyfikator>.path\}} - tylko plik
+
+\subsubsection{Komunikaty}
+
+\code{100 Test Finished} - opis
+
+\code{200 OK <lista rozmiarów>} - opis
+
+\code{201 List <lista identyfikatorów>} - opis
+
+\code{400 Bad Request} - opis
+
+\code{401 Command Failed <identyfikator>} - opis
+
+\code{402 Setup Too Long} - opis
+
+\subsection{Zarządzenie testem}
+
+\code{prepare @\{id=<identyfikator>\}} - opis
+
+\code{start @\{id=<identyfikator>\} @\{run=<tryb uruchomienia>\} @\{end=<tryb
+zakończenia>\}} - opis
+
+\code{stop @\{id=<identyfikator>\}} - opis
+
+\code{delete @\{id=<identyfikator\}} - opis
+
+\subsection{Wysyłanie wyników testu}
+
+\code{results @\{id=<identyfikator>\}} - opis
+
+\code{get @\{<parametr>\}} - opis
+
+\code{get @\{<identyfikator>.<parametr>\}} - opis
+
+\code{end} - powoduje wyjście z trybu wyników
+
+\end{document}
