@@ -10,19 +10,19 @@ create_schedule('client-server-test')
 
 test_end_policy('complete', setup_phase_delay=2.0)
 
-add_resource(File('serverdist', 'Server.py'))
-add_resource(File('clientdist', 'Client.py'))
+add_resource(File('serverdist', 'Server.py', chmod='+x'))
+add_resource(File('clientdist', 'Client.py', chmod='+x'))
 add_resource(File('testfile', 'datafile.txt'))
 
 append_schedule('server', [
     ('server',  at(0),           shell('@{serverdist.path} 0.0.0.0 9999', use_resources=['serverdist'])),
+    ('ksever',  at(3),           shell('kill -9 @{server.pid}')),
     ('ls',      after('server'), shell('ls')),
     ('md5sum',  after('ls'),     shell('md5sum dest_path'))
 ])
 
 append_schedule('client', [
     ('client',  at(1),           shell('@{clientdist.path} @{server.ip} 9999 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'])),
-    ('kserver', after('client'), shell('kill @{server.pid}')),
     ('ls',      after('client'), shell('ls')),
     ('md5sum',  after('ls'),     shell('md5sum @{testfile.path}'))
 ])
