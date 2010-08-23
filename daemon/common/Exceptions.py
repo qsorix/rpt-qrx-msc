@@ -5,10 +5,10 @@ class DaemonError(Exception):
     def __init__(self, exception):
         Exception.__init__(self, exception)
 
-class CommandError(Exception):
+class CommandError(DaemonError):
     def __init__(self, exception, cmd_id):
         self.cmd_id = cmd_id
-        Exception.__init__(self, exception)
+        DaemonError.__init__(self, exception)
 
 class ResolvError(DaemonError):
     pass
