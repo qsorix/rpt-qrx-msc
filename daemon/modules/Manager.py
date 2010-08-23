@@ -3,7 +3,7 @@
 
 import os
 import re
-import ConfigParser
+import logging
 import subprocess
 import sched
 import shlex
@@ -24,44 +24,44 @@ class Manager:
 
     def create_test(self, parent_id, id):
         if Test.get_by(id=id):
-            raise DatabaseError("Test '%s' already exists." % (id))
+            raise DatabaseError("[ Test %s ] Test already exists." % (id))
         test = Test(id=id)
         session.commit()
 
     def delete_test(self, parent_id , id):
         test = Test.get_by(id=id)
         if not test:
-            raise DatabaseError("Test '%s' doesn't exist." % (id))
+            raise DatabaseError("[ Test %s ] Test doesn't exist." % (id))
         session.delete(test)
         session.commit()
 
     def add_check_command(self, test_id, id, command):
         if self._id_exists(test_id, id):
-            raise DatabaseError("Command or file named '%s' already exists." % (id))
+            raise DatabaseError("[ Test %s ] Command or file named '%s' already exists." % (test_id, id))
         cmd = Check(test_id=test_id, id=id, command=command)
         session.commit()
 
     def add_setup_command(self, test_id, id, command):
         if self._id_exists(test_id, id):
-            raise DatabaseError("Command or file named '%s' already exists." % (id))
+            raise DatabaseError("[ Test %s ] Command or file named '%s' already exists." % (test_id, id))
         cmd = Setup(test_id=test_id, id=id, command=command)
         session.commit()
 
     def add_task_command(self, test_id, id, run, command):
         if self._id_exists(test_id, id):
-            raise DatabaseError("Command or file named '%s' already exists." % (id))
+            raise DatabaseError("[ Test %s ] Command or file named '%s' already exists." % (test_id, id))
         cmd = Task(test_id=test_id, id=id, command=command, run=run)
         session.commit()
  
     def add_clean_command(self, test_id, id, command):
         if self._id_exists(test_id, id):
-            raise DatabaseError("Command or file named '%s' already exists." % (id))
+            raise DatabaseError("[ Test %s ] Command or file named '%s' already exists." % (test_id, id))
         cmd = Clean(test_id=test_id, id=id, command=command)
         session.commit()
 
     def add_file(self, test_id, id, size):
         if self._id_exists(test_id, id):
-            raise DatabaseError("File or command named '%s' already exists." % (id))
+            raise DatabaseError("[ Test %s ] File or command named '%s' already exists." % (test_id, id))
 #        config = ConfigParser.SafeConfigParser()
 #        config.read('aretes.cfg')
 #        tmpdir = config.get('AreteS', 'tmpdir')
@@ -73,7 +73,7 @@ class Manager:
     def delete_command_or_file(self, test_id, id):
         if not Command.get_by(test_id=test_id, id=id):
             if not File.get_by(test_id=test_id, id=id):
-                raise DatabaseError("Command or file named '%s' doesn't exist." % (id))
+                raise DatabaseError("[ Test %s ] Command or file named '%s' doesn't exist." % (test_id, id))
             else:
                 os.remove(file.path)
                 session.delete(file)
@@ -83,11 +83,11 @@ class Manager:
 
     def open_results(self, parent_id, id):
         if not Test.get_by(id=id):
-            raise DatabaseError("Test '%s' doesn't exist." % (id))
+            raise DatabaseError("[ Test %s ] Test doesn't exist." % (id))
         if not self.schedulers.has_key(id):
-            raise SchedulerError("Test '%s' hasn't been started yet." % (id))
+            raise SchedulerError("[ Test %s ] Test hasn't been started yet." % (id))
         elif self.schedulers[id].still_running():
-            raise SchedulerError("Test '%s' is still running." % (id))
+            raise SchedulerError("[ Test %s ] Test is still running." % (id))
 
     def get_results(self, test_id, command):
         if re.match('@{([a-zA-Z0-9\._]+)}', command):
@@ -106,34 +106,26 @@ class Manager:
                         if number > 0:
                             return ('multi', (number, [output.content for output in cmd.outputs]))
                         else:
-                            raise DatabaseError("Output for command '%s' doesn't exist." % (id))
+                            raise DatabaseError("[ Test %s ] Output for command '%s' doesn't exist." % (test_id, id))
                     elif param == 'returncode':
                         number = len(cmd.returncodes)
                         if number > 0:
                             return ('multi', (number, [str(rc.content) for rc in cmd.returncodes]))
                         else:
-                            raise DatabaseError("Returncode for command '%s' doesn't exist." % (id))
+                            raise DatabaseError("[ Test %s ] Returncode for command '%s' doesn't exist." % (test_id, id))
                     elif param == 'start_time':
                         number = len(cmd.start_times)
                         if number > 0:
                             return ('multi', (number, [st.content.isoformat() for st in cmd.start_times]))
                         else:
-                            raise DatabaseError("Start datetime for command '%s' doesn't exist." % (id))
+                            raise DatabaseError("[ Test %s ] Start datetime for command '%s' doesn't exist." % (test_id, id))
                     elif param == 'duration':
                         number = len(cmd.durations)
                         if number > 0:
                             return ('multi', (number, [str(duration.content) for duration in cmd.durations]))
                         else:
-                            raise DatabaseError("Duration for command '%s' doesn't exist." % (id))                        
-#                elif id in file_ids:
-#                    file = File.get_by(test_id=test_id, id=id)
-#                    if param == 'output':
-#                        with open(file.path, 'rb') as f:
-#                            # FIXME File doesn't exist.
-#                            return f.read()
-                else:
-#                    raise DatabaseError("Command or file named '%s' doesn't exist." % (id))
-                    raise DatabaseError("Command named '%s' doesn't exist." % (id))
+                            raise DatabaseError("[ Test %s ] Duration for command '%s' doesn't exist." % (test_id, id))                        
+                    raise DatabaseError("[ Test %s ] Command named '%s' doesn't exist." % (test_id, id))
             elif len(ref) is 1:
                 param = ref[0]
                 if param in ['checks', 'setups', 'tasks', 'cleans']:
@@ -143,13 +135,13 @@ class Manager:
                     return ('single', Test.get_by(id=test_id).start_time.isoformat())
                 elif param == 'duration':
                     return ('single', str(Test.get_by(id=test_id).duration))
-            raise ResolvError("Cannot resolve '%s'." % (to_resolv))
+            raise ResolvError("[ Test %s ] Cannot resolve '%s'." % (test_id, to_resolv))
         else:
-            raise ParamError("You won't get your results that way.")
+            raise ParamError("[ Test %s ] You won't get your results that way." % (test_id))
 
     def prepare_test(self, parent_id, id):
         if not Test.get_by(id=id):
-            raise DatabaseError("Test '%s' doesn't exist." % (id))
+            raise DatabaseError("[ Test %s ] Test doesn't exist." % (id))
         self._run_commands(Check.query.filter_by(test_id=id).all(), id)
 
     def _setup_test(self, test_id):
@@ -157,14 +149,14 @@ class Manager:
 
     def start_test(self, parent_id, id, run, end):
         if not Test.get_by(id=id):
-            raise DatabaseError("Test '%s' doesn't exist." % (id))
+            raise DatabaseError("[ Test %s ] Test doesn't exist." % (id))
 
         run_type, run_value = self._resolv_test_run(run)
         
         self._setup_test(id)
         
         if (run_value - time.time()) <= 0.5:
-            raise SetupTooLongError("Setup for '%s' took too much time." % (id))
+            raise SetupTooLongError("[ Test %s ] Setup took too much time." % (id))
  
     def start_tasks(self, parent_id, id, run, end):
         run_type, run_value = self._resolv_test_run(run)
@@ -193,8 +185,8 @@ class Manager:
         duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
         test = Test.get_by(id=id)
         test.duration = duration
-        print '[test %s] Ended @ %s' % (id, end_time)
-        print '[test %s] Duration: %f' % (id, test.duration)
+        logging.info("[ Test %s ] Ended" % (id))
+        logging.info("[ Test %s ] Duration: %f" % (id, test.duration))
         session.commit()
         
         self.clean_test(id)
@@ -206,9 +198,9 @@ class Manager:
         # FIXME See if that works.
         test = Test.get_by(id=id)
         if not test:
-            raise DatabaseError("Test '%s' doesn't exist." % (id))
+            raise DatabaseError("[ Test %s ] Test 'doesn't exist." % (id))
         if not self.schedulers.has_key(id):
-            raise SchedulerError("Test '%s' hasn't been started yet." % (id))
+            raise SchedulerError("[ Test %s ] Test hasn't been started yet." % (id))
         self.clean_test(id)
         self.schedulers[id].end()
 
@@ -219,7 +211,7 @@ class Manager:
                 if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
                     command = Scheduler.subst(command, test_id)
                 args = shlex.split(command)
-                print '[test %s] Running %s command "%s" : %s' % (cmd.test_id, cmd.row_type, cmd.id, command)
+                logging.info("[ Test %s ] Running %s command '%s' : %s" % (cmd.test_id, cmd.row_type, cmd.id, command))
                 dt = datetime.now()            
                 p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 p.wait()
@@ -230,10 +222,11 @@ class Manager:
                 Duration(command=cmd, content=duration)
                 Returncode(command=cmd, content=p.returncode)
                 session.commit()
-                if p.returncode != 0:
-                    raise CommandError("Command '%s' ended badly." % (cmd.id), cmd.id)
             except (OSError, ResolvError) as e:
-                print '[Arete Slave]', e
+                raise DaemonError("[ Test %s ] Command '%s' failed." % (test_id, cmd.id))
+            if p.returncode != 0:
+                raise CommandError("[ Test %s ] Command '%s' ended badly." % (test_id, cmd.id), cmd.id)
+
 
     def _resolv_test_run(self, run):
         run = run.split(' ')

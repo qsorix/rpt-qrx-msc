@@ -6,7 +6,7 @@ import commands
 import subprocess
 import time
 from datetime import datetime
-import ConfigParser
+import logging
 import re
 import shlex
 import threading
@@ -130,7 +130,7 @@ class Scheduler:
                 command = Scheduler.subst(command, self.test_id)
             args = shlex.split(command)
             
-            print '[test %s] Running task "%s" : %s @ %s' % (self.test_id, task_id, command, dt)
+            logging.info("[ Test %s ] Running task '%s' : %s" % (self.test_id, task_id, command))
             
             p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             task = Task.get_by(test_id=self.test_id, id=task_id)
@@ -146,8 +146,8 @@ class Scheduler:
             Returncode(command=task, content=p.returncode)
             session.commit()
         except (OSError, ResolvError) as e:
-            print '[Arete Slave]', e
-    
+            raise DaemonError("[ Test %s ] Task '%s' failed." % (self.test_id, task_id))
+            
     @staticmethod     
     def subst(param, test_id):
         cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test_id=test_id).all())
@@ -168,7 +168,7 @@ class Scheduler:
                         if cmd.pid is not None:
                             param_map['pid'] = cmd.pid
                         else:
-                            raise ResolvError("Task '%s' hasn't been run yet." % (cmd.id))
+                            raise ResolvError("[ Test %s ] Task '%s' hasn't been run yet." % (self.test_id, cmd.id))
                     if param in param_map.keys():
                         return str(param_map[param])
                 elif id in file_ids:
@@ -183,7 +183,7 @@ class Scheduler:
 #                config = ConfigParser.SafeConfigParser()
 #                config.read('aretes.cfg')
 #                return config.get('AreteS', param)
-            raise ResolvError("Cannot resolve '%s'." % (to_resolv))
+            raise ResolvError("[ Test %s ] Cannot resolve '%s'." % (self.test_id, to_resolv))
 
         session.close()
         return re.sub('@{(?P<ref>[a-zA-Z0-9\._]+)}', resolve_ref, param)

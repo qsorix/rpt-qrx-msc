@@ -4,18 +4,20 @@
 import sys
 import socket
 import SocketServer
+import logging
 
 from modules.Parser import parse
 from common.Exceptions import *
 
 class Handler(SocketServer.StreamRequestHandler):       
     def handle(self):
-        print >> sys.stderr, "[%s] Handling connection" % self.client_address[0]
+        logging.info("[ Connection %s ] Handling" % self.client_address[0])
         parent = None
         parent_id = None
         
         from modules.Daemon import Daemon
         manager = Daemon.get_manager()
+#        logging.basicConfig(filename=Daemon.get_logfile(), level=logging.DEBUG)
         
         types_and_actions = {
             'test'        : manager.create_test,
@@ -43,7 +45,7 @@ class Handler(SocketServer.StreamRequestHandler):
                     if types_and_actions.get(type):
                         result = types_and_actions.get(type)(parent_id, **params)
                 except (DaemonError, CommandError) as e:
-                    print '[Arete Slave]', e
+                    logging.error(e)
                     if isinstance(e, CommandError):
                        self.send_cmd_error(e.cmd_id)
                     elif isinstance(e, SetupTooLongError):
@@ -51,7 +53,10 @@ class Handler(SocketServer.StreamRequestHandler):
                     else:
                         self.send_bad_request()
                     if type == 'start':
-                        manager.clean_test(params['id'])
+                        try:
+                            manager.clean_test(params['id'])
+                        except CommandError as ce:
+                            logging.error(ce)
                 else:
                     if type in ['test', 'results']:
                         parent = type
@@ -86,16 +91,16 @@ class Handler(SocketServer.StreamRequestHandler):
                             if params['end'] == 'complete':
                                 self.send_test_finished()
         except socket.error, IOError:
-            print >> sys.stderr, "[%s] Connection dropped" % self.client_address[0]
+            logging.info("[ Connection %s ] Dropped" % self.client_address[0])
 
     def receive(self):
         data = self.rfile.readline().strip()
         if data:
-            print >> sys.stderr, "[%s] Received: %s" % (self.client_address[0], data)
+            logging.info("[ Connection %s ] Received: %s" % (self.client_address[0], data))
         return data
 
     def send(self, msg):
-        print >> sys.stderr, "[%s] Sending: %s" % (self.client_address[0], msg)
+        logging.info("[ Connection %s ] Sending: %s" % (self.client_address[0], msg))
         self.wfile.write(msg + '\n')
 
     def send_ok(self, sizes=None):
