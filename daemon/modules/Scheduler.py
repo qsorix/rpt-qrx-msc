@@ -162,7 +162,6 @@ class Scheduler:
                 if id in cmd_ids:
                     cmd = Command.get_by(test_id=test_id, id=unicode(id))
                     param_map = {}
-                    # FIXME There are multiple returncodes now
                     if len(cmd.returncodes) > 0:
                         param_map['returncode'] = cmd.returncodes[-1]
                     if cmd.row_type == u'task':
