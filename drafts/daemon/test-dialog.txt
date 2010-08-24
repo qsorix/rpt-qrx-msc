@@ -1,9 +1,0 @@
-test 324
-file {text-file} 666
-text-file content
-schedule 2
-0: echo "dupa"
-5: ls -l
-duration 6
-start 2010-01-19 01:13:03
-end
