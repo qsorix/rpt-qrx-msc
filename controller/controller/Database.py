@@ -70,4 +70,4 @@ class Command(Entity):
     durations = OneToMany('Duration')
 
     def __repr__(self):
-        return '<Command "%s": %s >' % (self.id, self.command)
+        return '<Command "%s">' % (self.id)
