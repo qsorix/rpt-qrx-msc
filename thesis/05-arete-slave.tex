@@ -2,22 +2,21 @@
 
 \begin{document}
 
-\label{arete-slave}
 \chapter{Moduł Arete Slave}
+\label{arete-slave}
 
 Arete Slave jest programem służącym do wykonywania testów na komputerach
 stacjonarnych. Działa on jako
 demon\footnote{http://pl.wikipedia.org/wiki/Demon\_(informatyka)} sterowany
-przez moduł Master korzystając z protokołu opisanego w rozdziale
-\ref{arete-slave-protokol}. \fixme{Rozwiń myśl.} 
+przez moduł Master za pomocą protokołu opisanego w rozdziale
+\ref{arete-slave-protokol}.
 
-\label{arete-slave-arch}
 \section{Architektura}
+\label{arete-slave-arch}
 
 W skład architektury programu Arete Slave wchodzą cztery moduły oraz baza danych
 służąca do przechowywania informacji o uruchamianych testach, jak zostało to
-przedstawione na rysunku \ref{fig:arete-slave-arch}. \fixme{Napisać, że to jest
-ogólnie server tcp itd...}
+przedstawione na rysunku \ref{fig:arete-slave-arch}.
 
 \begin{figure}[htb]
 \begin{center}
@@ -36,22 +35,18 @@ zajmuje się ich interpretacją.
 
 \paragraph{Parser} służy do analizy składniowej przychodzących komunikatów.
 
-\paragraph{Manager} to główny moduł zarządzący testami. Na podstawie danych
+\paragraph{Manager} to główny moduł zarządzający testami. Na podstawie danych
 otrzymanych od Handler'a tworzy testy, dodaje do nich komendy oraz zapisuje te
 informacje do bazy danych. Następnie zajmuje się uruchamianiem i zatrzymywaniem
-testów oraz zwracaniem wyników.
+testów oraz zwracaniem wyników. Komendy główne które mają zostać wykonane w
+określonym momencie testu przekazywane są do modułu Scheduler'a. 
 
-\paragraph{Scheduler} pozwala uruchomić komendy w odpowienich momentach testu.
+\paragraph{Scheduler} pozwala uruchomić komendy w określonych punktach czasowych
+testu. Moduł ten korzysta z bazy danych w celu pobrania niezbędnych danych i
+zapisania wyników uruchamianych komend.
 
-\FIXME{
-Daemon - konfiguracja bazy danych, server TCP
-
-Manager - zarządzanie konfiguracją, dodawanie wpisów do bazy, uruchamianie
-testów, zapisywanie wyników...
-}
-
-\label{arete-slave-protokol}
 \section{Protokół komunikacji z Arete Master}
+\label{arete-slave-protokol}
 
 Do komunikacji między modułami Master i Slave zastosowaliśmy prosty protokół
 opisany poniżej. Wymiana komunikatów składa się z trzech głównych faz. Na
@@ -88,13 +83,13 @@ polecenia \code{prepare}.}
 
 \item{\code{setup @\{id=<identyfikator>\} <komenda>} - dodaje do testu komendę
 konfiguracyjną o podanym identyfikatorze. Komendy te uruchamiane są po odebraniu
-polecenia \code{setup}.}
+polecenia \code{start}.}
 
 \item{\code{task @\{id=<identyfikator>\} @\{run=<tryb uruchomienia>\} <komenda>} -
 dodaje do testu komendę główną o podanym identyfikatorze uruchamianą w czasie
 wykonywania testu zgodnie z parametrem określającym tryp uruchomienia. \\
 
-Dostępne są 3 tryby uruchamiania: \\
+Dostępne są trzy tryby uruchamiania: \\
 
 \begin{itemize}
   \setlength{\itemsep}{10pt}
@@ -136,15 +131,27 @@ wykonania programy i ustawienia. Umożliwia również zapamiętanie podstawowych
 informacji o systemie.  Jeśli któraś z komend nie wykona się poprawnie zostanie
 zwrócony komunikat \code{401 Command Failed}.}
 
-\item{\code{start @\{id=<identyfikator>\} @\{run=<tryb uruchomienia>\} @\{end=<tryb
+\item{\code{start @\{id=<identyfikator>\} @\{run=at <czas>\} @\{end=<tryb
 zakończenia>\}} - uruchamia właściwy test o podanym identyfikatorze. Najpierw
 wykonywane są komendy konfiguracyjne przesłane poleceniem \code{setup},
 a następnie uruchamiany jest scheduler wykonujący komendy główne w
-określonych momentach. Na koniec wykonywane są komendy czyszczące. Są one
-również uruchamiane w przypadku gdy któraś z komend głównych zakończy się
-błędem. Jeśli trybem zakończenia testu jest \code{complete} po zakończeniu
-wszystkich komend do Arete Master wysyłany jest komunikat \code{100 Test
+określonych momentach zaczynając od czasu podanego w parametrze \code{run}. Na
+koniec wykonywane są komendy czyszczące. Są one również uruchamiane w przypadku
+gdy któraś z komend głównych zakończy się błędem. \\
+
+Do dyspozycji są dwa tryby zakończenia testu: \\
+
+\begin{itemize}
+  \setlength{\itemsep}{10pt}
+
+\item{\code{duration <sekundy>} - test kończy działanie po określonej liczbie
+sekund.}
+
+\item{\code{complete} - test kończy działanie po zakończeniu wykonywania się
+ostatniej komendy. Do Arete Master wysyłany jest wtedy komunikat \code{100 Test
 Finished}.}
+
+\end{itemize}}
 
 \item{\code{stop @\{id=<identyfikator>\}} - zatrzymuje wykonywanie testu o
 podanym identyfikatorze. Wykonywane są również komendy czyszczące wchodzą w
@@ -166,9 +173,8 @@ polecenia:
   \setlength{\itemsep}{10pt}
 
 \item{\code{results @\{id=<identyfikator>\}} - przechodzi w tryb pobierania
-wyników testu o podanym identyfikatorze. Jeśli test taki nie istnieje, nie
-został jeszcze rozpoczęty lub nie zakończył się zostanie przesłany komunikat o
-błędzie.}
+wyników testu o podanym identyfikatorze. Jeśli test nie został jeszcze
+rozpoczęty lub nie zakończył się zostanie przesłany komunikat o błędzie.}
 
 \item{\code{get @\{<parametr>\}} - zwraca określony parametr testu. \\
 
@@ -208,8 +214,8 @@ Dostępne parametry komend to: \\
 
 \end{itemize}
 
-\label{arete-slave-podst-param}
 \subsection{Podstawianie parametrów}
+\label{arete-slave-podst-param}
 
 Komendy przesyłane do modułu Slave w ramach testu mogą korzystać z parametrów
 innych komend wchodzących w skład tego samego testu, lecz jest to możliwe
@@ -243,8 +249,8 @@ podanym identyfikatorze.}
 
 \end{itemize}
 
-\label{arete-slave-komunikaty}
 \subsection{Komunikaty}
+\label{arete-slave-komunikaty}
 
 Podczas komunikacji Arete Slave wysyła następujące komunikaty, aby
 sygnalizować o poprawnym lub błędnym działaniu:
@@ -277,8 +283,8 @@ należy uruchomić test.}
 
 \end{itemize}
 
-\label{arete-slave-baza-danych}
 \section{Przechowywanie danych}
+\label{arete-slave-baza-danych}
 
 Podstawową jednostką w bazie danych jest test (tabela \emph{tests}) w skład
 którego wchodzą komendy (tabela \emph{commands}) i pliki (tabela \emph{files}).
@@ -302,8 +308,8 @@ zapamiętanie wszystkich parametrów.
 \label{fig:arete-slave-db}
 \end{figure}
 
-\label{arete-slave-uruchamianie}
 \section{Uruchamianie}
+\label{arete-slave-uruchamianie}
 
 \begin{minted}{text}
   usage: Main.py [-h] [-p PORT] [-d DATABASE] [-l LOG]

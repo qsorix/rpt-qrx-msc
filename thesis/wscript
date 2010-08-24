@@ -28,6 +28,8 @@ def build(bld):
     dia('reference-config', 'reference-config-laboratory', 'laboratory')
     dia('reference-config', 'reference-config-schedule', 'schedule')
 
+    dia('arete-master-db', 'arete-master-db', 'db')
+
     dia('arete-slave-arch', 'arete-slave-arch', 'arch')
     dia('arete-slave-db', 'arete-slave-db', 'db')
 
