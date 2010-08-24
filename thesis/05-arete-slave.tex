@@ -2,38 +2,56 @@
 
 \begin{document}
 
+\label{arete-slave}
 \chapter{Moduł Arete Slave}
 
 Arete Slave jest programem służącym do wykonywania testów na komputerach
-\fixme{nie wiem jak to napisać}.
+stacjonarnych. Działa on jako
+demon\footnote{http://pl.wikipedia.org/wiki/Demon\_(informatyka)} sterowany
+przez moduł Master korzystając z protokołu opisanego w rozdziale
+\ref{arete-slave-protokol}. \fixme{Rozwiń myśl.} 
 
+\label{arete-slave-arch}
 \section{Architektura}
 
-W skład architektury programu Arete Slave wchodzi pięć modułów oraz baza danych
-służąca do przechowywania informacji o uruchamianych testach.
+W skład architektury programu Arete Slave wchodzą cztery moduły oraz baza danych
+służąca do przechowywania informacji o uruchamianych testach, jak zostało to
+przedstawione na rysunku \ref{fig:arete-slave-arch}. \fixme{Napisać, że to jest
+ogólnie server tcp itd...}
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{arete-slave-arch}
+\end{center}
+\caption{Architektura}
+\label{fig:arete-slave-arch}
+\end{figure}
+
+\paragraph{Handler} jest modułem obsługującym przychodzące połączenia TCP,
+służącym do komunikacji z Arete Master. Korzysta z Parser'a, aby sprawdzić czy
+przychodzące komunikaty są zgodne z protokołem komunikacji (Rozdział
+\ref{arete-slave-protokol}). Otrzymane dane przekazuje do modułu Manager, który
+zajmuje się ich interpretacją.
+
+\paragraph{Parser} służy do analizy składniowej przychodzących komunikatów.
+
+\paragraph{Manager} to główny moduł zarządzący testami. Na podstawie danych
+otrzymanych od Handler'a tworzy testy, dodaje do nich komendy oraz zapisuje te
+informacje do bazy danych. Następnie zajmuje się uruchamianiem i zatrzymywaniem
+testów oraz zwracaniem wyników.
+
+\paragraph{Scheduler} pozwala uruchomić komendy w odpowienich momentach testu.
 
 \FIXME{
-Opis modułów:
-
 Daemon - konfiguracja bazy danych, server TCP
-
-Handler - obsługa przychodzących połączeń, komunikacja z Arete Master
-
-Parser - parsowanie przychodzących komunikatów
 
 Manager - zarządzanie konfiguracją, dodawanie wpisów do bazy, uruchamianie
 testów, zapisywanie wyników...
-
-Scheduler - uruchamianie komend wchodzących w skład testu w odpowiednim momencie
 }
 
-\subsection{Przechowywanie danych}
-
-\FIXME{Schemat i opis bazy danych.}
-
+\label{arete-slave-protokol}
 \section{Protokół komunikacji z Arete Master}
-
-\FIXME{Czy można to nazwać protokołem?}
 
 Do komunikacji między modułami Master i Slave zastosowaliśmy prosty protokół
 opisany poniżej. Wymiana komunikatów składa się z trzech głównych faz. Na
@@ -45,110 +63,259 @@ Do przesyłania poleceń wykorzystaliśmy następujący format:
 
 \code{<polecenie> @\{<parametr>=<wartość>\} <komenda>}
 
-\fixme{Opisać go...}
+Polecenie określa czynność która ma zostać wykonana, taką jak stworzenie testu,
+jego uruchomienie czy pobranie wyników. Zastosowany format przekazywania
+parametrów \code{@\{...\}} pozwala w łatwy sposób wyróżnić je w otrzymanej
+wiadomości. W przypadku poleceń \code{check}, \code{setup}, \code{task} i
+\code{clean} do testu dodawana jest komenda wraz z argumentami podawana na końcu
+wiadomości.
 
 \subsection{Odbieranie planu testu}
 
 Do stworzenia testu oraz odebrania komend wchodzących w jego skład wykorzystane
 są następujące polecenia:
 
-\code{test @\{id=<identyfikator>\}} - tworzy nowy test o podanym
+\begin{itemize}
+  \setlength{\itemsep}{10pt}
+
+\item{\code{test @\{id=<identyfikator>\}} - tworzy nowy test o podanym
 identyfikatorze. Odebranie tego polecenia powoduje przejście w tryb testu, w
-którym możemy dodawać oraz usuwać komendy jednego z czterech typów.
+którym możemy dodawać komendy jednego z czterech typów.}
 
-\code{check @\{id=<identyfikator>\} <komenda>} - dodaje do testu komendę
-sprawdzającą o podanym identyfikatorze. Komendy te wywoływane są przez testem
-korzystając z polecenia \code{prepare}.
+\item{\code{check @\{id=<identyfikator>\} <komenda>} - dodaje do testu komendę
+sprawdzającą o podanym identyfikatorze. Komendy te wywoływane są korzystając z
+polecenia \code{prepare}.}
 
-\code{setup @\{id=<identyfikator>\} <komenda>} - dodaje do testu komendę
+\item{\code{setup @\{id=<identyfikator>\} <komenda>} - dodaje do testu komendę
 konfiguracyjną o podanym identyfikatorze. Komendy te uruchamiane są po odebraniu
-polecenia \code{setup}.
+polecenia \code{setup}.}
 
-\code{task @\{id=<identyfikator>\} @\{run=<tryb uruchomienia>\} <komenda>} -
-dodaje do testu komendę o podanym identyfikatorze uruchamianą w czasie
-wykonywania testu zgodnie z parametrem określającym tryp uruchomienia. Dostępne
-są 3 tryby uruchamiania.
+\item{\code{task @\{id=<identyfikator>\} @\{run=<tryb uruchomienia>\} <komenda>} -
+dodaje do testu komendę główną o podanym identyfikatorze uruchamianą w czasie
+wykonywania testu zgodnie z parametrem określającym tryp uruchomienia. \\
 
-\begin{itemize} \item{\code{at <sekunda>} - uruchamia komendę w podanej
-sekundzie testu licząc od daty rozpoczęcia testu.} \item{\code{after
-<identyfikator>} - uruchamia komendę po wykonaniu komendy o podanym
-identyfikatorze.} \item{\code{every <sekund>} - uruchamia komendę cyklicznie co
-podaną liczbę sekund licząc od daty rozpoczęcia testu.} \end{itemize}
+Dostępne są 3 tryby uruchamiania: \\
 
-\code{clean @\{id=<identyfikator>\} <komenda>} - dodaje do testu komendę
+\begin{itemize}
+  \setlength{\itemsep}{10pt}
+
+\item{\code{at <sekunda>} - uruchamia komendę w podanej sekundzie testu licząc
+od daty rozpoczęcia testu.}
+\item{\code{after <identyfikator>} - uruchamia komendę po wykonaniu komendy o
+podanym identyfikatorze.} 
+\item{\code{every <sekund>} - uruchamia komendę cyklicznie co podaną liczbę
+sekund licząc od daty rozpoczęcia testu.}
+
+\end{itemize}}
+
+\item{\code{clean @\{id=<identyfikator>\} <komenda>} - dodaje do testu komendę
 czyszczącą o podanym identyfikatorze. Komendy te uruchamiane są po zakończeniu
-test.
+test.}
 
-\code{file @\{id=<identyfikator>\} @\{size=<rozmiar pliku>\}} - dodaje do testu
+\item{\code{file @\{id=<identyfikator>\} @\{size=<rozmiar pliku>\}} - dodaje do testu
 plik o podanym identyfikatorze i rozmiarze. Pliki przechowywane są w katalogu
 \code{tmp} i mogą być wykorzystywane jako parametry komend wykonywanych podczas
-testu.
+testu.}
 
-\code{end} - powoduje wyjście z trybu testu.
+\item{\code{end} - powoduje wyjście z trybu testu.}
 
-\subsubsection{Podstawianie parametrów}
-
-Komendy przesyłane do modułu Slave w ramach testu mogą korzystać z parametrów
-innych komend wchodzących w skład tego samego testu.
-
-\code{@\{<identyfikator>.returncode\}} 
-
-\code{@\{<identyfikator>.pid\}} - tylko task
-
-\code{@\{<identyfikator>.size\}} - tylko plik
-
-\code{@\{<identyfikator>.path\}} - tylko plik
-
-\subsubsection{Komunikaty}
-
-\code{100 Test Finished} - opis
-
-\code{200 OK <lista rozmiarów>} - opis
-
-\code{201 List <lista identyfikatorów>} - opis
-
-\code{400 Bad Request} - opis
-
-\code{401 Command Failed <identyfikator>} - opis
-
-\code{402 Setup Too Long} - opis
+\end{itemize}
 
 \subsection{Zarządzenie testem}
 
-\code{prepare @\{id=<identyfikator>\}} - opis
+Po poprawnym stworzeniu testu można nim zarządzać przy pomocy
+następujących komend:
 
-\code{start @\{id=<identyfikator>\} @\{run=<tryb uruchomienia>\} @\{end=<tryb
-zakończenia>\}} - opis
+\begin{itemize}
+  \setlength{\itemsep}{10pt}
 
-\code{stop @\{id=<identyfikator>\}} - opis
+\item{\code{prepare @\{id=<identyfikator>\}} - uruchamia komendy sprawdzające
+testu o podanym identyfikatorze przesłane poleceniem \code{check}. Pozwala to
+stwierdzić czy środowisko uruchomienia testu zawiera wszystkie niezbędne do jego
+wykonania programy i ustawienia. Umożliwia również zapamiętanie podstawowych
+informacji o systemie.  Jeśli któraś z komend nie wykona się poprawnie zostanie
+zwrócony komunikat \code{401 Command Failed}.}
 
-\code{delete @\{id=<identyfikator\}} - opis
+\item{\code{start @\{id=<identyfikator>\} @\{run=<tryb uruchomienia>\} @\{end=<tryb
+zakończenia>\}} - uruchamia właściwy test o podanym identyfikatorze. Najpierw
+wykonywane są komendy konfiguracyjne przesłane poleceniem \code{setup},
+a następnie uruchamiany jest scheduler wykonujący komendy główne w
+określonych momentach. Na koniec wykonywane są komendy czyszczące. Są one
+również uruchamiane w przypadku gdy któraś z komend głównych zakończy się
+błędem. Jeśli trybem zakończenia testu jest \code{complete} po zakończeniu
+wszystkich komend do Arete Master wysyłany jest komunikat \code{100 Test
+Finished}.}
+
+\item{\code{stop @\{id=<identyfikator>\}} - zatrzymuje wykonywanie testu o
+podanym identyfikatorze. Wykonywane są również komendy czyszczące wchodzą w
+skład zatrzymanego testu. Zachowane zostają parametry tylko tych komend, które
+zakończyły się przez wydaniem polecenia \code{stop}.}
+
+\item{\code{delete @\{id=<identyfikator\}} - usuwa test o podanym
+identyfikatorze oraz wszystkie należące do niego komendy i pliki.}
+
+\end{itemize}
 
 \subsection{Wysyłanie wyników testu}
 
-\code{results @\{id=<identyfikator>\}} - opis
-
-\code{get @\{<parametr>\}} - opis
-
-Parametry:
+Po zakończeniu testu możliwe jest obebranie jest wyników w celu zapisania do
+bazy danych modułu Arete Master i dalszej analizy. Wykorzystujemy do tego celu
+polecenia:
 
 \begin{itemize}
-\item{\code{checks, setups, tasks, cleans} - opis}
-\item{\code{start\_time} - opis}
-\item{\code{duration} - opis}
-\end{itemize}
+  \setlength{\itemsep}{10pt}
 
-\code{get @\{<identyfikator>.<parametr>\}} - opis
+\item{\code{results @\{id=<identyfikator>\}} - przechodzi w tryb pobierania
+wyników testu o podanym identyfikatorze. Jeśli test taki nie istnieje, nie
+został jeszcze rozpoczęty lub nie zakończył się zostanie przesłany komunikat o
+błędzie.}
 
-Parametry:
+\item{\code{get @\{<parametr>\}} - zwraca określony parametr testu. \\
+
+Dostępne parametry testu to: \\
 
 \begin{itemize}
-\item{\code{output} - opis}
-\item{\code{returncode} - opis}
-\item{\code{start\_time} - opis}
-\item{\code{duration} - opis}
+  \setlength{\itemsep}{10pt}
+
+\item{\code{checks, setups, tasks, cleans} - listy komend danego typu które
+zostały poprawnie uruchomione i posiadają niepuste wyjście.}
+
+\item{\code{start\_time} - czas rozpoczęcia testu}
+
+\item{\code{duration} - długość trwania testu}
+
+\end{itemize}}
+
+\item{\code{get @\{<identyfikator>.<parametr>\}} - zwraca określony parametr
+komendy o podanym identyfikatorze. \\
+
+Dostępne parametry komend to: \\
+
+\begin{itemize}
+  \setlength{\itemsep}{10pt}
+
+\item{\code{output} - standardowe wyjście}
+
+\item{\code{returncode} - zwrócony kod wyjścia}
+
+\item{\code{start\_time} - czas rozpoczęcia}
+
+\item{\code{duration} - długość trwania}
+
+\end{itemize}}
+
+\item{\code{end} - powoduje wyjście z trybu wyników}
+
 \end{itemize}
 
-\code{end} - powoduje wyjście z trybu wyników
+\label{arete-slave-podst-param}
+\subsection{Podstawianie parametrów}
+
+Komendy przesyłane do modułu Slave w ramach testu mogą korzystać z parametrów
+innych komend wchodzących w skład tego samego testu, lecz jest to możliwe
+wyłącznie jeśli komendy te zostały wcześniej wywołane. W przeciwnym wypadku
+Arete Slave zwróci błąd. Parametry które mogą zostać podstawione to:
+
+\begin{itemize}
+  \setlength{\itemsep}{10pt}
+
+\item{\code{@\{<identyfikator>.returncode\}} - kod wyjścia zwrócony przez komendę
+o podanym identyfikatorze. Jeśli komenda była wykonywana więcej niż jeden raz
+zwracany jest kod wyjścia ostatniego wykonania.}
+
+\item{\code{@\{<identyfikator>.pid\}} - zwraca identyfikator procesu stworzonego
+poprzez wywołanie komendy o danym identyfikatorze. Odnosi się wyłącznie w
+przypadku komend typu \emph{task}.}
+
+\end{itemize}
+
+Podstawianie parametrów pozwala również na wykorzystanie plików dodanych do
+testu. Służą do tego parametry:
+
+\begin{itemize}
+  \setlength{\itemsep}{10pt}
+
+\item{\code{@\{<identyfikator>.size\}} - zwraca rozmiar pliku o podanym
+identyfikatorze.}
+
+\item{\code{@\{<identyfikator>.path\}} - zwraca pełną ścieżkę dostępu do pliku o
+podanym identyfikatorze.}
+
+\end{itemize}
+
+\label{arete-slave-komunikaty}
+\subsection{Komunikaty}
+
+Podczas komunikacji Arete Slave wysyła następujące komunikaty, aby
+sygnalizować o poprawnym lub błędnym działaniu:
+
+\begin{itemize}
+  \setlength{\itemsep}{10pt}
+
+\item{\code{100 Test Finished} - zwracany po wykonaniu wszystkich komend
+wchodzących w skład testu. Obowiązuje wyłącznie w trybie \emph{complete}.}
+
+\item{\code{200 OK <lista rozmiarów>} - zwracany do potwierdzenia poprawnie wykonanego
+polecenia; w przypadku pobierania wyników wykonanego testu przesyła również
+listę rozmiarów kolejnych wyników (np. \code{get @\{<id>.output\}}).}
+
+\item{\code{201 List <lista identyfikatorów>} - zwracany przy zapytaniach o listy
+komend które zakończyły się poprawnie (np. \code{get @\{checks\}}).}
+
+\item{\code{400 Bad Request} - zwaracany w przypadku jakiegokolwiek błędu. Najczęściej
+świadczy o przesłaniu komunikatu niezgodnego z protokołem lub wykorzystaniu
+identyfikatora który już istnieje w bazie danych.}
+
+\item{\code{401 Command Failed <identyfikator>} - zwracany gdy któraś z wykonywanych
+komend zakończy się błędem. W celu szybkiego zidentyfikowania problemu
+przesyłany jest identyfikator błędnej komendy.}
+
+\item{\code{402 Setup Too Long} - zwracany gdy komendy konfiguracyjne nie zakończyły
+się przed planowany czasem rozpoczęcia właściwego testu. Pozwala to zwrócić
+użytkownikowi uwagę na potrzebę zwiększenia wartości opóźnienia po którym
+należy uruchomić test.}
+
+\end{itemize}
+
+\label{arete-slave-baza-danych}
+\section{Przechowywanie danych}
+
+Podstawową jednostką w bazie danych jest test (tabela \emph{tests}) w skład
+którego wchodzą komendy (tabela \emph{commands}) i pliki (tabela \emph{files}).
+Dodatkowe cztery tabele dziedziczące z tabeli \emph{commands} określają komendy
+o konkretnych zastosowaniach (tabele \emph{check\_commands},
+\emph{setup\_commands}, \emph{tasks} i \emph{clean\_commands}).
+
+Każda komenda posiada cztery parametry, które są zwracane jako wyniki po
+zakończeniu testu: wyjście, zwracany kod wyjścia, czas rozpoczęcia oraz długość
+trwania, znajdujące się kolejno w tabelach \emph{output}, \emph{returncode},
+\emph{start\_time} oraz \emph{duration}.  Stworzenie osobnych tabel dla tych
+wartości umożliwia wielokrotne uruchomienie danej komendy i każdorazowe
+zapamiętanie wszystkich parametrów.
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=1\textwidth]{arete-slave-db}
+\end{center}
+\caption{Schemat bazy danych}
+\label{fig:arete-slave-db}
+\end{figure}
+
+\label{arete-slave-uruchamianie}
+\section{Uruchamianie}
+
+\begin{minted}{text}
+  usage: Main.py [-h] [-p PORT] [-d DATABASE] [-l LOG]
+
+  optional arguments:
+    -h, --help            show this help message and exit
+    -p PORT, --port PORT
+                          use port other than 4567
+    -d DATABASE, --database DATABASE
+                          use database file other than 'aretes.db'
+    -l LOG, --log LOG
+                          use log file other than 'aretes.log'
+\end{minted}
 
 \end{document}

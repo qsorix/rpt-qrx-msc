@@ -28,6 +28,9 @@ def build(bld):
     dia('reference-config', 'reference-config-laboratory', 'laboratory')
     dia('reference-config', 'reference-config-schedule', 'schedule')
 
+    dia('arete-slave-arch', 'arete-slave-arch', 'arch')
+    dia('arete-slave-db', 'arete-slave-db', 'db')
+
     bld.add_group()
 
     bld(features='tex', source='00-praca-magisterska.tex', prompt=0)
