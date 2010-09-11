@@ -14,8 +14,8 @@ przedstawione w \fixref{rozdziale JAKIMŚTAM}.
 \section{Zastosowania}
 
 Arete zostało stworzone z myślą o testerach, zespołach badawczych oraz
-studentach kierunków informatycznych, zajmujących się tworzeniem oprogramowanie
-sieciowe lub przeprowadzaniem eksperymentów w sieciach komputerowych. Może być
+studentach kierunków informatycznych, zajmujących się tworzeniem oprogramowania
+sieciowego lub przeprowadzaniem eksperymentów w sieciach komputerowych. Może być
 ono również przydatne dla prowadzących zajęcia praktyczne, przygotowujących
 ćwiczenia w takich środowiskach.
 
@@ -27,9 +27,13 @@ Potrzebowaliśmy narzędzia, które zautomatyzuje najczęściej wykonywane
 czynności: skonfiguruje maszyny, przeprowadzi testy, zapamięta wyniki i
 przywróci pierwotną konfigurację.
 
+\FIXME{Może by te scenariusze jakoś wypunktować. Napisać gdzieś, że są to
+przykłady które mają swoje pliki w ./examples i są dołączone do pracy, bo nie
+do końca wiadomo czemu są takie szczegółowe (ls, md5sum)}
+
 Najprostszy scenariusz ma miejsce w czasie tworzenia oprogramowania typu
 klient-serwer. Załóżmy, że tworzymy prosty program mający umożliwiać transfer
-plików. Zarówno serwer jak i klient sterowany będzie z linii poleceń. W teście
+plików. Zarówno serwer jak i klient będzie sterowany z linii poleceń. W teście
 chcemy sprawdzić czy transfer przebiegł poprawnie, tj. czy zgadza się z nazwa
 pliku i czy jego zawartość jest identyczna.
 
@@ -91,7 +95,7 @@ nie wpływał na uzyskiwane wyniki.
 
 Trzeci scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
 Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
-BitTorrent. Klienci mają rozpocząć ściąganie w tym samym momencie, a test należy
+BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test należy
 zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
 klient wysłał danych i ile trwała pełna dystrybucja pliku. Zadana topologia
 urządzeń to dwie sieci IP po cztery urządzenia, połączone routerem sztucznie
@@ -131,13 +135,13 @@ wynikające z omówionych przed chwilą scenariuszy. W skład możliwości musi 
 \item zakończenie testu w określony sposób:
   \begin{itemize}
   \item konkretny czas,
-  \item kooperatywna decyzja uczestników testu,
+  \item wspólna decyzja uczestników testu,
   \item wyznaczony host kończy test.
   \end{itemize}
 \end{itemize}
 
 Powyższe wymagania mieliśmy na uwadze projektując projekt. Będziemy do nich
-powracać w pozostałej treści pracy, żeby wykazać, iż zostały one spełnione.
+powracać w dalszej treści pracy, żeby wykazać, iż zostały one spełnione.
 
 \section{Założenia}
 
@@ -154,8 +158,8 @@ dzięki czemu może być wykorzystany w większej liczbie przypadków.
 \paragraph{Bezpieczeństwo jest adekwatne do zagrożeń.} Aby możliwe było
 przeprowadzenie pewnych testów, na urządzeniach wymagany jest dostęp w trybie
 administratora. Ponieważ polecenia realizujące test przekazywane są zdalnie,
-istnieje ryzyko wykorzystania ich do wykonania dowolnych komend jako
-administrator. Nie niesie to jednak zagrożeń dla bezpieczeństwa gdyż środowisko
+istnieje ryzyko wykorzystania ich do wykonania dowolnych komend z uprawnieniami
+administratora. Nie niesie to jednak zagrożeń dla bezpieczeństwa gdyż środowisko
 przeprowadzania testu zwykle odpowiada jego wymaganiom dotyczącym uprawnień w
 dostępie.
 
@@ -199,11 +203,12 @@ Wprowadzenie takiej architektury powoduje, że instalacja programu wykonującego
 testy (slave) zajmuje więcej czasu, trzeba ją bowiem przeprowadzić na
 wszystkich systemach. Jest to jednak konieczne, w celu osiągnięcia
 funkcjonalności wymaganej w pewnych scenariuszach testów, jak również przydatne
-ze względów bezpieczeństwa. Program nadzorujący umożliwia również
+ze względów bezpieczeństwa. \fixme{Program nadzorujący umożliwia również
 współpracę z urządzeniami bez zainstalowanego modułu slave\footnote{Jak
 np.~routery sprzętowe, gdzie instalacja własnego oprogramowania nie jest
 możliwa.}, ale może wtedy nie być możliwe wykonanie pewnych scenariuszy testów.
-
+- w sumie to nie umożliwia}
+i
 Przykładowo załóżmy, że chcemy przeprowadzić test mierzący ilość pakietów
 RIP\footnote{ang. Routing Information Protocol}, jakie routery wymieniają aby
 zapewnić poprawne tablice routingu po awarii łącza. Po połączeniu z routerem
@@ -264,7 +269,7 @@ Linuksowych.
 Poczyniliśmy także założenia mówiące o tym, czego program robić nie będzie.
 
 \paragraph{Analizę wyników pozostawiamy ekspertom.} Program ma pomóc w
-pozyskaniu wyników, ich analizę pozostawiamy użytkownikowi. Byłaby ona trudna ze
+pozyskaniu wyników określonych testów. Ich analiza byłaby ona trudna ze
 względu na to, że z każdego rodzaju testu wyniki miałyby inny charakter. Poza
 tym programy produkują dane w różnych formatach i nie sposób tego wcześniej
 przewidzieć. Dostępne są specjalistyczne programy służące do przetwarzania tego
@@ -276,6 +281,7 @@ program nie ma wpływu na sposób w jaki połączone są urządzenia w laborator
 tworzonych testach zakłada się, że użytkownik wie, jaki wpływ na wyniki testu ma
 stworzona przez niego sieć. Program nie stara się analizować zastanej topologii.
 
+\FIXME{
 \paragraph{Środowisko testu jest jego cechą.} Przeprowadzając test w
 rzeczywistej sieci prawdopodobnie celowo chcemy zbadać zachowanie implementacji
 we współpracy z innymi uczestnikami sieci. Nasz program nie wymusza wyłączności
@@ -283,12 +289,18 @@ na komunikację sieciową ani nie monitoruje innych użytkowników sieci. Jeśli
 poprawnego przeprowadzenia pomiaru wymagane jest, aby testowany program był
 jedynym użytkownikiem sieci, osoba wykonująca test sama musi o to zadbać.
 
-\paragraph{O urządzeniach zakładamy jak najmniej.} Program Arete nie
+\emph{Wcześniej jest napisane "czego program robić nie będzie", a to nie pasuje
+do tego.}
+}
+
+\paragraph{O urządzeniach zakładamy jak najmniej.} Narzędzie Arete nie
 wymaga od urządzeń biorących udział w teście żadnej funkcjonalności.
 Dzięki temu jesteśmy w stanie obsługiwać zarówno tanie urządzenia sieciowe, o
 bardzo ograniczonych możliwościach konfiguracyjnych, jak i w pełni wyposażone
 systemu Uniksowe czy dedykowane routery. To użytkownik decyduje o tym, co w
 danym teście mają robić występujące w nim urządzenia i tym samym stawia
 im wymagania dotyczące zarówno funkcjonalności, jak i bezpieczeństwa.
+
+\FIXME{Rysunek architektury całego systemu jest potrzebany!}
 
 \end{document}

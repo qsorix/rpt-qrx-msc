@@ -59,25 +59,28 @@ np. przenośność między systemami operacyjnymi, zależności od bibliotek
 graficznych i, co najważniejsze, prawdopodobnie nieprzyjazny człowiekowi
 format zapisu.
 
-Następnie rozważaliśmy stworzenie dedykowanego języka (DSL), którego cechy będą
-odpowiadać naszym wymaganiom. Inspiracją był tutaj język NED\footnote{NEtwork
-Description} używany przez symulator sieci
+Następnie rozważaliśmy stworzenie dedykowanego języka (\fixme{DSL}), którego
+cechy będą odpowiadać naszym wymaganiom. Inspiracją był tutaj język
+NED\footnote{NEtwork Description} używany przez symulator sieci
 OMNeT++\footnote{http://www.omnetpp.org/} do opisu budowy urządzeń, topologii
 połączeń i formatu komunikatów. Po kilku eksperymentach ze składnią stało się
 jednak jasne, że aby w czytelny sposób wspierać wiele rodzajów testów i
 jednocześnie niczego nie utrudniać, użytkownik będzie potrzebował możliwości
 rozbudowy tego języka. OMNeT++ rozwiązuje ten problem umożliwiając tworzenie
-implementacji modułów w języku C++, my postanowiliśmy skorzystać z Pythona.
+implementacji modułów w języku C++, my postanowiliśmy skorzystać z języka
+Python.
 
-Ostatecznie zdecydowaliśmy użyć Pythona jako języka konfiguracji. Tego typu
+\FIXME{Jakoś średnio jest podkreślony nasz długi proces wyboru języka.}
+
+\fixme{Ostatecznie} zdecydowaliśmy użyć języka Python jako języka konfiguracji. Tego typu
 rozwiązanie stosują m.in. takie narzędzia jak systemy budowania
 SCons\footnote{http://www.scons.org/} i
 Waf\footnote{http://code.google.com/p/waf/}.  Idąc ich śladem, postanowiliśmy
 stworzyć framework, który w prosty sposób będzie umożliwiał tworzenie
 różnorodnych konfiguracji.
 
-Python posiada wszystkie poszukiwane przez nas cechy. Ponadto użycie właśnie
-Pythona jako środowiska do stworzenia potrzebnego nam DSL jest łatwiejsze niż
+Język Python posiada wszystkie poszukiwane przez nas cechy. Ponadto użycie właśnie
+języka Python jako środowiska do stworzenia potrzebnego nam DSL jest łatwiejsze niż
 korzystanie z innych języków ponieważ:
 \begin{itemize}
 \item jest ogólnie dostępny,
@@ -120,17 +123,17 @@ podejmowane przez uruchamiany kod.
 \subsection{Format konfiguracji}
 
 Aby zwiększyć szanse na ponowne wykorzystanie poprzednio definiowanych
-tekstów, konfiguracja logicznie podzielona jest na cztery osobne części:
+testów, konfiguracja logicznie podzielona jest na cztery osobne części:
 \begin{itemize}
 \item model,
 \item laboratorium,
-\item mapowanie,
+\item mapowanie \fixme{- może mapowanie, żeby było bardziej po polsku},
 \item plan.
 \end{itemize}
 
 Model opisuje koncepcyjną topologię testu. Przedstawia ilość wymaganych
 urządzeń i połączenia między nimi. Laboratorium służy do definiowania sprzętu,
-którym w rzeczywistości dysponujemy. Mapowanie zapewnia odwzorowanie urządzeń
+którym w rzeczywistości dysponujemy. \fixme{Mapowanie} zapewnia odwzorowanie urządzeń
 z modelu na te dostępne w laboratorium. Te trzy komponenty definiują statyczną
 strukturę testu. Plan natomiast określa dynamiczne zachowanie urządzeń, tj.
 komendy wykonywane na nich w trakcie odbywania się testu.
@@ -167,7 +170,7 @@ interfejs do tworzenia węzłów -- urządzeń i krawędzi -- dodawania interfej
 i połączeń między nimi.
 
 Dodatkowo możliwe jest przypisanie dowolnych cech zarówno urządzeniom jak też
-ich interfejsom. Cechy te maja format par nazwa-wartość. Sposób ich
+ich interfejsom. Cechy te mają format par nazwa-wartość. Sposób ich
 wykorzystania zależy od użytkownika. Framework przekaże je do odpowiednich
 sterowników \fixref{ref do rozdziału o Host i Interface Drivers}, które można
 tworzyć samodzielnie. Cechy można wykorzystać na przykład do przypisywania
@@ -200,10 +203,10 @@ modelu.
 
 Dwie pozostałe linie tworzą i dodają do modelu dwa urządzenia przy pomocy
 funkcji \code{add\_host}. Pierwszym i obowiazkowym argumentem jest nazwa
-urządzenia. Dla wygody, funkcja zwraca referencję do utworzonego urządzenia.
+urządzenia. Dla wygody funkcja zwraca referencję do utworzonego urządzenia.
 
 Taka konfiguracja wystarczy do przeprowadzenia szerokiej gamy testów, w
-których potrzebne są dwa komputery i nic więcej nas nie interesuje.
+których potrzebne są jedynie dwa komputery.
 
 Załóżmy jednak, że z jakiegoś powodu musimy na czas testu określić komputerom
 zadane adresy IP. Adresy przypisuje się oczywiście do interfejsów.
@@ -219,7 +222,7 @@ stworzonego interfejsu.
 
 Pierwszy parametr (nazwa interfejsu) jest obowiązkowy. Dalsze, nazwane
 parametry\footnote{keyword arguments} są dowolne i służą do przypisania
-interfejsowi porządanych cech.  W tym wypadku podajemy parametr \code{ip}. W
+interfejsowi pożądanych cech.  W tym wypadku podajemy parametr \code{ip}. W
 czasie przetwarzania konfiguracji, odpowiedni sterownik widząc ten parametr
 wygeneruje komendy konfigurujące podany adres na odpowiednim interfejsie
 urządzenia docelowego.
@@ -263,9 +266,9 @@ Ostatecznie otrzymujemy konfigurację, która odpowiada diagramowi:
 Laboratorium prezentuje zestaw dostępnych urządzeń i sposób, w jaki można się
 z nimi komunikować.
 
-W danym teście może być zdefiniowanych więcej urządzeń, niż wykorzystujemy.
-Podobnie jak w laboratorium sieciowym zwykle znajduje się wiecej sprzętu niż
-wymagają proste ćwiczenia.
+W danym teście może być zdefiniowanych więcej urządzeń, niż wykorzystujemy, podobnie
+jak w prawdziwym laboratorium sieciowym zwykle znajduje się wiecej sprzętu niż
+wymagają tego proste ćwiczenia.
 
 Sposób definiowania urządzeń jest bardzo podobny do tego zaprezentowanego w
 modelu, dlatego od razu prezentujemy pełną konfigurację:
@@ -312,11 +315,13 @@ zdefiniowania kilku dodatkowych atrybutów:
 \begin{itemize}
 \item \code{connection} -- określa, z którego pluginu korzystać w celu
 nawiązania komunikacji z danym urządzeniem,
-\item \code{frontend} -- mówi, który plugin określa sposób w jaki przebiega
+\item \code{frontend} -- mówi, który \fixme{plugin} określa sposób w jaki przebiega
 komunikacja z danym urządzeniem (protokół przesyłanych komunikatów).
 \end{itemize}
 
-Więcej na temat pluginów piszemy w rozdziale \fixref{referencja do rozdziału o
+\FIXME{I znowu trzeba znaleść lepsze słowo dla pluginów, bo się nie podoba.}
+
+Więcej na temat \fixme{pluginów} piszemy w rozdziale \fixref{referencja do rozdziału o
 pluginach}.
 
 Framework nie wymaga podawania parametru \code{ip}. Jest to atrybut, z którego
@@ -376,7 +381,7 @@ Stworzone mapowanie podsumowuje diagram \fixref{ref do rysunku}.
 
 Wymaga się, aby wszystkie hosty i interfejsy z modelu zostały zmapowane. W
 przeciwnym razie framework odmówi działania, ponieważ koncepcyjnemu urządzeniu
-nie będzie odpowiadać żadna realizacja sprzętowa, na której możnaby wykonać
+nie będzie odpowiadać żadna realizacja sprzętowa, na której można by wykonać
 zadane akcje.
 
 \subsubsection{Plan}
@@ -398,10 +403,10 @@ zapewnienia, że użyjemy tylko jednego planu.
 Wywołanie funkcji \code{append\_schedule} jest bardziej złożone, poświęcimy mu
 zatem więcej czasu.
 
-Pierwszy argument to nazwa hosta z modelu, na którym wykonane maja zostać
-przekazywane polecenia. Z tego powodu plan jest związany z konkretnym modelem
-i, jeśli na jednym modelu realizujemy tylko jeden plan, często będzie
-definiowany w tym samym pliku.
+Pierwszy argument to nazwa hosta z modelu, na którym wykonane mają zostać
+przekazywane polecenia. Z tego powodu plan jest związany z konkretnym modelem -
+jeśli na jednym modelu realizujemy tylko jeden plan - często będzie definiowany
+w tym samym pliku.
 
 Drugi argument to lista trójek składających się z:
 \begin{itemize}
@@ -411,7 +416,7 @@ Drugi argument to lista trójek składających się z:
 \end{itemize}
 
 Nazwa komendy to po prostu napis ją identyfikujący. Dla danego hosta musi być
-unikalna ponieważ możliwe jest odwoływanie się do jednej komendy z drugiej.
+unikalna, ponieważ możliwe jest odwoływanie się do jednej komendy z drugiej.
 
 Strategia wykonania mówi w jaki sposób komenda ma być uruchamiana. W tym
 wypadku \code{at(0)} zleca jednokrotne wykonanie w zerowej sekundzie testu.
@@ -428,7 +433,7 @@ zadań jak dołączania zasobów czy stworzenia testów (np. sprawdzenia czy
 potrzebny program jest dostępny na urządzeniu).
 
 Wydawać się może, że taki rozbudowany interfejs będzie niewygodny w użyciu, ale
-zwiezłość i funkcje narzędziowe dostępne wraz z frameworkiem pozwalają w prosty
+zwięzłość i funkcje narzędziowe dostępne wraz z frameworkiem pozwalają w prosty
 i ekspresywny sposób przekazać to, co chcemy osiągnąć. Przykładem może być taki
 plan:
 
@@ -462,14 +467,14 @@ interfejs może dowolnie rozszczerzyć do swoich potrzeb.
 
 Podział konfiguracji na model, laboratorium, mapowanie i plan umożliwia
 wielokrotne użycie tych samych definicji bez konieczności powtarzania się. W
-wyraźny sposób odziela to też koncepcję testu, od jego sprzętowej realizacji.
+wyraźny sposób odziela to też koncepcję testu od jego sprzętowej realizacji.
 
 \section{Wykonawcza część frameworku}
 
 Zdefiniowany w konfiguracji test jest wykonywany przez moduł Master. Odpowiada
 on za wczytanie i walidację konfiguracji, połączenie z występującymi w teście
 urządzeniami, przesłanie im przygotowanej konfiguracji, uruchomienie i
-nadzorowanie testu, aż wreszcie pobranie wyników. Tam, gdzie działanie zależne
+nadzorowanie testu oraz pobranie wyników. Tam, gdzie działanie zależne
 jest od specyficznej konfiguracji testu, użytkownik ma możliwość dostarczenia
 własnej implementacji potrzebnych algorytmów za pomocą mechanizum pluginów.
 
@@ -512,7 +517,9 @@ Dokładny opis metod będzie w Reference. Odesłać tam.
 Przez połączenie ze zdalnym urządzeniem będziemy tutaj rozumieć kanał
 komunikacyjny pomiędzy Frontendem i kontrolowanym przez niego urządzeniem. W
 typowych zastosowaniach połączenie po prostu zestawia komunikację z modułem
-Arete Slave.  
+Arete Slave. 
+
+\FIXME{Inne możliwości połączenia się.}
 
 Najprostszym przykładem takiego połączenia może być połączenie TCP. Nieco
 trudniejszy technicznie, choć koncepcyjnie identyczny, jest tunel SSH.
@@ -541,7 +548,7 @@ cechy jakich od elementu będziemy oczekiwać. Samo ich podanie niczego jednak n
 powoduje, framework musi jeszcze zostać poinformowany o ich znaczeniu.
 
 Sterowniki parametrów\footnote{\fixme{kiepska nazwa}} służą do przetłumaczenia
-wartości atrybutów na odpowiednie akcje. Co to będą za akcje zależy od atrybutu.
+wartości atrybutów na odpowiednie akcje. Rodzaj akcji jest zależny od atrybutu.
 Dla przykładu, określenie atrybutu \code{ip} powinno owocować wykonaniem komend,
 które na docelowym urządzeniu odpowiednio skonfigurują interfejs sieciowy.
 
@@ -650,8 +657,8 @@ klasy implementuje więc użytkownik, zalecamy jednak stosowanie schematu
 
 Jeśli przed użyciem zasobu chcemy go jeszcze przygotować, framework Arete
 pozwala zdefiniować potrzebne do tego komendy. Może to być użyteczne na
-przykład przy pracy z archiwami, które przed testem będziemy chcięli
-rozpakować. Aby skorzystać z tej możliwości należy zaimplementować metodę
+przykład przy pracy z archiwami, które przed testem mają zostać rozpakowane. Aby
+skorzystać z tej możliwości należy zaimplementować metodę
 \code{generate\_commands}.
 
 \begin{pythoncode}
@@ -682,5 +689,7 @@ Szersze omówienie interfejsu \code{Resource} znajduje się w rozdziale
 \caption{Schemat bazy danych}
 \label{fig:arete-master-db}
 \end{figure}
+
+\FIXME{Opis bazy danych.}
 
 \end{document}

@@ -28,7 +28,7 @@ przedstawione na rysunku \ref{fig:arete-slave-arch}.
 \end{figure}
 
 \paragraph{Handler} jest modułem obsługującym przychodzące połączenia TCP,
-służącym do komunikacji z Arete Master. Korzysta z Parser'a, aby sprawdzić czy
+służącym do komunikacji z Arete Master. Korzysta z modułu Parser, aby sprawdzić czy
 przychodzące komunikaty są zgodne z protokołem komunikacji (Rozdział
 \ref{arete-slave-protokol}). Otrzymane dane przekazuje do modułu Manager, który
 zajmuje się ich interpretacją.
@@ -36,10 +36,10 @@ zajmuje się ich interpretacją.
 \paragraph{Parser} służy do analizy składniowej przychodzących komunikatów.
 
 \paragraph{Manager} to główny moduł zarządzający testami. Na podstawie danych
-otrzymanych od Handler'a tworzy testy, dodaje do nich komendy oraz zapisuje te
+otrzymanych od modułu Handler tworzy testy, dodaje do nich komendy oraz zapisuje te
 informacje do bazy danych. Następnie zajmuje się uruchamianiem i zatrzymywaniem
 testów oraz zwracaniem wyników. Komendy główne które mają zostać wykonane w
-określonym momencie testu przekazywane są do modułu Scheduler'a. 
+określonym momencie testu przekazywane są do modułu Scheduler. 
 
 \paragraph{Scheduler} pozwala uruchomić komendy w określonych punktach czasowych
 testu. Moduł ten korzysta z bazy danych w celu pobrania niezbędnych danych i
@@ -47,6 +47,9 @@ zapisania wyników uruchamianych komend.
 
 \section{Protokół komunikacji z Arete Master}
 \label{arete-slave-protokol}
+
+\FIXME{Ten protokuł powinien być prawdopodobnie gdzie indziej. Zobacz FIXME
+przed pierwszym rozdziałem.}
 
 Do komunikacji między modułami Master i Slave zastosowaliśmy prosty protokół
 opisany poniżej. Wymiana komunikatów składa się z trzech głównych faz. Na

@@ -5,26 +5,27 @@
 \chapter{Wprowadzenie}
 
 Inżynieria oprogramowania bardzo szeroko omawia tematykę testów, na każdym
-kroku podkreślając wagę i nieodłączność tej fazy w procesie tworzenia.
-Powstający produkt testuje się, aby zapewnić jak najwyższą jakość dostarczanego
-oprogramowania. Pod tym ogólnym stwierdzeniem często rozumie się co innego, w
-zależności od rodzaju i przeznaczenia programu. Dlatego też w tym rozdziale
-przybliżamy zakres zagadnień, na którym skupimy się w pracy.
+kroku podkreślając wagę i nieodłączność tej fazy w procesie tworzenia
+oprogramowania.  Powstający produkt testuje się, aby zapewnić jak najwyższą
+jakość dostarczanego oprogramowania. Pod tym ogólnym stwierdzeniem często
+rozumie się co innego, w zależności od rodzaju i przeznaczenia programu.
+Dlatego też w tym rozdziale przybliżamy zakres zagadnień, na którym skupimy się
+w pracy.
 
 \section{Dlaczego testujemy}
 
-Oprogramowanie testuje się, żeby sprawdzić poprawność jego działania. Twórcy
+Oprogramowanie testuje się, żeby sprawdzić zgodność jego działania ze specyfikacją. Twórcy
 zależy na tym, żeby zminimalizować liczbę swoich błędów. Odbiorca natomiast
 chciałby potwierdzenia, że otrzymuje produkt, jakiego oczekiwał. Pod tymi
 słowami kryje się za każdym razem inny konkret, któremu się przyglądamy, jednak
 kilka ogólnych cech pozostaje niezmiennych.
 
-Pierwszą taką cechą jest weryfikacja mierzalnej wartości. Każdy test powstaje w
-celu sprawdzenia czy oczekiwane przewidywania są spełnione. Wymagane jest więc
+Pierwszą taką cechą jest weryfikacja mierzalnej wartości. \fixme{Każdy test powstaje w
+celu sprawdzenia czy oczekiwane przewidywania są spełnione. \emph{- zdanie bez sensu}} Wymagane jest więc
 określenie jakich wartości oczekujemy od poszczególnych czynników. Biorąc za
 przykład popularny ostatnio ,,szybki Internet'' łatwo pokazać, że samo nazwanie
 czegoś szybkim nie przedstawia żadnej cennej informacji, gdyż mówiąc potocznie,
-dostawcy usług zawsze dostarczają najszybszy Internetu, a mimo to z roku na
+dostawcy usług zawsze dostarczają najszybszy Internet, a mimo to z roku na
 rok udaje się zapewnić jeszcze szybsze łącza.
 
 Obiektywne sformułowanie przedmiotu testu wymienia nie tylko badaną wielkość,
@@ -47,7 +48,7 @@ sieciowy nie ulega zniszczeniu w czasie większości testów.
 
 Uruchomienie tego samego testu na różnego rodzaju urządzeniach pozwala
 stwierdzić czy tworzone rozwiązanie jest przenośne, czy się skaluje, czy
-sprawdza się w ekstremalnych warunkach itp. W zastosowaniach związanych z
+sprawdza się w \fixme{ekstremalnych} warunkach itp. W zastosowaniach związanych z
 sieciami komputerowymi tego typu testy są szczególnie istotne ze względu na
 różnorodność dostępnych urządzeń i protokołów.
 
@@ -56,23 +57,26 @@ rozbudowując. Możliwość wielokrotnego testowania funkcjonalności pozwala oc
 ją w świetle wprowadzanych zmian. Najpierw można przekonać się o tym, że
 pożądana cecha została osiągnięta. Następnie, w przypadku poprawek istniejącego
 produktu, możemy przekonać się, że problemy zostały usunięte, a także, że ich
-eliminacja nie zaburzyła innych komponentów. To samo dotyczy nowej
-funkcjonalności. Mamy też możliwość oceny wpływu zmian na wydajność i to, przy
-systematycznym wykonywaniu testów, na przestrzeni życia całego projektu.
+eliminacja nie zaburzyła innych komponentów. To samo dotyczy \fixme{nowej}
+funkcjonalności. Mamy też możliwość oceny wpływu zmian na wydajność i to przy
+systematycznym wykonywaniu testów na przestrzeni życia całego projektu.
 
-Ponieważ w środowiskach rozproszonych powszechna jest sytuacja, w której mamy
-do czynienia ze sprzętem różnego rodzaju i różnych producentów, a budowane
-rozwiązania mają niezawodnie pracować przez wiele lat, testowanie tworzonych
-produktów jest tu bardzo istotne. Jednocześnie jest ono trudniejsze niż w
-wypadku rozwiązań przeznaczonych na samodzielne\footnote{ang. standalone}
-systemy.
+Ponieważ w środowiskach rozproszonych powszechna jest \fixme{sytuacja}, w
+której \fixme{mamy do czynienia} ze sprzętem różnego rodzaju i różnych
+producentów, a budowane rozwiązania mają niezawodnie pracować przez wiele lat,
+testowanie tworzonych produktów jest \fixme{tu} bardzo istotne. Jednocześnie
+jest ono trudniejsze niż w wypadku rozwiązań przeznaczonych na
+samodzielne\footnote{ang. standalone} systemy.
+
+\FIXME{Ten akapit nie pasuje na koniec. Napisać lepszy na koniec, a ten
+przenieść gdzieś indziej. Poza tym dużo niezręcznych słów.}
 
 \section{Testy aplikacji sieciowych}
 
-W sieciach komputerowych oprogramowanie występuje wszędzie. Na różnych
-warstwach modelu OSI powierza się mu różne zadania i inaczej je implementuje, a
-od każdego składnika sieciowego stosu oczekujemy poprawnej pracy, którą
-weryfikować można testami.
+\fixme{W sieciach komputerowych oprogramowanie występuje wszędzie. -
+\emph{filozoficznie pojechałeś:)}} Na różnych warstwach modelu OSI powierza się
+mu różne zadania i inaczej je implementuje, a od każdego składnika sieciowego
+stosu oczekujemy poprawnej pracy, którą można weryfikować testami.
 
 Inaczej wyglądają testy protokołu CSMA/CD, inaczej protokołu TCP, wreszcie
 zupełnie inne są testy aplikacji synchronizującej kalendarz z urządzeniem
@@ -88,14 +92,14 @@ jest podobny. Wyróżniliśmy następujące rodzaje testów:
   \item wydajności transmisji.
 \end{itemize}
 
-Pierwszy rodzaj dotyczy budowy komunikatów wymienianych między urządzeniami. Są
-to testy mające na celu sprawdzić czy przesyłane dane odpowiadają założeniom.
-Badane są takie wielkości jak: długość PDU, zgodność sumy kontrolnej,
-poprawność kodowania numeru wersji itp. Kontrola jakości na tym etapie ma na
-celu zweryfikowanie, czy wygenerowane bity, reprezentują PDU zgodne ze
-specyfikacją. Od wykorzystywanych tu narzędzi wymaga się, aby umożliwiały
-sformalizowanie opisu zawartego w dokumentacji do postaci, którą można
-algorytmicznie porównać z obserwowanymi PDU.
+Pierwszy rodzaj dotyczy poprawności budowy komunikatów wymienianych między
+urządzeniami. Są to testy mające na celu sprawdzić czy przesyłane dane
+odpowiadają założeniom.  Badane są takie wielkości jak: długość PDU, zgodność
+sumy kontrolnej, poprawność kodowania numeru wersji itp. Kontrola jakości na
+tym etapie ma na celu zweryfikowanie, czy wygenerowane bity reprezentują PDU
+zgodne ze specyfikacją. Od wykorzystywanych tu narzędzi wymaga się, aby
+umożliwiały sformalizowanie opisu zawartego w dokumentacji do postaci, którą
+można algorytmicznie porównać z obserwowanymi PDU.
 
 Kiedy operujemy poprawnymi komunikatami, należy zadbać o poprawność ich
 sekwencji. Skuteczna komunikacja najczęściej wymaga zachowania pewnej
@@ -113,10 +117,15 @@ czynników mających wpływ na odczuwalną jakość połączenia. Chociaż wysta
 najprostsze narzędzia (niemal każdy klient HTTP jest w stanie wyświetlić
 uzyskaną przepływność), jest to najtrudniejsza płaszczyzna testów.
 
-Trudność polega na poprawnym zdefiniowaniu testu. O ile w przypadku obserwacji
+\FIXME{Trudność polega na poprawnym zdefiniowaniu testu. O ile w przypadku obserwacji
 pojedynczych PDU i ich sekwencji łatwo pokusić się o stwierdzenie, że cały test
 można automatycznie wygenerować z dokumentacji protokołu, to kwestii wydajności
 nie da się zbadać bez udziału człowieka.
+
+\emph{Tu coś miało być źle z tym, że z powyższego nie wynika, żeby to była
+trudność. To raz, a dwa to jest bardzo dyskusyjne czy nie można testów
+wydajności wygenerować. Ogólnie to jedne można, drugie nie, ale na każdym
+poziomie można jakieś tam testy wygenerować.}}
 
 W tego typu testach sama implementacja odgrywa istotną rolę, ale ogromne
 znaczenie ma też wpływ środowiska i to użytkownik musi zadecydować o tym, jakie
@@ -145,10 +154,10 @@ zależności od testu pożądane będą różne warunki jego wykonania.
 
 Aby sprawdzić czy algorytm generuje poprawne PDU najwygodniej jest skorzystać
 ze środowiska testowego, debuggera czy symulatora. Nie potrzebujemy i nie
-chcemy opóźnień związanych z realną transmisją. Możemy nawet uruchomić algorytm
-osobno, poza stosem sieciowym, i patrząc z boku analizować jego działanie.
+chcemy \fixme{opóźnień} związanych z realną transmisją. Możemy nawet uruchomić algorytm
+osobno, poza stosem sieciowym, i patrząc \fixme{z boku} analizować jego działanie.
 
-W przypadku sekwencji komunikatów również wystarczy nam symulowanie
+W przypadku sekwencji komunikatów również wystarczy symulowanie
 uczestników komunikacji, gdyż zakładając poprawne działanie pozostałych
 elementów sieci, skupimy się w ten sposób na danym algorytmie.
 
@@ -166,10 +175,11 @@ temat wymagań stawianych procesorowi czy pamięci. Trzeba mieć jednak na uwadz
 że otrzymywane wyniki mają szczególny charakter i nie należy ich przekładać na
 oczekiwane zachowania w rzeczywistych sieciach. 
 
-Obecnie moc obliczeniowa pozwala symulować wiele czynników występujących w
-prawdziwych sieciach. Można więc coraz więcej testów przeprowadzać w
-wirtualnych środowiskach. Uważamy jednak, że mnogość czynników, które trzeba
-uwzględnić, wciąż przemawia na korzyść testów w warunkach rzeczywistych.
+\fixme{Obecnie moc obliczeniowa pozwala symulować wiele czynników występujących
+w prawdziwych sieciach. - \emph{nie pamiętam co było nie tak, ale to zdanie
+śmierdzi.}} Można więc coraz więcej testów przeprowadzać w wirtualnych
+środowiskach. Uważamy jednak, że mnogość czynników, które trzeba uwzględnić,
+wciąż przemawia na korzyść testów w warunkach rzeczywistych.
 
 Te czynniki to między innymi:
 \begin{itemize}
@@ -190,7 +200,12 @@ obserwowanym zachowaniu. Trzeba też pamiętać, że zbierane wyniki nabierają
 charakteru statystycznego i aby stały się wiarygodne, testy należy wielokrotnie
 powtarzać.
 
+\FIXME{Mimo wszystko należy myśleć o tych problemach jak o przeszkodach.
+Napisać to jakoś inaczej.}
+
 \section{Dostępne rozwiązania}
+
+\FIXME{Ten dział ma być wcześniej.}
 
 Istnieje wiele programów rozwiązujących problem automatyzacji testowania, które
 w mniejszym lub większym stopniu pozwalają na ułatwienie i przyspieszenie
@@ -282,14 +297,15 @@ reguł, po czym obserwować jej efektywność.
 
 \subsection{OMNeT++}
 
-OMNeT++ to biblioteka i framework\promotor{Postanowiliśmy zdecydowanie
-nie tłumaczyć tego na polski, bo mija sie to z celem. KAŻDY wie co to
-framework.} do tworzenia symulacji sieci. Użytkownik może korzystać z
+OMNeT++ to biblioteka i framework do tworzenia symulacji sieci. Użytkownik może korzystać z
 szerokiej gamy modułów oraz tworzyć własne. Środowisko to wspiera symulacje
 sterowane zdarzeniami przesyłanymi między występującymi w realizowanej sieci
 komponentami.
 
-Istnieje szereg frameworków zbudowanych na bazie środowiska OMNeT++, a które
+\FIXME{Jak już używać niespolszczonych nazw to ich nie odmieniać. Tutaj
+frameworków, gdzieś indziej switche.}
+
+Istnieje szereg \fixme{frameworków} zbudowanych na bazie środowiska OMNeT++, a które
 zostały stworzone z myślą o konkretnych rodzajach sieci, jak np. OverSim będący
 symulatorem sieci peer2peer.
 
@@ -304,11 +320,16 @@ jak np.~algorytmów routingu. Nie został zaprojektowany z myślą o symulacji
 złożonych systemów, takich jak pełna implementacja stosu sieciowego w systemie
 operacyjnym. Tego typu realizacje są możliwe, ale działają niewydajnie.
 
-Chociaż istnieje możliwość uruchomienia symulacji na kilku urządzeniach
+\FIXME{Chociaż istnieje możliwość uruchomienia symulacji na kilku urządzeniach
 jednocześnie, wykonywany kod pozostaje pod kontrolą środowiska OMNeT++.
+
+\emph{Wyjaśnić dlaczego, bo nie jest to jasne.}}
 
 Nie jest możliwy przypadek użycia, w którym za pomocą OMNeT++ sterujemy pracą
 zdalnych systemów, wykonując na nich własną aplikację.
+
+\FIXME{Przykłady użycia tych rozwiązań. Zilustrowanie kodem i jakimiś
+screenshotami. Ogólnie to więcej obrazków ma być:)}
 
 \subsection{Podsumowanie}
 
@@ -329,11 +350,12 @@ rzeczywistych sieciach, gdzie problemy takie jak synchronizacja urządzeń i
 zbieranie wyników powodują, że ręczne wykonywanie wszystkich czynności staje
 się bardzo czasochłonne i uciążliwe, choć sam test jest w swojej naturze prosty.
 
-W tabeli \fixref{referencja} porównujemy naszym zdaniem najistotniejsze cechy wspomnianych
-narzędzi. Jak widać Arete nie jest pozbawione wad, tym samym nie jest to
-idealne narzędzie do każdego typu zastosowań. Nie jest to również narzędzie
-zdolne do samodzielnej pracy. Uważamy jednak, że dobrze uzupełnia funkcjonalne
-braki istniejących rozwiązań i razem z nimi pozwala stworzyć praktyczne i
+W tabeli \fixref{referencja} porównujemy naszym zdaniem najistotniejsze cechy
+wspomnianych narzędzi. \fixme{Jak widać Arete nie jest pozbawione wad, tym
+samym nie jest to idealne narzędzie do każdego typu zastosowań. - \emph{LOL,
+napisać to mniej zuchwale:)}} Nie jest to również narzędzie zdolne do
+samodzielnej pracy. Uważamy jednak, że dobrze uzupełnia funkcjonalne braki
+istniejących rozwiązań i razem z nimi pozwala stworzyć praktyczne i
 wygodne środowisko testowe.
 
 \begin{small}

@@ -5,14 +5,15 @@
 \chapter{Przedmowa}
 
 W czasie pracy nad jednym z projektów w czasie studiów mieliśmy za zadanie
-sprawdzić wydajność transmisji ówczesnej implementacji DCCP w kernelu Linuksa.
-Sam pomiar nie był uciążliwy i sprowadzał się do uruchomienia programu na dwóch
-komputerach, odczekaniu kilkudziesięciu sekund i zapisaniu wyniku.
+sprawdzić wydajność transmisji ówczesnej implementacji protokołu DCCP w kernelu
+Linuksa.  Sam pomiar nie był uciążliwy i sprowadzał się do uruchomienia
+programu na dwóch komputerach, odczekaniu kilkudziesięciu sekund i zapisaniu
+wyniku.
 
 Kłopot polegał na tym, że pomiary musieliśmy wykonywać po kilka razy dla
 każdej z wielu przygotowanych konfiguracji. Często dwie konfiguracje różniły się
-wyłącznie tym który z komputerów biorących udział w teście pełnił rolę klienta,
-a który serwera, a wszystko znacznie komplikowało się gdy test wymagał
+wyłącznie tymi, który z komputerów biorących udział w teście pełnił rolę klienta,
+a który serwera, a wszystko znacznie się komplikowało gdy test wymagał
 wykorzystania więcej niż dwóch komputerów.
 
 Niekiedy testy należało powtarzać, ponieważ uruchamialiśmy je korzystając z
@@ -24,7 +25,9 @@ Traciliśmy sporo czasu na czynnościach, które powinny być wykonywane
 automatycznie. Tak zrodził się pomysł stworzenia narzędzia, które
 pomogłoby usystematyzować przeprowadzanie testów aplikacji sieciowych.
 
-W miniejszej pracy zaprezentujemy rozwiązanie, które pomoże zaoszczędzić wiele
+\FIXME{W powyższym akapicie dopisać, że takie rozwiązanie nie istaniało.}
+
+W niniejszej pracy zaprezentujemy rozwiązanie, które pomoże zaoszczędzić wiele
 godzin spędzanych na wykonywaniu małych, prostych czynności wymaganych podczas
 przeprowadzania pomiarów na kilku urządzeniach sieciowych w tym samym czasie.
 Za każdym razem zajmują one tylko kilkanaście sekund, ale wyeliminowanie ich
@@ -45,11 +48,15 @@ kwestie poprawnego przeprowadzania testów oraz katalogowania wyników.
 Testowanie nie jest jednak głównym tematem pracy i informacji oraz wytycznych
 należy szukać w innych źródłach.
 
+\FIXME{W sumie to testowanie jest tematem pracy, napisać to inaczej.}
+
 \section{Pojęcia i skróty}
 
 W pracy posługujemy się terminem urządzenie. Pod pojęciem tym, o ile nie
 zostanie zaznaczone inaczej, będziemy rozumieć aktywny sprzęt sieciowy w
 szczególności wszelkiego rodzaju zarządzalne switche, routery oraz komputery.
+
+\FIXME{Powiększyć ten dział o inne pojęcia i skróty, żeby miał sens:)}
 
 \section{README}
 
