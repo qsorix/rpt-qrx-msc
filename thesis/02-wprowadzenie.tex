@@ -106,25 +106,17 @@ Wydajność transmisji dotyczy między innymi osiąganych przepustowości, reakc
 na zatory, rywalizacji z innymi przepływami, jakości łączy fizycznych i innych
 czynników mających wpływ na odczuwalną jakość połączenia. Chociaż wystarczą tu
 najprostsze narzędzia (niemal każdy klient HTTP jest w stanie wyświetlić
-uzyskaną przepływność), jest to najtrudniejsza płaszczyzna testów. O ile w przypadku obserwacji
-pojedynczych PDU i ich sekwencji łatwo pokusić się o stwierdzenie, że większość testów
-można automatycznie wygenerować z dokumentacji protokołu, to kwestii wydajności
-nie da się zbadać bez udziału człowieka.
-
-\emph{Tu coś miało być źle z tym, że z powyższego nie wynika, żeby to była
-trudność. To raz, a dwa to jest bardzo dyskusyjne czy nie można testów
-wydajności wygenerować. Ogólnie to jedne można, drugie nie, ale na każdym
-poziomie można jakieś tam testy wygenerować.}}
+uzyskaną przepływność), jest to najtrudniejsza płaszczyzna testów. O ile w
+przypadku obserwacji pojedynczych PDU i ich sekwencji większość testów można
+automatycznie wygenerować z dokumentacji protokołu, to zbadanie kwestii
+wydajności jest bardzo trudne bez udziału człowieka.
 
 W tego typu testach sama implementacja odgrywa istotną rolę, ale ogromne
 znaczenie ma też wpływ środowiska i to użytkownik musi zadecydować o tym, jakie
 warunki chcemy badać, bo tylko on zna przeznaczenie tworzonego oprogramowania.
-
-Ponadto test w tym przypadku nie polega na zatwierdzeniu lub odrzuceniu
-pojedynczego przypadku, a na analizie wielokrotnie powtarzanych eksperymentów i
-odniesieniu wyników do teoretycznych założeń. Wiedza ekspercka jest tu
-nieodzowna.
-
+Test w tym przypadku nie polega na zatwierdzeniu lub odrzuceniu pojedynczego
+przypadku, a na analizie wielokrotnie powtarzanych eksperymentów i odniesieniu
+wyników do teoretycznych założeń. Wiedza ekspercka jest tu nieodzowna.
 Narzędzia do testowania wydajności nie powinny więc wyręczać człowieka, ale
 wspierać go ułatwiając konfigurację środowiska, obsługę wielu urządzeń
 jednocześnie i katalogowanie wyników.
@@ -135,42 +127,36 @@ Jest jasne, że eksperymenty najwygodniej przeprowadza się w sterylnych
 warunkach laboratorium. Błędem jest jednak oczekiwanie, że produkt będzie
 zachowywał się identycznie w normalnym użytkowaniu, a inżynieria oprogramowania
 zaleca nawet wykonywanie testowej instalacji wdrożeniowej, aby zaobserwować
-powstające różnice.
-
-Testy wykonywane w warunkach rzeczywistych mają zarówno wady jak i zalety.
-Wracając do omówionych powyżej rodzajów testów, można powiedzieć, że w
-zależności od testu pożądane będą różne warunki jego wykonania.
+powstające różnice. Testy wykonywane w warunkach rzeczywistych mają zarówno
+wady jak i zalety.  Wracając do omówionych powyżej rodzajów testów, można
+powiedzieć, że w zależności od testu pożądane będą różne warunki jego
+wykonania.
 
 Aby sprawdzić czy algorytm generuje poprawne PDU najwygodniej jest skorzystać
-ze środowiska testowego, debuggera czy symulatora. Nie potrzebujemy i nie
-chcemy \fixme{opóźnień} związanych z realną transmisją. Możemy nawet uruchomić algorytm
-osobno, poza stosem sieciowym, i patrząc \fixme{z boku} analizować jego działanie.
-
-W przypadku sekwencji komunikatów również wystarczy symulowanie
+ze środowiska testowego, debuggera czy symulatora. Opóźnienia związane z realną
+transmisją są niepotrzebne, a nawet nieporządane. Możemy nawet uruchomić
+algorytm osobno, poza stosem sieciowym, i analizować jego działanie
+niezależnie. W przypadku sekwencji komunikatów również wystarczy symulowanie
 uczestników komunikacji, gdyż zakładając poprawne działanie pozostałych
 elementów sieci, skupimy się w ten sposób na danym algorytmie.
 
 Test w warunkach rzeczywistych zawsze będzie wartościowym uzupełnieniem,
 ponieważ na symulatorze możemy zapomnieć o takich problemach jak przekłamania
-bitów czy gubienie PDU, a tworzone oprogramowanie powinno być na te zjawiska odporne.
-
-Chciałoby się jednocześnie z dwoma powyższymi testować także wydajność, ale
-jednoczesna analiza może prowadzić do otrzymania złych wyników. Wydajność może
-być niższa od rzeczywistej z powodu narzutu związanego ze sprawdzaniem
-komunikacji.
+bitów czy gubienie PDU, a tworzone oprogramowanie powinno być na te zjawiska
+odporne. Najlepszym scenariuszem byłoby testowanie dwóch powyższych
+jednocześnie z wydajnością, ale jednoczesna analiza może prowadzić do
+otrzymania złych wyników. Wydajność może być niższa od rzeczywistej z powodu
+narzutu związanego ze sprawdzaniem komunikacji.
 
 Pomiar wydajności w warunkach symulowanych dostarcza cennych informacji na
 temat wymagań stawianych procesorowi czy pamięci. Trzeba mieć jednak na uwadze,
 że otrzymywane wyniki mają szczególny charakter i nie należy ich przekładać na
-oczekiwane zachowania w rzeczywistych sieciach. 
-
-\fixme{Obecnie moc obliczeniowa pozwala symulować wiele czynników występujących
-w prawdziwych sieciach. - \emph{nie pamiętam co było nie tak, ale to zdanie
-śmierdzi.}} Można więc coraz więcej testów przeprowadzać w wirtualnych
-środowiskach. Uważamy jednak, że mnogość czynników, które trzeba uwzględnić,
-wciąż przemawia na korzyść testów w warunkach rzeczywistych.
-
-Te czynniki to między innymi:
+oczekiwane zachowania w rzeczywistych sieciach. Dostępna obecnie moc
+obliczeniowa pozwala symulować wiele czynników występujących w prawdziwych
+sieciach, można więc coraz więcej testów przeprowadzać w środowiskach
+wirtualnych. Uważamy jednak, że mnogość czynników, które trzeba uwzględnić,
+wciąż przemawia na korzyść testów w warunkach rzeczywistych. Te czynniki to
+między innymi:
 \begin{itemize}
 \item zawodność sprzętu,
 \item wpływ innych użytkowników,
@@ -197,7 +183,7 @@ Napisać to jakoś inaczej.}
 \FIXME{Ten dział ma być wcześniej.}
 
 Istnieje wiele programów rozwiązujących problem automatyzacji testowania, które
-w mniejszym lub większym stopniu pozwalają na ułatwienie i przyspieszenie
+w różnym stopniu i na różnych poziomach pozwalają na ułatwienie i przyspieszenie
 przeprowadzania testów aplikacji i protokołów sieciowych. Jednak spośród znanych
 nam rozwiązań, żadne nie pozwalało przeprowadzić takiego rodzaju testów, jakie
 próbowaliśmy wykonać.
@@ -289,14 +275,9 @@ reguł, po czym obserwować jej efektywność.
 OMNeT++ to biblioteka i framework do tworzenia symulacji sieci. Użytkownik może korzystać z
 szerokiej gamy modułów oraz tworzyć własne. Środowisko to wspiera symulacje
 sterowane zdarzeniami przesyłanymi między występującymi w realizowanej sieci
-komponentami.
-
-\FIXME{Jak już używać niespolszczonych nazw to ich nie odmieniać. Tutaj
-frameworków, gdzieś indziej switche.}
-
-Istnieje szereg \fixme{frameworków} zbudowanych na bazie środowiska OMNeT++, a które
-zostały stworzone z myślą o konkretnych rodzajach sieci, jak np. OverSim będący
-symulatorem sieci peer2peer.
+komponentami. Istnieje szereg narzędzi zbudowanych na bazie środowiska OMNeT++,
+które zostały stworzone z myślą o konkretnych rodzajach sieci, jak np. OverSim
+będący symulatorem sieci peer2peer.
 
 Framework umożliwia pracę w IDE opartym na Eclipse i wspiera wiele pożądanych
 funkcji jak np.~symulacje w czasie rzeczywistych czy integracja z bazą danych.
@@ -312,10 +293,10 @@ operacyjnym. Tego typu realizacje są możliwe, ale działają niewydajnie.
 \FIXME{Chociaż istnieje możliwość uruchomienia symulacji na kilku urządzeniach
 jednocześnie, wykonywany kod pozostaje pod kontrolą środowiska OMNeT++.
 
-\emph{Wyjaśnić dlaczego, bo nie jest to jasne.}}
+\emph{Wyjaśnić dlaczego, bo nie jest to jasne.
 
 Nie jest możliwy przypadek użycia, w którym za pomocą OMNeT++ sterujemy pracą
-zdalnych systemów, wykonując na nich własną aplikację.
+zdalnych systemów, wykonując na nich własną aplikację.}}
 
 \FIXME{Przykłady użycia tych rozwiązań. Zilustrowanie kodem i jakimiś
 screenshotami. Ogólnie to więcej obrazków ma być:)}
@@ -339,13 +320,11 @@ rzeczywistych sieciach, gdzie problemy takie jak synchronizacja urządzeń i
 zbieranie wyników powodują, że ręczne wykonywanie wszystkich czynności staje
 się bardzo czasochłonne i uciążliwe, choć sam test jest w swojej naturze prosty.
 
-W tabeli \fixref{referencja} porównujemy naszym zdaniem najistotniejsze cechy
-wspomnianych narzędzi. \fixme{Jak widać Arete nie jest pozbawione wad, tym
-samym nie jest to idealne narzędzie do każdego typu zastosowań. - \emph{LOL,
-napisać to mniej zuchwale:)}} Nie jest to również narzędzie zdolne do
-samodzielnej pracy. Uważamy jednak, że dobrze uzupełnia funkcjonalne braki
-istniejących rozwiązań i razem z nimi pozwala stworzyć praktyczne i
-wygodne środowisko testowe.
+W tabeli \fixref{tej poniżej} porównujemy naszym zdaniem najistotniejsze cechy
+wspomnianych narzędzi. Jak widać Arete nie jest idealnym narzędzie do każdego
+typu zastosowań. Nie jest to również narzędzie zdolne do samodzielnej pracy.
+Uważamy jednak, że dobrze uzupełnia funkcjonalne braki istniejących rozwiązań i
+razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
 
 \begin{small}
 \begin{center}
