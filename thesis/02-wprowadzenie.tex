@@ -2,7 +2,7 @@
 
 \begin{document}
 
-\chapter{Wprowadzenie}
+\chapter{Testowanie}
 
 Inżynieria oprogramowania bardzo szeroko omawia tematykę testów, na każdym
 kroku podkreślając wagę i nieodłączność tej fazy w procesie tworzenia
@@ -20,74 +20,65 @@ chciałby potwierdzenia, że otrzymuje produkt, jakiego oczekiwał. Pod tymi
 słowami kryje się za każdym razem inny konkret, któremu się przyglądamy, jednak
 kilka ogólnych cech pozostaje niezmiennych.
 
-Pierwszą taką cechą jest weryfikacja mierzalnej wartości. \fixme{Każdy test powstaje w
-celu sprawdzenia czy oczekiwane przewidywania są spełnione. \emph{- zdanie bez sensu}} Wymagane jest więc
-określenie jakich wartości oczekujemy od poszczególnych czynników. Biorąc za
-przykład popularny ostatnio ,,szybki Internet'' łatwo pokazać, że samo nazwanie
-czegoś szybkim nie przedstawia żadnej cennej informacji, gdyż mówiąc potocznie,
-dostawcy usług zawsze dostarczają najszybszy Internet, a mimo to z roku na
-rok udaje się zapewnić jeszcze szybsze łącza.
+Pierwszą taką cechą jest weryfikacja mierzalnej wartości. Testy powstają w celu
+sprawdzenia czy otrzymane wyniki spełniają określone kryteria. Wymagane jest
+więc określenie jakich wartości oczekujemy od poszczególnych czynników. Biorąc
+za przykład popularny ostatnio ,,szybki Internet'' łatwo pokazać, że samo
+nazwanie czegoś szybkim nie przedstawia żadnej cennej informacji, gdyż mówiąc
+potocznie, dostawcy usług zawsze dostarczają najszybszy Internet, a mimo to z
+roku na rok udaje się zapewnić jeszcze szybsze łącza. 
 
 Obiektywne sformułowanie przedmiotu testu wymienia nie tylko badaną wielkość,
 ale również oczekiwaną wartość. Mówienie o szybkości transferu ma sens, kiedy
 padają konkretne liczby, ponieważ wtedy można je porównać z przewidywaniami i
-stwierdzić czy dana szybkość nas zadowala.
-
-Może zdarzyć się, że taka wartość odniesienia nie istnieje. Przy pierwszym
-pomiarze czasu wykonania nowego algorytmu możemy tylko zgadywać lub subiektywnie
-oceniać go w świetle podobnych algorytmów. W kolejnych pomiarach dysponujemy już
-jednak poprzednią wartością i możemy wnioskować z jej pomocą.  Niezmienny jest
-jednak fakt, że sprawdzamy wielkość, którą można zmierzyć i nasze pomiary nie są
-zaburzone naszą osobistą oceną.
+stwierdzić czy dana szybkość nas zadowala. Może zdarzyć się, że taka wartość
+odniesienia nie istnieje. Przy pierwszym pomiarze czasu wykonania nowego
+algorytmu możemy tylko zgadywać lub subiektywnie oceniać go w świetle podobnych
+algorytmów. W kolejnych pomiarach dysponujemy już jednak poprzednią wartością i
+możemy wnioskować z jej pomocą. Niezmienny jest jednak fakt, że sprawdzamy
+wielkość, którą można zmierzyć i nasze pomiary nie są zaburzone naszą osobistą
+oceną.
 
 Możliwość dokonania kolejnego pomiaru jest drugą bardzo istotną cechą testu.
 Dzięki temu jesteśmy w stanie ocenić jak na wyniki wpływają takie czynniki jak
 sprzęt czy zmiany w oprogramowaniu. Istnieje szereg testów, których charakter
 uniemożliwia ich powtórzenie lub czyni je kosztownym. Na szczęście sprzęt
-sieciowy nie ulega zniszczeniu w czasie większości testów.
+sieciowy nie ulega zniszczeniu w czasie większości testów. Uruchomienie tego
+samego testu na różnego rodzaju urządzeniach pozwala stwierdzić czy tworzone
+rozwiązanie jest przenośne, czy się skaluje, czy sprawdza się w specyficznych
+warunkach itp. W zastosowaniach związanych z sieciami komputerowymi tego typu
+testy są szczególnie istotne ze względu na różnorodność dostępnych urządzeń i
+protokołów.
 
-Uruchomienie tego samego testu na różnego rodzaju urządzeniach pozwala
-stwierdzić czy tworzone rozwiązanie jest przenośne, czy się skaluje, czy
-sprawdza się w \fixme{ekstremalnych} warunkach itp. W zastosowaniach związanych z
-sieciami komputerowymi tego typu testy są szczególnie istotne ze względu na
-różnorodność dostępnych urządzeń i protokołów.
+Tworzenie, poprawianie i rozbudowywanie oprogramowania wiąże się nieodłącznie
+ze zmianami w kodzie. Możliwość wielokrotnego testowania danej funkcjonalności
+pozwala ocenić ją w świetle wprowadzanych zmian. Najpierw można przekonać się o
+tym, że pożądana cecha została osiągnięta. Następnie, w przypadku poprawek
+istniejącego produktu, możemy przekonać się, że problemy zostały usunięte, a
+także, że ich eliminacja nie zaburzyła innych komponentów. To samo dotyczy nowo
+dodanych funkcjonalności. Mamy również możliwość oceny wpływu zmian na
+wydajność i to przy systematycznym wykonywaniu testów na przestrzeni życia
+całego projektu.
 
-Zmiany w oprogramowaniu są naturalne. Zmienia się je tworząc, poprawiając i
-rozbudowując. Możliwość wielokrotnego testowania funkcjonalności pozwala ocenić
-ją w świetle wprowadzanych zmian. Najpierw można przekonać się o tym, że
-pożądana cecha została osiągnięta. Następnie, w przypadku poprawek istniejącego
-produktu, możemy przekonać się, że problemy zostały usunięte, a także, że ich
-eliminacja nie zaburzyła innych komponentów. To samo dotyczy \fixme{nowej}
-funkcjonalności. Mamy też możliwość oceny wpływu zmian na wydajność i to przy
-systematycznym wykonywaniu testów na przestrzeni życia całego projektu.
+\FIXME{Podsumować jakoś to testowanie...}
 
-Ponieważ w środowiskach rozproszonych powszechna jest \fixme{sytuacja}, w
-której \fixme{mamy do czynienia} ze sprzętem różnego rodzaju i różnych
-producentów, a budowane rozwiązania mają niezawodnie pracować przez wiele lat,
-testowanie tworzonych produktów jest \fixme{tu} bardzo istotne. Jednocześnie
-jest ono trudniejsze niż w wypadku rozwiązań przeznaczonych na
-samodzielne\footnote{ang. standalone} systemy.
-
-\FIXME{Ten akapit nie pasuje na koniec. Napisać lepszy na koniec, a ten
-przenieść gdzieś indziej. Poza tym dużo niezręcznych słów.}
+Testowanie jest zatem bardzo istotnym i nieodłącznym elementem tworzenia oprogramowania...
 
 \section{Testy aplikacji sieciowych}
 
-\fixme{W sieciach komputerowych oprogramowanie występuje wszędzie. -
-\emph{filozoficznie pojechałeś:)}} Na różnych warstwach modelu OSI powierza się
-mu różne zadania i inaczej je implementuje, a od każdego składnika sieciowego
-stosu oczekujemy poprawnej pracy, którą można weryfikować testami.
-
-Inaczej wyglądają testy protokołu CSMA/CD, inaczej protokołu TCP, wreszcie
-zupełnie inne są testy aplikacji synchronizującej kalendarz z urządzeniem
-mobilnym. Z drugiej strony często można znaleźć elementy wspólne pomimo tego,
-że badane implementacje realizują zupełnie inną funkcjonalność.
+W sieciach komputerowych oprogramowanie wykorzystuje się na różnych warstwach
+modelu OSI powierzając mu różne zadania i inaczej je implementujec. Od każdego
+składnika sieciowego stosu oczekujemy poprawnej pracy, którą można weryfikować
+testami. Inaczej wyglądają testy protokołu CSMA/CD, inaczej protokołu TCP,
+wreszcie zupełnie inne są testy aplikacji synchronizującej kalendarz z
+urządzeniem mobilnym. Z drugiej strony często można znaleźć elementy wspólne
+pomimo tego, że badane implementacje realizują zupełnie inną funkcjonalność.
 
 W dalszych rozważaniach skupimy się na podziale testów ze względu na rodzaj
 obserwowanych wielkości, ponieważ niezależnie od warstwy, sposób ich pomiaru
 jest podobny. Wyróżniliśmy następujące rodzaje testów:
 \begin{itemize}
-  \item wymienianych PDU\footnote{ang. Protocol Data Unit},
+  \item wymienianych PDU,
   \item sekwencji komunikatów,
   \item wydajności transmisji.
 \end{itemize}
@@ -115,10 +106,8 @@ Wydajność transmisji dotyczy między innymi osiąganych przepustowości, reakc
 na zatory, rywalizacji z innymi przepływami, jakości łączy fizycznych i innych
 czynników mających wpływ na odczuwalną jakość połączenia. Chociaż wystarczą tu
 najprostsze narzędzia (niemal każdy klient HTTP jest w stanie wyświetlić
-uzyskaną przepływność), jest to najtrudniejsza płaszczyzna testów.
-
-\FIXME{Trudność polega na poprawnym zdefiniowaniu testu. O ile w przypadku obserwacji
-pojedynczych PDU i ich sekwencji łatwo pokusić się o stwierdzenie, że cały test
+uzyskaną przepływność), jest to najtrudniejsza płaszczyzna testów. O ile w przypadku obserwacji
+pojedynczych PDU i ich sekwencji łatwo pokusić się o stwierdzenie, że większość testów
 można automatycznie wygenerować z dokumentacji protokołu, to kwestii wydajności
 nie da się zbadać bez udziału człowieka.
 
