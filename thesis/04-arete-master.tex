@@ -59,22 +59,17 @@ np. przenośność między systemami operacyjnymi, zależności od bibliotek
 graficznych i, co najważniejsze, prawdopodobnie nieprzyjazny człowiekowi
 format zapisu.
 
-Następnie rozważaliśmy stworzenie dedykowanego języka (\fixme{DSL}), którego
-cechy będą odpowiadać naszym wymaganiom. Inspiracją był tutaj język
-NED\footnote{NEtwork Description} używany przez symulator sieci
-OMNeT++\footnote{http://www.omnetpp.org/} do opisu budowy urządzeń, topologii
-połączeń i formatu komunikatów. Po kilku eksperymentach ze składnią stało się
-jednak jasne, że aby w czytelny sposób wspierać wiele rodzajów testów i
-jednocześnie niczego nie utrudniać, użytkownik będzie potrzebował możliwości
-rozbudowy tego języka. OMNeT++ rozwiązuje ten problem umożliwiając tworzenie
-implementacji modułów w języku C++, my postanowiliśmy skorzystać z języka
-Python.
-
-\FIXME{Jakoś średnio jest podkreślony nasz długi proces wyboru języka.}
-
-\fixme{Ostatecznie} zdecydowaliśmy użyć języka Python jako języka konfiguracji. Tego typu
-rozwiązanie stosują m.in. takie narzędzia jak systemy budowania
-SCons\footnote{http://www.scons.org/} i
+Następnie rozważaliśmy stworzenie dedykowanego języka\footnote{DSL -
+Domain-Specific Language}, którego cechy będą odpowiadać naszym wymaganiom.
+Inspiracją był tutaj język NED\footnote{NEtwork Description} używany przez
+symulator sieci OMNeT++\footnote{http://www.omnetpp.org/} do opisu budowy
+urządzeń, topologii połączeń i formatu komunikatów. Po kilku eksperymentach ze
+składnią stało się jednak jasne, że aby w czytelny sposób wspierać wiele
+rodzajów testów i jednocześnie niczego nie utrudniać, użytkownik będzie
+potrzebował możliwości rozbudowy tego języka. OMNeT++ rozwiązuje ten problem
+umożliwiając tworzenie implementacji modułów w języku C++, my postanowiliśmy
+skorzystać z języka Python. Tego typu rozwiązanie stosują m.in. takie narzędzia
+jak systemy budowania SCons\footnote{http://www.scons.org/} i
 Waf\footnote{http://code.google.com/p/waf/}.  Idąc ich śladem, postanowiliśmy
 stworzyć framework, który w prosty sposób będzie umożliwiał tworzenie
 różnorodnych konfiguracji.
@@ -127,16 +122,17 @@ testów, konfiguracja logicznie podzielona jest na cztery osobne części:
 \begin{itemize}
 \item model,
 \item laboratorium,
-\item mapowanie \fixme{- może mapowanie, żeby było bardziej po polsku},
+\item odwzorowanie, 
 \item plan.
 \end{itemize}
 
 Model opisuje koncepcyjną topologię testu. Przedstawia ilość wymaganych
 urządzeń i połączenia między nimi. Laboratorium służy do definiowania sprzętu,
-którym w rzeczywistości dysponujemy. \fixme{Mapowanie} zapewnia odwzorowanie urządzeń
-z modelu na te dostępne w laboratorium. Te trzy komponenty definiują statyczną
-strukturę testu. Plan natomiast określa dynamiczne zachowanie urządzeń, tj.
-komendy wykonywane na nich w trakcie odbywania się testu.
+którym w rzeczywistości dysponujemy. Odwzorowanie przedstawia powiązania między
+urządzeniami z modelu, a tymi dostępnymi w laboratorium. Te trzy komponenty
+definiują statyczną strukturę testu. Plan natomiast określa dynamiczne
+zachowanie urządzeń, tj.  komendy wykonywane na nich w trakcie odbywania się
+testu.
 
 Żeby lepiej oddać rolę każdego komponentu można posłużyć się analogią do
 ćwiczeń laboratoryjnych. Model będzie tutaj schematem sieci narysowanym w
@@ -315,14 +311,13 @@ zdefiniowania kilku dodatkowych atrybutów:
 \begin{itemize}
 \item \code{connection} -- określa, z którego pluginu korzystać w celu
 nawiązania komunikacji z danym urządzeniem,
-\item \code{frontend} -- mówi, który \fixme{plugin} określa sposób w jaki przebiega
-komunikacja z danym urządzeniem (protokół przesyłanych komunikatów).
+\item \code{frontend} -- mówi, która wtyczka\footnode{ang. plugin} określa
+sposób w jaki przebiega komunikacja z danym urządzeniem (protokół przesyłanych
+komunikatów).
 \end{itemize}
 
-\FIXME{I znowu trzeba znaleść lepsze słowo dla pluginów, bo się nie podoba.}
-
-Więcej na temat \fixme{pluginów} piszemy w rozdziale \fixref{referencja do rozdziału o
-pluginach}.
+Więcej na temat wtyczek piszemy w rozdziale \fixref{referencja do rozdziału o
+wtyczkach}.
 
 Framework nie wymaga podawania parametru \code{ip}. Jest to atrybut, z którego
 korzysta plugin \code{tcp} i w przypadku jego braku, zgłosiłby błąd w czasie
@@ -481,7 +476,36 @@ własnej implementacji potrzebnych algorytmów za pomocą mechanizum pluginów.
 W dalszej części omawiamy te miejsca i wyjaśniamy w jaki sposób zaimplementować
 własny plugin realizujący odpowiednią funkcjonalność.
 
-\subsection{Komunikacja z modułem Slave}
+\subsection{Połączenie ze zdalnym urządzeniem}
+
+\FIXME{To trzeba przepisać i ustalić jakąś wersję oficjalną.}
+
+Przez połączenie ze zdalnym urządzeniem będziemy tutaj rozumieć kanał
+komunikacyjny pomiędzy Frontendem i kontrolowanym przez niego urządzeniem. W
+typowych zastosowaniach połączenie po prostu zestawia komunikację z modułem
+Arete Slave. 
+
+\FIXME{Inne możliwości połączenia się.}
+
+Najprostszym przykładem takiego połączenia może być połączenie TCP. Nieco
+trudniejszy technicznie, choć koncepcyjnie identyczny, jest tunel SSH.
+Najważniejsze, żeby możliwe było wysyłanie i odbiór danych.
+
+We frameworku Arete połączenia modelowane są przez pluginy implementujące
+interfejs \code{ConnectionPlugin}. Jedyne zadanie tego interfejsu to
+dostarczanie i odbiór danych z kontrolującego go Frontendu. Otrzymuje on także
+pomocnicze rozkazy określające moment, w którym można nawiązać fizyczne
+połączenie oraz kiedy należy je przerwać.
+
+\FIXME{
+Diagram sekwencji interakcji Frontend i Connection w czasie testu.
+
+Omówienie connect, disconnect, output, input.
+
+Omówić znaczenie setblocking!
+}
+
+\subsubsection{Komunikacja z modułem Slave}
 
 Moduł Master w czasie testu kontroluje pracę uczestniczących w nim urządzeń.
 Dialog z nimi odbywa się za pośrednictwem klas implementujących interfejs
@@ -512,32 +536,10 @@ Następnie omówienie zadań każdej występującej na diagramie metody.
 Dokładny opis metod będzie w Reference. Odesłać tam.
 }
 
-\subsection{Połączenie ze zdalnym urządzeniem}
 
-Przez połączenie ze zdalnym urządzeniem będziemy tutaj rozumieć kanał
-komunikacyjny pomiędzy Frontendem i kontrolowanym przez niego urządzeniem. W
-typowych zastosowaniach połączenie po prostu zestawia komunikację z modułem
-Arete Slave. 
+\subsubsection{Komunikacja z innymi urządzeniami}
 
-\FIXME{Inne możliwości połączenia się.}
-
-Najprostszym przykładem takiego połączenia może być połączenie TCP. Nieco
-trudniejszy technicznie, choć koncepcyjnie identyczny, jest tunel SSH.
-Najważniejsze, żeby możliwe było wysyłanie i odbiór danych.
-
-We frameworku Arete połączenia modelowane są przez pluginy implementujące
-interfejs \code{ConnectionPlugin}. Jedyne zadanie tego interfejsu to
-dostarczanie i odbiór danych z kontrolującego go Frontendu. Otrzymuje on także
-pomocnicze rozkazy określające moment, w którym można nawiązać fizyczne
-połączenie oraz kiedy należy je przerwać.
-
-\FIXME{
-Diagram sekwencji interakcji Frontend i Connection w czasie testu.
-
-Omówienie connect, disconnect, output, input.
-
-Omówić znaczenie setblocking!
-}
+\FIXME{}
 
 \subsection{Sterowniki parametrów}
 
@@ -691,5 +693,9 @@ Szersze omówienie interfejsu \code{Resource} znajduje się w rozdziale
 \end{figure}
 
 \FIXME{Opis bazy danych.}
+
+\subsection{Uruchamianie}
+
+\FIXME{Opis uruchamiania.}
 
 \end{document}

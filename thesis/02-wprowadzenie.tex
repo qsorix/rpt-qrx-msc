@@ -165,22 +165,19 @@ między innymi:
 \item kwestie bezpieczeństwa.
 \end{itemize}
 
-Błędem jest myślenie o tych problemach jak o przeszkodach, które należy
-wyeliminować aby otrzymać poprawne środowisko testowe. To właśnie fakt ich
-występowania jest powodem, dla którego test przeprowadzamy. Zjawiska te, z
-natury nieprzewidywalne, uderzają w założenia o powtarzalności testu. Z tego
-powodu należy monitorować i w miarę możliwości odnotowywać ich wpływ, aby w
-zebranych wynikach móc poszukiwać relacji tłumaczących ewentualne zmiany w
+Mimo, że powinno się myśleć o tych problemach jak o przeszkodach, to właśnie
+fakt ich występowania jest powodem, dla którego test przeprowadzamy. Zjawiska
+te, z natury nieprzewidywalne, uderzają w założenia o powtarzalności testu. Z
+tego powodu należy monitorować i w miarę możliwości odnotowywać ich wpływ, aby
+w zebranych wynikach móc poszukiwać relacji tłumaczących ewentualne zmiany w
 obserwowanym zachowaniu. Trzeba też pamiętać, że zbierane wyniki nabierają
 charakteru statystycznego i aby stały się wiarygodne, testy należy wielokrotnie
 powtarzać.
 
-\FIXME{Mimo wszystko należy myśleć o tych problemach jak o przeszkodach.
-Napisać to jakoś inaczej.}
-
 \section{Dostępne rozwiązania}
 
-\FIXME{Ten dział ma być wcześniej.}
+\FIXME{Przykłady użycia tych rozwiązań. Zilustrowanie kodem i jakimiś
+screenshotami. Ogólnie to więcej obrazków ma być.}
 
 Istnieje wiele programów rozwiązujących problem automatyzacji testowania, które
 w różnym stopniu i na różnych poziomach pozwalają na ułatwienie i przyspieszenie
@@ -214,7 +211,11 @@ kodowania. Jest to standard ściśle związany z ASN.1 i opis danego kodowania
 zawsze łączy się z pewnym opisem danych wyrażonych w ASN.1. Z tego powodu często
 spotyka się określenie ASN.1+ECN.
 
-%\subsubsection{Podsumowanie}
+\subsubsection{Przykład użycia}
+
+\FIXME{Przykład użycia...}
+
+\subsubsection{Podsumowanie}
 
 Język ASN.1 doskonale nadaje się do tworzenia dokumentacji, z której następnie
 automatycznie można generować kodery i dekodery. Dzięki temu potrzebny do
@@ -240,7 +241,7 @@ postrzeganych jako czarne skrzynki. Nie był projektowany z myślą o testach
 wydajnościowych, chociaż obecnie projektowane są rozszerzenia mające na celu
 zaadresować tego typu zastosowania.
 
-%\subsubsection{System testowy TTCN-3}
+\subsubsection{System testowy TTCN-3}
 
 Testowanie przy użyciu TTCN-3 opiera się na wykonywaniu zaimplementowanych
 komponentów, które, działając w interakcji z testowanych systemem, obserwują
@@ -257,7 +258,11 @@ pośrednich adapterów możliwe jest łączenie portów poszczególnych komponen
 sobą (aby testować sam protokół) lub portami działających węzłów, co umożliwia
 np. testowanie implementacji stosu TCP/IP systemu operacyjnego.
 
-%\subsubsection{Podsumowanie}
+\subsubsection{Przykład użycia}
+
+\FIXME{Przykład użycia...}
+
+\subsubsection{Podsumowanie}
 
 TTCN jest dojrzałym i powszechnie używanym narzędziem. Jego możliwości pozwalają
 w prosty sposób, dogłębnie testować komunikację na poziomie sekwencji
@@ -293,13 +298,14 @@ operacyjnym. Tego typu realizacje są możliwe, ale działają niewydajnie.
 \FIXME{Chociaż istnieje możliwość uruchomienia symulacji na kilku urządzeniach
 jednocześnie, wykonywany kod pozostaje pod kontrolą środowiska OMNeT++.
 
-\emph{Wyjaśnić dlaczego, bo nie jest to jasne.
+\emph{Wyjaśnić dlaczego, bo nie jest to jasne.}
 
 Nie jest możliwy przypadek użycia, w którym za pomocą OMNeT++ sterujemy pracą
-zdalnych systemów, wykonując na nich własną aplikację.}}
+zdalnych systemów, wykonując na nich własną aplikację.}
 
-\FIXME{Przykłady użycia tych rozwiązań. Zilustrowanie kodem i jakimiś
-screenshotami. Ogólnie to więcej obrazków ma być:)}
+\subsubsection{Przykład użycia}
+
+\FIXME{Przykład użycia...}
 
 \subsection{Podsumowanie}
 
