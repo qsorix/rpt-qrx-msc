@@ -14,6 +14,8 @@ class Daemon:
 
     def __init__(self, port, database, log):
         self._setup_database(database)
+        if not os.path.isdir("./tmp"):
+            os.mkdir("./tmp")
         logging.basicConfig(filename=log, level=logging.DEBUG, format="%(asctime)s %(levelname)s: %(message)s")
         
         from modules.Handler import Handler
