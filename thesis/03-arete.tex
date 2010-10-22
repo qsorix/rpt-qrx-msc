@@ -11,6 +11,8 @@ testu i stworzeniu programów potrzebnych do jego przeprowadzenia pozostaje w
 kwestii użytkownika. Przykładowe konfiguracje i scenariusze użycia zostaną
 przedstawione w \fixref{rozdziale JAKIMŚTAM}.
 
+\FIXME{Napisać bardziej szczegółowo co będzie dalej opisywane...}
+
 \section{Zastosowania}
 
 Arete zostało stworzone z myślą o testerach, zespołach badawczych oraz
@@ -281,17 +283,12 @@ program nie ma wpływu na sposób w jaki połączone są urządzenia w laborator
 tworzonych testach zakłada się, że użytkownik wie, jaki wpływ na wyniki testu ma
 stworzona przez niego sieć. Program nie stara się analizować zastanej topologii.
 
-\FIXME{
-\paragraph{Środowisko testu jest jego cechą.} Przeprowadzając test w
+\paragraph{Nie wymuszamy konfiguracji środowiska testu.} Przeprowadzając test w
 rzeczywistej sieci prawdopodobnie celowo chcemy zbadać zachowanie implementacji
 we współpracy z innymi uczestnikami sieci. Nasz program nie wymusza wyłączności
 na komunikację sieciową ani nie monitoruje innych użytkowników sieci. Jeśli do
 poprawnego przeprowadzenia pomiaru wymagane jest, aby testowany program był
 jedynym użytkownikiem sieci, osoba wykonująca test sama musi o to zadbać.
-
-\emph{Wcześniej jest napisane "czego program robić nie będzie", a to nie pasuje
-do tego.}
-}
 
 \paragraph{O urządzeniach zakładamy jak najmniej.} Narzędzie Arete nie
 wymaga od urządzeń biorących udział w teście żadnej funkcjonalności.
@@ -301,6 +298,8 @@ systemu Uniksowe czy dedykowane routery. To użytkownik decyduje o tym, co w
 danym teście mają robić występujące w nim urządzenia i tym samym stawia
 im wymagania dotyczące zarówno funkcjonalności, jak i bezpieczeństwa.
 
-\FIXME{Rysunek architektury całego systemu jest potrzebany!}
+\section{Architektura}
+
+\FIXME{Rysunek architektury całego systemu jest potrzebany! Ogólnie tutaj dobrze to opisać.}
 
 \end{document}

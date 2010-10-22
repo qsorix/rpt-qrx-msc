@@ -2,7 +2,7 @@
 
 \begin{document}
 
-\chapter{Wprowadzenie}
+\chapter{Testowanie}
 
 Inżynieria oprogramowania bardzo szeroko omawia tematykę testów, na każdym
 kroku podkreślając wagę i nieodłączność tej fazy w procesie tworzenia
@@ -20,74 +20,65 @@ chciałby potwierdzenia, że otrzymuje produkt, jakiego oczekiwał. Pod tymi
 słowami kryje się za każdym razem inny konkret, któremu się przyglądamy, jednak
 kilka ogólnych cech pozostaje niezmiennych.
 
-Pierwszą taką cechą jest weryfikacja mierzalnej wartości. \fixme{Każdy test powstaje w
-celu sprawdzenia czy oczekiwane przewidywania są spełnione. \emph{- zdanie bez sensu}} Wymagane jest więc
-określenie jakich wartości oczekujemy od poszczególnych czynników. Biorąc za
-przykład popularny ostatnio ,,szybki Internet'' łatwo pokazać, że samo nazwanie
-czegoś szybkim nie przedstawia żadnej cennej informacji, gdyż mówiąc potocznie,
-dostawcy usług zawsze dostarczają najszybszy Internet, a mimo to z roku na
-rok udaje się zapewnić jeszcze szybsze łącza.
+Pierwszą taką cechą jest weryfikacja mierzalnej wartości. Testy powstają w celu
+sprawdzenia czy otrzymane wyniki spełniają określone kryteria. Wymagane jest
+więc określenie jakich wartości oczekujemy od poszczególnych czynników. Biorąc
+za przykład popularny ostatnio ,,szybki Internet'' łatwo pokazać, że samo
+nazwanie czegoś szybkim nie przedstawia żadnej cennej informacji, gdyż mówiąc
+potocznie, dostawcy usług zawsze dostarczają najszybszy Internet, a mimo to z
+roku na rok udaje się zapewnić jeszcze szybsze łącza. 
 
 Obiektywne sformułowanie przedmiotu testu wymienia nie tylko badaną wielkość,
 ale również oczekiwaną wartość. Mówienie o szybkości transferu ma sens, kiedy
 padają konkretne liczby, ponieważ wtedy można je porównać z przewidywaniami i
-stwierdzić czy dana szybkość nas zadowala.
-
-Może zdarzyć się, że taka wartość odniesienia nie istnieje. Przy pierwszym
-pomiarze czasu wykonania nowego algorytmu możemy tylko zgadywać lub subiektywnie
-oceniać go w świetle podobnych algorytmów. W kolejnych pomiarach dysponujemy już
-jednak poprzednią wartością i możemy wnioskować z jej pomocą.  Niezmienny jest
-jednak fakt, że sprawdzamy wielkość, którą można zmierzyć i nasze pomiary nie są
-zaburzone naszą osobistą oceną.
+stwierdzić czy dana szybkość nas zadowala. Może zdarzyć się, że taka wartość
+odniesienia nie istnieje. Przy pierwszym pomiarze czasu wykonania nowego
+algorytmu możemy tylko zgadywać lub subiektywnie oceniać go w świetle podobnych
+algorytmów. W kolejnych pomiarach dysponujemy już jednak poprzednią wartością i
+możemy wnioskować z jej pomocą. Niezmienny jest jednak fakt, że sprawdzamy
+wielkość, którą można zmierzyć i nasze pomiary nie są zaburzone naszą osobistą
+oceną.
 
 Możliwość dokonania kolejnego pomiaru jest drugą bardzo istotną cechą testu.
 Dzięki temu jesteśmy w stanie ocenić jak na wyniki wpływają takie czynniki jak
 sprzęt czy zmiany w oprogramowaniu. Istnieje szereg testów, których charakter
 uniemożliwia ich powtórzenie lub czyni je kosztownym. Na szczęście sprzęt
-sieciowy nie ulega zniszczeniu w czasie większości testów.
+sieciowy nie ulega zniszczeniu w czasie większości testów. Uruchomienie tego
+samego testu na różnego rodzaju urządzeniach pozwala stwierdzić czy tworzone
+rozwiązanie jest przenośne, czy się skaluje, czy sprawdza się w specyficznych
+warunkach itp. W zastosowaniach związanych z sieciami komputerowymi tego typu
+testy są szczególnie istotne ze względu na różnorodność dostępnych urządzeń i
+protokołów.
 
-Uruchomienie tego samego testu na różnego rodzaju urządzeniach pozwala
-stwierdzić czy tworzone rozwiązanie jest przenośne, czy się skaluje, czy
-sprawdza się w \fixme{ekstremalnych} warunkach itp. W zastosowaniach związanych z
-sieciami komputerowymi tego typu testy są szczególnie istotne ze względu na
-różnorodność dostępnych urządzeń i protokołów.
+Tworzenie, poprawianie i rozbudowywanie oprogramowania wiąże się nieodłącznie
+ze zmianami w kodzie. Możliwość wielokrotnego testowania danej funkcjonalności
+pozwala ocenić ją w świetle wprowadzanych zmian. Najpierw można przekonać się o
+tym, że pożądana cecha została osiągnięta. Następnie, w przypadku poprawek
+istniejącego produktu, możemy przekonać się, że problemy zostały usunięte, a
+także, że ich eliminacja nie zaburzyła innych komponentów. To samo dotyczy nowo
+dodanych funkcjonalności. Mamy również możliwość oceny wpływu zmian na
+wydajność i to przy systematycznym wykonywaniu testów na przestrzeni życia
+całego projektu.
 
-Zmiany w oprogramowaniu są naturalne. Zmienia się je tworząc, poprawiając i
-rozbudowując. Możliwość wielokrotnego testowania funkcjonalności pozwala ocenić
-ją w świetle wprowadzanych zmian. Najpierw można przekonać się o tym, że
-pożądana cecha została osiągnięta. Następnie, w przypadku poprawek istniejącego
-produktu, możemy przekonać się, że problemy zostały usunięte, a także, że ich
-eliminacja nie zaburzyła innych komponentów. To samo dotyczy \fixme{nowej}
-funkcjonalności. Mamy też możliwość oceny wpływu zmian na wydajność i to przy
-systematycznym wykonywaniu testów na przestrzeni życia całego projektu.
+\FIXME{Podsumować jakoś to testowanie...}
 
-Ponieważ w środowiskach rozproszonych powszechna jest \fixme{sytuacja}, w
-której \fixme{mamy do czynienia} ze sprzętem różnego rodzaju i różnych
-producentów, a budowane rozwiązania mają niezawodnie pracować przez wiele lat,
-testowanie tworzonych produktów jest \fixme{tu} bardzo istotne. Jednocześnie
-jest ono trudniejsze niż w wypadku rozwiązań przeznaczonych na
-samodzielne\footnote{ang. standalone} systemy.
-
-\FIXME{Ten akapit nie pasuje na koniec. Napisać lepszy na koniec, a ten
-przenieść gdzieś indziej. Poza tym dużo niezręcznych słów.}
+Testowanie jest zatem bardzo istotnym i nieodłącznym elementem tworzenia oprogramowania...
 
 \section{Testy aplikacji sieciowych}
 
-\fixme{W sieciach komputerowych oprogramowanie występuje wszędzie. -
-\emph{filozoficznie pojechałeś:)}} Na różnych warstwach modelu OSI powierza się
-mu różne zadania i inaczej je implementuje, a od każdego składnika sieciowego
-stosu oczekujemy poprawnej pracy, którą można weryfikować testami.
-
-Inaczej wyglądają testy protokołu CSMA/CD, inaczej protokołu TCP, wreszcie
-zupełnie inne są testy aplikacji synchronizującej kalendarz z urządzeniem
-mobilnym. Z drugiej strony często można znaleźć elementy wspólne pomimo tego,
-że badane implementacje realizują zupełnie inną funkcjonalność.
+W sieciach komputerowych oprogramowanie wykorzystuje się na różnych warstwach
+modelu OSI powierzając mu różne zadania i inaczej je implementujec. Od każdego
+składnika sieciowego stosu oczekujemy poprawnej pracy, którą można weryfikować
+testami. Inaczej wyglądają testy protokołu CSMA/CD, inaczej protokołu TCP,
+wreszcie zupełnie inne są testy aplikacji synchronizującej kalendarz z
+urządzeniem mobilnym. Z drugiej strony często można znaleźć elementy wspólne
+pomimo tego, że badane implementacje realizują zupełnie inną funkcjonalność.
 
 W dalszych rozważaniach skupimy się na podziale testów ze względu na rodzaj
 obserwowanych wielkości, ponieważ niezależnie od warstwy, sposób ich pomiaru
 jest podobny. Wyróżniliśmy następujące rodzaje testów:
 \begin{itemize}
-  \item wymienianych PDU\footnote{ang. Protocol Data Unit},
+  \item wymienianych PDU,
   \item sekwencji komunikatów,
   \item wydajności transmisji.
 \end{itemize}
@@ -115,27 +106,17 @@ Wydajność transmisji dotyczy między innymi osiąganych przepustowości, reakc
 na zatory, rywalizacji z innymi przepływami, jakości łączy fizycznych i innych
 czynników mających wpływ na odczuwalną jakość połączenia. Chociaż wystarczą tu
 najprostsze narzędzia (niemal każdy klient HTTP jest w stanie wyświetlić
-uzyskaną przepływność), jest to najtrudniejsza płaszczyzna testów.
-
-\FIXME{Trudność polega na poprawnym zdefiniowaniu testu. O ile w przypadku obserwacji
-pojedynczych PDU i ich sekwencji łatwo pokusić się o stwierdzenie, że cały test
-można automatycznie wygenerować z dokumentacji protokołu, to kwestii wydajności
-nie da się zbadać bez udziału człowieka.
-
-\emph{Tu coś miało być źle z tym, że z powyższego nie wynika, żeby to była
-trudność. To raz, a dwa to jest bardzo dyskusyjne czy nie można testów
-wydajności wygenerować. Ogólnie to jedne można, drugie nie, ale na każdym
-poziomie można jakieś tam testy wygenerować.}}
+uzyskaną przepływność), jest to najtrudniejsza płaszczyzna testów. O ile w
+przypadku obserwacji pojedynczych PDU i ich sekwencji większość testów można
+automatycznie wygenerować z dokumentacji protokołu, to zbadanie kwestii
+wydajności jest bardzo trudne bez udziału człowieka.
 
 W tego typu testach sama implementacja odgrywa istotną rolę, ale ogromne
 znaczenie ma też wpływ środowiska i to użytkownik musi zadecydować o tym, jakie
 warunki chcemy badać, bo tylko on zna przeznaczenie tworzonego oprogramowania.
-
-Ponadto test w tym przypadku nie polega na zatwierdzeniu lub odrzuceniu
-pojedynczego przypadku, a na analizie wielokrotnie powtarzanych eksperymentów i
-odniesieniu wyników do teoretycznych założeń. Wiedza ekspercka jest tu
-nieodzowna.
-
+Test w tym przypadku nie polega na zatwierdzeniu lub odrzuceniu pojedynczego
+przypadku, a na analizie wielokrotnie powtarzanych eksperymentów i odniesieniu
+wyników do teoretycznych założeń. Wiedza ekspercka jest tu nieodzowna.
 Narzędzia do testowania wydajności nie powinny więc wyręczać człowieka, ale
 wspierać go ułatwiając konfigurację środowiska, obsługę wielu urządzeń
 jednocześnie i katalogowanie wyników.
@@ -146,42 +127,36 @@ Jest jasne, że eksperymenty najwygodniej przeprowadza się w sterylnych
 warunkach laboratorium. Błędem jest jednak oczekiwanie, że produkt będzie
 zachowywał się identycznie w normalnym użytkowaniu, a inżynieria oprogramowania
 zaleca nawet wykonywanie testowej instalacji wdrożeniowej, aby zaobserwować
-powstające różnice.
-
-Testy wykonywane w warunkach rzeczywistych mają zarówno wady jak i zalety.
-Wracając do omówionych powyżej rodzajów testów, można powiedzieć, że w
-zależności od testu pożądane będą różne warunki jego wykonania.
+powstające różnice. Testy wykonywane w warunkach rzeczywistych mają zarówno
+wady jak i zalety.  Wracając do omówionych powyżej rodzajów testów, można
+powiedzieć, że w zależności od testu pożądane będą różne warunki jego
+wykonania.
 
 Aby sprawdzić czy algorytm generuje poprawne PDU najwygodniej jest skorzystać
-ze środowiska testowego, debuggera czy symulatora. Nie potrzebujemy i nie
-chcemy \fixme{opóźnień} związanych z realną transmisją. Możemy nawet uruchomić algorytm
-osobno, poza stosem sieciowym, i patrząc \fixme{z boku} analizować jego działanie.
-
-W przypadku sekwencji komunikatów również wystarczy symulowanie
+ze środowiska testowego, debuggera czy symulatora. Opóźnienia związane z realną
+transmisją są niepotrzebne, a nawet nieporządane. Możemy nawet uruchomić
+algorytm osobno, poza stosem sieciowym, i analizować jego działanie
+niezależnie. W przypadku sekwencji komunikatów również wystarczy symulowanie
 uczestników komunikacji, gdyż zakładając poprawne działanie pozostałych
 elementów sieci, skupimy się w ten sposób na danym algorytmie.
 
 Test w warunkach rzeczywistych zawsze będzie wartościowym uzupełnieniem,
 ponieważ na symulatorze możemy zapomnieć o takich problemach jak przekłamania
-bitów czy gubienie PDU, a tworzone oprogramowanie powinno być na te zjawiska odporne.
-
-Chciałoby się jednocześnie z dwoma powyższymi testować także wydajność, ale
-jednoczesna analiza może prowadzić do otrzymania złych wyników. Wydajność może
-być niższa od rzeczywistej z powodu narzutu związanego ze sprawdzaniem
-komunikacji.
+bitów czy gubienie PDU, a tworzone oprogramowanie powinno być na te zjawiska
+odporne. Najlepszym scenariuszem byłoby testowanie dwóch powyższych
+jednocześnie z wydajnością, ale jednoczesna analiza może prowadzić do
+otrzymania złych wyników. Wydajność może być niższa od rzeczywistej z powodu
+narzutu związanego ze sprawdzaniem komunikacji.
 
 Pomiar wydajności w warunkach symulowanych dostarcza cennych informacji na
 temat wymagań stawianych procesorowi czy pamięci. Trzeba mieć jednak na uwadze,
 że otrzymywane wyniki mają szczególny charakter i nie należy ich przekładać na
-oczekiwane zachowania w rzeczywistych sieciach. 
-
-\fixme{Obecnie moc obliczeniowa pozwala symulować wiele czynników występujących
-w prawdziwych sieciach. - \emph{nie pamiętam co było nie tak, ale to zdanie
-śmierdzi.}} Można więc coraz więcej testów przeprowadzać w wirtualnych
-środowiskach. Uważamy jednak, że mnogość czynników, które trzeba uwzględnić,
-wciąż przemawia na korzyść testów w warunkach rzeczywistych.
-
-Te czynniki to między innymi:
+oczekiwane zachowania w rzeczywistych sieciach. Dostępna obecnie moc
+obliczeniowa pozwala symulować wiele czynników występujących w prawdziwych
+sieciach, można więc coraz więcej testów przeprowadzać w środowiskach
+wirtualnych. Uważamy jednak, że mnogość czynników, które trzeba uwzględnić,
+wciąż przemawia na korzyść testów w warunkach rzeczywistych. Te czynniki to
+między innymi:
 \begin{itemize}
 \item zawodność sprzętu,
 \item wpływ innych użytkowników,
@@ -190,25 +165,22 @@ Te czynniki to między innymi:
 \item kwestie bezpieczeństwa.
 \end{itemize}
 
-Błędem jest myślenie o tych problemach jak o przeszkodach, które należy
-wyeliminować aby otrzymać poprawne środowisko testowe. To właśnie fakt ich
-występowania jest powodem, dla którego test przeprowadzamy. Zjawiska te, z
-natury nieprzewidywalne, uderzają w założenia o powtarzalności testu. Z tego
-powodu należy monitorować i w miarę możliwości odnotowywać ich wpływ, aby w
-zebranych wynikach móc poszukiwać relacji tłumaczących ewentualne zmiany w
+Mimo, że powinno się myśleć o tych problemach jak o przeszkodach, to właśnie
+fakt ich występowania jest powodem, dla którego test przeprowadzamy. Zjawiska
+te, z natury nieprzewidywalne, uderzają w założenia o powtarzalności testu. Z
+tego powodu należy monitorować i w miarę możliwości odnotowywać ich wpływ, aby
+w zebranych wynikach móc poszukiwać relacji tłumaczących ewentualne zmiany w
 obserwowanym zachowaniu. Trzeba też pamiętać, że zbierane wyniki nabierają
 charakteru statystycznego i aby stały się wiarygodne, testy należy wielokrotnie
 powtarzać.
 
-\FIXME{Mimo wszystko należy myśleć o tych problemach jak o przeszkodach.
-Napisać to jakoś inaczej.}
-
 \section{Dostępne rozwiązania}
 
-\FIXME{Ten dział ma być wcześniej.}
+\FIXME{Przykłady użycia tych rozwiązań. Zilustrowanie kodem i jakimiś
+screenshotami. Ogólnie to więcej obrazków ma być.}
 
 Istnieje wiele programów rozwiązujących problem automatyzacji testowania, które
-w mniejszym lub większym stopniu pozwalają na ułatwienie i przyspieszenie
+w różnym stopniu i na różnych poziomach pozwalają na ułatwienie i przyspieszenie
 przeprowadzania testów aplikacji i protokołów sieciowych. Jednak spośród znanych
 nam rozwiązań, żadne nie pozwalało przeprowadzić takiego rodzaju testów, jakie
 próbowaliśmy wykonać.
@@ -239,7 +211,11 @@ kodowania. Jest to standard ściśle związany z ASN.1 i opis danego kodowania
 zawsze łączy się z pewnym opisem danych wyrażonych w ASN.1. Z tego powodu często
 spotyka się określenie ASN.1+ECN.
 
-%\subsubsection{Podsumowanie}
+\subsubsection{Przykład użycia}
+
+\FIXME{Przykład użycia...}
+
+\subsubsection{Podsumowanie}
 
 Język ASN.1 doskonale nadaje się do tworzenia dokumentacji, z której następnie
 automatycznie można generować kodery i dekodery. Dzięki temu potrzebny do
@@ -265,7 +241,7 @@ postrzeganych jako czarne skrzynki. Nie był projektowany z myślą o testach
 wydajnościowych, chociaż obecnie projektowane są rozszerzenia mające na celu
 zaadresować tego typu zastosowania.
 
-%\subsubsection{System testowy TTCN-3}
+\subsubsection{System testowy TTCN-3}
 
 Testowanie przy użyciu TTCN-3 opiera się na wykonywaniu zaimplementowanych
 komponentów, które, działając w interakcji z testowanych systemem, obserwują
@@ -282,7 +258,11 @@ pośrednich adapterów możliwe jest łączenie portów poszczególnych komponen
 sobą (aby testować sam protokół) lub portami działających węzłów, co umożliwia
 np. testowanie implementacji stosu TCP/IP systemu operacyjnego.
 
-%\subsubsection{Podsumowanie}
+\subsubsection{Przykład użycia}
+
+\FIXME{Przykład użycia...}
+
+\subsubsection{Podsumowanie}
 
 TTCN jest dojrzałym i powszechnie używanym narzędziem. Jego możliwości pozwalają
 w prosty sposób, dogłębnie testować komunikację na poziomie sekwencji
@@ -300,14 +280,9 @@ reguł, po czym obserwować jej efektywność.
 OMNeT++ to biblioteka i framework do tworzenia symulacji sieci. Użytkownik może korzystać z
 szerokiej gamy modułów oraz tworzyć własne. Środowisko to wspiera symulacje
 sterowane zdarzeniami przesyłanymi między występującymi w realizowanej sieci
-komponentami.
-
-\FIXME{Jak już używać niespolszczonych nazw to ich nie odmieniać. Tutaj
-frameworków, gdzieś indziej switche.}
-
-Istnieje szereg \fixme{frameworków} zbudowanych na bazie środowiska OMNeT++, a które
-zostały stworzone z myślą o konkretnych rodzajach sieci, jak np. OverSim będący
-symulatorem sieci peer2peer.
+komponentami. Istnieje szereg narzędzi zbudowanych na bazie środowiska OMNeT++,
+które zostały stworzone z myślą o konkretnych rodzajach sieci, jak np. OverSim
+będący symulatorem sieci peer2peer.
 
 Framework umożliwia pracę w IDE opartym na Eclipse i wspiera wiele pożądanych
 funkcji jak np.~symulacje w czasie rzeczywistych czy integracja z bazą danych.
@@ -323,13 +298,14 @@ operacyjnym. Tego typu realizacje są możliwe, ale działają niewydajnie.
 \FIXME{Chociaż istnieje możliwość uruchomienia symulacji na kilku urządzeniach
 jednocześnie, wykonywany kod pozostaje pod kontrolą środowiska OMNeT++.
 
-\emph{Wyjaśnić dlaczego, bo nie jest to jasne.}}
+\emph{Wyjaśnić dlaczego, bo nie jest to jasne.}
 
 Nie jest możliwy przypadek użycia, w którym za pomocą OMNeT++ sterujemy pracą
-zdalnych systemów, wykonując na nich własną aplikację.
+zdalnych systemów, wykonując na nich własną aplikację.}
 
-\FIXME{Przykłady użycia tych rozwiązań. Zilustrowanie kodem i jakimiś
-screenshotami. Ogólnie to więcej obrazków ma być:)}
+\subsubsection{Przykład użycia}
+
+\FIXME{Przykład użycia...}
 
 \subsection{Podsumowanie}
 
@@ -350,13 +326,11 @@ rzeczywistych sieciach, gdzie problemy takie jak synchronizacja urządzeń i
 zbieranie wyników powodują, że ręczne wykonywanie wszystkich czynności staje
 się bardzo czasochłonne i uciążliwe, choć sam test jest w swojej naturze prosty.
 
-W tabeli \fixref{referencja} porównujemy naszym zdaniem najistotniejsze cechy
-wspomnianych narzędzi. \fixme{Jak widać Arete nie jest pozbawione wad, tym
-samym nie jest to idealne narzędzie do każdego typu zastosowań. - \emph{LOL,
-napisać to mniej zuchwale:)}} Nie jest to również narzędzie zdolne do
-samodzielnej pracy. Uważamy jednak, że dobrze uzupełnia funkcjonalne braki
-istniejących rozwiązań i razem z nimi pozwala stworzyć praktyczne i
-wygodne środowisko testowe.
+W tabeli \fixref{tej poniżej} porównujemy naszym zdaniem najistotniejsze cechy
+wspomnianych narzędzi. Jak widać Arete nie jest idealnym narzędzie do każdego
+typu zastosowań. Nie jest to również narzędzie zdolne do samodzielnej pracy.
+Uważamy jednak, że dobrze uzupełnia funkcjonalne braki istniejących rozwiązań i
+razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
 
 \begin{small}
 \begin{center}

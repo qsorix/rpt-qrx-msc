@@ -9,6 +9,7 @@ import sched
 import shlex
 import time
 import threading
+import uuid
 from datetime import datetime, timedelta
 
 from database.Models import *
@@ -62,10 +63,8 @@ class Manager:
     def add_file(self, test_id, id, size):
         if self._id_exists(test_id, id):
             raise DatabaseError("[ Test %s ] File or command named '%s' already exists." % (test_id, id))
-#        config = ConfigParser.SafeConfigParser()
-#        config.read('aretes.cfg')
-#        tmpdir = config.get('AreteS', 'tmpdir')
-        path = './tmp/' + test_id + '_' + id
+        path = './tmp/' + id + str(uuid.uuid1())
+#        path = './tmp/' + test_id + '_' + id
         file = File(test_id=test_id, id=id, size=size, path=path)
         session.commit()
         return (path, size)

@@ -2,7 +2,9 @@
 
 \begin{document}
 
-\chapter{Przedmowa}
+\chapter{Wprowadzenie}
+
+\section{Geneza}
 
 W czasie pracy nad jednym z projektów w czasie studiów mieliśmy za zadanie
 sprawdzić wydajność transmisji ówczesnej implementacji protokołu DCCP w kernelu
@@ -12,51 +14,61 @@ wyniku.
 
 Kłopot polegał na tym, że pomiary musieliśmy wykonywać po kilka razy dla
 każdej z wielu przygotowanych konfiguracji. Często dwie konfiguracje różniły się
-wyłącznie tymi, który z komputerów biorących udział w teście pełnił rolę klienta,
+wyłącznie tym, który z komputerów biorących udział w teście pełnił rolę klienta,
 a który serwera, a wszystko znacznie się komplikowało gdy test wymagał
-wykorzystania więcej niż dwóch komputerów.
-
-Niekiedy testy należało powtarzać, ponieważ uruchamialiśmy je korzystając z
-nieodpowiedniej konfiguracji. Innym razem nie pamiętaliśmy czego dotyczyły
-otrzymane wyniki i uruchamialiśmy testy ponownie, wyłącznie po to, by się o tym
-przekonać.
+wykorzystania więcej niż dwóch komputerów. Niekiedy testy należało powtarzać,
+ponieważ uruchamialiśmy je korzystając z nieodpowiedniej konfiguracji. Innym
+razem nie pamiętaliśmy czego dotyczyły otrzymane wyniki i uruchamialiśmy testy
+ponownie, wyłącznie po to, by się o tym przekonać.
 
 Traciliśmy sporo czasu na czynnościach, które powinny być wykonywane
-automatycznie. Tak zrodził się pomysł stworzenia narzędzia, które
-pomogłoby usystematyzować przeprowadzanie testów aplikacji sieciowych.
-
-\FIXME{W powyższym akapicie dopisać, że takie rozwiązanie nie istaniało.}
+automatycznie. W czasie poszukiwań środowiska, które mogłoby w tym pomóc
+natrafiliśmy na kilka istniejących narzędzi, lecz żadne z nich nie pozwalało
+na przeprowadzenie testów w interesujący nas sposób. Rozwiązania te zostały
+szerzej opisane w rozdziale \fixref{o istniejących rozwiązaniach}. Tak
+zrodził się pomysł stworzenia narzędzia, które pomogłoby usystematyzować
+przeprowadzanie testów aplikacji sieciowych.
 
 W niniejszej pracy zaprezentujemy rozwiązanie, które pomoże zaoszczędzić wiele
 godzin spędzanych na wykonywaniu małych, prostych czynności wymaganych podczas
 przeprowadzania pomiarów na kilku urządzeniach sieciowych w tym samym czasie.
 Za każdym razem zajmują one tylko kilkanaście sekund, ale wyeliminowanie ich
-pozwala skupić się na tym, co w testowaniu jest najważniejsze -- na wynikach --
-i pracować efektywniej.
+pozwala pracować efektywniej i skupić się na tym, co w testowaniu
+najważniejsze, czyli wynikach.
 
 \section{Cele}
 
 W pracy skupiliśmy się na analizie problemu jakim jest automatyzacja
 testowania, przeglądzie istniejących rozwiązań i narzędzi w tym zakresie oraz
-omówieniu i ocenie narzędzia Arete (Automated Real Environment Tests Engine) --
+omówieniu i ocenie narzędzia Arete (Automated Real Environment Test Engine) --
 stworzonego przez nas środowiska do automatyzacji testów.
 
 Przedstawimy problemy związane z testowaniem aplikacji i protokołów sieciowych.
 Zademonstrujemy zastosowanie Arete do wykonywania różnego rodzaju testów oraz
-wyjaśniamy w jakich przypadkach nie będzie ono odpowiednie.  Poruszymy również
+wyjaśniamy w jakich przypadkach nie będzie ono odpowiednie. Poruszymy również
 kwestie poprawnego przeprowadzania testów oraz katalogowania wyników.
-Testowanie nie jest jednak głównym tematem pracy i informacji oraz wytycznych
-należy szukać w innych źródłach.
 
-\FIXME{W sumie to testowanie jest tematem pracy, napisać to inaczej.}
+\section{Pojęcia}
 
-\section{Pojęcia i skróty}
+W pracy posługujemy się następującymi terminami. 
 
-W pracy posługujemy się terminem urządzenie. Pod pojęciem tym, o ile nie
-zostanie zaznaczone inaczej, będziemy rozumieć aktywny sprzęt sieciowy w
-szczególności wszelkiego rodzaju zarządzalne switche, routery oraz komputery.
+\begin{description}
+  \item[Urządzenie] \hfill \\
+Pod tym pojęciem, o ile nie zostanie zaznaczone inaczej, będziemy rozumieć
+aktywny sprzęt sieciowy w szczególności wszelkiego rodzaju zarządzalne
+przełączniki, rutery oraz komputery.
+\end{description}
 
-\FIXME{Powiększyć ten dział o inne pojęcia i skróty, żeby miał sens:)}
+\section{Skróty}
+
+\begin{description}
+  \item[CSMA/CD] \hfill \\ Carrier Sense Multiple Access / Collision Detection
+  \item[DCCP] \hfill \\ Datagram Congestion Control Protocol
+  \item[HTTP] \hfill \\ HyperText Transfer Protocol
+  \item[OSI] \hfill \\ Open Systems Interconnection
+  \item[PDU] \hfill \\ Protocol Data Unit
+  \item[TCP] \hfill \\ Transmission Control Protocol
+\end{description}
 
 \section{README}
 
@@ -65,18 +77,5 @@ Część przypisów przeznaczona jest dla promotora. Tak, jak np. ten\promotor{T
 \fixme{Tekst na czerwono to nasze notatki i miejsca, w których trzeba coś poprawić.}
 
 \fixref{W ten sposób oznaczane są brakujące odniesienia do innych fragmentów pracy.}
-
-\section {Skróty}
-
-\FIXME{
-Tutaj, jeśli trzeba, możemy zebrać używane skróty. Jak nie trzeba to też możemy
-zebrać, będzie pół strony więcej :P
-}
-
-\section{Plan pracy}
-
-\FIXME{
-patrz plan-pracy.txt
-}
 
 \end{document}
