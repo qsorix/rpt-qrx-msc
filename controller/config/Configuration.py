@@ -98,7 +98,7 @@ class ConfiguredTest:
             obligatory_attributes = ['connection', 'frontend']
 
             for attr in obligatory_attributes:
-                if not device[attr]:
+                if attr not in device.attributes():
                     raise Exceptions.SanityError("Device '%s' doesn't specify '%s' attribute" % (device['name'], attr))
 
             for (iname, interface) in host.model.interfaces().items():
