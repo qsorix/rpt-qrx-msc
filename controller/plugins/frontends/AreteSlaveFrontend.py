@@ -3,9 +3,18 @@
 
 from controller.FrontendPlugin import FrontendPlugin
 import controller.Database as Database
+from common import Exceptions
 
 import datetime
 import os
+
+class _SentCommand:
+    """Auxillary structure to store sent commands in uniform way."""
+
+    def __init__(self, phase, type, value):
+        self.phase = phase
+        self.type = type
+        self.value = value
 
 class AreteSlaveFrontend(FrontendPlugin):
     frontend_type = 'arete_slave'
@@ -20,7 +29,7 @@ class AreteSlaveFrontend(FrontendPlugin):
 
     def _make_id(self):
         self._id += 1
-        return self._id
+        return str(self._id)
 
     def deploy_configuration(self):
         self.connect()
@@ -39,24 +48,24 @@ class AreteSlaveFrontend(FrontendPlugin):
 
         for c in host_commands.check():
             id = self._make_id()
-            out('check @{id=%i} %s\n' % (id, c))
+            out('check @{id=%s} %s\n' % (id, c))
 
             assert id not in self._sent_cmds
-            self._sent_cmds[id] = c
+            self._sent_cmds[id] = _SentCommand(phase='check', type='shell', value=c)
 
         for c in host_commands.setup():
             id = self._make_id()
-            out('setup @{id=%i} %s\n' % (id, c))
+            out('setup @{id=%s} %s\n' % (id, c))
 
             assert id not in self._sent_cmds
-            self._sent_cmds[id] = c
+            self._sent_cmds[id] = _SentCommand(phase='setup', type='shell', value=c)
 
         for c in host_commands.cleanup():
             id = self._make_id()
-            out('clean @{id=%i} %s\n' % (id, c))
+            out('clean @{id=%s} %s\n' % (id, c))
 
             assert id not in self._sent_cmds
-            self._sent_cmds[id] = c
+            self._sent_cmds[id] = _SentCommand(phase='cleanup', type='shell', value=c)
 
         for c in host_commands.schedule():
             out('task @{id=%(id)s} @{run=%(run)s} @{type=%(type)s} %(cmd)s\n' %
@@ -66,7 +75,7 @@ class AreteSlaveFrontend(FrontendPlugin):
                  'cmd': c.command().command()})
 
             assert c['name'] not in self._sent_cmds
-            self._sent_cmds[c['name']] = c
+            self._sent_cmds[c['name']] = _SentCommand(phase='task', type=c.command().command_type(), value=c.command().command())
 
         out('end\n')
 
@@ -185,6 +194,7 @@ class AreteSlaveFrontend(FrontendPlugin):
         raise ConfigurationError("Unknown test end policy {0!r}".format(end_policy));
 
     def fetch_results(self):
+        print '  -- fetching results from ' + self.host().model['name'] + ' --'
 
         self.connect()
         self.output().write('results @{id=%s}\n' % self._test_id)
@@ -198,9 +208,13 @@ class AreteSlaveFrontend(FrontendPlugin):
 
             for list in ['checks', 'setups', 'tasks', 'cleans']:
                 ids = self._get_list(list)
-#                print list, ':'
                 for id in ids:
-                    command = Database.Command(node=node, id=id, phase=list, type='FIXME', value='FIXME')
+
+                    c = self._sent_cmds[id]
+                    if id not in self._sent_cmds:
+                        raise Exceptions.SlaveError("Returned command ID {0} was not sent to slave.".format(id))
+
+                    command = Database.Command(node=node, id=id, phase=c.phase, type=c.type, value=c.value)
 
                     start_times = map ((lambda x: datetime.datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%f')), self._get_param('start_time', id))
                     durations = map ((lambda x: datetime.timedelta(seconds=float(x))), self._get_param('duration', id))
@@ -211,7 +225,7 @@ class AreteSlaveFrontend(FrontendPlugin):
                     if (len(durations) != invocations or
                        len(outputs) != invocations or
                        len(returncodes) != invocations):
-                        raise SlaveError("Protocol error. Mismatched number of values returned for invoked command.")
+                        raise Exceptions.SlaveError("Protocol error. Mismatched number of values returned for invoked command.")
 
                     for i in range(invocations):
                         Database.Invocation(command=command, start_time=start_times[i], duration=durations[i], output=outputs[i], return_code=returncodes[i])
