@@ -9,6 +9,8 @@ import time
 from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
 from common import Exceptions
+#FIXME import just one object with interface to database operations
+from controller.Database import *
 
 class TestDurationPolicy:
     def __init__(self, start, end_policy):
@@ -49,6 +51,7 @@ class Controller:
 
         self._test_uuid = uuid.uuid4()
         self._create_frontends(configured_test)
+        self._test = configured_test
 
         try:
             self._send_configuration()
@@ -56,7 +59,8 @@ class Controller:
 
             # FIXME: at this point frontends must be synchronized with slaves.
 
-            self._perform_test(configured_test)
+            self._perform_test()
+
             self._fetch_results()
 
         except:
@@ -110,8 +114,12 @@ class Controller:
             # throws an exception in case of a problem
             frontend.wait_sanity_check()
 
-    def _perform_test(self, configured_test):
+    def _perform_test(self):
         # configuration is sane, start the test
+
+        self._start_time = datetime.datetime.now()
+
+        configured_test = self._test
 
         # calculate exact start moment
         setup_delay = datetime.timedelta(seconds=configured_test.setup_phase_delay)
@@ -142,9 +150,25 @@ class Controller:
                     for frontend in self._frontends.values():
                         frontend.trigger(trigger['name'])
 
+        self._duration = datetime.datetime.now() - self._start_time
+
     def _fetch_results(self):
+        #Database.begin() begin:
+        # FIXME It should be done somewhere else.
+        # ON START
+        metadata.bind = 'sqlite:///' + 'aretem.db'
+        setup_all()
+        create_all()
+        # ^^^
+
+        test = Test(id=unicode(self._test_uuid), start_time=self._start_time, duration=self._duration)
+        session.commit()
+
         for frontend in self._frontends.values():
             frontend.fetch_results()
+            session.commit()
+
+
 
     def _abort_test(self):
         for frontend in self._frontends.values():

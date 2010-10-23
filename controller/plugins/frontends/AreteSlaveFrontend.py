@@ -2,7 +2,7 @@
 # coding=utf-8
 
 from controller.FrontendPlugin import FrontendPlugin
-from controller.Database import *
+import controller.Database as Database
 
 import datetime
 import os
@@ -183,40 +183,36 @@ class AreteSlaveFrontend(FrontendPlugin):
         raise ConfigurationError("Unknown test end policy {0!r}".format(end_policy));
 
     def fetch_results(self):
-        self.connect()
 
+        self.connect()
         self.output().write('results @{id=%s}\n' % self._test_id)
         resp = self.input().readline()
         if resp.startswith('200'):
-            # FIXME It should be done somewhere else.
-            metadata.bind = 'sqlite:///' + 'aretem.db'
-            setup_all()
-            create_all()
-            # ^^^
                        
             start_time = datetime.datetime.strptime(self._get_param('start_time')[0], '%Y-%m-%dT%H:%M:%S.%f')
-            duration = self._get_param('duration')[0]
-#            print 'test', self._test_id, ':', started_at, duration
+            duration = datetime.timedelta(seconds=float(self._get_param('duration')[0]))
             
-            test = Test(id=unicode(self._test_id), start_time=start_time, duration=duration)
+            node = Database.Node(test=Database.Test.get_by(id=unicode(self._test_id)), node=self.host().model['name'], start_time=start_time, duration=duration)
 
             for list in ['checks', 'setups', 'tasks', 'cleans']:
                 ids = self._get_list(list)
 #                print list, ':'
                 for id in ids:
-                    command = Command(id=id, type=list[:-1], test=test)
-                    for returncode in self._get_param('returncode', id):
-                        Returncode(command=command, content=returncode)
-                    for output in self._get_param('output', id):
-                        Output(command=command, content=output)
-                    for start_time in self._get_param('start_time', id):
-                        dt = datetime.datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S.%f')
-                        StartTime(command=command, content=dt)
-                    for duration in self._get_param('duration', id):
-                        Duration(command=command, content=duration)
-#                    print id, ':', returncode, output, started_at, duration
+                    command = Database.Command(node=node, id=id, phase=list, type='FIXME', value='FIXME')
 
-            session.commit()
+                    #for returncode in self._get_param('returncode', id):
+                        #Returncode(command=command, content=returncode)
+
+                    #for output in self._get_param('output', id):
+                        #Output(command=command, content=output)
+
+                    #for start_time in self._get_param('start_time', id):
+                        #dt = datetime.datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S.%f')
+                        #StartTime(command=command, content=dt)
+
+                    #for duration in self._get_param('duration', id):
+                        #Duration(command=command, content=duration)
+
             self.output().write('end\n')
             resp = self.input().readline()
 
