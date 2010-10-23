@@ -155,8 +155,6 @@ class Controller:
         self._duration = datetime.datetime.now() - self._start_time
 
     def _fetch_results(self):
-        Database.init();
-
         test = Database.Test(id=unicode(self._test_uuid), start_time=self._start_time, duration=self._duration)
         Database.commit();
 
