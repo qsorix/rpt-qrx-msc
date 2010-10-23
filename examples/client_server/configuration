@@ -14,8 +14,9 @@ add_resource(File('serverdist', 'Server.py', chmod='+x'))
 add_resource(File('clientdist', 'Client.py', chmod='+x'))
 add_resource(File('testfile', 'datafile.txt'))
 
-# > task @{id=task_id} @{run=after client} @{type=notify} kill-server
-# > task @{id=task_id} @{run=after client} @{type=shell} ...
+# > task @{id=task_id} @{run=after client}        @{type=notify} kill-server
+# > task @{id=task_id} @{run=after client}        @{type=shell} ...
+# > task @{id=trigger} @{run=trigger kill-server} @{type=shell} kill @{server.pid}
 
 # ...
 
