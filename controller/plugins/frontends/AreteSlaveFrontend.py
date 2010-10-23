@@ -79,7 +79,6 @@ class AreteSlaveFrontend(FrontendPlugin):
 
     def wait_sanity_check(self):
         print '  -- waiting for sanity check to finish at ' + self.host().model['name'] + ' --'
-        self._check_response();
 
         resp = self.input().readline()
 
