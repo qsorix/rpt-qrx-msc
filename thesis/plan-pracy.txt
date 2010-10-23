@@ -144,6 +144,7 @@
   X stron. Dokumentacja techniczna całego API frameworku i standardowo
   dostarczanych utilities. Dokładny opis bazy danych.
 
+8-1. Plany na przyszłość, możliwości rozwoju.
 
 8. Podsumowanie
 

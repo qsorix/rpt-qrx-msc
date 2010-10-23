@@ -55,7 +55,7 @@ class File(Resources.Resource):
 
             resp = frontend.input().readline().strip()
             if not resp.startswith('200'):
-                raise RuntimeError('Wrong response while transfering file')
+                raise RuntimeError('Wrong response while transfering file. Expected 200 OK, got \'' + resp + '\'')
 
     def generate_commands(self, cmd, host):
         """
