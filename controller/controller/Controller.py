@@ -63,7 +63,8 @@ class Controller:
 
             self._fetch_results()
 
-        except:
+        except Exception as e:
+            print 'Aborting test because of exception: ' + str(e)
             self._abort_test()
             raise
 
