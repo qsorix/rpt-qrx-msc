@@ -25,10 +25,11 @@ class after(Schedule.RunPolicy):
         return 'after %s' % self._cmd
     
 class shell(Schedule.Command):
-    def __init__(self, command, use_resources=[]):
+    def __init__(self, command, use_resources=[], check_executable=True):
         self._command = command
         self._binary = command.split()[0]
         self._resources = use_resources
+        self._check_executable = check_executable
 
     def accept_transformation(self, transformation):
         self._command = transformation(self._command)
@@ -37,7 +38,10 @@ class shell(Schedule.Command):
         return self._command
 
     def sanity_checks(self):
-        return ["which '%s'" % self._binary]
+        if self._check_executable:
+            return ["which '%s'" % self._binary]
+        else
+            return []
 
     def needed_resources(self):
         return self._resources
