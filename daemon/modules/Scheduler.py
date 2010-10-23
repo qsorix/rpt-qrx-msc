@@ -14,7 +14,7 @@ import os
 import signal
 
 from database.Models import *
-from common.Exceptions import ResolvError
+from common.Exceptions import ResolvError, DaemonError
 
 class Scheduler:
     def __init__(self, test_id, start_time, condition=None, duration=None):
@@ -35,7 +35,9 @@ class Scheduler:
             if type == 'after' and Task.get_by(id=value):
                 self.conditions[value] = threading.Condition()
 
-        self.task_scheduler.enterabs(start_time, 1, self.start, ())   
+        self.task_scheduler.enterabs(start_time, 1, self.start, ()) 
+
+        counter = 0
         for task in Task.query.filter_by(test_id=self.test_id).all():
             type, value = self._resolv_task_run(task.run)
             if type == 'at':
@@ -58,7 +60,8 @@ class Scheduler:
                     args = (task.id, self._get_notify_next(task.id), after_condition)
                     task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
                     self.task_threads[task.id] = task_thread
-                    self.task_scheduler.enterabs(start_time+value+0.01, 1, task_thread.start, ())
+                    counter += 0.1
+                    self.task_scheduler.enterabs(start_time+value+counter, 1, task_thread.start, ())
         if duration:
             self.task_scheduler.enterabs(start_time+duration, 1, self.end, (condition, ))          
     
@@ -71,7 +74,7 @@ class Scheduler:
         test.start_time = self.started_at
         session.commit()
     
-    def end(self, condition):
+    def end(self, condition=None):
         condition.acquire()
 
         self.active = False
@@ -118,35 +121,50 @@ class Scheduler:
                 self._shell_command_execution(task_id)
             
         if notify_next:
-            notify_next.notify_all()
+            notify_next.notify()
             notify_next.release()
 
     def _shell_command_execution(self, task_id):
         dt = datetime.now()
 
-        try:
-            command = str(Command.get_by(test_id=self.test_id, id=task_id).command)
-            if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
-                command = Scheduler.subst(command, self.test_id)
-            args = shlex.split(command)
-            
-            logging.info("[ Test %s ] Running task '%s' : %s" % (self.test_id, task_id, command))
-            
-            p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            task = Task.get_by(test_id=self.test_id, id=task_id)
-            self.pids[task_id] = p.pid               
-            task.pid = p.pid
-            session.commit()
-            p.wait()
-            td = datetime.now() - dt
-            duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-            Output(command=task, content=p.stdout.read().strip())
-            StartTime(command=task, content=dt)
-            Duration(command=task, content=duration)
-            Returncode(command=task, content=p.returncode)
-            session.commit()
-        except (OSError, ResolvError) as e:
-            raise DaemonError("[ Test %s ] Task '%s' failed." % (self.test_id, task_id))
+        cmd_type = str(Command.get_by(test_id=self.test_id, id=task_id).cmd_type)
+        command = str(Command.get_by(test_id=self.test_id, id=task_id).command)
+
+        if cmd_type == 'shell':
+            try:
+                print 'Trying to run ' + command
+
+                if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
+                    command = Scheduler.subst(command, self.test_id)
+                args = shlex.split(command)
+                
+                logging.info("[ Test %s ] Running task '%s' : %s" % (self.test_id, task_id, command))
+                
+                p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                task = Task.get_by(test_id=self.test_id, id=task_id)
+                self.pids[task_id] = p.pid               
+                task.pid = p.pid
+                session.commit()
+                p.wait()
+                td = datetime.now() - dt
+                duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+                Output(command=task, content=p.stdout.read().strip())
+                StartTime(command=task, content=dt)
+                Duration(command=task, content=duration)
+                Returncode(command=task, content=p.returncode)
+                session.commit()
+            except (OSError, ResolvError) as e:
+                logging.error(e)
+                logging.error("[ Test %s ] Task '%s' failed." % (self.test_id, task_id))
+                from modules.Daemon import Daemon
+                manager = Daemon.get_manager()
+#                manager.stop_test(None, self.test_id)
+                # FIXME: See if that works:)
+
+        elif cmd_type == 'notify':
+            from modules.Daemon import Daemon
+            manager = Daemon.get_manager()
+            manager.notify_handlers[self.test_id](self.test_id, command)
             
     @staticmethod     
     def subst(param, test_id):
@@ -178,12 +196,7 @@ class Scheduler:
                     param_map['path'] = file.path
                     if param in param_map.keys():
                         return str(param_map[param])
-#            elif len(ref) is 1 and ref[0] in ['tmpdir', 'dbfile']:
-#                param = ref[0]
-#                config = ConfigParser.SafeConfigParser()
-#                config.read('aretes.cfg')
-#                return config.get('AreteS', param)
-            raise ResolvError("[ Test %s ] Cannot resolve '%s'." % (self.test_id, to_resolv))
+            raise ResolvError("[ Test %s ] Cannot resolve '%s'." % (test_id, to_resolv))
 
         session.close()
         return re.sub('@{(?P<ref>[a-zA-Z0-9\._]+)}', resolve_ref, param)

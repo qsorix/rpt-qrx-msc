@@ -19,6 +19,7 @@ from common.Exceptions import *
 class Manager:
     def __init__(self):
         self.schedulers = {}
+        self.notify_handlers = {}
 
     def _id_exists(self, test_id, id):
         return Command.get_by(test_id=test_id, id=id) or File.get_by(test_id=test_id, id=id)
@@ -48,11 +49,14 @@ class Manager:
         cmd = Setup(test_id=test_id, id=id, command=command)
         session.commit()
 
-    def add_task_command(self, test_id, id, run, command):
+    def add_task_command(self, test_id, id, run, type, command):
         if self._id_exists(test_id, id):
             raise DatabaseError("[ Test %s ] Command or file named '%s' already exists." % (test_id, id))
-        cmd = Task(test_id=test_id, id=id, command=command, run=run)
+        cmd = Task(test_id=test_id, id=id, command=command, run=run, cmd_type=type)
         session.commit()
+        
+        if type == 'notify':
+            pass #TODO
  
     def add_clean_command(self, test_id, id, command):
         if self._id_exists(test_id, id):
@@ -138,6 +142,9 @@ class Manager:
         else:
             raise ParamError("[ Test %s ] You won't get your results that way." % (test_id))
 
+    def run_trigger(self):
+        pass
+
     def prepare_test(self, parent_id, id):
         if not Test.get_by(id=id):
             raise DatabaseError("[ Test %s ] Test doesn't exist." % (id))
@@ -200,8 +207,8 @@ class Manager:
             raise DatabaseError("[ Test %s ] Test 'doesn't exist." % (id))
         if not self.schedulers.has_key(id):
             raise SchedulerError("[ Test %s ] Test hasn't been started yet." % (id))
-        self.clean_test(id)
         self.schedulers[id].end()
+        self.clean_test(id)
 
     def _run_commands(self, commands, test_id):
         for cmd in commands:
@@ -240,3 +247,7 @@ class Manager:
             return (end[0], int(end[1]))
         elif end[0] == 'complete':
             return (end[0], None)
+
+    def register_handler(self, test_id, handler_notify):
+        print 'Adding handler for test ' + test_id
+        self.notify_handlers[test_id] = handler_notify

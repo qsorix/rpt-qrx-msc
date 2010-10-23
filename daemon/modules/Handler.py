@@ -32,7 +32,8 @@ class Handler(SocketServer.StreamRequestHandler):
             'delete'      : manager.delete_test,
             'prepare'     : manager.prepare_test,
             'start'       : manager.start_test,
-            'stop'        : manager.stop_test
+            'stop'        : manager.stop_test,
+            'trigger'     : manager.run_trigger #TODO
         }
 
         try:
@@ -87,6 +88,7 @@ class Handler(SocketServer.StreamRequestHandler):
                     else:
                         self.send_ok()
                         if type == 'start':
+                            manager.register_handler(params['id'], self.notify)
                             manager.start_tasks(parent_id, **params)
                             if params['end'] == 'complete':
                                 self.send_test_finished()
@@ -102,6 +104,9 @@ class Handler(SocketServer.StreamRequestHandler):
     def send(self, msg):
         logging.info("[ Connection %s ] Sending: %s" % (self.client_address[0], msg))
         self.wfile.write(msg + '\n')
+
+    def notify(self, test_id, trigger):
+        self.send('100 Notify ' + test_id + ' ' + trigger)
 
     def send_ok(self, sizes=None):
         msg = '200 OK'

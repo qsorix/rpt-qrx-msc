@@ -8,9 +8,9 @@ from common.Exceptions import LineError, ParentError, TypeError, ParamError, Val
 main_regex        = r'^(?P<type>\w+)(?P<parameters>( \@\{\w+\=[a-zA-Z0-9 -_\.]+\})*)(?P<command> .+)?\s*$'
 start_run_regex   = r'^(at\s[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6})$'
 start_end_regex   = r'^(duration\s[0-9]+)|(complete)$'
-task_run_regex    = r'^(at\s\d)|(after\s.+)|(every\s\d)$'
+task_run_regex    = r'^(at\s\d)|(after\s.+)|(every\s\d)|(trigger\s.+)$'
 
-main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete']
+main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete', 'trigger']
 test_sub_types    = ['file', 'check', 'setup', 'task', 'clean', 'delete', 'end']
 results_sub_types = ['get', 'end']
 
@@ -19,8 +19,9 @@ start_run_types   = ['run']
 task_run_types    = ['run']
 
 file_required     = ['size']
-task_required     = ['run']
+task_required     = ['run', 'type']
 start_required    = ['run', 'end']
+trigger_required  = ['name']
 
 def parse(line, parent=None):
     # Check line
@@ -89,7 +90,7 @@ def parse(line, parent=None):
 
     # Check other parameters
     if len(tmparamap) > 0:
-        raise ParamError("Unknown parameter '%s'." % (tmparamap.popitem()[1]))
+        raise ParamError("Unknown parameter '%s'." % (tmparamap.popitem()[0]))
 
     # Return parsed line
     if parent:
