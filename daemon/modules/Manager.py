@@ -9,6 +9,7 @@ import sched
 import shlex
 import time
 import threading
+import thread
 import uuid
 from datetime import datetime, timedelta
 
@@ -143,7 +144,7 @@ class Manager:
             raise ParamError("[ Test %s ] You won't get your results that way." % (test_id))
 
     def run_trigger(self, parent_id, id, name):
-        triggers = [task for task in Tasks.query.filter_by(test_id=id).all() if task.run.endswith(name)]
+        triggers = [task for task in Task.query.filter_by(test_id=id).all() if task.run.endswith(name)]
         print triggers
         self._run_commands(triggers , id)
 
@@ -175,7 +176,11 @@ class Manager:
         elif end_type == 'complete':
             task_sched = Scheduler(id, run_value)
         self.schedulers[id] = task_sched
-                      
+
+        thread.start_new_thread(self._wait_for_the_end, (id, task_sched, end_type, global_condition))
+#        self._wait_for_the_end(id, task_sched, end_type, global_condition)
+
+    def _wait_for_the_end(self, test_id, task_sched, end_type, global_condition):
         task_sched.run()
 
         if end_type == 'duration':
@@ -185,19 +190,21 @@ class Manager:
             global_condition.release()
         elif end_type == 'complete':
             time.sleep(0.01)
-            while self.schedulers[id].still_running():
+            while self.schedulers[test_id].still_running():
                 time.sleep(0.01)
         
         end_time = datetime.now()
-        td = end_time - self.schedulers[id].started_at
+        td = end_time - self.schedulers[test_id].started_at
         duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-        test = Test.get_by(id=id)
+        test = Test.get_by(id=test_id)
         test.duration = duration
-        logging.info("[ Test %s ] Ended" % (id))
-        logging.info("[ Test %s ] Duration: %f" % (id, test.duration))
+        logging.info("[ Test %s ] Ended" % (test_id))
+        logging.info("[ Test %s ] Duration: %f" % (test_id, test.duration))
         session.commit()
         
-        self.clean_test(id)
+        self.clean_test(test_id)
+
+        self.notify_handlers[test_id]()
 
     def clean_test(self, test_id):
         self._run_commands(Clean.query.filter_by(test_id=test_id).all(), test_id)

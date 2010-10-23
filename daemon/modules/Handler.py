@@ -5,6 +5,7 @@ import sys
 import socket
 import SocketServer
 import logging
+import thread
 
 from modules.Parser import parse
 from common.Exceptions import *
@@ -38,7 +39,9 @@ class Handler(SocketServer.StreamRequestHandler):
 
         try:
             while 1:
+                print '.'
                 line = self.receive()
+                print 'jest'
                 if line == '':
                     raise socket.error
                 try:
@@ -86,12 +89,14 @@ class Handler(SocketServer.StreamRequestHandler):
                             self.send_ok(sizes=[len(to_send)])
                             self.wfile.write(to_send)
                     else:
-                        self.send_ok()
+                        if type != 'trigger':
+                            self.send_ok()
                         if type == 'start':
-                            manager.register_handler(params['id'], self.notify)
+                            manager.register_handler(params['id'], self.send_100)
+#                            thread.start_new_thread(manager.start_tasks, (parent_id, params['id'], params['run'], params['end']))
                             manager.start_tasks(parent_id, **params)
-                            if params['end'] == 'complete':
-                                self.send_test_finished()
+#                            if params['end'] == 'complete':
+#                                self.send_test_finished()
         except socket.error, IOError:
             logging.info("[ Connection %s ] Dropped" % self.client_address[0])
 
@@ -133,3 +138,8 @@ class Handler(SocketServer.StreamRequestHandler):
     def send_test_finished(self):
         self.send('100 Test Finished')
 
+    def send_100(self, test_id=None, trigger=None):
+        if trigger and test_id:
+            self.notify(test_id, trigger)
+        else:
+            self.send_test_finished()

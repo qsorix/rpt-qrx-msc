@@ -26,6 +26,6 @@ if __name__ == "__main__":
             os.remove(args.database)
         if os.path.isfile(args.log):
             os.remove(args.log)
-    else:
-        daemon = Daemon(port=args.port, database=args.database, log=args.log)
-        daemon.run()
+
+    daemon = Daemon(port=args.port, database=args.database, log=args.log)
+    daemon.run()

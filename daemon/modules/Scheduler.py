@@ -205,7 +205,7 @@ class Scheduler:
         t = run.split(' ')
         if t[0] in ['every', 'at']:
             return (t[0], int(t[1]))
-        elif t[0] in ['after']:
+        elif t[0] in ['after', 'trigger']:
             return (t[0], t[1])
 
     def still_running(self):
