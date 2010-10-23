@@ -94,7 +94,7 @@ class Controller:
         self._frontends = {}
         for (name, host) in configured_test.hosts.items():
             connection = self._connection_class(host)
-            self._frontends[name] = self._frontend_class(host)(host, connection, test_uuid=self._test_uuid)
+            self._frontends[name] = self._frontend_class(host)(host, connection, test_uuid=self._test_uuid, triggers=configured_test.triggers)
 
     def _send_configuration(self):
         for frontend in self._frontends.values():
@@ -124,14 +124,23 @@ class Controller:
         for frontend in self._frontends.values():
             frontend.start_test(duration_policy)
 
+        # store here fired triggers
+        # so we don't fire the same trigger twice
+        notified_triggers = set()
+
         # wait for the test to end
         all_finished = False
         while(not all_finished):
             time.sleep(1.0)
             all_finished = True
             for frontend in self._frontends.values():
-                ffinished = frontend.check_test_end()
-                all_finished = all_finished and ffinished
+                finished = frontend.check_test_end()
+                all_finished = all_finished and finished
+
+            for trigger in configured_test.triggers:
+                if trigger.ready() and trigger['name'] not in notified_triggers:
+                    for frontend in self._frontends.values():
+                        frontend.trigger(trigger['name'])
 
     def _fetch_results(self):
         for frontend in self._frontends.values():

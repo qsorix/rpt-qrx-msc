@@ -28,8 +28,10 @@ class FrontendPlugin:
     start_test
     check_test_end
       nonblocking call. returns true if the test has finished
+      can receive trigger notifications
     fetch_results
     abort_test
+    trigger(name) - send trigger event to slave
     ====================
     """
 

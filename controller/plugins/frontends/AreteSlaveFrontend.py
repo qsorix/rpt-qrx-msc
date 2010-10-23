@@ -14,10 +14,11 @@ import os
 class AreteSlaveFrontend(FrontendPlugin):
     frontend_type = 'arete_slave'
 
-    def __init__(self, host, connection, test_uuid):
+    def __init__(self, host, connection, test_uuid, triggers):
         FrontendPlugin.__init__(self, host, connection)
         self._sent_cmds = {}
         self._id = 0
+        self._triggers = triggers
         self._test_id = test_uuid
         self._test_finished_flag = False
 
@@ -107,6 +108,11 @@ class AreteSlaveFrontend(FrontendPlugin):
         if self._disconnect_for_end_policy(end):
             self.disconnect()
 
+    def trigger(self, trigger_name):
+        if not conn.connected(): return
+
+        self.output().write('trigger @{id=%s}\n' % (trigger_name))
+
     def check_test_end(self):
         self._non_blocking_io()
         return self._test_end()
@@ -154,6 +160,12 @@ class AreteSlaveFrontend(FrontendPlugin):
         print '  -- received {0} at {1} -- '.format(line, self.host().model['name'])
         if line == '100 Test Finished':
             self._test_finished_flag = True
+
+        if line.startwith('100 Notify '):
+            trigger_name = line[10:]
+            if trigger_name not in self._triggers:
+                raise RuntimeError("Received unknown trigger name ({0}).".format(trigger_name))
+            self._triggers[trigger_name].notify()
 
     def _disconnect_for_end_policy(self, end_policy):
         policy = self._duration_policy.end_policy().split()
@@ -228,4 +240,5 @@ class AreteSlaveFrontend(FrontendPlugin):
                     
     def abort_test(self):
         # TODO Implement aborting sanity check and test itself.
+        # Note: do not throw here. log errors and don't propagate them
         pass

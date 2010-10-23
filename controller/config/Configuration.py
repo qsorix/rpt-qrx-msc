@@ -75,6 +75,11 @@ class ConfiguredTest:
        Framework przekazuje ją z konfiguracji do wszystkich występujących w
        teście :class:`frontendów <Fronted>`.
 
+    .. attribute:: triggers
+
+       Słownik zdefiniowanych triggerów (:class:`~config.Schedule.Trigger`).
+       Kluczami są nazwy podane przy tworzeniu triggerów.
+
     """
 
     def sanity_check(self):
@@ -193,6 +198,7 @@ class Configuration:
         ct.hosts = {}
         ct.end_policy = Schedule.get_schedule().test_end_policy()
         ct.setup_phase_delay = Schedule.get_schedule().setup_phase_delay()
+        ct.triggers = Schedule.get_schedule().triggers()
 
         for h in Model.get_model().hosts():
             host = ConfiguredHost()
