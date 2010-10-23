@@ -67,6 +67,23 @@ class RunPolicy:
     """
     pass
 
+class Trigger(NamedMixin):
+    """Trigger synchronizacyjny. Slave'y mogą używać triggerów do
+    przeprowadzenia prostej synchronizacji jak np. stworzenie bariery.
+    """
+    def __init__(self, name, starting_value):
+        self.rename(name)
+        self._value = starting_value
+
+    def notify(self):
+        """Obniż wartość licznika o jeden."""
+        if self._value > 0
+            self._value = self._value - 1
+
+    def ready(self):
+        """Zwróć True jeśli licznik wynosi zero."""
+        return self._value == 0
+
 class Event(NamedMixin):
     """Zdarzenie łączy komendę `command` ze strategią wykonania `run_policy`.
     Zdarzenie posiada nazwę `name`.
@@ -93,12 +110,23 @@ class Schedule(NamedMixin):
         self._schedules = {}
         self._test_end_policy = None
         self._setup_phase_delay = 1.0 # 1 second default
+        self._triggers = {}
 
     def set_test_end_policy(self, test_end_policy):
         self._test_end_policy = test_end_policy
 
     def test_end_policy(self):
         return self._test_end_policy
+
+    def create_trigger(self, name, starting_value):
+        if (name in self._triggers):
+            raise Exceptions.ConfigurationException("Trigger named {0} already exists".format(name))
+
+        self._triggers[name] = Trigger(name, starting_value)
+
+    def triggers(self):
+        """Zwróć listę skonfigurowanych triggerów."""
+        return self._triggers
 
     def set_setup_phase_delay(self, setup_phase_delay):
         self._setup_phase_delay = setup_phase_delay
@@ -172,9 +200,17 @@ def test_end_policy(end_policy, setup_phase_delay = None):
     if setup_phase_delay:
         get_schedule().set_setup_phase_delay(setup_phase_delay)
 
+def create_trigger(*args, **kwargs):
+    """Stwórz nowy trigger z wartością początkową.
+
+    Patrz :meth:`Schedule.create_trigger`.
+    """
+    return get_schedule().create_trigger(*args, **kwargs)
+
 public_functions = {
     'create_schedule': create_schedule,
     'get_schedule': get_schedule,
     'append_schedule': append_schedule,
-    'test_end_policy': test_end_policy
+    'test_end_policy': test_end_policy,
+    'create_trigger': create_trigger
 }
