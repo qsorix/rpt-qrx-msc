@@ -6,68 +6,45 @@ from elixir import *
 class Test(Entity):
     using_options(tablename='tests')
 
-    id = Field(Unicode(128), primary_key=True)
-    comment = Field(Unicode(128), required=False, default=None)
-    start_time = Field(DateTime, required=True)
-    duration = Field(Integer, required=True)
+    nodes = OneToMany('Node')
 
+    id = Field(String, primary_key=True)
+    start_time = Field(DateTime, required=True)
+    duration = Field(Interval, required=True)
+    comment = Field(String, required=False, default=None)
+
+
+class Node(Entity):
+    using_options(tablename='nodes')
+
+    test = ManyToOne('Test')
     commands = OneToMany('Command')
 
-    def __repr__(self):
-        return '<Test "%s">' % self.id
+    node = Field(String, required=True)
+    start_time = Field(DateTime, required=True)
+    duration = Field(Interval, required=True)
 
-class Output(Entity):
-    using_options(tablename='outputs')
-
-    content = Field(LargeBinary, required=True)
-    
-    command = ManyToOne('Command')
-    
-    def __repr__(self):
-        return '<Output for "%s">' % (self.command.id)
-    
-class Returncode(Entity):
-    using_options(tablename='returncodes')
-
-    content = Field(Integer, required=True)
-    
-    command = ManyToOne('Command')
-    
-    def __repr__(self):
-        return '<Returncode for "%s">' % (self.command.id)
-    
-class StartTime(Entity):
-    using_options(tablename='start_times')
-
-    content = Field(DateTime, required=True)
-    
-    command = ManyToOne('Command')
-    
-    def __repr__(self):
-        return '<Start time for "%s">' % (self.command.id)
-    
-class Duration(Entity):
-    using_options(tablename='durations')
-
-    content = Field(Integer, required=True)
-    
-    command = ManyToOne('Command')
-    
-    def __repr__(self):
-        return '<Duration for "%s">' % (self.command.id)
 
 class Command(Entity):
-    using_options(tablename='commands')
+    using_options(tablename='commands', auto_primarykey='cmd_id')
 
-    id = Field(Unicode(128), primary_key=True)
-#    command = Field(Unicode(128), required=True)
-    type = Field(Unicode(128), required=True)
+    node = ManyToOne('Node')
+    invocations = OneToMany('Invocation')
 
-    test = ManyToOne('Test', primary_key=True)
-    outputs = OneToMany('Output')
-    returncodes = OneToMany('Returncode')
-    start_times = OneToMany('StartTime')
-    durations = OneToMany('Duration')
+    id = Field(String, required=True)
+    phase = Field(String, required=True)
+    type = Field(String, required=True)
+    value = Field(String, required=True)
 
-    def __repr__(self):
-        return '<Command "%s">' % (self.id)
+
+class Invocation(Entity):
+    using_options(tablename='invocations')
+
+    command = ManyToOne('Command')
+
+    output = Field(LargeBinary)
+    start_time = Field(DateTime, required=True)
+    duration = Field(Interval)
+    return_code = Field(Integer)
+
+
