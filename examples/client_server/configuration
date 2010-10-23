@@ -27,14 +27,14 @@ add_resource(File('testfile', 'datafile.txt'))
 create_trigger('kill-server', 1) # 1 -- number of clients
 
 append_schedule('server', [
-    ('server',  at(0),                  shell('@{serverdist.path} 0.0.0.0 9999', use_resources=['serverdist'], check_executable=False)),
+    ('server',  at(0),                  shell('@{serverdist.path} 0.0.0.0 6666', use_resources=['serverdist'], check_executable=False)),
     ('ls',      after('server'),        shell('ls')),
     ('md5sum',  after('server'),        shell('md5sum dest_path')),
     ('trigger', trigger('kill-server'), shell('kill @{server.pid}'))
 ])
 
 append_schedule('client', [
-    ('client',  at(1),                  shell('@{clientdist.path} @{server.ip} 9999 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'], check_executable=False)),
+    ('client',  at(1),                  shell('@{clientdist.path} @{server.ip} 6666 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'], check_executable=False)),
     ('ls',      after('client'),        shell('ls')),
     ('md5sum',  after('client'),        shell('md5sum @{testfile.path}')),
     ('notify',  after('client'),        notify('kill-server'))
