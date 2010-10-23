@@ -127,7 +127,7 @@ class Manager:
                         if number > 0:
                             return ('multi', (number, [str(duration.content) for duration in cmd.durations]))
                         else:
-                            raise DatabaseError("[ Test %s ] Duration for command '%s' doesn't exist." % (test_id, id))                        
+                            raise DatabaseError("[ Test %s ] Duration for command '%s' doesn't exist." % (test_id, id)) 
                     raise DatabaseError("[ Test %s ] Command named '%s' doesn't exist." % (test_id, id))
             elif len(ref) is 1:
                 param = ref[0]
@@ -142,8 +142,10 @@ class Manager:
         else:
             raise ParamError("[ Test %s ] You won't get your results that way." % (test_id))
 
-    def run_trigger(self):
-        pass
+    def run_trigger(self, parent_id, id, name):
+        triggers = [task for task in Tasks.query.filter_by(test_id=id).all() if task.run.endswith(name)]
+        print triggers
+        self._run_commands(triggers , id)
 
     def prepare_test(self, parent_id, id):
         if not Test.get_by(id=id):
@@ -249,5 +251,5 @@ class Manager:
             return (end[0], None)
 
     def register_handler(self, test_id, handler_notify):
-        print 'Adding handler for test ' + test_id
+#        print 'Adding handler for test ' + test_id
         self.notify_handlers[test_id] = handler_notify
