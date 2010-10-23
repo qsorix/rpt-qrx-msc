@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from config.Model import add_host, add_link, get_model
-import itertools
+from config.Model import add_host
 
 def group(name, count):
     g = []
@@ -15,13 +14,3 @@ def interface(host):
         return host.interface('implicit')
 
     return host.add_interface('implicit')
-
-def link_all(*interfaces):
-    for (a, b) in itertools.combinations(interfaces, 2):
-        link(a, b)
-
-def get_host(name):
-    for h in model.hosts():
-        if h.name() == name:
-            return h
-

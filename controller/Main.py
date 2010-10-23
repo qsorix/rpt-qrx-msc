@@ -11,7 +11,6 @@ from controller import Database
 
 import sys
 import os
-import getopt
 import argparse
 import py.path
 

@@ -194,7 +194,7 @@ class AreteSlaveFrontend(FrontendPlugin):
         if policy[0] in ['complete']:
             return False
 
-        raise ConfigurationError("Unknown test end policy {0!r}".format(end_policy));
+        raise Exceptions.ConfigurationError("Unknown test end policy {0!r}".format(end_policy));
 
     def fetch_results(self):
         print '  -- fetching results from ' + self.host().model['name'] + ' --'

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from command.Generator import Generator, HostCommands
+from command.Generator import Generator
 from config.Configuration import ConfiguredHost, ConfiguredTest
 from config.Model import Host
 from config.Laboratory import Device

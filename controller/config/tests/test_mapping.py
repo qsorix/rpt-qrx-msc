@@ -6,8 +6,6 @@ import config.Laboratory as Laboratory
 
 from config.Mapping import create_mapping, destroy_mapping, get_mapping, bind
 
-import py
-
 def clear():
     Model.destroy_model()
     Laboratory.destroy_laboratory()

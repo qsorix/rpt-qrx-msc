@@ -3,6 +3,7 @@
 
 from BaseMixins import NamedMixin
 
+from common import Exceptions
 from Utils import resolve_host_name
 
 class Command:

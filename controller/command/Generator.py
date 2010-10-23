@@ -116,8 +116,6 @@ class Generator:
     def _perform_substitutions(self, prepared_commands, configured_test):
         for host, commands in prepared_commands.items():
 
-            new_hc = HostCommands()
-
             substitution = lambda x: self._substitute_for_host(host, x, configured_test)
 
             commands.accept_transformation(substitution)

@@ -8,7 +8,6 @@ class InterfaceIP(InterfaceDriverPlugin):
         if 'ip' not in attributes:
             return
 
-        ip = interface['ip']
         cmd.add_check('which ip')
 
         args = {'ip': interface['ip'],

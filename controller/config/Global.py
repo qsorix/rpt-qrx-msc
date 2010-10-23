@@ -2,7 +2,6 @@
 # coding=utf-8
 
 import getpass
-import sys
 from common import Exceptions
 
 parameters = None

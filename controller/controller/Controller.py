@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import sys
 import uuid
 import datetime
 import time
@@ -155,7 +154,7 @@ class Controller:
         self._duration = datetime.datetime.now() - self._start_time
 
     def _fetch_results(self):
-        test = Database.Test(id=unicode(self._test_uuid), start_time=self._start_time, duration=self._duration)
+        Database.Test(id=unicode(self._test_uuid), start_time=self._start_time, duration=self._duration)
         Database.commit();
 
         for frontend in self._frontends.values():
