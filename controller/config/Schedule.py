@@ -77,7 +77,7 @@ class Trigger(NamedMixin):
 
     def notify(self):
         """Obniż wartość licznika o jeden."""
-        if self._value > 0
+        if self._value > 0:
             self._value = self._value - 1
 
     def ready(self):

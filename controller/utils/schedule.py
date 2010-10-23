@@ -54,7 +54,7 @@ class shell(Schedule.Command):
     def sanity_checks(self):
         if self._check_executable:
             return ["which '%s'" % self._binary]
-        else
+        else:
             return []
 
     def needed_resources(self):
