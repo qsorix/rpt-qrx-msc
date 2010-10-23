@@ -137,7 +137,7 @@ class Controller:
                 finished = frontend.check_test_end()
                 all_finished = all_finished and finished
 
-            for trigger in configured_test.triggers:
+            for trigger in configured_test.triggers.values():
                 if trigger.ready() and trigger['name'] not in notified_triggers:
                     for frontend in self._frontends.values():
                         frontend.trigger(trigger['name'])
