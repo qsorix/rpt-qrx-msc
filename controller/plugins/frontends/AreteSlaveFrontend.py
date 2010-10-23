@@ -65,7 +65,7 @@ class AreteSlaveFrontend(FrontendPlugin):
             self._sent_cmds[id] = c
 
         for c in host_commands.schedule():
-            out('task @{id=%(id)s} @{run=%(run)s} @{run=%(type)s} %(cmd)s\n' %
+            out('task @{id=%(id)s} @{run=%(run)s} @{type=%(type)s} %(cmd)s\n' %
                 {'id': c['name'],
                  'run': c.run_policy().schedule_for_arete_slave(),
                  'type': c.command().command_type(),
@@ -161,12 +161,16 @@ class AreteSlaveFrontend(FrontendPlugin):
         print '  -- received {0} at {1} -- '.format(line, self.host().model['name'])
         if line == '100 Test Finished':
             self._test_finished_flag = True
+            return
 
-        if line.startwith('100 Notify '):
+        if line.startswith('100 Notify '):
             trigger_name = line[10:]
             if trigger_name not in self._triggers:
                 raise RuntimeError("Received unknown trigger name ({0}).".format(trigger_name))
             self._triggers[trigger_name].notify()
+            return
+
+        raise RuntimeError("Not recognized message received from slave. Message is: {0}".format(line))
 
     def _disconnect_for_end_policy(self, end_policy):
         policy = self._duration_policy.end_policy().split()
