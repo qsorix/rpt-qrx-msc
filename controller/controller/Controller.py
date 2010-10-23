@@ -157,7 +157,7 @@ class Controller:
     def _fetch_results(self):
         Database.init();
 
-        test = Test(id=unicode(self._test_uuid), start_time=self._start_time, duration=self._duration)
+        test = Database.Test(id=unicode(self._test_uuid), start_time=self._start_time, duration=self._duration)
         Database.commit();
 
         for frontend in self._frontends.values():
