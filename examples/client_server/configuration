@@ -15,16 +15,15 @@ add_resource(File('clientdist', 'Client.py', chmod='+x'))
 add_resource(File('testfile', 'datafile.txt'))
 
 append_schedule('server', [
-    ('server',  at(0),           shell('@{serverdist.path} 0.0.0.0 9999', use_resources=['serverdist'])),
-    ('kserver', at(3),           shell('kill -9 @{server.pid}')),
+    ('server',  at(0),           shell('@{serverdist.path} 0.0.0.0 9999', use_resources=['serverdist'], check_executable=False)),
     ('ls',      after('server'), shell('ls')),
-    ('md5sum',  after('ls'),     shell('md5sum dest_path'))
+    ('md5sum',  after('server'), shell('md5sum dest_path'))
 ])
 
 append_schedule('client', [
-    ('client',  at(1),           shell('@{clientdist.path} @{server.ip} 9999 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'])),
+    ('client',  at(1),           shell('@{clientdist.path} @{server.ip} 9999 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'], check_executable=False)),
     ('ls',      after('client'), shell('ls')),
-    ('md5sum',  after('ls'),     shell('md5sum @{testfile.path}'))
+    ('md5sum',  after('client'), shell('md5sum @{testfile.path}'))
 ])
 
 
