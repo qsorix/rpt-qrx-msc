@@ -9,11 +9,16 @@ class ConfigurationError(Exception):
 class SanityError(ConfigurationError):
     pass
 
-class NotBoundError(Exception):
+class NotBoundError(ConfigurationError):
     pass
 
-class NameExistsError(Exception):
+class NameExistsError(ConfigurationError):
     pass
 
-class MissingPluginError(Exception):
+class MissingPluginError(ConfigurationError):
     pass
+
+class SlaveError(Exception):
+    def __init__(self, exception, traceback=None):
+        Exception.__init__(self, exception)
+        self.traceback = traceback

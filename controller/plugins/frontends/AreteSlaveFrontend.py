@@ -32,10 +32,11 @@ class AreteSlaveFrontend(FrontendPlugin):
         host_commands = self.host().commands
         resources = self.host().resources
 
-        out = self.output().write
+        def out(cmd):
+            self.output().write(cmd)
+            self._check_response();
 
         out('test @{id=%s}\n' % self._test_id)
-        resp = self.input().readline()
 
         for r in resources:
             r.transfer_with_arete_slave(self)
@@ -43,24 +44,21 @@ class AreteSlaveFrontend(FrontendPlugin):
         for c in host_commands.check():
             id = self._make_id()
             out('check @{id=%i} %s\n' % (id, c))
-            resp = self.input().readline()
-            #FIXME: resp.startswith('200')
+
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
         for c in host_commands.setup():
             id = self._make_id()
             out('setup @{id=%i} %s\n' % (id, c))
-            resp = self.input().readline()
-            #FIXME: resp.startswith('200')
+
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
         for c in host_commands.cleanup():
             id = self._make_id()
             out('clean @{id=%i} %s\n' % (id, c))
-            resp = self.input().readline()
-            #FIXME: resp.startswith('200')
+
             assert id not in self._sent_cmds
             self._sent_cmds[id] = c
 
@@ -70,25 +68,29 @@ class AreteSlaveFrontend(FrontendPlugin):
                  'run': c.run_policy().schedule_for_arete_slave(),
                  'type': c.command().command_type(),
                  'cmd': c.command().command()})
-            resp = self.input().readline()
-            #FIXME: resp.startswith('200')
+
             assert c['name'] not in self._sent_cmds
             self._sent_cmds[c['name']] = c
 
         out('end\n')
-        resp = self.input().readline()
-        #FIXME: resp.startswith('200')
 
     def start_sanity_check(self):
         self.output().write('prepare @{id=%s}\n' % self._test_id)
 
     def wait_sanity_check(self):
         print '  -- waiting for sanity check to finish at ' + self.host().model['name'] + ' --'
+        self._check_response();
+
         resp = self.input().readline()
-        #FIXME: resp.startswith('200')
+
+        if resp.startswith('200'):
+            return
+
         if resp.startswith('401'):
-            print 'sanity check failed'
-            # TODO Do sth about it
+            raise SlaveError('Sanity check failed on ' + self.host().model['name'])
+
+        raise SlaveError('Unexpected result received after sanity check: ' + resp)
+
 
     def start_test(self, duration_policy):
         self._duration_policy = duration_policy
@@ -103,14 +105,13 @@ class AreteSlaveFrontend(FrontendPlugin):
         run = 'at ' + start.isoformat()
 
         self.output().write('start @{id=%s} @{run=%s} @{end=%s}\n' % (self._test_id, run, end))
-        resp = self.input().readline()
-        #FIXME: resp.startswith('200')
+        self._check_response();
 
         if self._disconnect_for_end_policy(end):
             self.disconnect()
 
     def trigger(self, trigger_name):
-        if not conn.connected(): return
+        if not self.connection().connected(): return
 
         self.output().write('trigger @{id=%s} @{name=%s}\n' % (self._test_id, trigger_name))
 
@@ -163,6 +164,7 @@ class AreteSlaveFrontend(FrontendPlugin):
             self._test_finished_flag = True
             return
 
+        # Line in format: 100 Notify test_id trigger_name
         if line.startswith('100 Notify '):
 
             tokens = line.split()
@@ -243,6 +245,13 @@ class AreteSlaveFrontend(FrontendPlugin):
                 data = self.input().read(int(size)).strip()
                 data_list.append(data)
             return data_list
+
+    def _check_response(self):
+        resp = self.input().readline()
+        if resp.startswith('200'):
+            return
+
+        raise Exceptions.SlaveError('Received wrong response. Expected 200 OK, got: ' + resp);
                     
     def abort_test(self):
         # TODO Implement aborting sanity check and test itself.

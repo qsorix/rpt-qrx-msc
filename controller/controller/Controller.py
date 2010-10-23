@@ -169,7 +169,6 @@ class Controller:
             session.commit()
 
 
-
     def _abort_test(self):
         for frontend in self._frontends.values():
             frontend.abort_test()
