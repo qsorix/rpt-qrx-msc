@@ -9,7 +9,6 @@ import time
 from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
 from common import Exceptions
-#FIXME import just one object with interface to database operations
 from controller import Database
 
 class TestDurationPolicy:

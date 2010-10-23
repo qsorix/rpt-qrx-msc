@@ -7,10 +7,6 @@ import controller.Database as Database
 import datetime
 import os
 
-# FIXME: if anything goes wrong, raise an exception. It is catched in
-# Controller.py, where it causes all frontends to abort_test()
-# Then the exception is propagated do Main.
-
 class AreteSlaveFrontend(FrontendPlugin):
     frontend_type = 'arete_slave'
 
