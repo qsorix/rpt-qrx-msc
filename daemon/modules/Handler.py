@@ -33,7 +33,7 @@ class Handler(SocketServer.StreamRequestHandler):
             'prepare'     : manager.prepare_test,
             'start'       : manager.start_test,
             'stop'        : manager.stop_test,
-            'trigger'     : manager.run_trigger #TODO
+            'trigger'     : manager.run_trigger
         }
 
         try:
