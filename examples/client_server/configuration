@@ -18,15 +18,14 @@ create_trigger('kill-server', 1) # 1 -- number of clients
 
 append_schedule('server', [
     ('server',  at(0),                  shell('@{serverdist.path} 0.0.0.0 6666', use_resources=['serverdist'], check_executable=False)),
-    ('ls',      after('server'),        shell('ls')),
-    ('md5sum',  after('ls'),        shell('md5sum dest_path')),
+    ('ls',      after('server'),        shell('ls dest_path')),
+    ('md5sum',  after('ls'),            shell('md5sum dest_path')),
     ('trigger', trigger('kill-server'), shell('kill @{server.pid}'))
 ])
 
 append_schedule('client', [
     ('client',  at(1),                  shell('@{clientdist.path} localhost 6666 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'], check_executable=False)),
-    ('ls',      after('client'),        shell('ls')),
-    ('md5sum',  after('ls'),            shell('md5sum @{testfile.path}')),
+    ('md5sum',  after('client'),        shell('md5sum @{testfile.path}')),
     ('notify',  after('md5sum'),        notify('kill-server'))
 ])
 
