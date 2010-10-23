@@ -23,6 +23,17 @@ class after(Schedule.RunPolicy):
 
     def schedule_for_arete_slave(self):
         return 'after %s' % self._cmd
+
+class trigger(Schedule.RunPolicy):
+    def __init__(self, trigger):
+        self._trigger = trigger
+
+    def schedule_for_arete_slave(self):
+        return 'trigger %s' % self._trigger
+
+class poke(Schedule.RunPolicy):
+    def schedule_for_arete_slave(self):
+        return 'poke'
     
 class shell(Schedule.Command):
     def __init__(self, command, use_resources=[], check_executable=True):
@@ -30,6 +41,9 @@ class shell(Schedule.Command):
         self._binary = command.split()[0]
         self._resources = use_resources
         self._check_executable = check_executable
+
+    def command_type(self):
+        return 'shell'
 
     def accept_transformation(self, transformation):
         self._command = transformation(self._command)
@@ -45,6 +59,22 @@ class shell(Schedule.Command):
 
     def needed_resources(self):
         return self._resources
+
+class notify(Schedule.Command):
+    def __init__(self, trigger_name):
+        self._trigger_name = trigger_name
+
+    def command_type(self):
+        return 'notify'
+
+    def sanity_checks(self):
+        return []
+
+    def accept_transformation(self, transformation):
+        self._trigger_name = transformation(self._trigger_name)
+
+    def command(self):
+        return self._trigger_name
 
 class ClientServer:
     def __init__(self, name, server_command, client_command):
