@@ -202,18 +202,19 @@ class AreteSlaveFrontend(FrontendPlugin):
                 for id in ids:
                     command = Database.Command(node=node, id=id, phase=list, type='FIXME', value='FIXME')
 
-                    #for returncode in self._get_param('returncode', id):
-                        #Returncode(command=command, content=returncode)
+                    start_times = map ((lambda x: datetime.datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%f')), self._get_param('start_time', id))
+                    durations = map ((lambda x: datetime.timedelta(seconds=float(x))), self._get_param('duration', id))
+                    outputs = self._get_param('output', id)
+                    returncodes = self._get_param('returncode', id)
 
-                    #for output in self._get_param('output', id):
-                        #Output(command=command, content=output)
+                    invocations = len(start_times)
+                    if (len(durations) != invocations or
+                       len(outputs) != invocations or
+                       len(returncodes) != invocations):
+                        raise SlaveError("Protocol error. Mismatched number of values returned for invoked command.")
 
-                    #for start_time in self._get_param('start_time', id):
-                        #dt = datetime.datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S.%f')
-                        #StartTime(command=command, content=dt)
-
-                    #for duration in self._get_param('duration', id):
-                        #Duration(command=command, content=duration)
+                    for i in range(invocations):
+                        Database.Invocation(command=command, start_time=start_times[i], duration=durations[i], output=outputs[i], return_code=returncodes[i])
 
             self.output().write('end\n')
             resp = self.input().readline()
@@ -232,14 +233,20 @@ class AreteSlaveFrontend(FrontendPlugin):
             self.output().write('get @{%s.%s}\n' % (task_id, param))
         else:
             self.output().write('get @{%s}\n' % (param))
+
         reply = self.input().readline().strip()
-        if reply.startswith('200'):
-            data_list = []
-            sizes = reply.split(' ')[2:]
-            for size in sizes:
-                data = self.input().read(int(size)).strip()
-                data_list.append(data)
-            return data_list
+        if not reply.startswith('200'):
+            raise SlaveError("Wrong response while receiving results")
+
+        data_list = []
+        sizes = reply.split(' ')[2:]
+        for size in sizes:
+            if size != 0:
+                data = self.input().read(int(size))
+            else:
+                data = None
+            data_list.append(data)
+        return data_list
 
     def _check_response(self):
         resp = self.input().readline()
