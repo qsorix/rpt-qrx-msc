@@ -65,9 +65,10 @@ class AreteSlaveFrontend(FrontendPlugin):
             self._sent_cmds[id] = c
 
         for c in host_commands.schedule():
-            out('task @{id=%(id)s} @{run=%(run)s} %(cmd)s\n' %
+            out('task @{id=%(id)s} @{run=%(run)s} @{run=%(type)s} %(cmd)s\n' %
                 {'id': c['name'],
                  'run': c.run_policy().schedule_for_arete_slave(),
+                 'type': c.command().command_type(),
                  'cmd': c.command().command()})
             resp = self.input().readline()
             #FIXME: resp.startswith('200')
@@ -111,7 +112,7 @@ class AreteSlaveFrontend(FrontendPlugin):
     def trigger(self, trigger_name):
         if not conn.connected(): return
 
-        self.output().write('trigger @{id=%s}\n' % (trigger_name))
+        self.output().write('trigger @{id=%s} @{name=%s}\n' % (self._test_id, trigger_name))
 
     def check_test_end(self):
         self._non_blocking_io()
