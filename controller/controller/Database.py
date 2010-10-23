@@ -3,8 +3,8 @@
 
 from elixir import *
 
-def init():
-    metadata.bind = 'sqlite:///' + 'aretem.db'
+def init(filename):
+    metadata.bind = 'sqlite:///' + filename
     setup_all()
     create_all()
 
