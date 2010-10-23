@@ -151,6 +151,8 @@ class Controller:
                     for frontend in self._frontends.values():
                         frontend.trigger(trigger['name'])
 
+                    notified_triggers.add(trigger['name'])
+
         self._duration = datetime.datetime.now() - self._start_time
 
     def _fetch_results(self):

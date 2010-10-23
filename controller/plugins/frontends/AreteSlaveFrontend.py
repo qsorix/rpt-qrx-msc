@@ -113,7 +113,6 @@ class AreteSlaveFrontend(FrontendPlugin):
         if not self.connection().connected(): return
 
         self.output().write('trigger @{id=%s} @{name=%s}\n' % (self._test_id, trigger_name))
-        self._check_response();
 
     def check_test_end(self):
         self._non_blocking_io()
@@ -257,3 +256,4 @@ class AreteSlaveFrontend(FrontendPlugin):
         # TODO Implement aborting sanity check and test itself.
         # Note: do not throw here. log errors and don't propagate them
         pass
+
