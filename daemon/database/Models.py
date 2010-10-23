@@ -99,6 +99,7 @@ class Task(Command):
     using_options(inheritance='multi', tablename='tasks')
 
     run = Field(Unicode(128), required=True)
+    cmd_type = Field(Unicode(128), required=True)
     pid = Field(Integer, default=None)
     
     def __repr__(self):

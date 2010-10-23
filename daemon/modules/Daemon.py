@@ -32,6 +32,7 @@ class Daemon:
         try:
             self.tcp_server.serve_forever()
         except KeyboardInterrupt:
+            # FIXME Not seem to work...
             for scheduler in self.manager.schedulers.values():
                 for event in scheduler.task_scheduler.queue:
                     scheduler.task_scheduler.cancel(event)
