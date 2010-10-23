@@ -28,8 +28,11 @@ class AreteSlaveFrontend(FrontendPlugin):
         self._test_finished_flag = False
 
     def _make_id(self):
-        self._id += 1
-        return str(self._id)
+        while True:
+            self._id += 1
+            id = str('__auto__'+str(self._id))
+            if id not in self._sent_cmds:
+                return id
 
     def deploy_configuration(self):
         self.connect()
@@ -91,9 +94,9 @@ class AreteSlaveFrontend(FrontendPlugin):
             return
 
         if resp.startswith('401'):
-            raise SlaveError('Sanity check failed on ' + self.host().model['name'])
+            raise Exceptions.SlaveError('Sanity check failed on ' + self.host().model['name'])
 
-        raise SlaveError('Unexpected result received after sanity check: ' + resp)
+        raise Exceptions.SlaveError('Unexpected result received after sanity check: ' + resp)
 
 
     def start_test(self, duration_policy):
@@ -250,7 +253,7 @@ class AreteSlaveFrontend(FrontendPlugin):
 
         reply = self.input().readline().strip()
         if not reply.startswith('200'):
-            raise SlaveError("Wrong response while receiving results")
+            raise Exceptions.SlaveError("Wrong response while receiving results")
 
         data_list = []
         sizes = reply.split(' ')[2:]
