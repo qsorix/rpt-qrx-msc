@@ -10,7 +10,7 @@ from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
 from common import Exceptions
 #FIXME import just one object with interface to database operations
-from controller.Database import *
+from controller import Database
 
 class TestDurationPolicy:
     def __init__(self, start, end_policy):
@@ -156,20 +156,14 @@ class Controller:
         self._duration = datetime.datetime.now() - self._start_time
 
     def _fetch_results(self):
-        #Database.begin() begin:
-        # FIXME It should be done somewhere else.
-        # ON START
-        metadata.bind = 'sqlite:///' + 'aretem.db'
-        setup_all()
-        create_all()
-        # ^^^
+        Database.init();
 
         test = Test(id=unicode(self._test_uuid), start_time=self._start_time, duration=self._duration)
-        session.commit()
+        Database.commit();
 
         for frontend in self._frontends.values():
             frontend.fetch_results()
-            session.commit()
+            Database.commit();
 
 
     def _abort_test(self):

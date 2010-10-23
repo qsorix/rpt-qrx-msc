@@ -3,6 +3,14 @@
 
 from elixir import *
 
+def init():
+    metadata.bind = 'sqlite:///' + 'aretem.db'
+    setup_all()
+    create_all()
+
+def commit():
+    session.commit()
+
 class Test(Entity):
     using_options(tablename='tests')
 
