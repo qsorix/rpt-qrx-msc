@@ -164,11 +164,16 @@ class AreteSlaveFrontend(FrontendPlugin):
             return
 
         if line.startswith('100 Notify '):
-            trigger_name = line[10:]
-            if trigger_name not in self._triggers:
-                raise RuntimeError("Received unknown trigger name ({0}).".format(trigger_name))
-            self._triggers[trigger_name].notify()
-            return
+
+            tokens = line.split()
+            if len(tokens) == 4:
+                trigger_name = line.split()[3]
+
+                if trigger_name not in self._triggers:
+                    raise RuntimeError("Received unknown trigger name ({0}).".format(trigger_name))
+
+                self._triggers[trigger_name].notify()
+                return
 
         raise RuntimeError("Not recognized message received from slave. Message is: {0}".format(line))
 
