@@ -47,21 +47,22 @@ if __name__ == "__main__":
         Global.parameters.prompt_parameters(args.ask_parameters)
         consume_parameters(args.set)
 
-        c = Configuration.Configuration()
-        configured_test = c.read(args.config, args.map)
+        # read configuration
+        configured_test = Configuration.Configuration().read(args.config, args.map)
 
-        e = Generator.Generator()
-        prepared_commands = e.process( configured_test )
-        #TODO: prepared_commands.sanity_check()
+        # generate commands
+        Generator.Generator().process( configured_test )
 
-        for (host, commands) in prepared_commands.items():
-            configured_test.hosts[host].commands = commands
-
+        # run hooks
         for hook_name in args.hooks:
             HookPlugin.lookup(hook_name)().visit_configured_test(configured_test)
 
-        ctrl = Controller.Controller()
-        ctrl.run(configured_test)
+        # perform test
+        Controller.Controller().run(configured_test)
+
+    except Exceptions.MissingPluginError as e:
+        print 'Plugin not found:'
+        print e
 
     except Exceptions.ConfigurationError as e:
         print 'Configuration error:'
@@ -72,12 +73,15 @@ if __name__ == "__main__":
             print '-'*60
         sys.exit(2)
 
-    except Exceptions.MissingPluginError as e:
-        print 'Plugin not found:'
+    except Exceptions.SlaveError as e:
+        print 'Slave communication error:'
         print e
+        if e.traceback:
+            print '-'*60
+            print e.traceback,
+            print '-'*60
+        sys.exit(3)
 
     except Exception as e:
         print 'Error: ', e
-        raise
-
-
+        # raise

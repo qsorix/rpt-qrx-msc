@@ -66,6 +66,9 @@ class Generator:
 
         self._perform_substitutions(result, configured_test)
 
+        for (host, commands) in result.items():
+            configured_test.hosts[host].commands = commands
+
         return result
 
     def _generate(self, host):
