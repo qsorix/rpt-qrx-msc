@@ -39,9 +39,7 @@ class Handler(SocketServer.StreamRequestHandler):
 
         try:
             while 1:
-                print '.'
                 line = self.receive()
-                print 'jest'
                 if line == '':
                     raise socket.error
                 try:

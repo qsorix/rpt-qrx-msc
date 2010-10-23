@@ -145,7 +145,6 @@ class Manager:
 
     def run_trigger(self, parent_id, id, name):
         triggers = [task for task in Task.query.filter_by(test_id=id).all() if task.run.endswith(name)]
-        print triggers
         self._run_commands(triggers , id)
 
     def prepare_test(self, parent_id, id):
@@ -258,5 +257,4 @@ class Manager:
             return (end[0], None)
 
     def register_handler(self, test_id, handler_notify):
-#        print 'Adding handler for test ' + test_id
         self.notify_handlers[test_id] = handler_notify

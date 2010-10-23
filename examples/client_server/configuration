@@ -14,30 +14,20 @@ add_resource(File('serverdist', 'Server.py', chmod='+x'))
 add_resource(File('clientdist', 'Client.py', chmod='+x'))
 add_resource(File('testfile', 'datafile.txt'))
 
-# > task @{id=task_id} @{run=after client}        @{type=notify} kill-server
-# > task @{id=task_id} @{run=after client}        @{type=shell} ...
-# > task @{id=trigger} @{run=trigger kill-server} @{type=shell} kill @{server.pid}
-
-# ...
-
-# > trigger @{id=test_id} @{name=kill-server}
-
-# < 100 Notify kill-server
-
 create_trigger('kill-server', 1) # 1 -- number of clients
 
 append_schedule('server', [
     ('server',  at(0),                  shell('@{serverdist.path} 0.0.0.0 6666', use_resources=['serverdist'], check_executable=False)),
     ('ls',      after('server'),        shell('ls')),
-    ('md5sum',  after('server'),        shell('md5sum dest_path')),
+    ('md5sum',  after('ls'),        shell('md5sum dest_path')),
     ('trigger', trigger('kill-server'), shell('kill @{server.pid}'))
 ])
 
 append_schedule('client', [
-    ('client',  at(1),                  shell('@{clientdist.path} @{server.ip} 6666 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'], check_executable=False)),
+    ('client',  at(1),                  shell('@{clientdist.path} localhost 6666 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'], check_executable=False)),
     ('ls',      after('client'),        shell('ls')),
-    ('md5sum',  after('client'),        shell('md5sum @{testfile.path}')),
-    ('notify',  after('client'),        notify('kill-server'))
+    ('md5sum',  after('ls'),            shell('md5sum @{testfile.path}')),
+    ('notify',  after('md5sum'),        notify('kill-server'))
 ])
 
 

@@ -60,7 +60,7 @@ class Scheduler:
                     args = (task.id, self._get_notify_next(task.id), after_condition)
                     task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
                     self.task_threads[task.id] = task_thread
-                    counter += 0.1
+                    counter += 0.2
                     self.task_scheduler.enterabs(start_time+value+counter, 1, task_thread.start, ())
         if duration:
             self.task_scheduler.enterabs(start_time+duration, 1, self.end, (condition, ))          
@@ -132,8 +132,6 @@ class Scheduler:
 
         if cmd_type == 'shell':
             try:
-                print 'Trying to run ' + command
-
                 if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
                     command = Scheduler.subst(command, self.test_id)
                 args = shlex.split(command)
