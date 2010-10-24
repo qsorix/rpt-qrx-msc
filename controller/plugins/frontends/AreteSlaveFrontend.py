@@ -2,7 +2,7 @@
 # coding=utf-8
 
 from controller.FrontendPlugin import FrontendPlugin
-import controller.Database as Database
+from common import Database
 from common import Exceptions
 
 import datetime
@@ -19,12 +19,10 @@ class _SentCommand:
 class AreteSlaveFrontend(FrontendPlugin):
     frontend_type = 'arete_slave'
 
-    def __init__(self, host, connection, test_uuid, triggers):
-        FrontendPlugin.__init__(self, host, connection)
+    def __init__(self, host, connection, configured_test):
+        FrontendPlugin.__init__(self, host, connection, configured_test)
         self._sent_cmds = {}
         self._id = 0
-        self._triggers = triggers
-        self._test_id = test_uuid
         self._test_finished_flag = False
 
     def _make_id(self):
@@ -44,7 +42,7 @@ class AreteSlaveFrontend(FrontendPlugin):
             self.output().write(cmd)
             self._check_response();
 
-        out('test @{id=%s}\n' % self._test_id)
+        out('test @{id=%s}\n' % self.configuration().test_uuid)
 
         for r in resources:
             r.transfer_with_arete_slave(self)
@@ -83,7 +81,7 @@ class AreteSlaveFrontend(FrontendPlugin):
         out('end\n')
 
     def start_sanity_check(self):
-        self.output().write('prepare @{id=%s}\n' % self._test_id)
+        self.output().write('prepare @{id=%s}\n' % self.configuration().test_uuid)
 
     def wait_sanity_check(self):
         print '  -- waiting for sanity check to finish at ' + self.host().model['name'] + ' --'
@@ -111,7 +109,7 @@ class AreteSlaveFrontend(FrontendPlugin):
 
         run = 'at ' + start.isoformat()
 
-        self.output().write('start @{id=%s} @{run=%s} @{end=%s}\n' % (self._test_id, run, end))
+        self.output().write('start @{id=%s} @{run=%s} @{end=%s}\n' % (self.configuration().test_uuid, run, end))
         self._check_response();
 
         if self._disconnect_for_end_policy(end):
@@ -120,7 +118,7 @@ class AreteSlaveFrontend(FrontendPlugin):
     def trigger(self, trigger_name):
         if not self.connection().connected(): return
 
-        self.output().write('trigger @{id=%s} @{name=%s}\n' % (self._test_id, trigger_name))
+        self.output().write('trigger @{id=%s} @{name=%s}\n' % (self.configuration().test_uuid, trigger_name))
 
     def check_test_end(self):
         self._non_blocking_io()
@@ -178,10 +176,10 @@ class AreteSlaveFrontend(FrontendPlugin):
             if len(tokens) == 4:
                 trigger_name = line.split()[3]
 
-                if trigger_name not in self._triggers:
+                if trigger_name not in self.configuration().triggers:
                     raise RuntimeError("Received unknown trigger name ({0}).".format(trigger_name))
 
-                self._triggers[trigger_name].notify()
+                self.configuration().triggers[trigger_name].notify()
                 return
 
         raise RuntimeError("Not recognized message received from slave. Message is: {0}".format(line))
@@ -200,14 +198,14 @@ class AreteSlaveFrontend(FrontendPlugin):
         print '  -- fetching results from ' + self.host().model['name'] + ' --'
 
         self.connect()
-        self.output().write('results @{id=%s}\n' % self._test_id)
+        self.output().write('results @{id=%s}\n' % self.configuration().test_uuid)
         resp = self.input().readline()
         if resp.startswith('200'):
                        
             start_time = datetime.datetime.strptime(self._get_param('start_time')[0], '%Y-%m-%dT%H:%M:%S.%f')
             duration = datetime.timedelta(seconds=float(self._get_param('duration')[0]))
             
-            node = Database.Node(test=Database.Test.get_by(id=unicode(self._test_id)), node=self.host().model['name'], start_time=start_time, duration=duration)
+            node = Database.Node(test=Database.Test.get_by(id=unicode(self.configuration().test_uuid)), node=self.host().model['name'], start_time=start_time, duration=duration)
 
             for list in ['checks', 'setups', 'tasks', 'cleans']:
                 ids = self._get_list(list)

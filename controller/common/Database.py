@@ -2,14 +2,26 @@
 # coding=utf-8
 
 from elixir import *
+import datetime
 
 def init(filename):
     metadata.bind = 'sqlite:///' + filename
     setup_all()
     create_all()
 
+def store_test(configured_test):
+    Test(id=unicode(configured_test.test_uuid),
+         start_time=datetime.datetime.now(),
+         comment = configured_test.comment_message,
+         model=configured_test.model['name'],
+         laboratory=configured_test.laboratory['name'],
+         schedule=configured_test.schedule['name'],
+         mapping=configured_test.mapping['name'])
+    commit();
+
 def commit():
     session.commit()
+
 
 class Test(Entity):
     using_options(tablename='tests')
@@ -18,8 +30,12 @@ class Test(Entity):
 
     id = Field(String, primary_key=True)
     start_time = Field(DateTime, required=True)
-    duration = Field(Interval, required=True)
     comment = Field(String, required=False, default=None)
+
+    model = Field(String, required=True)
+    laboratory = Field(String, required=True)
+    schedule = Field(String, required=True)
+    mapping = Field(String, required=True)
 
 
 class Node(Entity):

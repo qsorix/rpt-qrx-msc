@@ -8,7 +8,7 @@ import Schedule
 import Resources
 import Utils
 import common.Exceptions as Exceptions
-
+import uuid
 import traceback
 
 class ConfiguredHost:
@@ -80,7 +80,28 @@ class ConfiguredTest:
        Słownik zdefiniowanych triggerów (:class:`~config.Schedule.Trigger`).
        Kluczami są nazwy podane przy tworzeniu triggerów.
 
+    .. attribute:: model
+
+       Referencja do struktury modelu.
+
+    .. attribute:: laboratory
+
+       Referencja do struktury laboratorium.
+
+    .. attribute:: schedule
+
+       Referencja do struktury planu.
+
+    .. attribute:: mapping
+
+       Referencja do struktury mapowania.
+
     """
+
+    def __init__(self):
+        """ Stwórz nowy test przypisując mu unikalny identyfikator. """
+        self.test_uuid = uuid.uuid4()
+
 
     def sanity_check(self):
         """ Sprawdź poprawność konfiguracji.
@@ -220,6 +241,11 @@ class Configuration:
             ct.hosts[h['name']] = host
 
         ct.sanity_check()
+
+        ct.model = Model.get_model()
+        ct.laboratory = Laboratory.get_laboratory()
+        ct.schedule = Schedule.get_schedule()
+        ct.mapping = Mapping.get_mapping()
 
         self._configured_test = ct
 

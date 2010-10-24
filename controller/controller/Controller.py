@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import uuid
 import datetime
 import time
 
 from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
 from common import Exceptions
-from controller import Database
+from common import Database
 
 class TestDurationPolicy:
     def __init__(self, start, end_policy):
@@ -47,7 +46,6 @@ class TestDurationPolicy:
 class Controller:
     def run(self, configured_test):
 
-        self._test_uuid = uuid.uuid4()
         self._create_frontends(configured_test)
         self._test = configured_test
 
@@ -97,7 +95,7 @@ class Controller:
         self._frontends = {}
         for (name, host) in configured_test.hosts.items():
             connection = self._connection_class(host)
-            self._frontends[name] = self._frontend_class(host)(host, connection, test_uuid=self._test_uuid, triggers=configured_test.triggers)
+            self._frontends[name] = self._frontend_class(host)(host, connection, configured_test)
 
     def _send_configuration(self):
         for frontend in self._frontends.values():
@@ -115,8 +113,6 @@ class Controller:
 
     def _perform_test(self):
         # configuration is sane, start the test
-
-        self._start_time = datetime.datetime.now()
 
         configured_test = self._test
 
@@ -151,12 +147,7 @@ class Controller:
 
                     notified_triggers.add(trigger['name'])
 
-        self._duration = datetime.datetime.now() - self._start_time
-
     def _fetch_results(self):
-        Database.Test(id=unicode(self._test_uuid), start_time=self._start_time, duration=self._duration)
-        Database.commit();
-
         for frontend in self._frontends.values():
             frontend.fetch_results()
             Database.commit();

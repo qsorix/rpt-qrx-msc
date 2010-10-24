@@ -7,7 +7,7 @@ from command import Generator
 from controller import Controller
 from common import Exceptions
 from common.Hooks import HookPlugin
-from controller import Database
+from common import Database
 
 import sys
 import os
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     parser.add_argument('--plugins', help='plugins path', required=False, nargs='+', default=[])
     parser.add_argument('--hooks', help='names of the hooks to run', required=False, nargs='+', default=[])
     parser.add_argument('--map', help='allows you to specify mapping on command line in the format model:device', required=False, nargs='+', default=[])
-    parser.add_argument('-m', '--message', help='specify comment for this execution of test', required=False, default="")
+    parser.add_argument('-m', '--message', help='specify comment message for this execution of test', required=False, default=None)
     parser.add_argument('-d', '--database', help='path to results database (sqlite file)', required=False, default="arete.db")
 
     args = parser.parse_args()
@@ -51,6 +51,7 @@ if __name__ == "__main__":
 
         # read configuration
         configured_test = Configuration.Configuration().read(args.config, args.map)
+        configured_test.comment_message = args.message
 
         # generate commands
         Generator.Generator().process( configured_test )
@@ -61,6 +62,7 @@ if __name__ == "__main__":
 
         # initialize database
         Database.init(args.database)
+        Database.store_test(configured_test)
 
         # perform test
         Controller.Controller().run(configured_test)

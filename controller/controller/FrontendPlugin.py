@@ -47,10 +47,14 @@ class FrontendPlugin:
 
         raise RuntimeError("Frontend plugin for type '%s' was not registered" % name)
 
-    def __init__(self, host, connection_class, **kwargs):
+    def __init__(self, host, connection_class, configured_test, **kwargs):
         self._host = host
+        self._configured_test = configured_test
         self._connection_class = connection_class
         self._connection = connection_class(self.host())
+
+    def configuration(self):
+        return self._configured_test
 
     def connection(self):
         return self._connection
