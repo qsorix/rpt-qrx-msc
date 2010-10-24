@@ -289,7 +289,16 @@ class AreteSlaveFrontend(FrontendPlugin):
         raise Exceptions.SlaveError('Received wrong response. Expected 200 OK, got: ' + resp);
                     
     def abort_test(self):
-        # TODO Implement aborting sanity check and test itself.
-        # Note: do not throw here. log errors and don't propagate them
-        pass
+        """If possible, abort the test.
+
+        Do not throw exceptions."""
+
+        try:
+            if not self.connection().connected(): return
+
+            self.output().write('stop @{id=%s}\n' % (self.configuration().test_uuid))
+            self.disconnect()
+
+        except Exception as e:
+            print "Exception while aborting test. Ignoring: ", e
 
