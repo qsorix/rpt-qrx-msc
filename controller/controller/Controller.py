@@ -53,8 +53,6 @@ class Controller:
             self._send_configuration()
             self._perform_sanity_check()
 
-            # FIXME: at this point frontends must be synchronized with slaves.
-
             self._perform_test()
 
             self._fetch_results()

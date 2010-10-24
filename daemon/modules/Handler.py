@@ -6,6 +6,7 @@ import socket
 import SocketServer
 import logging
 import thread
+import datetime
 
 from modules.Parser import parse
 from common.Exceptions import *
@@ -34,7 +35,8 @@ class Handler(SocketServer.StreamRequestHandler):
             'prepare'     : manager.prepare_test,
             'start'       : manager.start_test,
             'stop'        : manager.stop_test,
-            'trigger'     : manager.run_trigger
+            'trigger'     : manager.run_trigger,
+            'time'        : self.send_time
         }
 
         try:
@@ -87,7 +89,7 @@ class Handler(SocketServer.StreamRequestHandler):
                             self.send_ok(sizes=[len(to_send)])
                             self.wfile.write(to_send)
                     else:
-                        if type != 'trigger':
+                        if type not in ['trigger', 'time']:
                             self.send_ok()
                         if type == 'start':
                             manager.register_handler(params['id'], self.send_100)
@@ -141,3 +143,6 @@ class Handler(SocketServer.StreamRequestHandler):
             self.notify(test_id, trigger)
         else:
             self.send_test_finished()
+
+    def send_time(self, test_id):
+        self.send('200 OK ' + datetime.datetime.now().isoformat())

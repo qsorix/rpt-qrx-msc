@@ -10,7 +10,7 @@ start_run_regex   = r'^(at\s[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2
 start_end_regex   = r'^(duration\s[0-9]+)|(complete)$'
 task_run_regex    = r'^(at\s\d)|(after\s.+)|(every\s\d)|(trigger\s.+)$'
 
-main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete', 'trigger']
+main_types        = ['test', 'results', 'prepare', 'start', 'stop', 'delete', 'trigger', 'time']
 test_sub_types    = ['file', 'check', 'setup', 'task', 'clean', 'delete', 'end']
 results_sub_types = ['get', 'end']
 
@@ -59,7 +59,7 @@ def parse(line, parent=None):
 
     # Check required parameters
     req = []
-    if not type in ['end', 'get']:
+    if not type in ['end', 'get', 'time']:
         req.append('id')
     if globals().has_key(type+'_required'):
         req += globals()[type+'_required']

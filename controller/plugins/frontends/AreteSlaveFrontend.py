@@ -81,11 +81,12 @@ class AreteSlaveFrontend(FrontendPlugin):
         out('end\n')
 
     def start_sanity_check(self):
+        self._synchronize()
+
         self.output().write('prepare @{id=%s}\n' % self.configuration().test_uuid)
 
     def wait_sanity_check(self):
         print '  -- waiting for sanity check to finish at ' + self.host().model['name'] + ' --'
-
         resp = self.input().readline()
 
         if resp.startswith('200'):
@@ -96,6 +97,24 @@ class AreteSlaveFrontend(FrontendPlugin):
 
         raise Exceptions.SlaveError('Unexpected result received after sanity check: ' + resp)
 
+    def _synchronize(self):
+        l1 = datetime.datetime.now()
+
+        self.output().write('time\n')
+        resp = self.input().readline()
+
+        l2 = datetime.datetime.now()
+
+        if not resp.startswith('200 OK '):
+            raise Exceptions.SlaveError('Unable to synchronize, got response: ' + resp)
+
+        r1 = datetime.datetime.strptime(resp.split()[2], '%Y-%m-%dT%H:%M:%S.%f')
+
+        # assuming symmetric communication delay 0.5 * (l1-l2) is the point in
+        # local when remote end is sending the response
+        # it is written in a way it is because we can only subtract two time
+        # values, and add two timedelta
+        self._synchronization_offset = ((r1 - l1) + (r1 - l2)) // 2
 
     def start_test(self, duration_policy):
         self._duration_policy = duration_policy
@@ -103,9 +122,7 @@ class AreteSlaveFrontend(FrontendPlugin):
         start = duration_policy.start()
         end = duration_policy.end_policy()
 
-        # TODO From start time (local) and time offset acquired during
-        # synchronization calculate remote time at which test should start
-        # start += synchronizated_offset
+        start += self._synchronization_offset
 
         run = 'at ' + start.isoformat()
 
@@ -165,6 +182,7 @@ class AreteSlaveFrontend(FrontendPlugin):
     def _async_input(self, line):
         line = line.strip()
         print '  -- received {0} at {1} -- '.format(line, self.host().model['name'])
+
         if line == '100 Test Finished':
             self._test_finished_flag = True
             return
