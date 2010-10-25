@@ -32,8 +32,11 @@ class trigger(Schedule.RunPolicy):
         return 'trigger %s' % self._trigger
 
 class poke(Schedule.RunPolicy):
+    def __init__(self, poke):
+        self._poke = poke
+
     def schedule_for_arete_slave(self):
-        return 'poke'
+        return 'poke %s' % self._poke
     
 class shell(Schedule.Command):
     def __init__(self, command, use_resources=[], check_executable=True):
