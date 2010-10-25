@@ -1,0 +1,29 @@
+from utils.schedule import at, shell, trigger, notify, poke
+
+create_model('poke-test')
+
+add_host('a')
+add_host('b')
+
+create_schedule('poke-test')
+
+test_end_policy('complete', setup_phase_delay=2.0)
+
+create_trigger('test', 2)
+
+loop = 'bash -c "while true; do echo -n .; sleep 1; done"'
+
+append_schedule('a', [
+    ('echo', at(0), shell(loop)),
+    ('notify', at(2), notify('test')),
+    ('trigger', trigger('test'), shell('kill @{echo.pid}'))
+])
+
+append_schedule('b', [
+    ('echo', at(0), shell(loop)),
+    ('poke', at(4), shell('@{poke test}', check_executable=False)),
+    ('notify', poke('test'), notify('test')),
+    ('trigger', trigger('test'), shell('kill @{echo.pid}'))
+])
+
+# vim: ft=python
