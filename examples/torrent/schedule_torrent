@@ -1,20 +1,23 @@
 create_schedule('torrent-distribution-time')
     
-test_end_policy('complete', setup_phase_delay=1.0)
+test_end_policy('complete', setup_phase_delay=2.0)
 
 # east[0] will be seeding. All other hosts just download
 
 torrent = add_resource(File('torrent', 'big-data-file.torrent'))
 data    = add_resource(File('data',    'big-data-file'))
 
+create_trigger('stop-torrent', 8)
+
 seed_schedule = [
-    ('tracker', at(0), shell('bittorrent-tracker --port 9876', use_resources=[torrent, data]))
+    ('tracker', at(0), shell('bittorrent-tracker --port 9876')),
+    ('stop', trigger('stop-torrent'), shell('kill @{tracker.pid}'))
 ]
 
 peer_schedule = [
-    # FIXME 2: get commands from semafor-triggers proposal if they get
-    # implemented. if not, this test won't work :-(
-    ('ctorrent', at(1), shell('ctorrent @{torrent.path} -X @{arete_slave_poke}', use_resources=[torrent]))
+    ('ctorrent', at(1), shell('ctorrent @{torrent.path} -X @{poke stop-torrent}', use_resources=[torrent])),
+    ('poke', poke('stop-torrent'), notify('stop-torrent')),
+    ('stop', trigger('stop-torrent'), shell('kill @{ctorrent.pid}'))
 ]
 
 append_schedule(east[0], seed_schedule)
