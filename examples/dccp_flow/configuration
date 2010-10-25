@@ -25,7 +25,7 @@ add_host('client', iptables_counters=['33', 'tcp', 'udp']) # 33 is DCCP
 add_host('server', iptables_counters=['33', 'tcp', 'udp'])
 
 create_schedule('dccp_flow')
-test_end_policy('duration 20', setup_phase_delay=1.0)
+test_end_policy('duration 20', setup_phase_delay=2.0)
 
 dccp = ClientServer('dccp',
     server_command='iperf -s -p 7999 -t dccp',
