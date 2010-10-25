@@ -8,8 +8,7 @@ torrent = add_resource(File('torrent', 'big-data-file.torrent'))
 data    = add_resource(File('data',    'big-data-file'))
 
 seed_schedule = [
-    # FIXME 1: tracker missing
-    ('tracker', at(0), shell('FIXME', use_resources=[torrent, data]))
+    ('tracker', at(0), shell('bittorrent-tracker --port 9876', use_resources=[torrent, data]))
 ]
 
 peer_schedule = [
