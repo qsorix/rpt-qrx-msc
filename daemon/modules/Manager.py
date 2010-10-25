@@ -91,7 +91,7 @@ class Manager:
 
     def get_results(self, test_id, command):
         if re.match('@{([a-zA-Z0-9\._]+)}', command):
-            match = re.match('@{(?P<ref>[a-zA-Z0-9 -_\.]+)}', command)
+            match = re.match('@{(?P<ref>[a-zA-Z0-9-_]+)}', command)
             cmd_ids  = [cmd.id for cmd in Command.query.filter_by(test_id=test_id).all()]
 
             ref = match.group('ref').split('.')
