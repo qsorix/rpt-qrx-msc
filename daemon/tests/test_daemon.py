@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import nose
 import socket
-import os
 import thread
 import time
 

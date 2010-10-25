@@ -5,13 +5,12 @@ import os
 import re
 import logging
 import subprocess
-import sched
 import shlex
 import time
 import threading
 import thread
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from database.Models import *
 from modules.Scheduler import Scheduler
@@ -28,7 +27,7 @@ class Manager:
     def create_test(self, parent_id, id):
         if Test.get_by(id=id):
             raise DatabaseError("[ Test %s ] Test already exists." % (id))
-        test = Test(id=id)
+        Test(id=id)
         session.commit()
 
     def delete_test(self, parent_id , id):
@@ -41,28 +40,25 @@ class Manager:
     def add_check_command(self, test_id, id, command):
         if self._id_exists(test_id, id):
             raise DatabaseError("[ Test %s ] Command or file named '%s' already exists." % (test_id, id))
-        cmd = Check(test_id=test_id, id=id, command=command)
+        Check(test_id=test_id, id=id, command=command)
         session.commit()
 
     def add_setup_command(self, test_id, id, command):
         if self._id_exists(test_id, id):
             raise DatabaseError("[ Test %s ] Command or file named '%s' already exists." % (test_id, id))
-        cmd = Setup(test_id=test_id, id=id, command=command)
+        Setup(test_id=test_id, id=id, command=command)
         session.commit()
 
     def add_task_command(self, test_id, id, run, type, command):
         if self._id_exists(test_id, id):
             raise DatabaseError("[ Test %s ] Command or file named '%s' already exists." % (test_id, id))
-        cmd = Task(test_id=test_id, id=id, command=command, run=run, cmd_type=type)
+        Task(test_id=test_id, id=id, command=command, run=run, cmd_type=type)
         session.commit()
-        
-        if type == 'notify':
-            pass #TODO
- 
+
     def add_clean_command(self, test_id, id, command):
         if self._id_exists(test_id, id):
             raise DatabaseError("[ Test %s ] Command or file named '%s' already exists." % (test_id, id))
-        cmd = Clean(test_id=test_id, id=id, command=command)
+        Clean(test_id=test_id, id=id, command=command)
         session.commit()
 
     def add_file(self, test_id, id, size):
@@ -70,7 +66,7 @@ class Manager:
             raise DatabaseError("[ Test %s ] File or command named '%s' already exists." % (test_id, id))
         path = './tmp/' + id + str(uuid.uuid1())
 #        path = './tmp/' + test_id + '_' + id
-        file = File(test_id=test_id, id=id, size=size, path=path)
+        File(test_id=test_id, id=id, size=size, path=path)
         session.commit()
         return (path, size)
 
@@ -97,7 +93,6 @@ class Manager:
         if re.match('@{([a-zA-Z0-9\._]+)}', command):
             match = re.match('@{(?P<ref>[a-zA-Z0-9\._]+)}', command)
             cmd_ids  = [cmd.id for cmd in Command.query.filter_by(test_id=test_id).all()]
-            file_ids = [file.id for file in File.query.filter_by(test_id=test_id).all()]
 
             ref = match.group('ref').split('.')
             if len(ref) is 2:
@@ -180,30 +175,34 @@ class Manager:
 #        self._wait_for_the_end(id, task_sched, end_type, global_condition)
 
     def _wait_for_the_end(self, test_id, task_sched, end_type, global_condition):
-        task_sched.run()
+        try:
+            task_sched.run()
 
-        if end_type == 'duration':
-            global_condition.acquire()
-            while False:
-                global_condition.wait()
-            global_condition.release()
-        elif end_type == 'complete':
-            time.sleep(0.01)
-            while self.schedulers[test_id].still_running():
+            if end_type == 'duration':
+                global_condition.acquire()
+                while False:
+                    global_condition.wait()
+                global_condition.release()
+            elif end_type == 'complete':
                 time.sleep(0.01)
-        
-        end_time = datetime.now()
-        td = end_time - self.schedulers[test_id].started_at
-        duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-        test = Test.get_by(id=test_id)
-        test.duration = duration
-        logging.info("[ Test %s ] Ended" % (test_id))
-        logging.info("[ Test %s ] Duration: %f" % (test_id, test.duration))
-        session.commit()
-        
-        self.clean_test(test_id)
+                while self.schedulers[test_id].still_running():
+                    time.sleep(0.01)
+            
+            end_time = datetime.now()
+            td = end_time - self.schedulers[test_id].started_at
+            duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+            test = Test.get_by(id=test_id)
+            test.duration = duration
+            logging.info("[ Test %s ] Ended" % (test_id))
+            logging.info("[ Test %s ] Duration: %f" % (test_id, test.duration))
+            session.commit()
+            
+            self.clean_test(test_id)
 
-        self.notify_handlers[test_id]()
+            self.notify_handlers[test_id]()
+        except Exception:
+            pass
+#            logging.error(e)
 
     def clean_test(self, test_id):
         self._run_commands(Clean.query.filter_by(test_id=test_id).all(), test_id)
@@ -236,7 +235,7 @@ class Manager:
                 Duration(command=cmd, content=duration)
                 Returncode(command=cmd, content=p.returncode)
                 session.commit()
-            except (OSError, ResolvError) as e:
+            except OSError, ResolvError:
                 raise DaemonError("[ Test %s ] Command '%s' failed." % (test_id, cmd.id))
             if p.returncode != 0:
                 raise CommandError("[ Test %s ] Command '%s' ended badly." % (test_id, cmd.id), cmd.id)

@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import sys
 import socket
 import SocketServer
 import logging
-import thread
 import datetime
 
 from modules.Parser import parse
 from common.Exceptions import *
 
-class Handler(SocketServer.StreamRequestHandler):       
+class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
         logging.info("[ Connection %s ] Handling" % self.client_address[0])
         parent = None
@@ -19,7 +17,6 @@ class Handler(SocketServer.StreamRequestHandler):
         
         from modules.Daemon import Daemon
         manager = Daemon.get_manager()
-#        logging.basicConfig(filename=Daemon.get_logfile(), level=logging.DEBUG)
         
         types_and_actions = {
             'test'        : manager.create_test,
@@ -51,9 +48,9 @@ class Handler(SocketServer.StreamRequestHandler):
                 except (DaemonError, CommandError) as e:
                     logging.error(e)
                     if isinstance(e, CommandError):
-                       self.send_cmd_error(e.cmd_id)
+                        self.send_cmd_error(e.cmd_id)
                     elif isinstance(e, SetupTooLongError):
-                       self.send_setup_too_long()
+                        self.send_setup_too_long()
                     else:
                         self.send_bad_request()
                     if type == 'start':
@@ -77,7 +74,6 @@ class Handler(SocketServer.StreamRequestHandler):
                         type = result[0]
                         to_send = result[1]
                         if type == 'multi':
-                            number = to_send[0]
                             output_list = to_send[1]
                             size_list = [len(output) for output in output_list]
                             self.send_ok(sizes=size_list)
@@ -93,10 +89,7 @@ class Handler(SocketServer.StreamRequestHandler):
                             self.send_ok()
                         if type == 'start':
                             manager.register_handler(params['id'], self.send_100)
-#                            thread.start_new_thread(manager.start_tasks, (parent_id, params['id'], params['run'], params['end']))
                             manager.start_tasks(parent_id, **params)
-#                            if params['end'] == 'complete':
-#                                self.send_test_finished()
         except socket.error, IOError:
             logging.info("[ Connection %s ] Dropped" % self.client_address[0])
 

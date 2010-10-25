@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-import nose
 from nose.tools import raises
 
 from modules.Parser import parse

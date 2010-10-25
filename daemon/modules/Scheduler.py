@@ -2,7 +2,6 @@
 # coding=utf-8
 
 import sched
-import commands
 import subprocess
 import time
 from datetime import datetime
@@ -14,7 +13,7 @@ import os
 import signal
 
 from database.Models import *
-from common.Exceptions import ResolvError, DaemonError
+from common.Exceptions import ResolvError
 
 class Scheduler:
     def __init__(self, test_id, start_time, condition=None, duration=None):
@@ -75,7 +74,8 @@ class Scheduler:
         session.commit()
     
     def end(self, condition=None):
-        condition.acquire()
+        if condition:
+            condition.acquire()
 
         self.active = False
 
@@ -87,8 +87,9 @@ class Scheduler:
                 if self.pids.has_key(id):
                     os.kill(self.pids[id], signal.SIGKILL)
 
-        condition.notify()
-        condition.release()
+        if condition:
+            condition.notify()
+            condition.release()
     
     def _get_notify_next(self, id):
         if self.conditions.has_key(id):
