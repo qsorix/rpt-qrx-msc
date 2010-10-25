@@ -117,7 +117,7 @@ class Scheduler:
                     left = every - (time.time() - t)
                     if left > 0:
                         time.sleep(left)
-                    # FIXME Command for 'every' can't last longer then 'every' value.
+                    # Command for 'every' can't last longer then 'every' value.
             else:                
                 self._shell_command_execution(task_id)
             
@@ -195,12 +195,18 @@ class Scheduler:
                     param_map['path'] = file.path
                     if param in param_map.keys():
                         return str(param_map[param])
+            elif len(ref) is 1:
+                if ref.startswith('poke') and len(ref.split(' ')) is 2:
+                    return 'python ./modules/Poker.py %s %s' % (test_id, ref.split(' ')[1])
+
             raise ResolvError("[ Test %s ] Cannot resolve '%s'." % (test_id, to_resolv))
 
         session.close()
         return re.sub('@{(?P<ref>[a-zA-Z0-9\._]+)}', resolve_ref, param)
 
     def _resolv_task_run(self, run):
+        if run == 'poke':
+            return (run, None)
         t = run.split(' ')
         if t[0] in ['every', 'at']:
             return (t[0], int(t[1]))

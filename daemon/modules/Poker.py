@@ -9,12 +9,16 @@ import sys
 class Pokeler(SocketServer.StreamRequestHandler):
     def handle(self):
         line = self.rfile.readline().strip()
-        if line:
-            line = line.split(':')
-            test_id = line[0]
-            poke_name = line[1]
-            logging.info("[ Test %s ] Received poke: %s" % (test_id, poke_name))
-            print line
+
+        line = unicode(line).split(':')
+        test_id = line[0]
+        poke_name = line[1]
+        logging.info("[ Test %s ] Received poke: %s" % (test_id, poke_name))
+
+        from modules.Daemon import Daemon
+        manager = Daemon.get_manager()
+
+        manager.run_poke(test_id, poke_name)
 
 class Poker:
     def poke(self, test_id, name):

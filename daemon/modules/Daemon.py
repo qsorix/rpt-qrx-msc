@@ -4,6 +4,7 @@
 import os
 import SocketServer
 import logging
+from threading import Thread
 
 from database.Models import *
 from modules.Manager import Manager
@@ -24,6 +25,9 @@ class Daemon:
         SocketServer.TCPServer.allow_reuse_address = True
         self.tcp_server = SocketServer.TCPServer(('localhost', port), Handler)
 
+        from modules.Poker import Pokeler
+        self.poke_server = SocketServer.TCPServer(('localhost', 91827), Pokeler)
+
     def _setup_database(self, database):
         metadata.bind = 'sqlite:///' + database
         setup_all()
@@ -32,8 +36,15 @@ class Daemon:
     def run(self):
         logging.info('[ Arete Slave ] Started @ %s:%d' % (self.tcp_server.server_address[0], self.tcp_server.server_address[1]))
         try:
+            poke_thread = Thread(target=self.poke_server.serve_forever)
+            poke_thread.setDaemon(True)
+            poke_thread.start()
+
             self.tcp_server.serve_forever()
         except KeyboardInterrupt:
+            self.tcp_server.shutdown()
+            self.poke_server.shutdown()
+
             # FIXME Not seem to work...
             for scheduler in self.manager.schedulers.values():
                 for event in scheduler.task_scheduler.queue:

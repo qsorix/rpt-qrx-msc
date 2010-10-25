@@ -137,5 +137,5 @@ class Handler(SocketServer.StreamRequestHandler):
         else:
             self.send_test_finished()
 
-    def send_time(self, test_id):
+    def send_time(self, test_id=None):
         self.send('200 OK ' + datetime.datetime.now().isoformat())

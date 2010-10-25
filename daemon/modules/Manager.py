@@ -138,9 +138,13 @@ class Manager:
         else:
             raise ParamError("[ Test %s ] You won't get your results that way." % (test_id))
 
+    def run_poke(self, test_id, name):
+        pokes = [task for task in Task.query.filter_by(test_id=test_id).all() if task.run == 'poke ' + name]
+        self._run_commands(pokes, test_id)
+
     def run_trigger(self, parent_id, id, name):
-        triggers = [task for task in Task.query.filter_by(test_id=id).all() if task.run.endswith(name)]
-        self._run_commands(triggers , id)
+        triggers = [task for task in Task.query.filter_by(test_id=id).all() if task.run == 'trigger ' + name]
+        self._run_commands(triggers, id)
 
     def prepare_test(self, parent_id, id):
         if not Test.get_by(id=id):
@@ -172,7 +176,6 @@ class Manager:
         self.schedulers[id] = task_sched
 
         thread.start_new_thread(self._wait_for_the_end, (id, task_sched, end_type, global_condition))
-#        self._wait_for_the_end(id, task_sched, end_type, global_condition)
 
     def _wait_for_the_end(self, test_id, task_sched, end_type, global_condition):
         try:
@@ -202,7 +205,6 @@ class Manager:
             self.notify_handlers[test_id]()
         except Exception:
             pass
-#            logging.error(e)
 
     def clean_test(self, test_id):
         self._run_commands(Clean.query.filter_by(test_id=test_id).all(), test_id)
