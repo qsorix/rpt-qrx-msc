@@ -133,10 +133,10 @@ class Scheduler:
 
         if cmd_type == 'shell':
             try:
-                if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
-                    command = Scheduler.subst(command, self.test_id)
-                args = shlex.split(command)
-                
+#                if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
+                command = Scheduler.subst(command, self.test_id)
+                args = shlex.split(str(command))
+
                 logging.info("[ Test %s ] Running task '%s' : %s" % (self.test_id, task_id, command))
                 
                 p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -196,21 +196,22 @@ class Scheduler:
                     if param in param_map.keys():
                         return str(param_map[param])
             elif len(ref) is 1:
-                if ref.startswith('poke') and len(ref.split(' ')) is 2:
-                    return 'python ./modules/Poker.py %s %s' % (test_id, ref.split(' ')[1])
+                if ref[0].startswith('poke') and len(ref[0].split(' ')) is 2:
+                    from modules.Daemon import Daemon
+                    manager = Daemon.get_manager()
+                    port = manager.poker_port
+                    return 'python ./modules/Poker.py %s %s %s' % (test_id, ref[0].split(' ')[1], str(port))
 
             raise ResolvError("[ Test %s ] Cannot resolve '%s'." % (test_id, to_resolv))
 
         session.close()
-        return re.sub('@{(?P<ref>[a-zA-Z0-9\._]+)}', resolve_ref, param)
+        return re.sub('@{(?P<ref>[a-zA-Z0-9 \._-]+)}', resolve_ref, param)
 
     def _resolv_task_run(self, run):
-        if run == 'poke':
-            return (run, None)
         t = run.split(' ')
         if t[0] in ['every', 'at']:
             return (t[0], int(t[1]))
-        elif t[0] in ['after', 'trigger']:
+        elif t[0] in ['after', 'trigger', 'poke']:
             return (t[0], t[1])
 
     def still_running(self):

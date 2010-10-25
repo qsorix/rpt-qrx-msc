@@ -26,7 +26,8 @@ class Daemon:
         self.tcp_server = SocketServer.TCPServer(('localhost', port), Handler)
 
         from modules.Poker import Pokeler
-        self.poke_server = SocketServer.TCPServer(('localhost', 91827), Pokeler)
+        self.manager.poker_port = port*10+1
+        self.poke_server = SocketServer.TCPServer(('localhost', self.manager.poker_port), Pokeler)
 
     def _setup_database(self, database):
         metadata.bind = 'sqlite:///' + database

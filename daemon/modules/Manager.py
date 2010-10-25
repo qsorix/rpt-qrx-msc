@@ -90,8 +90,8 @@ class Manager:
             raise SchedulerError("[ Test %s ] Test is still running." % (id))
 
     def get_results(self, test_id, command):
-        if re.match('@{([a-zA-Z0-9\._]+)}', command):
-            match = re.match('@{(?P<ref>[a-zA-Z0-9-_]+)}', command)
+        if re.match('@{([a-zA-Z0-9\s\-\._]+)}', command):
+            match = re.match('@{(?P<ref>[a-zA-Z0-9\s\-\._]+)}', command)
             cmd_ids  = [cmd.id for cmd in Command.query.filter_by(test_id=test_id).all()]
 
             ref = match.group('ref').split('.')
@@ -221,27 +221,29 @@ class Manager:
 
     def _run_commands(self, commands, test_id):
         for cmd in commands:
-            try:
-                command = str(cmd.command)
-                if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
+            if isinstance(cmd, Task) and cmd.cmd_type == 'notify':
+                self.notify_handlers[test_id](test_id, cmd.command)
+            else:
+                try:
+                    command = str(cmd.command)
+#                if re.search('@{(?P<ref>([a-zA-Z0-9_-]+\.\w+)|(poke\s\w+))}', command):
                     command = Scheduler.subst(command, test_id)
-                args = shlex.split(command)
-                logging.info("[ Test %s ] Running %s command '%s' : %s" % (cmd.test_id, cmd.row_type, cmd.id, command))
-                dt = datetime.now()            
-                p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                p.wait()
-                td = datetime.now() - dt
-                duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-                Output(command=cmd, content = p.stdout.read().strip())
-                StartTime(command=cmd, content=dt)
-                Duration(command=cmd, content=duration)
-                Returncode(command=cmd, content=p.returncode)
-                session.commit()
-            except OSError, ResolvError:
-                raise DaemonError("[ Test %s ] Command '%s' failed." % (test_id, cmd.id))
-            if p.returncode != 0:
-                raise CommandError("[ Test %s ] Command '%s' ended badly." % (test_id, cmd.id), cmd.id)
-
+                    args = shlex.split(command)
+                    logging.info("[ Test %s ] Running %s command '%s' : %s" % (cmd.test_id, cmd.row_type, cmd.id, command))
+                    dt = datetime.now()            
+                    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    p.wait()
+                    td = datetime.now() - dt
+                    duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
+                    Output(command=cmd, content = p.stdout.read().strip())
+                    StartTime(command=cmd, content=dt)
+                    Duration(command=cmd, content=duration)
+                    Returncode(command=cmd, content=p.returncode)
+                    session.commit()
+                except OSError, ResolvError:
+                    raise DaemonError("[ Test %s ] Command '%s' failed." % (test_id, cmd.id))
+                if p.returncode != 0:
+                    raise CommandError("[ Test %s ] Command '%s' ended badly." % (test_id, cmd.id), cmd.id)
 
     def _resolv_test_run(self, run):
         run = run.split(' ')
