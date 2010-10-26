@@ -6,26 +6,13 @@ import SocketServer
 import logging
 import sys
 
-class Pokeler(SocketServer.StreamRequestHandler):
-    def handle(self):
-        line = self.rfile.readline().strip()
-
-        line = unicode(line).split(':')
-        test_id = line[0]
-        poke_name = line[1]
-        logging.info("[ Test %s ] Received poke: %s" % (test_id, poke_name))
-
-        from modules.Daemon import Daemon
-        manager = Daemon.get_manager()
-
-        manager.run_poke(test_id, poke_name)
-
 class Poker:
     def poke(self, test_id, name, port):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
         sock.connect(('localhost', port))
-        sock.send('%s:%s' % (test_id, name))
+        _out = sock.makefile('w', 0)
+        _out.write('poke %s:%s\n' % (test_id, name))
         sock.close()
 
 if __name__ == "__main__":

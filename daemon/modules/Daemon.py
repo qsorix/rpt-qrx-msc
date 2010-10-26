@@ -4,10 +4,12 @@
 import os
 import SocketServer
 import logging
-from threading import Thread
 
 from database.Models import *
 from modules.Manager import Manager
+
+class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    pass
 
 class Daemon:
     manager = Manager()
@@ -23,11 +25,9 @@ class Daemon:
         
         from modules.Handler import Handler
         SocketServer.TCPServer.allow_reuse_address = True
-        self.tcp_server = SocketServer.TCPServer(('localhost', port), Handler)
+        self.tcp_server = ThreadedTCPServer(('localhost', port), Handler)
 
-        from modules.Poker import Pokeler
-        self.manager.poker_port = port*10+1
-        self.poke_server = SocketServer.TCPServer(('localhost', self.manager.poker_port), Pokeler)
+        self.manager.port = port
 
     def _setup_database(self, database):
         metadata.bind = 'sqlite:///' + database
@@ -37,10 +37,6 @@ class Daemon:
     def run(self):
         logging.info('[ Arete Slave ] Started @ %s:%d' % (self.tcp_server.server_address[0], self.tcp_server.server_address[1]))
         try:
-            poke_thread = Thread(target=self.poke_server.serve_forever)
-            poke_thread.setDaemon(True)
-            poke_thread.start()
-
             self.tcp_server.serve_forever()
         except KeyboardInterrupt:
             self.tcp_server.shutdown()

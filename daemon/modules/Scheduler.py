@@ -199,8 +199,7 @@ class Scheduler:
                 if ref[0].startswith('poke') and len(ref[0].split(' ')) is 2:
                     from modules.Daemon import Daemon
                     manager = Daemon.get_manager()
-                    port = manager.poker_port
-                    return 'python ./modules/Poker.py %s %s %s' % (test_id, ref[0].split(' ')[1], str(port))
+                    return 'python ./modules/Poker.py %s %s %s' % (test_id, ref[0].split(' ')[1], str(manager.port))
 
             raise ResolvError("[ Test %s ] Cannot resolve '%s'." % (test_id, to_resolv))
 

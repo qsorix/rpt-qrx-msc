@@ -11,92 +11,103 @@ from common.Exceptions import *
 
 class Handler(SocketServer.StreamRequestHandler):
     def handle(self):
-        logging.info("[ Connection %s ] Handling" % self.client_address[0])
-        parent = None
-        parent_id = None
-        
         from modules.Daemon import Daemon
         manager = Daemon.get_manager()
-        
-        types_and_actions = {
-            'test'        : manager.create_test,
-            'test_check'  : manager.add_check_command,
-            'test_setup'  : manager.add_setup_command,
-            'test_task'   : manager.add_task_command,
-            'test_clean'  : manager.add_clean_command,
-            'test_file'   : manager.add_file,
-            'test_delete' : manager.delete_command_or_file,
-            'results'     : manager.open_results,
-            'results_get' : manager.get_results,
-            'delete'      : manager.delete_test,
-            'prepare'     : manager.prepare_test,
-            'start'       : manager.start_test,
-            'stop'        : manager.stop_test,
-            'trigger'     : manager.run_trigger,
-            'time'        : self.send_time
-        }
 
         try:
-            while 1:
-                line = self.receive()
-                if line == '':
-                    raise socket.error
-                try:
-                    type, params = parse(line, parent)
-                    if types_and_actions.get(type):
-                        result = types_and_actions.get(type)(parent_id, **params)
-                except (DaemonError, CommandError) as e:
-                    logging.error(e)
-                    if isinstance(e, CommandError):
-                        self.send_cmd_error(e.cmd_id)
-                    elif isinstance(e, SetupTooLongError):
-                        self.send_setup_too_long()
-                    else:
-                        self.send_bad_request()
-                    if type == 'start':
-                        try:
-                            manager.clean_test(params['id'])
-                        except CommandError as ce:
-                            logging.error(ce)
-                else:
-                    if type in ['test', 'results']:
-                        parent = type
-                        parent_id = params['id']
-                    if type.endswith('end'):
-                        parent = None
-                        parent_id = None
-                    if type == 'test_file':
-                        path = result[0]
-                        size = result[1]
-                        with open(path, 'wb') as f:
-                            f.write(self.request.recv(size))
-                    if type == 'results_get':
-                        type = result[0]
-                        to_send = result[1]
-                        if type == 'multi':
-                            output_list = to_send[1]
-                            size_list = [len(output) for output in output_list]
-                            self.send_ok(sizes=size_list)
-                            for output in output_list:
-                                self.wfile.write(output)
-                        elif type == 'list':
-                            self.send_list(to_send)
+            line = self.receive()
+            if line == '':
+                raise socket.error
+            elif line.startswith('poke'):
+                line = unicode(line[5:]).split(':')
+                test_id = line[0]
+                poke_name = line[1]
+                logging.info("[ Test %s ] Running poke: %s" % (test_id, poke_name))
+                manager.run_poke(test_id, poke_name)
+            else:
+                logging.info("[ Connection %s ] Handling" % self.client_address[0])
+
+                parent = None
+                parent_id = None
+
+                types_and_actions = {
+                    'test'        : manager.create_test,
+                    'test_check'  : manager.add_check_command,
+                    'test_setup'  : manager.add_setup_command,
+                    'test_task'   : manager.add_task_command,
+                    'test_clean'  : manager.add_clean_command,
+                    'test_file'   : manager.add_file,
+                    'test_delete' : manager.delete_command_or_file,
+                    'results'     : manager.open_results,
+                    'results_get' : manager.get_results,
+                    'delete'      : manager.delete_test,
+                    'prepare'     : manager.prepare_test,
+                    'start'       : manager.start_test,
+                    'stop'        : manager.stop_test,
+                    'trigger'     : manager.run_trigger,
+                    'time'        : self.send_time
+                }
+
+                while 1:
+                    if line:
+                        logging.info("[ Connection %s ] Received: %s" % (self.client_address[0], line))
+                    try:
+                        type, params = parse(line, parent)
+                        if types_and_actions.get(type):
+                            result = types_and_actions.get(type)(parent_id, **params)
+                    except (DaemonError, CommandError) as e:
+                        logging.error(e)
+                        if isinstance(e, CommandError):
+                            self.send_cmd_error(e.cmd_id)
+                        elif isinstance(e, SetupTooLongError):
+                            self.send_setup_too_long()
                         else:
-                            self.send_ok(sizes=[len(to_send)])
-                            self.wfile.write(to_send)
+                            self.send_bad_request()
+#                    if line.startswith('start'):
+#                        try:
+#                            manager.clean_test(params['id'])
+#                        except CommandError as ce:
+#                            logging.error(ce)
                     else:
-                        if type not in ['trigger', 'time']:
-                            self.send_ok()
-                        if type == 'start':
-                            manager.register_handler(params['id'], self.send_100)
-                            manager.start_tasks(parent_id, **params)
+                        if type in ['test', 'results']:
+                            parent = type
+                            parent_id = params['id']
+                        if type.endswith('end'):
+                            parent = None
+                            parent_id = None
+                        if type == 'test_file':
+                            path = result[0]
+                            size = result[1]
+                            with open(path, 'wb') as f:
+                                f.write(self.request.recv(size))
+                        if type == 'results_get':
+                            type = result[0]
+                            to_send = result[1]
+                            if type == 'multi':
+                                output_list = to_send[1]
+                                size_list = [len(output) for output in output_list]
+                                self.send_ok(sizes=size_list)
+                                for output in output_list:
+                                    self.wfile.write(output)
+                            elif type == 'list':
+                                self.send_list(to_send)
+                            else:
+                                self.send_ok(sizes=[len(to_send)])
+                                self.wfile.write(to_send)
+                        else:
+                            if type not in ['trigger', 'time']:
+                                self.send_ok()
+                            if type == 'start':
+                                manager.register_handler(params['id'], self.send_100)
+                                manager.start_tasks(parent_id, **params)
+                    line = self.receive()
+                    if line == '':
+                        raise socket.error
         except socket.error, IOError:
             logging.info("[ Connection %s ] Dropped" % self.client_address[0])
 
     def receive(self):
         data = self.rfile.readline().strip()
-        if data:
-            logging.info("[ Connection %s ] Received: %s" % (self.client_address[0], data))
         return data
 
     def send(self, msg):
