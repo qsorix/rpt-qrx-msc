@@ -1,0 +1,3 @@
+authorized_keys - one key per line (cat id_rsa.pub >> authorized_keys)
+
+ssh_host_rsa_key - zrobiony ssh-keygen -b 2048
