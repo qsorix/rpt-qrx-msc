@@ -28,45 +28,18 @@ class File(Entity):
     def __repr__(self):
         return '<File "%s" (%d)>' % (self.id, self.size)
 
-class Output(Entity):
-    using_options(tablename='outputs')
+class Invocation(Entity):
+    using_options(tablename='invocations')
 
-    content = Field(LargeBinary, default=None)
-    
     command = ManyToOne('Command')
+
+    output = Field(LargeBinary, default=None)
+    start_time = Field(DateTime, required=True)
+    duration = Field(Interval, default=None)
+    return_code = Field(Integer, default=None)
     
     def __repr__(self):
-        return '<Output for "%s">' % (self.command.id)
-    
-class Returncode(Entity):
-    using_options(tablename='returncodes')
-
-    content = Field(Integer, default=None)
-    
-    command = ManyToOne('Command')
-    
-    def __repr__(self):
-        return '<Returncode for "%s">' % (self.command.id)
-    
-class StartTime(Entity):
-    using_options(tablename='start_times')
-
-    content = Field(DateTime, default=None)
-    
-    command = ManyToOne('Command')
-    
-    def __repr__(self):
-        return '<Start time for "%s">' % (self.command.id)
-    
-class Duration(Entity):
-    using_options(tablename='durations')
-
-    content = Field(Integer, default=None)
-    
-    command = ManyToOne('Command')
-    
-    def __repr__(self):
-        return '<Duration for "%s">' % (self.command.id)
+        return '<Invocation for "%s">' % (self.command.id)
 
 class Command(Entity):
     using_options(tablename='commands')
@@ -75,10 +48,7 @@ class Command(Entity):
     command = Field(Unicode(128), required=True)
 
     test = ManyToOne('Test', primary_key=True)
-    outputs = OneToMany('Output')
-    returncodes = OneToMany('Returncode')
-    start_times = OneToMany('StartTime')
-    durations = OneToMany('Duration')
+    invocations = OneToMany('Invocation')
 
     def __repr__(self):
         return '<Command "%s": %s >' % (self.id, self.command)

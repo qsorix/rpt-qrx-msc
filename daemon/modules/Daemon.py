@@ -40,7 +40,6 @@ class Daemon:
             self.tcp_server.serve_forever()
         except KeyboardInterrupt:
             self.tcp_server.shutdown()
-            self.poke_server.shutdown()
 
             # FIXME Not seem to work...
             for scheduler in self.manager.schedulers.values():

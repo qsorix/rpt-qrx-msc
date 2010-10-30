@@ -63,11 +63,6 @@ class Handler(SocketServer.StreamRequestHandler):
                             self.send_setup_too_long()
                         else:
                             self.send_bad_request()
-#                    if line.startswith('start'):
-#                        try:
-#                            manager.clean_test(params['id'])
-#                        except CommandError as ce:
-#                            logging.error(ce)
                     else:
                         if type in ['test', 'results']:
                             parent = type
@@ -84,11 +79,30 @@ class Handler(SocketServer.StreamRequestHandler):
                             type = result[0]
                             to_send = result[1]
                             if type == 'multi':
-                                output_list = to_send[1]
-                                size_list = [len(output) for output in output_list]
+                                kind = result[2]
+                                size_list = []
+                                for output in to_send:
+                                    if output != None:
+                                        if kind == 'duration':
+                                            output = str(float(output.seconds)+(output.microseconds/1000000))
+                                        elif kind == 'returncode':
+                                            output = str(output)
+                                        elif kind == 'start_time':
+                                            output = output.isoformat()
+                                        output_len = len(output)
+                                        size_list.append(output_len)
+                                    else:
+                                        size_list.append(-1)
                                 self.send_ok(sizes=size_list)
-                                for output in output_list:
-                                    self.wfile.write(output)
+                                for output in to_send:
+                                    if output != None:
+                                        if kind == 'duration':
+                                            output = str(float(output.seconds)+(output.microseconds/1000000))
+                                        elif kind == 'returncode':
+                                            output = str(output)
+                                        elif kind == 'start_time':
+                                            output = output.isoformat()
+                                        self.wfile.write(output)
                             elif type == 'list':
                                 self.send_list(to_send)
                             else:

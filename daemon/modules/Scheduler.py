@@ -42,27 +42,36 @@ class Scheduler:
             if type == 'at':
                 if (duration and value < duration) or not duration:
                     args = (task.id, self._get_notify_next(task.id))
-                    task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
+                    task_thread = threading.Thread(name=task.id, \
+                        target=self._run_task, args=args)
                     self.task_threads[task.id] = task_thread
-                    self.task_scheduler.enterabs(start_time+value, 1, task_thread.start, ())
+                    self.task_scheduler.enterabs(start_time+value, 1, \
+                        task_thread.start, ())
             elif type == 'every':
                 self.every_count[task.id] = 0
                 args = (task.id, None, None, value)
-                task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
+                task_thread = threading.Thread(name=task.id, \
+                    target=self._run_task, args=args)
                 self.task_threads[task.id+repr(0)] = task_thread
-                self.task_scheduler.enterabs(start_time, 1, task_thread.start, ())
+                self.task_scheduler.enterabs(start_time, 1, \
+                    task_thread.start, ())
             elif type == 'after':
                 after_condition = self._get_run_after(value)
                 if after_condition:
                     while isinstance(value, str) or isinstance(value, unicode):
-                        type, value = self._resolv_task_run(Task.get_by(test_id=self.test_id, id=value).run)
-                    args = (task.id, self._get_notify_next(task.id), after_condition)
-                    task_thread = threading.Thread(name=task.id, target=self._run_task, args=args)
+                        type, value = self._resolv_task_run(Task.get_by(\
+                            test_id=self.test_id, id=value).run)
+                    args = (task.id, self._get_notify_next(task.id), \
+                        after_condition)
+                    task_thread = threading.Thread(name=task.id, \
+                        target=self._run_task, args=args)
                     self.task_threads[task.id] = task_thread
                     counter += 0.2
-                    self.task_scheduler.enterabs(start_time+value+counter, 1, task_thread.start, ())
+                    self.task_scheduler.enterabs(start_time+value+counter, \
+                        1, task_thread.start, ())
         if duration:
-            self.task_scheduler.enterabs(start_time+duration, 1, self.end, (condition, ))          
+            self.task_scheduler.enterabs(start_time+duration, 1, self.end, \
+                (condition, ))          
     
     def run(self):
         self.task_scheduler.run()
@@ -128,47 +137,62 @@ class Scheduler:
     def _shell_command_execution(self, task_id):
         dt = datetime.now()
 
-        cmd_type = str(Command.get_by(test_id=self.test_id, id=task_id).cmd_type)
+        cmd_type = str(Command.get_by(test_id=self.test_id, id=task_id)\
+            .cmd_type)
         command = str(Command.get_by(test_id=self.test_id, id=task_id).command)
 
         if cmd_type == 'shell':
             try:
-#                if re.search('@{(?P<ref>[a-zA-Z0-9\._]+)}', command):
                 command = Scheduler.subst(command, self.test_id)
                 args = shlex.split(str(command))
 
-                logging.info("[ Test %s ] Running task '%s' : %s" % (self.test_id, task_id, command))
+                logging.info("[ Test %s ] Running task '%s' : %s" \
+                    % (self.test_id, task_id, command))
                 
-                p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                p = subprocess.Popen(args, stdout=subprocess.PIPE, \
+                    stderr=subprocess.STDOUT)
                 task = Task.get_by(test_id=self.test_id, id=task_id)
                 self.pids[task_id] = p.pid               
                 task.pid = p.pid
                 session.commit()
                 p.wait()
                 td = datetime.now() - dt
-                duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-                Output(command=task, content=p.stdout.read().strip())
-                StartTime(command=task, content=dt)
-                Duration(command=task, content=duration)
-                Returncode(command=task, content=p.returncode)
-                session.commit()
             except (OSError, ResolvError) as e:
                 logging.error(e)
-                logging.error("[ Test %s ] Task '%s' failed." % (self.test_id, task_id))
-                from modules.Daemon import Daemon
-                manager = Daemon.get_manager()
+                logging.error("[ Test %s ] Running task '%s' failed." \
+                    % (self.test_id, task_id))
+
+                Invocation(command=Command.get_by(test_id=self.test_id, \
+                    id=task_id), start_time=dt)
+                session.commit()
+
+#                from modules.Daemon import Daemon
+#                manager = Daemon.get_manager()
 #                manager.stop_test(None, self.test_id)
                 # FIXME: See if that works:)
+            else:
+                Invocation(\
+                    command=Command.get_by(test_id=self.test_id, \
+                        id=task_id), output=p.stdout.read(), start_time=dt, \
+                        duration=td, return_code=p.returncode)
+                session.commit()
+                pass
 
         elif cmd_type == 'notify':
             from modules.Daemon import Daemon
             manager = Daemon.get_manager()
             manager.notify_handlers[self.test_id](self.test_id, command)
+
+            Invocation(command=Command.get_by(test_id=self.test_id, \
+                id=task_id), start_time=dt)
+            session.commit()
             
     @staticmethod     
     def subst(param, test_id):
-        cmd_ids  = list(cmd.id for cmd in Command.query.filter_by(test_id=test_id).all())
-        file_ids = list(file.id for file in File.query.filter_by(test_id=test_id).all())
+        cmd_ids  = list(\
+            cmd.id for cmd in Command.query.filter_by(test_id=test_id).all())
+        file_ids = list(\
+            file.id for file in File.query.filter_by(test_id=test_id).all())
 
         def resolve_ref(matchobj):
             to_resolv = matchobj.group('ref')
@@ -179,13 +203,15 @@ class Scheduler:
                 if id in cmd_ids:
                     cmd = Command.get_by(test_id=test_id, id=unicode(id))
                     param_map = {}
-                    if len(cmd.returncodes) > 0:
-                        param_map['returncode'] = cmd.returncodes[-1]
+                    if len(cmd.invocations) > 0:
+                        param_map['returncode'] = \
+                            cmd.invocation[-1].return_code
                     if cmd.row_type == u'task':
                         if cmd.pid is not None:
                             param_map['pid'] = cmd.pid
                         else:
-                            raise ResolvError("[ Test %s ] Task '%s' hasn't been run yet." % (self.test_id, cmd.id))
+                            raise ResolvError("[ Test %s ] Task '%s' hasn't \
+                                been run yet." % (self.test_id, cmd.id))
                     if param in param_map.keys():
                         return str(param_map[param])
                 elif id in file_ids:
@@ -199,9 +225,11 @@ class Scheduler:
                 if ref[0].startswith('poke') and len(ref[0].split(' ')) is 2:
                     from modules.Daemon import Daemon
                     manager = Daemon.get_manager()
-                    return 'python ./modules/Poker.py %s %s %s' % (test_id, ref[0].split(' ')[1], str(manager.port))
+                    return 'python ./modules/Poker.py %s %s %s' \
+                        % (test_id, ref[0].split(' ')[1], str(manager.port))
 
-            raise ResolvError("[ Test %s ] Cannot resolve '%s'." % (test_id, to_resolv))
+            raise ResolvError("[ Test %s ] Cannot resolve '%s'." \
+                % (test_id, to_resolv))
 
         session.close()
         return re.sub('@{(?P<ref>[a-zA-Z0-9 \._-]+)}', resolve_ref, param)
@@ -214,6 +242,7 @@ class Scheduler:
             return (t[0], t[1])
 
     def still_running(self):
-        running = len([th for th in self.task_threads.values() if th.is_alive()]) != 0
+        running = len([th for th in self.task_threads.values() \
+            if th.is_alive()]) != 0
         return running or not self.task_scheduler.empty()
     

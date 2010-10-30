@@ -65,7 +65,6 @@ class Manager:
         if self._id_exists(test_id, id):
             raise DatabaseError("[ Test %s ] File or command named '%s' already exists." % (test_id, id))
         path = './tmp/' + id + str(uuid.uuid1())
-#        path = './tmp/' + test_id + '_' + id
         File(test_id=test_id, id=id, size=size, path=path)
         session.commit()
         return (path, size)
@@ -101,34 +100,30 @@ class Manager:
                 if id in cmd_ids:
                     cmd = Command.get_by(test_id=test_id, id=id)
                     if param == 'output':
-                        number = len(cmd.outputs)
-                        if number > 0:
-                            return ('multi', (number, [output.content for output in cmd.outputs]))
+                        if len(cmd.invocations) > 0:
+                            return ('multi', [invocation.output for invocation in cmd.invocations], 'output')
                         else:
                             raise DatabaseError("[ Test %s ] Output for command '%s' doesn't exist." % (test_id, id))
                     elif param == 'returncode':
-                        number = len(cmd.returncodes)
-                        if number > 0:
-                            return ('multi', (number, [str(rc.content) for rc in cmd.returncodes]))
+                        if len(cmd.invocations) > 0:
+                            return ('multi', [invocation.return_code for invocation in cmd.invocations], 'returncode')
                         else:
                             raise DatabaseError("[ Test %s ] Returncode for command '%s' doesn't exist." % (test_id, id))
                     elif param == 'start_time':
-                        number = len(cmd.start_times)
-                        if number > 0:
-                            return ('multi', (number, [st.content.isoformat() for st in cmd.start_times]))
+                        if len(cmd.invocations) > 0:
+                            return ('multi', [invocation.start_time for invocation in cmd.invocations], 'start_time')
                         else:
                             raise DatabaseError("[ Test %s ] Start datetime for command '%s' doesn't exist." % (test_id, id))
                     elif param == 'duration':
-                        number = len(cmd.durations)
-                        if number > 0:
-                            return ('multi', (number, [str(duration.content) for duration in cmd.durations]))
+                        if len(cmd.invocations) > 0:
+                            return ('multi', [invocation.duration for invocation in cmd.invocations], 'duration')
                         else:
                             raise DatabaseError("[ Test %s ] Duration for command '%s' doesn't exist." % (test_id, id)) 
                     raise DatabaseError("[ Test %s ] Command named '%s' doesn't exist." % (test_id, id))
             elif len(ref) is 1:
                 param = ref[0]
                 if param in ['checks', 'setups', 'tasks', 'cleans']:
-                    list = [cmd.id for cmd in Command.query.filter_by(test_id=test_id, row_type=param[:-1]).all() if len(cmd.outputs) > 0]
+                    list = [cmd.id for cmd in Command.query.filter_by(test_id=test_id, row_type=param[:-1]).all() if len(cmd.invocations) > 0]
                     return ('list', list)
                 elif param == 'start_time':
                     return ('single', Test.get_by(id=test_id).start_time.isoformat())
@@ -226,7 +221,6 @@ class Manager:
             else:
                 try:
                     command = str(cmd.command)
-#                if re.search('@{(?P<ref>([a-zA-Z0-9_-]+\.\w+)|(poke\s\w+))}', command):
                     command = Scheduler.subst(command, test_id)
                     args = shlex.split(command)
                     logging.info("[ Test %s ] Running %s command '%s' : %s" % (cmd.test_id, cmd.row_type, cmd.id, command))
@@ -234,16 +228,18 @@ class Manager:
                     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     p.wait()
                     td = datetime.now() - dt
-                    duration = float(td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6
-                    Output(command=cmd, content = p.stdout.read().strip())
-                    StartTime(command=cmd, content=dt)
-                    Duration(command=cmd, content=duration)
-                    Returncode(command=cmd, content=p.returncode)
-                    session.commit()
                 except OSError, ResolvError:
+                    Invocation(command=cmd, start_time=dt)
+                    session.commit()
+
                     raise DaemonError("[ Test %s ] Command '%s' failed." % (test_id, cmd.id))
-                if p.returncode != 0:
-                    raise CommandError("[ Test %s ] Command '%s' ended badly." % (test_id, cmd.id), cmd.id)
+                else:
+                    Invocation(command=cmd, output=p.stdout.read(), start_time=dt, duration=td, return_code=p.returncode)
+                    session.commit()
+
+                    if p.returncode != 0:
+                        # For sanity_check and setup
+                        raise CommandError("[ Test %s ] Command '%s' ended badly." % (test_id, cmd.id), cmd.id)
 
     def _resolv_test_run(self, run):
         run = run.split(' ')
