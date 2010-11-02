@@ -8,6 +8,11 @@ from common import Exceptions
 import datetime
 import os
 
+def _to_time_delta(data):
+    if data is None:
+        return None
+    return datetime.timedelta(seconds=float(data))
+
 class _SentCommand:
     """Auxillary structure to store sent commands in uniform way."""
 
@@ -236,7 +241,7 @@ class AreteSlaveFrontend(FrontendPlugin):
                     command = Database.Command(node=node, id=id, phase=c.phase, type=c.type, value=c.value)
 
                     start_times = map ((lambda x: datetime.datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%f')), self._get_param('start_time', id))
-                    durations = map ((lambda x: datetime.timedelta(seconds=float(x))), self._get_param('duration', id))
+                    durations = map (_to_time_delta, self._get_param('duration', id))
                     outputs = self._get_param('output', id)
                     returncodes = self._get_param('returncode', id)
 
@@ -272,12 +277,14 @@ class AreteSlaveFrontend(FrontendPlugin):
             raise Exceptions.SlaveError("Wrong response while receiving results")
 
         data_list = []
-        sizes = reply.split(' ')[2:]
+        sizes = map(int, reply.split(' ')[2:])
         for size in sizes:
-            if size != 0:
-                data = self.input().read(int(size))
-            else:
+            if size == -1:
                 data = None
+            elif size == 0:
+                data = ""
+            else:
+                data = self.input().read(int(size))
             data_list.append(data)
         return data_list
 
