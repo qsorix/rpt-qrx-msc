@@ -6,13 +6,19 @@ from common import Exceptions
 class AttributedMixin:
     """Obsługa atrybutów."""
 
+    def __contains__(self, name):
+        return name in self._attributes
+
     def __getitem__(self, name):
         """Zwróć wartość atrybutu ``name``.
 
         Zwróci ``None`` jeśli podany atrybut nie został określony.
         """
         try:
-            return self._attributes[name]
+            if name in self._attributes:
+                return self._attributes[name]
+            else:
+                return None
         except AttributeError:
             return None
 
