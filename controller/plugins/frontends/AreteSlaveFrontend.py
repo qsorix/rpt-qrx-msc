@@ -7,6 +7,7 @@ from common import Exceptions
 
 import datetime
 import os
+import socket
 
 def _to_time_delta(data):
     if data is None:
@@ -157,6 +158,9 @@ class AreteSlaveFrontend(FrontendPlugin):
             while True:
                 line = conn.input().readline()
                 self._async_input(line)
+
+        except socket.timeout:
+            pass
 
         except IOError as e:
             if e.errno not in [os.errno.EAGAIN, os.errno.EWOULDBLOCK]:

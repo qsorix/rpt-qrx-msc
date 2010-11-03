@@ -41,18 +41,18 @@ class SSHConnection(ConnectionPlugin):
             return
 
         if self._method=='key':
-            self._ssh.connect(self._ip, port=self._port, username=self._username, key_filename=self._keyfile)
+            self._ssh.connect(self._ip, port=int(self._port), username=self._username, key_filename=self._keyfile)
 
         elif self._method=='password':
             self._ssh.connect(self._ip, port=self._port, username=self._username, password=self._password)
 
         self._channel = self._ssh.get_transport().open_session()
 
-        self._in = session.makefile('r', 0)
-        self._out = session.makefile('w', 0)
+        self._in = self._channel.makefile('r', 0)
+        self._out = self._channel.makefile('w', 0)
 
     def close(self):
-        assert self._socket
+        assert self._channel
 
         self._out.close()
         self._in.close()
