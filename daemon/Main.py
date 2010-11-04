@@ -33,6 +33,16 @@ def load_authorized_keys(filename):
         print >> sys.stderr, "Cannot load authorized keys file"
         sys.exit(1)
 
+def load_host_key(filename):
+    # Prevent using this file if others can read/write to it
+    mode = os.stat(filename).st_mode
+    unwanted_bits = stat.S_IRWXG | stat.S_IRWXO # unwanted_bits = ----rwxrwx
+    if mode & unwanted_bits:
+        print >> sys.stderr, "Host key file has wrong permissions. For security reasons group and other users cannot access this file."
+        sys.exit(1)
+
+    return paramiko.RSAKey(filename=filename)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Main.py')
     
@@ -66,7 +76,7 @@ if __name__ == "__main__":
             print >> sys.stderr, "In order to use ssh you must provide --authorized-keys and --host-key arguments"
             sys.exit(1)
 
-        host_key = paramiko.RSAKey(filename=args.host_key)
+        host_key = load_host_key(args.host_key)
         authorized_keys = load_authorized_keys(args.authorized_keys)
         daemon = Daemon(port=args.port, database=args.database, log=args.log, verbose=args.verbose, ssh=True, authorized_keys=authorized_keys, host_key=host_key)
 
