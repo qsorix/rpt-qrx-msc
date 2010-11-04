@@ -20,7 +20,6 @@ class SSHServer (paramiko.ServerInterface):
         self.authorized_keys = authorized_keys
 
     def check_auth_publickey(self, username, key):
-        #FIXME: log
         if key in self.authorized_keys:
             logging.info("[ SSH ] User %s authenticated using pubkey." % (username))
             return paramiko.AUTH_SUCCESSFUL

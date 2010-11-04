@@ -2,6 +2,7 @@
 # coding=utf-8
 
 import os
+import stat
 import argparse
 import shutil
 import sys
@@ -15,16 +16,22 @@ except:
     has_ssh_support = False
 
 def load_authorized_keys(filename):
-    #FIXME: ssh sprawdza prawa i odmowia pracy, jesli plik authorized_keys ma
-    # inne prawa niz 0400. To dobry pomysl jest :)
-    #
-    # poza tym wypadaloby moze te funkcje troche bardziej 'bledo-odpornie'
-    # napisac, teraz sie pewnie ostro sypnie jak w pliku beda jakies krzaki
-    with open(filename, 'r') as f:
-        lines = f.readlines()
+    # Prevent using this file if others can write to it
+    mode = os.stat(filename).st_mode
+    unwanted_bits = stat.S_IWGRP | stat.S_IWOTH # unwanted_bits = -----w--w-
+    if mode & unwanted_bits:
+        print >> sys.stderr, "Authorized keys file has wrong permissions. For security reasons group and other users cannot have write permissions."
+        sys.exit(1)
 
-        # wez druga kolumne z wszystkich linii, zdedokuj i zrob z niej klucze
-        return map(lambda x: paramiko.RSAKey(data=base64.decodestring(x.split()[1])), lines)
+    try:
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+
+            # take second column of every line, decode it and use as a rsa key
+            return map(lambda x: paramiko.RSAKey(data=base64.decodestring(x.split()[1])), lines)
+    except:
+        print >> sys.stderr, "Cannot load authorized keys file"
+        sys.exit(1)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Main.py')
