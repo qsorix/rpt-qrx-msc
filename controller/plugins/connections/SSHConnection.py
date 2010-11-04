@@ -3,6 +3,8 @@
 
 from common import Exceptions
 from controller.ConnectionPlugin import ConnectionPlugin
+import os
+import stat
 
 class SSHConnection(ConnectionPlugin):
     connection_type = 'ssh'
@@ -24,6 +26,8 @@ class SSHConnection(ConnectionPlugin):
         if 'keyfile' in host.device:
             self._method='key'
             self._keyfile = host.device['keyfile']
+            self._validate_key_file()
+
         elif 'password' in host.device:
             self._method='password'
             self._password = host.device['password']
@@ -31,6 +35,13 @@ class SSHConnection(ConnectionPlugin):
             raise Exceptions.ConfigurationError("Required attribute not set for device {0}. SSHConnection plugin needs either 'keyfile' or 'password' attribute.".format(host.device['name']))
 
         self._ssh.set_missing_host_key_policy(paramiko.WarningPolicy())
+
+    def _validate_key_file(self):
+        mode = os.stat(self._keyfile).st_mode
+        # unwanted_bits = ----rwxrwx
+        unwanted_bits = stat.S_IRWXG | stat.S_IRWXO
+        if mode & unwanted_bits:
+            raise Exceptions.ConfigurationError("Key file has wrong permissions. For security reasons group and other users cannot have any rights to this file.")
 
     def connected(self):
         return self._channel is not None
