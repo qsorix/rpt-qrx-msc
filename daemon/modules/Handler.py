@@ -121,7 +121,7 @@ class Handler(SocketServer.StreamRequestHandler):
 
                 while 1:
                     if line:
-                        logging.info("[ Connection %s ] Received: %s" % (self.client_address[0], line))
+                        logging.info("[ Connection %s ] [ %s ] Received: %s" % (self.client_address[0], datetime.datetime.now(), line))
                     try:
                         type, params = parse(line, parent)
                         if types_and_actions.get(type):
