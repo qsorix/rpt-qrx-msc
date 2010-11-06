@@ -155,7 +155,7 @@ class Handler(SocketServer.StreamRequestHandler):
                                 for output in to_send:
                                     if output != None:
                                         if kind == 'duration':
-                                            output = str(float(output.seconds)+(output.microseconds/1000000))
+                                            output = str(float(output.seconds)+(output.microseconds/1000000.0))
                                         elif kind == 'returncode':
                                             output = str(output)
                                         elif kind == 'start_time':
@@ -168,7 +168,7 @@ class Handler(SocketServer.StreamRequestHandler):
                                 for output in to_send:
                                     if output != None:
                                         if kind == 'duration':
-                                            output = str(float(output.seconds)+(output.microseconds/1000000))
+                                            output = str(float(output.seconds)+(output.microseconds/1000000.0))
                                         elif kind == 'returncode':
                                             output = str(output)
                                         elif kind == 'start_time':

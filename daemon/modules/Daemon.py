@@ -28,6 +28,7 @@ class Daemon:
         from modules.Handler import Handler
         SocketServer.TCPServer.allow_reuse_address = True
         self.tcp_server = ThreadedTCPServer(('localhost', port), Handler)
+        self.tcp_server.daemon_threads = True
         self.tcp_server.use_ssh = ssh
         if ssh:
             self.tcp_server.authorized_keys = authorized_keys
