@@ -1,0 +1,17 @@
+from utils import path
+
+create_laboratory('local')
+add_device('local1',
+  connection='ssh',
+  ip='127.0.0.1',
+  username='user',
+  keyfile=path.relative('id_rsa'),
+  connection_port='9998',
+  frontend='arete_slave')
+add_device('local2',
+  connection='ssh',
+  username='user',
+  keyfile=path.relative('id_rsa'),
+  ip='127.0.0.1',
+  connection_port='9999',
+  frontend='arete_slave')

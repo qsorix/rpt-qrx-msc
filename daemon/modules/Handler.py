@@ -6,10 +6,81 @@ import SocketServer
 import logging
 import datetime
 
+try:
+    import paramiko
+    has_ssh_support = True
+except:
+    has_ssh_support = False
+
 from modules.Parser import parse
 from common.Exceptions import *
 
+class SSHServer (paramiko.ServerInterface):
+    def __init__(self, authorized_keys):
+        self.authorized_keys = authorized_keys
+
+    def check_auth_publickey(self, username, key):
+        if key in self.authorized_keys:
+            logging.info("[ SSH ] User %s authenticated using pubkey." % (username))
+            return paramiko.AUTH_SUCCESSFUL
+
+        logging.warn("[ SSH ] Pubkey authentication failed for %s" % (username))
+        return paramiko.AUTH_FAILED
+
+    def check_channel_request(self, kind, chanid):
+        if kind=='session':
+            logging.warn("[ SSH ] Opening channel %s" % (kind))
+            return paramiko.OPEN_SUCCEEDED
+
+        logging.warn("[ SSH ] Request for unknown channel kind %s" % (kind))
+        return paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
+
+    def get_allowed_auths(self, username):
+        return 'pubkey'
+
 class Handler(SocketServer.StreamRequestHandler):
+    def setup(self):
+        if self.server.use_ssh:
+            if not has_ssh_support:
+                raise RuntimeError("Can't use SSH. Missing library paramiko.")
+
+            transport = paramiko.Transport(self.request)
+            transport.add_server_key(self.server.host_key)
+            transport.start_server(server=SSHServer(self.server.authorized_keys))
+
+            channel = transport.accept()
+            if not channel:
+                raise RuntimeError("Can't establish SSH communication.")
+
+            logging.info("[ SSH ] Connection established.")
+
+            self.rfile = channel.makefile('r', 0)
+            self.wfile = channel.makefile('w', 0)
+
+        else:
+            self.rfile = self.request.makefile('r', 0)
+            self.wfile = self.request.makefile('w', 0)
+
+    def finish(self):
+        # try-except blogs are because of paramiko sometimes throwing
+        # exceptions from close() methods.
+        try:
+            self.wfile.close()
+        except:
+            pass
+
+        try:
+            self.rfile.close()
+        except:
+            pass
+
+        try:
+            if self.server.use_ssh:
+                channel.close()
+        except:
+            pass
+
+
     def handle(self):
         from modules.Daemon import Daemon
         manager = Daemon.get_manager()
@@ -74,7 +145,7 @@ class Handler(SocketServer.StreamRequestHandler):
                             path = result[0]
                             size = result[1]
                             with open(path, 'wb') as f:
-                                f.write(self.request.recv(size))
+                                f.write(self.rfile.read(size))
                         if type == 'results_get':
                             type = result[0]
                             to_send = result[1]

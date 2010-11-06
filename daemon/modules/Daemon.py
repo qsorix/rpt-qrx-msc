@@ -14,9 +14,11 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 class Daemon:
     manager = Manager()
 
-    def __init__(self, port, database, log, verbose):
+    def __init__(self, port, database, log, verbose, ssh=False, authorized_keys=None, host_key=None):
         self._setup_database(database)
-        if not os.path.isdir("./tmp"):
+
+        #FIXME: tmp-path in arguments
+        if not os.path.isdir("./tmp"): 
             os.mkdir("./tmp")
         logging.basicConfig(filename=log, level=logging.DEBUG, format="%(asctime)s %(levelname)s: %(message)s")
         if verbose:
@@ -26,6 +28,10 @@ class Daemon:
         from modules.Handler import Handler
         SocketServer.TCPServer.allow_reuse_address = True
         self.tcp_server = ThreadedTCPServer(('localhost', port), Handler)
+        self.tcp_server.use_ssh = ssh
+        if ssh:
+            self.tcp_server.authorized_keys = authorized_keys
+            self.tcp_server.host_key = host_key
 
         self.manager.port = port
 
