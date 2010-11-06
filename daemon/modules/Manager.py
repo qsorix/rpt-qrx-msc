@@ -160,10 +160,10 @@ class Manager:
         run_type, run_value = self._resolv_test_run(run)
         
         self._setup_test(id)
-        
-#        if (run_value - time.time()) <= 0.1:
-        if run_value > time.time():
-            raise SetupTooLongError("[ Test %s ] Setup took too much time." % (id))
+        now = time.time()
+
+        if run_value < now:
+            raise SetupTooLongError("[ Test %s ] [ %s < %s ] Setup took too much time." % (id, run_value, now))
  
     def start_tasks(self, parent_id, id, run, end):
         run_type, run_value = self._resolv_test_run(run)
