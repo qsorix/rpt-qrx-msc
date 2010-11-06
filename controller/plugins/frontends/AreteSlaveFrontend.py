@@ -229,9 +229,14 @@ class AreteSlaveFrontend(FrontendPlugin):
         resp = self.input().readline()
         if resp.startswith('200'):
                        
-            start_time = datetime.datetime.strptime(self._get_param('start_time')[0], '%Y-%m-%dT%H:%M:%S.%f')
-            duration = datetime.timedelta(seconds=float(self._get_param('duration')[0]))
-            
+            start_time = self._get_param('start_time')[0]
+            if start_time is not None:
+                start_time = datetime.datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S.%f')
+
+            duration = self._get_param('duration')[0]
+            if duration is not None:
+                duration = datetime.timedelta(seconds=float(duration))
+
             node = Database.Node(test=Database.Test.get_by(id=unicode(self.configuration().test_uuid)), node=self.host().model['name'], start_time=start_time, duration=duration)
 
             for list in ['checks', 'setups', 'tasks', 'cleans']:
