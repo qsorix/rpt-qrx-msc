@@ -201,7 +201,8 @@ class Manager:
             session.commit()
             
             self.clean_test(test_id)
-
+    
+            # FIXME: Don't send if socket closed.
             self.notify_handlers[test_id]()
         except Exception:
             pass

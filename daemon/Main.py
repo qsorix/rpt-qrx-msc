@@ -6,6 +6,7 @@ import stat
 import argparse
 import shutil
 import sys
+import ConfigParser
 from modules.Daemon import Daemon
 
 try:
@@ -46,41 +47,96 @@ def load_host_key(filename):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog='Main.py')
     
-    parser.add_argument('-p', '--port', help="use port other than 4567", required=False, type=int, default=4567)
-    parser.add_argument('-d', '--database', help="use database file other than 'aretes.db'", required=False, type=str, default='aretes.db')
-    parser.add_argument('-l', '--log', help="use log file other than 'aretes.log'", required=False, type=str, default='aretes.log')
+    parser.add_argument('-c', '--config', help="use config file", required=False, type=str)
+    parser.add_argument('-p', '--port', help="use port other than 4567", required=False, type=int)
+    parser.add_argument('-d', '--database', help="use database file other than 'aretes.db'", required=False, type=str)
+    parser.add_argument('-l', '--log', help="use log file other than 'aretes.log'", required=False, type=str)
     parser.add_argument('-v', '--verbose', help="print everything to stderr too", required=False, action='store_true')
     parser.add_argument('-n', '--new', help="delete current database and log", required=False, action='store_true')
-    parser.add_argument('-c', '--clean', help="delete temporary file directory", required=False, action='store_true')
-    parser.add_argument('-s', '--ssh', help="use ssh to authorize connections", required=False, action='store_true', default=False)
+    parser.add_argument('--clean', help="delete temporary file directory", required=False, action='store_true')
+    parser.add_argument('-s', '--ssh', help="use ssh to authorize connections", required=False, action='store_true')
     parser.add_argument('--authorized-keys', help="path to authorized keys file", required=False, type=str)
     parser.add_argument('--host-key', help="path to host's private key file", required=False, type=str)
 
     args = parser.parse_args()
- 
+
+    port = 4567
+    database = 'aretes.db'
+    log = 'aretes.log'
+    verbose = False
+    new = False
+    clean = False
+    ssh = False
+
+    if args.config:
+        config = ConfigParser.SafeConfigParser()
+        check = config.read(args.config)
+
+        if check and config.has_section('Arete'):
+            if config.has_option('Arete', 'port'):
+                port = config.getint('Arete', 'port')
+            if config.has_option('Arete', 'database'):
+                database = config.get('Arete', 'database')
+            if config.has_option('Arete', 'log'):
+                log = config.get('Arete', 'log')
+            if config.has_option('Arete', 'verbose'):
+                verbose = config.getboolean('Arete', 'verbose')
+            if config.has_option('Arete', 'new'):
+                new = config.getboolean('Arete', 'new')
+            if config.has_option('Arete', 'clean'):
+                clean = config.getboolean('Arete', 'clean')
+            if config.has_option('Arete', 'ssh'):
+                ssh = config.getboolean('Arete', 'ssh')
+            if config.has_option('Arete', 'authorized_keys'):
+                authorized_keys = config.get('Arete', 'authorized_keys')
+            if config.has_option('Arete', 'host_key'):
+                host_key = config.get('Arete', 'host_key')
+        else:
+            print >> sys.stderr, "Invalid config file."
+            config.get
+
+    if args.port != None:
+        port = args.port
+    if args.database != None:
+        database = args.database
+    if args.log != None:
+        log = args.log
+    if args.verbose:
+        verbose = True
+    if args.new:
+        new = True
     if args.clean:
+        clean = True
+    if args.ssh:
+        ssh = True
+    if args.authorized_keys != None:
+        authorized_keys = args.authorized_keys
+    if args.host_key != None:
+        host_key = args.host_key
+
+    if clean:
         if os.path.isdir("./tmp"):
             shutil.rmtree("./tmp")
-    if args.new:
-        if os.path.isfile(args.database):
-            os.remove(args.database)
-        if os.path.isfile(args.log):
-            os.remove(args.log)
+    if new:
+        if os.path.isfile(database):
+            os.remove(database)
+        if os.path.isfile(log):
+            os.remove(log)
 
-    if args.ssh:
+    if ssh:
         if (not has_ssh_support):
             print >> sys.stderr, "In order to use ssh you must install paramiko library."
             sys.exit(1)
 
-        if (args.authorized_keys is None) or (args.host_key is None):
+        if (authorized_keys is None) or (host_key is None):
             print >> sys.stderr, "In order to use ssh you must provide --authorized-keys and --host-key arguments"
             sys.exit(1)
 
-        host_key = load_host_key(args.host_key)
-        authorized_keys = load_authorized_keys(args.authorized_keys)
-        daemon = Daemon(port=args.port, database=args.database, log=args.log, verbose=args.verbose, ssh=True, authorized_keys=authorized_keys, host_key=host_key)
+        host_key = load_host_key(host_key)
+        authorized_keys = load_authorized_keys(authorized_keys)
+        daemon = Daemon(port=port, database=database, log=log, verbose=verbose, ssh=True, authorized_keys=authorized_keys, host_key=host_key)
 
     else:
-        daemon = Daemon(port=args.port, database=args.database, log=args.log, verbose=args.verbose, ssh=False)
+        daemon = Daemon(port=port, database=database, log=log, verbose=verbose, ssh=False)
 
     daemon.run()
