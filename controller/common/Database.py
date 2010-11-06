@@ -45,8 +45,8 @@ class Node(Entity):
     commands = OneToMany('Command')
 
     node = Field(String, required=True)
-    start_time = Field(DateTime, required=True)
-    duration = Field(Interval, required=True)
+    start_time = Field(DateTime, required=False, default=None)
+    duration = Field(Interval, required=False, default=None)
 
 
 class Command(Entity):

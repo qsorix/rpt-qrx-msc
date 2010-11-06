@@ -51,11 +51,15 @@ class Controller:
 
         try:
             self._send_configuration()
-            self._perform_sanity_check()
+            sanity_exception = self._perform_sanity_check()
 
-            self._perform_test()
+            if sanity_exception is None:
+                self._perform_test()
 
             self._fetch_results()
+
+            if sanity_exception:
+                raise sanity_exception
 
         except Exception as e:
             print 'Aborting test because of exception: ' + str(e)
@@ -100,14 +104,18 @@ class Controller:
             frontend.deploy_configuration()
 
     def _perform_sanity_check(self):
-        # TODO: perform synchronization. as part of environment&sanity check or on its own
+        try:
+            for frontend in self._frontends.values():
+                frontend.start_sanity_check()
 
-        for frontend in self._frontends.values():
-            frontend.start_sanity_check()
+            for frontend in self._frontends.values():
+                # throws an exception in case of a problem
+                frontend.wait_sanity_check()
 
-        for frontend in self._frontends.values():
-            # throws an exception in case of a problem
-            frontend.wait_sanity_check()
+            return None
+
+        except Exceptions.SanityError as error:
+            return error
 
     def _perform_test(self):
         # configuration is sane, start the test

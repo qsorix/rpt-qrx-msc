@@ -89,10 +89,11 @@ class ClientServer:
     def server(self, start, end):
         start_policy = at(start)
         end_policy = at(end)
-        return [
-            (self._sname, start_policy, shell(self._scmd)),
-            (self._sname+'_kill', end_policy, shell('kill @{%s.pid}' % self._sname))
-        ]
+        result = [(self._sname, start_policy, shell(self._scmd))]
+        if end is not None:
+            result.append((self._sname+'_kill', end_policy, shell('kill @{%s.pid}' % self._sname)))
+
+        return result
 
     def client(self, start, end, server):
         start_policy = at(start)
@@ -100,8 +101,9 @@ class ClientServer:
 
         ccmd = self._ccmd.replace('@{server', '@{%s' % server)
 
-        return [
-            (self._cname, start_policy, shell(ccmd)),
-            (self._cname+'_kill', end_policy, shell('kill @{%s.pid}' % self._cname))
-        ]
+        result = [(self._cname, start_policy, shell(ccmd))]
+        if end is not None:
+            result.append((self._cname+'_kill', end_policy, shell('kill @{%s.pid}' % self._cname)))
+
+        return result
 
