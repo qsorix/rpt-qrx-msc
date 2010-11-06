@@ -69,14 +69,16 @@ class Host(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
         self.set_attributes(**kwargs)
         self._resources = set()
 
-    def use_resource(self, resource_name):
-        """Używaj zasobu `resource_name`.
+    def use_resource(self, resource):
+        """Używaj zasobu `resource`.
 
         Powoduje, że w czasie testu na urządzenie odpowiadające hostowi
         zostanie przesłany określony zasób.
 
         """
-        resource = Resources.resources.resources()[resource_name]
+        if isinstance(resource, str):
+            resource = Utils.resolve_resource_name(resource)
+
         self._resources.add(resource)
 
     def needed_resources(self):
