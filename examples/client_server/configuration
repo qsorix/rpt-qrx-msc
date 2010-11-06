@@ -8,7 +8,7 @@ add_host('server')
 
 create_schedule('client-server-test')
 
-test_end_policy('complete', setup_phase_delay=2.0)
+test_end_policy('complete', setup_phase_delay=0.0)
 
 add_resource(File('serverdist', 'Server.py', chmod='+x'))
 add_resource(File('clientdist', 'Client.py', chmod='+x'))
@@ -24,7 +24,7 @@ append_schedule('server', [
 ])
 
 append_schedule('client', [
-    ('client',  at(1),                  shell('@{clientdist.path} localhost 6666 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'], check_executable=False)),
+    ('client',  at(1),                  shell('@{clientdist.path} @{server.ip} 6666 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'], check_executable=False)),
     ('md5sum',  after('client'),        shell('md5sum @{testfile.path}')),
     ('notify',  after('md5sum'),        notify('kill-server'))
 ])
