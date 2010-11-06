@@ -1,0 +1,10 @@
+create_model('torrent-minimalistic')
+
+host1 = add_host('host1')
+#host2 = add_host('host2')
+
+east = [host1]
+#west = [host2]
+west = []
+
+# vim: ft=python

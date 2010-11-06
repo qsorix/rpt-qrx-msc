@@ -51,7 +51,15 @@ class File(Resources.Resource):
     def transfer_with_arete_slave(self, frontend):
         with open(self._path, 'rb') as file:
             frontend.output().write('file @{id=%(id)s} @{size=%(size)s}\n' % {'id':self['name'], 'size':self._size})
-            frontend.output().write(file.read())
+            try:
+                while True:
+                    READ_SIZE = 1000000
+                    data = file.read(READ_SIZE)
+                    frontend.output().write(data)
+                    if len(data) < READ_SIZE:
+                        break
+            except Exception as E:
+                print type(E), E
 
             resp = frontend.input().readline().strip()
             if not resp.startswith('200'):

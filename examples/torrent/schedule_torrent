@@ -1,3 +1,6 @@
+from utils.resources import File
+from utils.schedule import at, after, shell, trigger, notify, poke
+
 create_schedule('torrent-distribution-time')
     
 test_end_policy('complete', setup_phase_delay=2.0)
@@ -7,20 +10,23 @@ test_end_policy('complete', setup_phase_delay=2.0)
 torrent = add_resource(File('torrent', 'big-data-file.torrent'))
 data    = add_resource(File('data',    'big-data-file'))
 
-create_trigger('stop-torrent', 8)
+# there are W+E-1 downloading peers
+#create_trigger('stop-torrent', len(west+east)-1)
+create_trigger('stop-torrent', len(west+east))
 
-seed_schedule = [
+tracker_schedule = [
     ('tracker', at(0), shell('bittorrent-tracker --port 9876')),
-    ('stop', trigger('stop-torrent'), shell('kill @{tracker.pid}'))
+    ('stop-tracker', trigger('stop-torrent'), shell('kill @{tracker.pid}'))
 ]
 
 peer_schedule = [
-    ('ctorrent', at(1), shell('ctorrent @{torrent.path} -X @{poke stop-torrent}', use_resources=[torrent])),
+    ('ctorrent', at(5), shell('ctorrent "@{torrent.path}" -X @{poke stop-torrent}', use_resources=[torrent])),
     ('poke', poke('stop-torrent'), notify('stop-torrent')),
     ('stop', trigger('stop-torrent'), shell('kill @{ctorrent.pid}'))
 ]
 
-append_schedule(east[0], seed_schedule)
+append_schedule(east[0], tracker_schedule)
+east[0].use_resource(data)
 
 for host in west + east:
     append_schedule(host, peer_schedule)
