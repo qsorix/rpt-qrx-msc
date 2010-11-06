@@ -211,7 +211,7 @@ class Scheduler:
                             param_map['pid'] = cmd.pid
                         else:
                             raise ResolvError("[ Test %s ] Task '%s' hasn't \
-                                been run yet." % (self.test_id, cmd.id))
+                                been run yet." % (test_id, cmd.id))
                     if param in param_map.keys():
                         return str(param_map[param])
                 elif id in file_ids:
