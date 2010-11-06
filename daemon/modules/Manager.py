@@ -227,7 +227,7 @@ class Manager:
                     command = str(cmd.command)
                     command = Scheduler.subst(command, test_id)
                     args = shlex.split(command)
-                    logging.info("[ Test %s ] Running %s command '%s' : %s" % (cmd.test_id, cmd.row_type, cmd.id, command))
+                    logging.info("[ Test %s ] [ %s ] Running %s command '%s' : %s" % (cmd.test_id, datetime.now(), cmd.row_type, cmd.id, command))
                     dt = datetime.now()            
                     p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     p.wait()
