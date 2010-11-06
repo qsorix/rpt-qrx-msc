@@ -191,6 +191,7 @@ class Handler(SocketServer.StreamRequestHandler):
                     line = self.receive()
                     if line == '':
                         raise socket.error
+
         except socket.error, IOError:
             logging.info("[ Connection %s ] Dropped" % self.client_address[0])
 

@@ -161,7 +161,8 @@ class Manager:
         
         self._setup_test(id)
         
-        if (run_value - time.time()) <= 0.5:
+#        if (run_value - time.time()) <= 0.1:
+        if run_value > time.time():
             raise SetupTooLongError("[ Test %s ] Setup took too much time." % (id))
  
     def start_tasks(self, parent_id, id, run, end):
