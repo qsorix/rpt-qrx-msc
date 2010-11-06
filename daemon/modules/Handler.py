@@ -144,8 +144,11 @@ class Handler(SocketServer.StreamRequestHandler):
                         if type == 'test_file':
                             path = result[0]
                             size = result[1]
+                            copied = 0
                             with open(path, 'wb') as f:
-                                f.write(self.rfile.read(size))
+                                while copied < size:
+                                    read = min(size - copied, 1000000)
+                                    copied += f.write(self.rfile.read(read))
                         if type == 'results_get':
                             type = result[0]
                             to_send = result[1]
