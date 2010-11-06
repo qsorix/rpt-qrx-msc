@@ -99,7 +99,7 @@ class AreteSlaveFrontend(FrontendPlugin):
             return
 
         if resp.startswith('401'):
-            raise Exceptions.SlaveError('Sanity check failed on ' + self.host().model['name'])
+            raise Exceptions.SanityError('Sanity check failed on ' + self.host().model['name'])
 
         raise Exceptions.SlaveError('Unexpected result received after sanity check: ' + resp)
 
