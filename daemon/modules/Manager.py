@@ -83,9 +83,9 @@ class Manager:
     def open_results(self, parent_id, id):
         if not Test.get_by(id=id):
             raise DatabaseError("[ Test %s ] Test doesn't exist." % (id))
-        if not self.schedulers.has_key(id):
-            raise SchedulerError("[ Test %s ] Test hasn't been started yet." % (id))
-        elif self.schedulers[id].still_running():
+#        if not self.schedulers.has_key(id):
+#            raise SchedulerError("[ Test %s ] Test hasn't been started yet." % (id))
+        if self.schedulers.has_key(id) and self.schedulers[id].still_running():
             raise SchedulerError("[ Test %s ] Test is still running." % (id))
 
     def get_results(self, test_id, command):
