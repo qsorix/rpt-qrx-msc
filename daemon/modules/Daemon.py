@@ -41,7 +41,6 @@ class Daemon:
         except KeyboardInterrupt:
             self.tcp_server.shutdown()
 
-            # FIXME Not seem to work...
             for scheduler in self.manager.schedulers.values():
                 for event in scheduler.task_scheduler.queue:
                     scheduler.task_scheduler.cancel(event)

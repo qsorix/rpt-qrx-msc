@@ -205,7 +205,6 @@ class Manager:
         self._run_commands(Clean.query.filter_by(test_id=test_id).all(), test_id)
 
     def stop_test(self, parent_id, id):
-        # FIXME See if that works.
         test = Test.get_by(id=id)
         if not test:
             raise DatabaseError("[ Test %s ] Test 'doesn't exist." % (id))
