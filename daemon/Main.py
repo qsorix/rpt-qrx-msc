@@ -60,6 +60,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # defaults
     port = 4567
     database = 'aretes.db'
     log = 'aretes.log'
@@ -68,17 +69,21 @@ if __name__ == "__main__":
     clean = False
     ssh = False
 
+    # config
     if args.config:
         config = ConfigParser.SafeConfigParser()
         check = config.read(args.config)
+
+        def relative(filename):
+            return os.path.join(os.path.dirname(args.config), filename)
 
         if check and config.has_section('Arete'):
             if config.has_option('Arete', 'port'):
                 port = config.getint('Arete', 'port')
             if config.has_option('Arete', 'database'):
-                database = config.get('Arete', 'database')
+                database = relative(config.get('Arete', 'database'))
             if config.has_option('Arete', 'log'):
-                log = config.get('Arete', 'log')
+                log = relative(config.get('Arete', 'log'))
             if config.has_option('Arete', 'verbose'):
                 verbose = config.getboolean('Arete', 'verbose')
             if config.has_option('Arete', 'new'):
@@ -88,13 +93,14 @@ if __name__ == "__main__":
             if config.has_option('Arete', 'ssh'):
                 ssh = config.getboolean('Arete', 'ssh')
             if config.has_option('Arete', 'authorized_keys'):
-                authorized_keys = config.get('Arete', 'authorized_keys')
+                authorized_keys = relative(config.get('Arete', 'authorized_keys'))
             if config.has_option('Arete', 'host_key'):
-                host_key = config.get('Arete', 'host_key')
+                host_key = relative(config.get('Arete', 'host_key'))
         else:
             print >> sys.stderr, "Invalid config file."
             config.get
 
+    # arguments
     if args.port != None:
         port = args.port
     if args.database != None:
