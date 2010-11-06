@@ -126,9 +126,13 @@ class Manager:
                     list = [cmd.id for cmd in Command.query.filter_by(test_id=test_id, row_type=param[:-1]).all() if len(cmd.invocations) > 0]
                     return ('list', list)
                 elif param == 'start_time':
-                    return ('single', Test.get_by(id=test_id).start_time.isoformat())
+                    if self.schedulers.has_key(test_id):
+                        return ('single', Test.get_by(id=test_id).start_time.isoformat())
+                    return ('single', None)
                 elif param == 'duration':
-                    return ('single', str(Test.get_by(id=test_id).duration))
+                    if self.schedulers.has_key(test_id):
+                        return ('single', str(Test.get_by(id=test_id).duration))
+                    return ('single', None)
             raise ResolvError("[ Test %s ] Cannot resolve '%s'." % (test_id, to_resolv))
         else:
             raise ParamError("[ Test %s ] You won't get your results that way." % (test_id))
