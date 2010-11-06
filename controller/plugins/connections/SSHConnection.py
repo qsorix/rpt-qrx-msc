@@ -34,7 +34,9 @@ class SSHConnection(ConnectionPlugin):
         else:
             raise Exceptions.ConfigurationError("Required attribute not set for device {0}. SSHConnection plugin needs either 'keyfile' or 'password' attribute.".format(host.device['name']))
 
-        self._ssh.set_missing_host_key_policy(paramiko.WarningPolicy())
+        # we don't care for secure server. it is us who poses a threat in
+        # security, server doesn't send any commands
+        self._ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     def _validate_key_file(self):
         mode = os.stat(self._keyfile).st_mode
