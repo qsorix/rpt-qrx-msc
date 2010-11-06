@@ -177,8 +177,11 @@ class Handler(SocketServer.StreamRequestHandler):
                             elif type == 'list':
                                 self.send_list(to_send)
                             else:
-                                self.send_ok(sizes=[len(to_send)])
-                                self.wfile.write(to_send)
+                                if to_send != None:
+                                    self.send_ok(sizes=[len(to_send)])
+                                    self.wfile.write(to_send)
+                                else:
+                                    self.send_ok(sizes=[-1])
                         else:
                             if type not in ['trigger', 'time']:
                                 self.send_ok()
