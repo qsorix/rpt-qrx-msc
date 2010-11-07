@@ -144,7 +144,7 @@ class Controller:
         while(running_frontends):
             # TODO instead of sleep, it should gather all open connections and
             # do a select()-like wait on them
-            time.sleep(1.0)
+            time.sleep(0.1)
 
             # iterate over running frontends and remove those which has
             # finished
