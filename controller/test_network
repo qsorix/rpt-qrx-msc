@@ -1,7 +1,7 @@
 standard_connection = {
     # 'connection': 'tcp',
     'connection': 'dummy',
-    'connection_port': '4564',
+    'port': '4564',
     'frontend': 'arete_slave',
     'shell': 'linux_shell'}
 

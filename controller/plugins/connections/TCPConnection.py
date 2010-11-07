@@ -7,11 +7,11 @@ import socket
 
 class TCPConnection(ConnectionPlugin):
     connection_type = 'tcp'
-    needed_attributes = ['ip', 'connection_port' ]
+    needed_attributes = ['ip', 'port' ]
 
     def __init__(self, host):
         self._ip = host.device['ip']
-        self._port = host.device['connection_port']
+        self._port = host.device['port']
         self._socket = None
 
     def connected(self):

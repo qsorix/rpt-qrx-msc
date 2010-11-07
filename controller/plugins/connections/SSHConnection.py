@@ -8,7 +8,7 @@ import stat
 
 class SSHConnection(ConnectionPlugin):
     connection_type = 'ssh'
-    needed_attributes = ['ip', 'connection_port', 'username' ]
+    needed_attributes = ['ip', 'port', 'username' ]
 
     def __init__(self, host):
         try:
@@ -17,7 +17,7 @@ class SSHConnection(ConnectionPlugin):
             raise Exceptions.ConfigurationError("SSHConnection plugin needs paramiko library. Connection type 'ssh' will not be available.")
 
         self._ip = host.device['ip']
-        self._port = host.device['connection_port']
+        self._port = host.device['port']
         self._ssh = paramiko.SSHClient()
         self._channel = None
 

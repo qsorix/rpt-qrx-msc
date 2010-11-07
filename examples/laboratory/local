@@ -2,11 +2,11 @@ create_laboratory('local')
 add_device('local1',
   connection='tcp',
   ip='127.0.0.1',
-  connection_port='9998',
+  port='9998',
   frontend='arete_slave',
   synchronize=False)
 add_device('local2',
   connection='tcp',
   ip='127.0.0.1',
-  connection_port='9999',
+  port='9999',
   frontend='arete_slave')

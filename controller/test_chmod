@@ -7,7 +7,7 @@ daemon = add_host('daemon')
 
 connection = {
     'connection': 'tcp',
-    'connection_port': '4567',
+    'port': '4567',
     'frontend': 'arete_slave',
     'shell': 'linux_shell'
 }

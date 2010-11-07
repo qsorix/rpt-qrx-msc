@@ -3,17 +3,17 @@ create_laboratory('daliowa')
 add_device('pc1',
   connection='tcp',
   ip='192.168.1.100',
-  connection_port='9999',
+  port='9999',
   frontend='arete_slave')
 
 add_device('pc2',
   connection='tcp',
   ip='192.168.1.101',
-  connection_port='9999',
+  port='9999',
   frontend='arete_slave')
 
 add_device('pc3',
   connection='tcp',
   ip='192.168.1.102',
-  connection_port='9999',
+  port='9999',
   frontend='arete_slave')

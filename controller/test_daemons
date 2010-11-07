@@ -15,8 +15,8 @@ connection = {
 
 create_laboratory('daemon_lab')
 
-marvin1 = add_device('marvin1', ip='127.0.0.1', connection_port='4567', **connection)
-marvin2 = add_device('marvin2', ip='127.0.0.1', connection_port='5678', **connection)
+marvin1 = add_device('marvin1', ip='127.0.0.1', port='4567', **connection)
+marvin2 = add_device('marvin2', ip='127.0.0.1', port='5678', **connection)
 marvin1_eth0 = marvin1.add_interface('eth0')
 marvin2_eth0 = marvin2.add_interface('eth0')
 

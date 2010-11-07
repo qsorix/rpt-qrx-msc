@@ -1,9 +1,9 @@
 create_laboratory('krowo')
 
-defteros = add_device('defteros', ip='127.0.0.1', connection='tcp', connection_port='9999', frontend='arete_slave', shell='linux_shell')
+defteros = add_device('defteros', ip='127.0.0.1', connection='tcp', port='9999', frontend='arete_slave', shell='linux_shell')
 defteros.add_interface('eth0')
 
-marvin = add_device('marvin', ip='127.0.0.1', connection='tcp', connection_port='9998', frontend='arete_slave', shell='linux_shell')
+marvin = add_device('marvin', ip='127.0.0.1', connection='tcp', port='9998', frontend='arete_slave', shell='linux_shell')
 marvin.add_interface('eth0')
 
 # vim: ft=python

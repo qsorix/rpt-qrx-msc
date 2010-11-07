@@ -24,7 +24,7 @@ create_laboratory('virtual')
 device_template = {
     'connection': 'dummy',
     'frontend': 'arete_slave',
-    'connection_port': 345
+    'port': 345
 }
 node1 = add_device('node1', ip='192.168.6.200', **device_template)
 node2 = add_device('node2', ip='192.168.6.201', **device_template)
