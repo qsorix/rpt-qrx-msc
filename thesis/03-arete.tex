@@ -191,33 +191,52 @@ Wprowadzenie takiej architektury powoduje, że instalacja programu wykonującego
 testy (slave) zajmuje więcej czasu, trzeba ją bowiem przeprowadzić na
 wszystkich systemach. Jest to jednak konieczne, w celu osiągnięcia
 funkcjonalności wymaganej w pewnych scenariuszach testów, jak również przydatne
-ze względów bezpieczeństwa. \fixme{Program nadzorujący umożliwia również
-współpracę z urządzeniami bez zainstalowanego modułu slave\footnote{Jak
-np.~routery sprzętowe, gdzie instalacja własnego oprogramowania nie jest
-możliwa.}, ale może wtedy nie być możliwe wykonanie pewnych scenariuszy testów.
-- w sumie to nie umożliwia}
-i
-Przykładowo załóżmy, że chcemy przeprowadzić test mierzący ilość pakietów
-RIP\footnote{ang. Routing Information Protocol}, jakie routery wymieniają aby
-zapewnić poprawne tablice routingu po awarii łącza. Po połączeniu z routerem
-będziemy mieli możliwość wydania polecenia zatrzymującego wybrany interfejs.
-Jeżeli jednak jest to jednocześnie interfejs, którym się z routerem
-komunikujemy, a dane urządzenie nie będzie umożliwiać automatycznego
-przywrócenia pracy interfejsu, stracimy nad nim kontrolę.
+ze względów bezpieczeństwa.
+
+W przypadkach, gdy na urządzeniu nie można zainstalować modułu
+slave\footnote{Jak np.~większość routerów sprzętowych}, użytkownik ma możliwość
+dostarczenia własnej wtyczki, dzięki której wciąż będzie można przeprowadzić
+test. Więcej na ten temat w rozdziale \fixref{o wtyczkach typu FrontendPlugin}.
+
+% FIXME: To jest przykład sytuacji, kiedy w teście występuje urządzenie bez
+% modułu Slave, i powoduje to, że jakiegoś rodzaju testu się nie da
+% przeprowadzić.
+%
+% Być może warto go przenieść do rozdziału o pluginach
+%
+% -----------------------------------------------------------------------------
+% Przykładowo załóżmy, że chcemy przeprowadzić test mierzący ilość pakietów
+% RIP\footnote{ang. Routing Information Protocol}, jakie routery wymieniają aby
+% zapewnić poprawne tablice routingu po awarii łącza. Po połączeniu z routerem
+% będziemy mieli możliwość wydania polecenia zatrzymującego wybrany interfejs.
+% Jeżeli jednak jest to jednocześnie interfejs, którym się z routerem
+% komunikujemy, a dane urządzenie nie będzie umożliwiać automatycznego
+% przywrócenia pracy interfejsu, stracimy nad nim kontrolę.
+% -----------------------------------------------------------------------------
 
 \paragraph{Synchronizacja urządzeń nie zmienia wskazań ich zegarów.}
-Najprostszym rozwiązaniem problemu synchronizacji byłoby wykorzystanie protokołu
-NTP do ustawienia czasu systemowego i następnie korzystanie z lokalnych wskazań
-tych zegarów. Takie wyjście ma jednak dwie wady. Po pierwsze zmiana zegara nie
-jest dostępna na wszystkich systemach. Po drugie, zmiana wskazań zegara w czasie
-pracy systemu mogłaby zaburzyć pracę innych uruchomionych programów. Z tego
-powodu prościej i bezpieczniej jest sprawdzić czy urządzenia są zsynchronizowane
-i odmówić pracy w przeciwnym razie, niż automatycznie tę synchronizację
-przeprowadzać.
+Najprostszym rozwiązaniem problemu synchronizacji byłoby wykorzystanie ogólnie
+dostępnego protokołu synchronizacji czasu (np.~NTP) do ustawienia czasu
+systemowego i następnie korzystanie z lokalnych wskazań tych zegarów. Takie
+wyjście ma jednak dwie wady. Po pierwsze zmiana zegara nie jest dostępna na
+wszystkich systemach. Po drugie, zmiana wskazań zegara w czasie pracy systemu
+mogłaby zaburzyć pracę innych uruchomionych programów.
 
-\FIXME{
-Więcej i dokładniej o synchronizacji.
-}
+Z tego powodu wprowadziliśmy protokół synchronizacji, który oblicza różnice
+między zegarami urządzeń i uwzględnia je przy wyznaczaniu czasu rozpoczęcia
+testu.
+
+Protokół ten po prostu wysyła do modułu slave zapytanie o lokalny czas
+urządzenia, na którym jest uruchomiony. Zakładając symetryczny czas komunikacji
+w obie strony, różnicę czasu można wyznaczyć wzorem: $$\Delta t = r - \frac{l_1
++ l_2}{2}$$ gdzie $r$ to wskazanie zegara zdalnego urządzenia w momencie
+odebrania zapytania o czas a $l_1$ i $l_2$ to odpowiednio czasy wysłania
+zapytania i odebrania odpowiedzi.
+
+Synchronizacja ta jest domyślnie włączona, ale opcjonalna. Jeżeli testy
+uruchamiamy w sieci, gdzie aktywny jest zewnętrzny protokół synchronizacji,
+zegary urządzeń prawdopodobnie będą zsynchronizowane dokładniej i nasz prosty
+protokół mógłby raczej pogorszyć sytuację.
 
 \paragraph{Wszystkie wyniki są cenne.} Ponieważ obecnie przechowywanie dużych
 ilości danych nie sprawia problemu, w czasie testu staramy się zebrać jak
