@@ -105,6 +105,15 @@ class AreteSlaveFrontend(FrontendPlugin):
         raise Exceptions.SlaveError('Unexpected result received after sanity check: ' + resp)
 
     def _synchronize(self):
+        synchronize = self.host().device['synchronize']
+        if synchronize == False:
+            # if synchronize is None, perform synchronization (default behavior)
+            print '  -- time synchronization skipped for ' + self.host().model['name'] + ' --'
+            self._synchronization_offset = datetime.timedelta()
+            return
+
+        print '  -- performing time synchronization with ' + self.host().model['name'] + ' --'
+
         l1 = datetime.datetime.now()
 
         self.output().write('time\n')
