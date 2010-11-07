@@ -485,6 +485,73 @@ własnej implementacji potrzebnych algorytmów za pomocą mechanizmu wtyczek.
 W dalszej części omawiamy te miejsca i wyjaśniamy w jaki sposób zaimplementować
 własne wtyczki realizujące odpowiednią funkcjonalność.
 
+\subsubsection{Komunikacja z modułem Slave}
+
+Moduł Master w czasie testu kontroluje pracę uczestniczących w nim urządzeń.
+Dialog z nimi odbywa się za pośrednictwem klas implementujących interfejs
+\code{FrontendPlugin}. Obiekty Frontend mają za zadanie enkapsulować rzeczywisty
+protokół komunikacji i sposób pracy urządzenia, udostępniając modułowi Master
+spójnego sposobu nadzoru nad każdym rodzajem urządzenia.
+
+Zadania frontendu to między innymi: synchronizacja z urządzeniem, przesłanie
+konfiguracji testu, pobieranie wyników. Wykonywanie tych czynności jest zlecane
+przez moduł Master, frontend tłumaczy te rozkazy na protokół zrozumiały przez
+kontrolowane urządzenie i przesyła mu odpowiednie instrukcje.
+
+Sam sposób dostarczania rozkazów jest poza zasięgiem klas \code{FrontendPlugin}.
+Odpowiadają za to pluginy typu \code{ConnectionPlugin}. Frontend nie musi
+wiedzieć, że rozkazy przesłane będą połączeniem TCP, wystarczy, że od niższej
+warstwy otrzyma interfejs do wysyłania i odbierania danych. Więcej informacji o
+interfejsie \code{ConnectionPlugin} dostępnych jest w dalszej części tego
+rozdziału.
+
+Diagram sekwencji \ref{fig:arete-master-controller-frontend-sequence}
+przedstawia sposób, w jaki moduł kontrolny steruje pracą modułów frontend.
+Należy zwrócić uwagę, że obiektów frontend w jednym teście występuje tyle, ile
+hostów skonfigurowano w modelu.
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=1\textwidth]{arete-master-controller-frontend-sequence}
+\end{center}
+\caption{Współpraca modułów Controller i Frontend w prawidłowym przebiegu testu.}
+\label{fig:arete-master-controller-frontend-sequence}
+\end{figure}
+
+Praca kontrolera rozpoczyna się od stworzenia obiektów frontend korzystając z
+wtyczek określonych w konfiguracji testu. Frontend przy tworzeniu otrzymuje
+konfigurację podlegającego mu urządzenia, a także klasę, której powinien użyć
+do nawiązania z nim połączenia.
+
+Następnie frontendy instruowane są do przesłania konfiguracji testu (komunikat
+\code{deploy\_configuration}). Protokół w jakim odbywa się komunikacja jest z
+punktu widzenia kontrolera nieistotny.
+
+W kolejnej fazie frontendy mają poinstruować urządzenia, aby rozpoczęły test
+poprawności odebranej konfiguracji (komunikat \code{start\_sanity\_check}).
+Urządzenie ma w tym momencie wykonać komendy z fazy sprawdzania poprawności.
+Kontroler czeka, aż każdy frontend otrzyma od urządzeń status poprawności
+(komunikat \code{wait\_sanity\_check}). Test jest przerywany, jeśli któreś z
+urządzeń stwierdzi, że konfiguracja nie jest poprawna.
+
+Po tym teście kontroler rozpoczyna wykonanie testu (komunikat
+\code{start\_test}). W czasie trwania testu za pomocą komunikatu
+\code{check\_test\_end} kontroler pyta frontendów czy test na podległym
+urządzeniu zakończył się.
+
+Pobieranie wyników (komunikat \code{fetch\_results}) odbywa się, gdy test
+zakończy się wykonywać na wszystkich urządzeniach.
+
+
+\FIXME{
+Reszta opisu FrontendPlugin.
+
+Diagram sekwencji obrazujący działanie triggerów.
+
+Dokładny opis metod pluginu FrontendPlugin będzie w Reference. Odesłać tam.
+}
+
 \subsection{Połączenie ze zdalnym urządzeniem}
 
 \FIXME{To trzeba przepisać i ustalić jakąś wersję oficjalną.}
@@ -512,37 +579,6 @@ Diagram sekwencji interakcji Frontend i Connection w czasie testu.
 Omówienie connect, disconnect, output, input.
 
 Omówić znaczenie setblocking!
-}
-
-\subsubsection{Komunikacja z modułem Slave}
-
-Moduł Master w czasie testu kontroluje pracę uczestniczących w nim urządzeń.
-Dialog z nimi odbywa się za pośrednictwem klas implementujących interfejs
-\code{FrontendPlugin}. Obiekty Frontend mają za zadanie enkapsulować rzeczywisty
-protokół komunikacji i sposób pracy urządzenia, udostępniając modułowi Master
-spójnego sposobu nadzoru nad każdym rodzajem urządzenia.
-
-Zadania frontendu to między innymi: synchronizacja z urządzeniem, przesłanie
-konfiguracji testu, pobieranie wyników. Wykonywanie tych czynności jest zlecane
-przez moduł Master, frontend tłumaczy te rozkazy na protokół zrozumiały przez
-kontrolowane urządzenie i przesyła mu odpowiednie instrukcje.
-
-Sam sposób dostarczania rozkazów jest poza zasięgiem klas \code{FrontendPlugin}.
-Odpowiadają za to pluginy typu \code{ConnectionPlugin}. Frontend nie musi
-wiedzieć, że rozkazy przesłane będą połączeniem TCP, wystarczy, że od niższej
-warstwy otrzyma interfejs do wysyłania i odbierania danych. Więcej informacji o
-interfejsie \code{ConnectionPlugin} dostępnych jest w dalszej części tego
-rozdziału.
-
-\FIXME{
-Reszta opisu FrontendPlugin.
-
-Najpierw diagram sekwencji przedstawiający interakcję Master i dwóch frontend.
-Omówienie algorytmu przeprowadzania testu.
-
-Następnie omówienie zadań każdej występującej na diagramie metody.
-
-Dokładny opis metod będzie w Reference. Odesłać tam.
 }
 
 
