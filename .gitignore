@@ -13,3 +13,6 @@ thesis/output
 /daemon/daemon.db
 /daemon/tmp
 /thesis/reference/build
+/examples/torrent/big-data-file
+/examples/torrent/big-data-file.torrent
+
