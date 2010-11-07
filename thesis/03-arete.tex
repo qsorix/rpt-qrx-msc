@@ -6,12 +6,20 @@
 W tym rozdziale prezentujemy stworzone przez nas narzędzie Arete -- Automated
 Real Environment Testing Engine. Jego zadaniem jest automatyzacja
 powtarzających się czynności występujących przy przeprowadzaniu testów w
-środowiskach rozproszonych w warunkach rzeczywistych.  Samo zaprojektowanie
-testu i stworzeniu programów potrzebnych do jego przeprowadzenia pozostaje w
-kwestii użytkownika. Przykładowe konfiguracje i scenariusze użycia zostaną
-przedstawione w \fixref{rozdziale JAKIMŚTAM}.
+środowiskach rozproszonych w warunkach rzeczywistych.
 
-\FIXME{Napisać bardziej szczegółowo co będzie dalej opisywane...}
+Omówienie rozpoczynamy od przedstawienia, popartych przykładami, zastosowań, z
+myślą o których stworzone zostało Arete. Są to sytuacje, w których nasze
+narzędzie pozwoli usprawnić pracę osób przeprowadzających testy.
+
+Następnie opisujemy wynikające z zastosowań wymagania funkcjonalne. Wymagania
+te krótko podsumowują podstawowe możliwości programu.
+
+W dalszej części prezentujemy dodatkowe założenia mające wpływ na charakter
+tworzonego rozwiązania, jednocześnie argumentując podjęte przez nas decyzje w
+świetle jego użyteczności.
+
+Rozdział zamyka prezentacja architektury programu.
 
 \section{Zastosowania}
 
@@ -28,6 +36,10 @@ mieliśmy trzy konkretne scenariusze omówione poniżej.
 Potrzebowaliśmy narzędzia, które zautomatyzuje najczęściej wykonywane
 czynności: skonfiguruje maszyny, przeprowadzi testy, zapamięta wyniki i
 przywróci pierwotną konfigurację.
+
+Samo zaprojektowanie testu i stworzenie programów potrzebnych do jego
+przeprowadzenia (m.in. programów mierzących obserwowane wartości) pozostaje w
+kwestii użytkownika.
 
 \FIXME{Może by te scenariusze jakoś wypunktować. Napisać gdzieś, że są to
 przykłady które mają swoje pliki w ./examples i są dołączone do pracy, bo nie
