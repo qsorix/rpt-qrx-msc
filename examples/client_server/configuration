@@ -20,6 +20,7 @@ append_schedule('server', [
     ('server',  at(0),                  shell('@{serverdist.path} 0.0.0.0 6666', use_resources=['serverdist'], check_executable=False)),
     ('ls',      after('server'),        shell('ls dest_path')),
     ('md5sum',  after('ls'),            shell('md5sum dest_path')),
+    ('rm',      after('md5sum'),        shell('rm -f dest_path')),
     ('trigger', trigger('kill-server'), shell('kill @{server.pid}'))
 ])
 
