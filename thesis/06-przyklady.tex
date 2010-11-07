@@ -1,0 +1,92 @@
+\documentclass[00-praca-magisterska.tex]{subfiles}
+\begin{document}
+
+\chapter{Przykłady}
+
+\FIXME{Na razie jest tu tylko kopia tekstu, który opisywał przykładowe
+scenariusze. Tekst w pierwotnym miejscu został streszczony, a tutaj jest jego
+oryginalna postać. Trzeba ją pociąć do odpowiednich podrozdziałów.}
+
+Najprostszy scenariusz ma miejsce w czasie tworzenia oprogramowania typu
+klient-serwer. Załóżmy, że tworzymy prosty program mający umożliwiać transfer
+plików. Zarówno serwer jak i klient będzie sterowany z linii poleceń. W teście
+chcemy sprawdzić czy transfer przebiegł poprawnie, tj. czy zgadza się z nazwa
+pliku i czy jego zawartość jest identyczna.
+
+Klient łączy się z serwerem i korzystając z protokołu TCP przesyła nazwę i
+zawartość wskazanego pliku. Serwer nasłuchuje na przychodzące połączenia i
+odbiera transmitowany plik, który zapisuje w lokalnym systemie plików.
+
+Aby wykonać pomiar musimy zbudować aktualną wersję kodu źródłowego i
+przygotować pliki wykonywalne serwera do transmisji. Odpowiedni plik (np. Java
+Archive) powinien wygenerować używany przez nas skrypt budujący.
+
+Gotowe pliki trzeba przesłać na maszynę docelową i uruchomić serwer odpowiednim
+poleceniem. Pliki aplikacji klienckiej będą uruchamiane lokalnie.
+
+Aby sprawdzić poprawność tranmisji, po jej zakończeniu na obu systemach
+wykonujemy polecenia \code{ls} i \code{md5sum}.
+
+W idealnej sytuacji, wszystkie opisane wyżej czynności będą wymagały wydania
+tylko dwóch poleceń.
+
+Zadanie narzędzia polega tutaj na:
+\begin{enumerate}
+\item przesłaniu aktualnej implementacji serwera na wyznaczone urządzenie,
+\item uruchomieniu serwera i klienta z odpowiednimi parametrami,
+\item zakończeniu serwera po wykonaniu testu,
+\item obliczeniu sum kontrolnych plików,
+\item zapamiętaniu wyników z obu komponentów,
+\item usunięcie pliku ze zdalnej maszyny.
+\end{enumerate}
+
+Drugi scenariusz dotyczy pomiaru szybkości transferu danych przy użyciu
+protokołu DCCP (Datagram Congestion Control Protocol) oraz wpływu innych
+transmisji na tę szybkość. Sposób pomiaru jest prosty. Wykorzystujemy program
+\code{iperf}, który umożliwia uruchomienie serwera i klienta wybranego
+protokołu. Klient transmituje do serwera strumień losowych danych korzystając
+ze wskazanego protokołu transportowego i zapamiętuje uzyskaną szybkość
+transmisji. Dodatkowo, przy użyciu reguł \code{iptables} mierzy się ilość
+pakietów i bajtów całego ruchu sieciowego.
+
+Stworzyliśmy kilka różnych testów badających m.in.: samodzielną pracę DCCP,
+wpływ transmisji TCP i UDP na pracę DCCP, porównanie DCCP z TCP i UDP, itd.
+Różniły się one kolejnością i momentami, w których na uczestniczących w teście
+urządzeniach należało uruchomić lub zakończyć \code{iperf}.
+
+Aby zautomatyzować te testy, program musi:
+\begin{enumerate}
+\item korzystając z interfejsu \code{sysctl} skonfigurować parametry DCCP,
+\item stworzyć reguły \code{iptables} do mierzenia ruchu,
+\item przeprowadzić synchronizację, 
+\item rozpocząć test,
+\item w wyznaczonych momentach rozpocząć lub zakończyć działanie \code{iperf},
+\item zbierać wartości liczników \code{iptables},
+\item zapamiętać wszystkie uzyskiwane wyniki,
+\item przywrócić opcje DCCP i konfigurację \code{iptables}.
+\end{enumerate}
+
+Ważne jest też, żeby w czasie testu program nie przesyłał żadnych danych, aby
+nie wpływał na uzyskiwane wyniki.
+
+Trzeci scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
+Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
+BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test należy
+zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
+klient wysłał danych i ile trwała pełna dystrybucja pliku. Zadana topologia
+urządzeń to dwie sieci IP po cztery urządzenia, połączone routerem sztucznie
+generującym opóźnienia.
+
+Program w tym teście:
+\begin{enumerate}
+\item do każdego uczestnika wysyła plik torrent,
+\item konfiguruje interfejsy routera,
+\item konfiguruje adresy sieciowe uczestników,
+\item jednocześnie uruchamia klientów sieci BitTorrent,
+\item oczekuje aż każdy otrzyma pełny plik,
+\item zatrzymuje klientów,
+\item zapamiętuje wyniki,
+\item przywraca konfigurację.
+\end{enumerate}
+
+\end{document}
