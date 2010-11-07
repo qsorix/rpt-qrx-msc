@@ -4,6 +4,12 @@
 
 \chapter{Moduł Arete Master}
 
+\section{Architektura}
+
+\FIXME{ Obrazek. }
+
+\FIXME { Wprowadzić pojęcia: konfiguracja, frontend, połączenie, sterownik. }
+
 \section{Konfiguracja}
 
 Cechą dobrze zaplanowanego testu jest możliwość przeprowadzania go
@@ -137,7 +143,7 @@ testu.
 Żeby lepiej oddać rolę każdego komponentu można posłużyć się analogią do
 ćwiczeń laboratoryjnych. Model będzie tutaj schematem sieci narysowanym w
 poleceniu do ćwiczenia. Laboratorium, to po prostu spis dostępnego nam
-sprzętu. Mapowanie określa, które z dostępnych urządzeń zostaną wykorzystane
+sprzętu. Odwzorowanie określa, które z dostępnych urządzeń zostaną wykorzystane
 do zbudowania zadanej topologii. Plan mówi, co zrobić w momencie, kiedy
 potrzebna sieć jest już gotowa.
 
@@ -145,10 +151,10 @@ Framework nie narzuca żadnego podziału, poszczególne części można nawet
 definiować równolegle. Możliwe i zalecane jest jednak aby każdą część
 definiować w osobnym pliku. W ten sposób będziemy posiadać pliki,
 które opisywać będą dostępne nam laboratoria i kilka plików z testami, jakie
-aktualnie wykonujemy. Definicji mapowań będzie potrzeba tyle, ile różnych par
-model-sprzęt będziemy używać. Plan najczęściej można umieścić razem z modelem,
-chyba, że na tej samej topologii będziemy wykonywać wiele różnego rodzaju
-zadań.
+aktualnie wykonujemy. Definicji odwzorowań będzie potrzeba tylu, ilu różnych
+par model-laboratorium będziemy używać. Plan najczęściej można umieścić razem z
+modelem, choć oczywiście w bardziej złożonych konfiguracja tutaj także
+praktyczne będzie umieszczenie ich osobno.
 
 W dalszej części opisujemy szczegółowo poszczególne fragmenty konfiguracji,
 ograniczając się jednak tylko do podstawowego interfejsu zapewnianego przez
@@ -238,15 +244,11 @@ zawsze pomiędzy dwoma interfejsami i tworzy się je korzystając z funkcji
   add_link(a_eth, b_eth)
 \end{pythoncode*}
 
-Kolejność parametrów nie jest istotna. Połączeniu nie można przypisywać
-żadnych atrybutów.
+Kolejność parametrów nie jest istotna. Połączeniu nie można przypisywać żadnych
+atrybutów. Definiowanie połączeń nie jest obowiązkowe, a ich ewentualna
+interpretacja przez sterowniki pozostawiona jest użytkownikowi. 
 
-\FIXME{obecnie nie przychodzi nam do głowy żaden przypadek
-użycia, w którym połączenie wnosiło by cokolwiek istotnego.}
-
-Definiowanie połączeń nie jest obowiązkowe.
-
-Ostatecznie otrzymujemy konfigurację, która odpowiada diagramowi:
+Ostatecznie otrzymujemy konfigurację, która odpowiada diagramowi \ref{fig:konfiguracja-model}.
 
 \begin{figure}[htb]
 \begin{center}
@@ -273,25 +275,28 @@ modelu, dlatego od razu prezentujemy pełną konfigurację:
   create_laboratory('myroom')
 
   defteros = add_device('defteros',
-      ip='192.168.1.100',
       connection='tcp',
-      frontend='anagkid')
+      ip='192.168.1.100',
+      port='9999',
+      frontend='arete_slave')
 
   marvin = add_device('marvin',
-      ip='192.168.1.101',
       connection='tcp',
-      frontend='anagkid')
+      ip='192.168.1.101',
+      port='9999',
+      frontend='arete_slave')
 
   d_eth0 = defteros.add_interface('eth0')
   m_eth0 = marvin.add_interface('eth0')
 \end{pythoncode}
 
 Konfiguracja ta mówi, że w laboratorium \code{myroom} dysponujemy komputerami
-\code{defteros} i \code{marvin}. Na obu uruchomiony jest demon \code{anagkid} i
-połaczyć się z nim można korzystając z TCP, na standardowym
-porcie\footnote{decyduje o tym plugin connection typu 'tcp'}. Oba komputery
-posiadają interfejs sieciowy nazwany \code{eth0}. Przedstawione jest to na
-diagramie poniżej. \fixref{ref do diagramu}.
+\code{defteros} i \code{marvin}. Na obu uruchomiony jest demon
+\code{arete\_slave}\footnote{Taki jest identyfikator modułu slave dostarczanego
+razem z framework'iem.} i połaczyć się z nim można korzystając z TCP. Plugin
+połączenia typu \code{tcp} korzysta z atrybutów \code{ip} i \code{port}. Oba
+komputery posiadają interfejs sieciowy nazwany \code{eth0}. Przedstawione jest
+to na diagramie \ref{fig:konfiguracja-laboratory}.
 
 \begin{figure}[htb]
 \begin{center}
@@ -316,36 +321,39 @@ sposób w jaki przebiega komunikacja z danym urządzeniem (protokół przesyłan
 komunikatów).
 \end{itemize}
 
+\FIXME{Umieścić gdzieś opis opcji synchronize=False.}
+
 Więcej na temat wtyczek piszemy w rozdziale \fixref{referencja do rozdziału o
 wtyczkach}.
 
-Framework nie wymaga podawania parametru \code{ip}. Jest to atrybut, z którego
-korzysta plugin \code{tcp} i w przypadku jego braku, zgłosiłby błąd w czasie
-przetwarzania konfiguracji. Opis wymaganych atrybutów znajduje się w
-dokumentacji każdego z pluginów.
+Framework nie wymaga podawania parametrów \code{ip} oraz \code{port}. Są to
+atrybuty, z których korzysta plugin \code{tcp} i w przypadku ich braku,
+zgłosiłby błąd w czasie przetwarzania konfiguracji. Opis wymaganych atrybutów
+znajduje się w dokumentacji każdego z pluginów.
 
-Sposób tworzenia interfejsów jest identyczny jak w przypadku modelu. Ważne,
-aby nazwy odpowiadały rzeczywistym nazwom, jakich używa się na danej
-platformie do identyfikacji interfejsu, ponieważ nazwy te mogą pojawić się w
-generowanych komendach.
+Sposób tworzenia interfejsów jest identyczny jak w przypadku modelu. Ważne, aby
+nazwy odpowiadały rzeczywistym nazwom, jakich używa się na danej platformie do
+identyfikacji interfejsu, ponieważ nazwy te mogą pojawić się w generowanych
+komendach i muszą być zrozumiałe przez system operacyjny urządzenia.
 
-Urządzenie może posiadać więcej interfejsów niż wymaga tego model, więcej na
-ten temat w rozdziale o mapowaniu. \fixref{ref do rozdziału o mapowaniu}
+Podobnie jak w laboratorium może znajdować się więcej urządzeń niż jest
+wymaganych w teście, tak samo urządzenie może posiadać więcej interfejsów niż
+wymaga tego model. Nadmiarowe po prostu są ignorowane.
 
-W przypadku laboratorium nie definiuje się połaczeń między urządzeniami. Nie
-miałoby to sensu ponieważ połaczenia te muszą istnieć w rzeczywistości.
+W przypadku laboratorium nie definiuje się połączeń między urządzeniami. Nie
+miałoby to sensu ponieważ połączenia te muszą istnieć w rzeczywistości.
 Wykonuje je użytkownik wpinając odpowiednie kable i nie ma możliwości zmiany
 połączeń z poziomu oprogramowania.
 
-\subsubsection{Mapowanie}
+\subsubsection{Odwzorowanie}
 
-Mapowanie to najprostsza część konfiguracji. Jej zadaniem jest przypisanie
+Odwzorowanie to najprostsza część konfiguracji. Jej zadaniem jest przypisanie
 hostów z modelu do konkretnych urządzeń w laboratorium. Jeśli w modelu
 zdefiniowano interfejsy, również należy je przypisać do interfejsów urządzeń.
 Oczywiście interfejsy danego hosta można przypisywać tylko do interfejsów
 urządzenia, z którym powiązany został host.
 
-Do tworzenia powiązania służy funkcja \code{bind}, która przyjmuje dwa
+Do tworzenia tych przypisań służy funkcja \code{bind}, która przyjmuje dwa
 argumenty. Na początku pliku widzimy też funkcję \code{create\_mapping}, której
 zadanie jest analogiczne jak poprzednio w przypadku modelu i laboratorium.
 
@@ -360,10 +368,10 @@ zadanie jest analogiczne jak poprzednio w przypadku modelu i laboratorium.
 \end{pythoncode}
 
 Warto zwrócić uwagę, że zmienne utworzone w dwóch poprzednich częściach
-konfiguracji są dostępne w czasie wczytywania pliku z mapowaniem, dzięki czemu
+konfiguracji są dostępne w czasie wczytywania pliku z odwzorowaniem, dzięki czemu
 odwoływanie się do stworzonych wcześniej obiektów jest łatwiejsze.
 
-Stworzone mapowanie podsumowuje diagram \fixref{ref do rysunku}.
+Stworzone odwzorowanie przedstawia diagram \ref{fig:konfiguracja-mapping}.
 
 \begin{figure}[htb]
 \begin{center}
@@ -374,7 +382,7 @@ Stworzone mapowanie podsumowuje diagram \fixref{ref do rysunku}.
 \label{fig:konfiguracja-mapping}
 \end{figure}
 
-Wymaga się, aby wszystkie hosty i interfejsy z modelu zostały zmapowane. W
+Wymaga się, aby wszystkie hosty i interfejsy z modelu zostały odwzorowane. W
 przeciwnym razie framework odmówi działania, ponieważ koncepcyjnemu urządzeniu
 nie będzie odpowiadać żadna realizacja sprzętowa, na której można by wykonać
 zadane akcje.
@@ -406,8 +414,8 @@ w tym samym pliku.
 Drugi argument to lista trójek składających się z:
 \begin{itemize}
 \item nazwy komendy,
-\item strategia wykonania,
-\item komenda
+\item strategii wykonania,
+\item komendy
 \end{itemize}
 
 Nazwa komendy to po prostu napis ją identyfikujący. Dla danego hosta musi być
@@ -415,16 +423,17 @@ unikalna, ponieważ możliwe jest odwoływanie się do jednej komendy z drugiej.
 
 Strategia wykonania mówi w jaki sposób komenda ma być uruchamiana. W tym
 wypadku \code{at(0)} zleca jednokrotne wykonanie w zerowej sekundzie testu.
-Strategie muszą być wybierane z uwzględnieniem możliwości wybranego frontendu
-(patrz opis laboratorium). Konstruktor \code{at} tworzy obiekt typu
+Strategie muszą być wybierane z uwzględnieniem możliwości wybranej wtyczki
+frontendu (patrz opis laboratorium). Konstruktor \code{at} tworzy obiekt typu
 \code{RunPolicy}. Użytkownik może definiować własne strategie. Opis dostępnych
 strategii, a także informacje o ich tworzeniu znajdują się w rozdziale
 \fixref{ref do rozdziału}.
 
 Ostatni element trójki to komenda do wykonania. Jest ona enkapsulowana w
 obiekcie typu \code{Command}, którego klasa dostarcza interfejsu
-potrzebnego do przekazania samej komendy, ale także do kilku pomocnicznych
-zadań jak dołączania zasobów czy stworzenia testów (np. sprawdzenia czy
+potrzebnego do przekazania samej komendy oraz jej typu (w tym wypadku jest to
+polecenie powłoki), ale także do kilku pomocniczych zadań jak dołączania
+zasobów czy stworzenia testów poprawności środowiska (np. sprawdzenia czy
 potrzebny program jest dostępny na urządzeniu).
 
 Wydawać się może, że taki rozbudowany interfejs będzie niewygodny w użyciu, ale
@@ -434,8 +443,8 @@ plan:
 
 \begin{pythoncode}
   dccp = flow('dccp',
-      server_command='iperf -s -p 4099 -t dccp',
-      client_command='iperf -c @{server.ip} -p 4099 -t dccp')
+      server_command='iperf -s -p 4099 -d',
+      client_command='iperf -c @{server.ip} -p 4099 -d')
 
   append_schedule('alice', dccp.server(start=0, end=30))
   append_schedule('bob',   dccp.client(start=1, end=29, server='alice'))
@@ -450,19 +459,19 @@ hoście \code{alice}, klient natomiast połączy się z nim w 1 sekundzie i roz�
 w 29.
 
 Inne przykłady definicji planów można znaleźć w rozdziale prezentującym
-zastosowania \fixref{ref do rozdziału}. Ich lektura pozwoli lepiej zrozumieć
-w jaki sposób wykorzystać dostępny interfejs.
+przykładowe zastosowania \fixref{ref do rozdziału Przykłady}. Ich lektura
+pozwoli lepiej zrozumieć w jaki sposób wykorzystać dostępny interfejs.
 
 \subsection{Podsumowanie}
 
 Zaprezentowany sposób konfiguracji dostarcza prostego interfejsu pozwalającego
 budować test poprzez wiele wywołań funkcji. Dzięki zastosowaniu istniejącego
 języka programowania użytkownik nie musi uczyć się nowej składni, a dostarczony
-interfejs może dowolnie rozszczerzyć do swoich potrzeb.
+interfejs może dowolnie rozszerzyć do swoich potrzeb.
 
-Podział konfiguracji na model, laboratorium, mapowanie i plan umożliwia
+Podział konfiguracji na model, laboratorium, odwzorowanie i plan umożliwia
 wielokrotne użycie tych samych definicji bez konieczności powtarzania się. W
-wyraźny sposób odziela to też koncepcję testu od jego sprzętowej realizacji.
+wyraźny sposób oddziela to też koncepcję testu od jego sprzętowej realizacji.
 
 \section{Wykonawcza część frameworku}
 
@@ -471,10 +480,10 @@ on za wczytanie i walidację konfiguracji, połączenie z występującymi w teś
 urządzeniami, przesłanie im przygotowanej konfiguracji, uruchomienie i
 nadzorowanie testu oraz pobranie wyników. Tam, gdzie działanie zależne
 jest od specyficznej konfiguracji testu, użytkownik ma możliwość dostarczenia
-własnej implementacji potrzebnych algorytmów za pomocą mechanizum pluginów.
+własnej implementacji potrzebnych algorytmów za pomocą mechanizmu wtyczek.
 
 W dalszej części omawiamy te miejsca i wyjaśniamy w jaki sposób zaimplementować
-własny plugin realizujący odpowiednią funkcjonalność.
+własne wtyczki realizujące odpowiednią funkcjonalność.
 
 \subsection{Połączenie ze zdalnym urządzeniem}
 
@@ -598,7 +607,7 @@ zostanie sprawdzone, czy program \code{ip} jest dostępny. W fazie konfiguracji
 odpowiedni adres zostanie dodany, a po zakończeniu testu usunięty z interfejsu.
 
 Metoda \code{interface.bound()} zwraca związany (poprzez zdefiniowane
-mapowanie) z tym interfejsem interfejs urządzenia. Dzięki temu mamy dostęp do
+odwzorowanie) z tym interfejsem interfejs urządzenia. Dzięki temu mamy dostęp do
 jego nazwy w rzeczywistym urządzeniu i możemy podać argument wymaganay przez
 program \code{ip}.
 
