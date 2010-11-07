@@ -117,41 +117,46 @@ class Controller:
         except Exceptions.SanityError as error:
             return error
 
-    def _perform_test(self):
-        # configuration is sane, start the test
-
-        configured_test = self._test
-
+    def _test_duration_policy(self):
         # calculate exact start moment
-        setup_delay = datetime.timedelta(seconds=configured_test.setup_phase_delay)
+        setup_delay = datetime.timedelta(seconds=self._test.setup_phase_delay)
         now = datetime.datetime.now()
         start = now+setup_delay
 
-        duration_policy = TestDurationPolicy(start, configured_test.end_policy)
+        return TestDurationPolicy(start, self._test.end_policy)
+
+    def _perform_test(self):
+        # configuration is sane, start the test
 
         # instruct fronteds to start the test
+        duration_policy = self._test_duration_policy()
+
         for frontend in self._frontends.values():
             frontend.start_test(duration_policy)
 
-        # store here fired triggers
-        # so we don't fire the same trigger twice
-        notified_triggers = set()
+        self._monitor_running_frontends()
+
+    def _monitor_running_frontends(self):
+        running_frontends = self._frontends.values()
+        remaining_triggers = set(self._test.triggers.values())
 
         # wait for the test to end
-        all_finished = False
-        while(not all_finished):
+        while(running_frontends):
+            # TODO instead of sleep, it should gather all open connections and
+            # do a select()-like wait on them
             time.sleep(1.0)
-            all_finished = True
-            for frontend in self._frontends.values():
-                finished = frontend.check_test_end()
-                all_finished = all_finished and finished
 
-            for trigger in configured_test.triggers.values():
-                if trigger.ready() and trigger['name'] not in notified_triggers:
-                    for frontend in self._frontends.values():
-                        frontend.trigger(trigger['name'])
+            # iterate over running frontends and remove those which has
+            # finished
+            running_frontends = [f for f in running_frontends if not f.check_test_end()]
 
-                    notified_triggers.add(trigger['name'])
+            activated_triggers = set([t for t in remaining_triggers if t.ready()])
+
+            for trigger in activated_triggers:
+                for frontend in running_frontends:
+                    frontend.trigger(trigger['name'])
+
+            remaining_triggers -= activated_triggers
 
     def _fetch_results(self):
         for frontend in self._frontends.values():
