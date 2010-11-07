@@ -68,9 +68,9 @@ class Controller:
 
     def _connection_class(self, host):
         """
-        Find out how and connect to given host.
+        Find out how to connect to given host.
 
-        Return connection object allowing streamed IO.
+        Return connection class allowing streamed IO.
         """
         driver_name = host.device['connection']
 
