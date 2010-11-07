@@ -96,6 +96,7 @@ class AreteSlaveFrontend(FrontendPlugin):
         resp = self.input().readline()
 
         if resp.startswith('200'):
+            print '  -- sanity check passed at ' + self.host().model['name'] + ' --'
             return
 
         if resp.startswith('401'):
@@ -132,6 +133,7 @@ class AreteSlaveFrontend(FrontendPlugin):
 
         run = 'at ' + start.isoformat()
 
+        print '  -- starting test at ' + self.host().model['name'] + ' --'
         self.output().write('start @{id=%s} @{run=%s} @{end=%s}\n' % (self.configuration().test_uuid, run, end))
         self._check_response();
 
@@ -145,7 +147,11 @@ class AreteSlaveFrontend(FrontendPlugin):
 
     def check_test_end(self):
         self._non_blocking_io()
-        return self._test_end()
+        finished = self._test_end()
+        if finished:
+            print '  -- test finished at ' + self.host().model['name'] + ' --'
+
+        return finished
 
     def _non_blocking_io(self):
         conn = self.connection()
@@ -170,8 +176,6 @@ class AreteSlaveFrontend(FrontendPlugin):
             conn.setblocking(True)
 
     def _test_end(self):
-        print '  -- waiting for the test to finish at ' + self.host().model['name'] + ' --'
-
         policy = self._duration_policy.end_policy().split()
         if policy[0] == 'duration':
             duration = datetime.timedelta(seconds=float(policy[1]))
@@ -190,7 +194,7 @@ class AreteSlaveFrontend(FrontendPlugin):
 
     def _async_input(self, line):
         line = line.strip()
-        print '  -- received {0} at {1} -- '.format(line, self.host().model['name'])
+        # print '  -- received {0} at {1} -- '.format(line, self.host().model['name'])
 
         if line == '100 Test Finished':
             self._test_finished_flag = True
