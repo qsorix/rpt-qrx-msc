@@ -3,42 +3,200 @@
 
 \chapter{Przykłady}
 
+\section{Klient-serwer}
+
+Pierwszym przykładem który omówimy jest prosty scenariusz, z którym często mamy
+do czynienia w czasie tworzenia oprogramowania typu klient-serwer. W naszym
+przypadku będzie to program umożliwiający transfer plików, gdzie zarówno serwer
+jak i klient będą sterowane z linii poleceń. W teście będziemy chcieli sprawdzić
+czy transfer przebiegł poprawnie, tj. czy zawartość przesłanego pliku jest
+identyczna i czy zgadza się jego nazwa.
+
+W przykładzie wykorzystaliśmy proste aplikacje napisane w języku Python, których
+kod zamieszczamy poniżej. Klient łączy się z serwerem i korzystając z protokołu
+TCP przesyła nazwę i zawartość wskazanego pliku. Serwer nasłuchuje na
+przychodzące połączenia i odbiera nazwę oraz zawartość transmitowanego pliku, a
+następnie zapisuje go w lokalnym systemie plików.
+
+\begin{pythoncode}
+  # Client.py:
+  import sys
+  import socket
+
+  if __name__ == "__main__":
+      if len(sys.argv) != 5:
+	  print >>sys.stderr, \
+	      "Usage: {0} <ip> <port> <file> <destname>".format(sys.argv[0])
+	  sys.exit(1)
+
+      ip = sys.argv[1]
+      port = int(sys.argv[2])
+      filename = sys.argv[3]
+      destname = sys.argv[4]
+
+      sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      sock.connect((ip, port))
+
+      sock.send(destname+'\n')
+
+      with open(filename, 'r') as file:
+          sock.sendall(file.read())
+
+      sock.close()
+
+      print 'transfer done'
+
+\end{pythoncode}
+
+\begin{pythoncode}
+  # Server.py:
+  import sys
+  import SocketServer
+
+  class FileTransferHandler(SocketServer.BaseRequestHandler):
+      def handle(self):
+          input  = self.request.makefile('r', 0)
+          filename = input.readline().strip()
+
+          print 'received', filename
+
+          with open(filename, 'w') as file:
+	      file.write(input.read())
+  
+          self.request.close()
+
+  if __name__ == "__main__":
+      if len(sys.argv) != 3:
+          print >>sys.stderr, "Usage: {0} <ip> <port>".format(sys.argv[0])
+          sys.exit(1)
+
+      ip = sys.argv[1]
+      port = int(sys.argv[2])
+
+      server = SocketServer.TCPServer((ip, port), FileTransferHandler)
+      server.serve_forever()
+
+\end{pythoncode}
+
+\subsection{Konfiguracja}
+
+Poniżej omówiliśmy szczegółowo konfigurację testu. Zawiera ona jedynie model i
+plan testu, natomiast laboratorium i odzworowanie między modelem a laboratorium
+zostaną przedstawione później. Zakładamy, że użytkownik zapoznał się z działem
+\fixref{Konfiguracja}.
+
+\begin{pythoncode}
+  create_model('client-server')
+
+  add_host('client')
+  add_host('server')
+
+  create_schedule('client-server-test')
+\end{pythoncode}
+
+Na początku tworzymy model o nazwie \emph{client-server}. Ponieważ do
+przeprowadzenia testu potrzebujemy dwóch urządzeń - klienta i serwer, dodajemy
+je do stworzonego modelu. Tworzymy również plan testu \emph{client-server-test},
+aby móc określić jakie komendy będę wykonywane na urządzeniach.
+
+\begin{pythoncode}
+  test_end_policy('complete', setup_phase_delay=0.0)
+  create_trigger('kill-server', 1)
+\end{pythoncode}
+
+Następnie konfigurujemy globalne ustawienia testu. Ponieważ ciężko przewidzieć
+nam jak długo potrwa test, ustawiamy politykę zakończenia testu na
+\emph{complete}. Spowoduje to zakończenie testu dopiero w momencie, gdy zakończy
+się on na wszystkich urządzeniach biorących w nim udział. Zwróćmy uwagę, że
+jednym z urządzeń jest serwer, który z założenia nie kończy swojego działania. Z
+tego powodu tworzymy \fixme{trigger}, mający za zadanie zakończyć działanie
+serwera, gdy określona ilość urządzeń (w naszym przypadku jeden klient),
+powiadomi o zakończeniu testu. Wartość tę podajemy jako drugi parametr komendy
+\code{create\_trigger}. W komendzie \code{test\_end\_policy} jak parametr
+\code{setup\_phase\_delay} podajemy czas potrzebny na uruchomienie komend
+konfiguracyjnych. W naszym przypadku czas ten wynosi \emph{0.0} ponieważ nie
+jest wymagana dodatkowa konfiguracja.
+
+\begin{pythoncode}
+  add_resource(File('clientdist', 'Client.py', chmod='+x'))
+  add_resource(File('serverdist', 'Server.py', chmod='+x'))
+  add_resource(File('testfile', 'datafile.txt'))
+\end{pythoncode}
+
+Kolejnym etapem jest dodanie zasobów biorących udział w teście. Będą to
+oczywiście programy \emph{Client.py} oraz \emph{Server.py}. Aby zapewnić im
+odpowiednie prawa po przesłaniu na zdalne urządzenia, koszystamy z parametru
+\code{chmod}. Jako trzeci dodajemy plik który zostanie przesłany między
+urządzeniami.
+
+\begin{pythoncode}
+  append_schedule('client', [
+      ('client', at(1), \
+          shell('@{clientdist.path} @{server.ip} 6666 @{testfile.path} dest_path', \
+	  use_resources=['clientdist', 'testfile'], check_executable=False)),
+      ('md5sum', after('client'), shell('md5sum @{testfile.path}')),
+      ('notify', after('md5sum'), notify('kill-server'))
+  ])
+\end{pythoncode}
+
+Najważniejszą częścią konfiguracji jest określenie szczegółowego planu
+wykonywania komend na urządzeniach. W przypadku klienta uruchamiamy program
+\emph{Client.py} z odpowiednimi parametrami, tj. adresem i portem serwera, nazwą
+pliku który zostanie przesłany oraz docelową nazwą pliku. W parametrze
+\code{use\_resources} podajemy nazwy stworzonych wcześniej zasobów. Parametr
+\code{check\_executable=False} zapobiega sprawdzeniu czy komenda którą chcemy wykonać
+jest wykonywalna, ponieważ sami zadbaliśmy o to nadając plikom odpowiednie prawa
+podczas ich tworzenia. Zwróćmy uwagę, że komenda \emph{client} uruchamiana jest
+z sekundowym opóźnieniem (\code{at(1)}), by mieć pewność, że serwer zdąży się uruchomić.
+
+Następnie dodajemy dwa zadania, które będą wykonywane gdy program klienta zakończy
+działanie (funkcja \code{after()}). Pierwsze z nich to komenda sprawdzająca sumę
+kontrolną przesyłanego pliku korzystając z polecenia \code{md5sum}. Drugie
+powoduje powiadomienie Arete Master o zakończeniu działania. Ponieważ
+\fixme{trigger} o nazwie \emph{kill-server} czeka tylko na jedno powiadomienie,
+serwer otrzyma dzięki niemu sygnał do wykonania komendy kończącej swoje
+działanie.
+
+\begin{pythoncode}
+  append_schedule('server', [
+      ('server', at(0), \
+          shell('@{serverdist.path} 0.0.0.0 6666', use_resources=['serverdist'], \
+	  check_executable=False)),
+      ('trigger', trigger('kill-server'), shell('kill @{server.pid}')),
+      ('ls', after('server'), shell('ls dest_path')),
+      ('md5sum', after('ls'), shell('md5sum dest_path')),
+      ('rm', after('md5sum'), shell('rm -f dest_path'))
+  ])
+\end{pythoncode}
+
+W przypadku serwera na początku uruchamiany jest program \emph{Server.py} z
+odpowiednimi parametrami. Podobnie jak w kliencie przesyłane są wymagane zasoby
+oraz flaga \code{check\_executable} ustawiana jest na \code{False}. Następnie
+tworzona jest komenda kończąca działanie komendy \emph{server}, która zostanie
+uruchomiona po otrzymaniu sygnału o nazwie \emph{kill-server} od modułu Arete
+Master. Pozwoli to na uruchomienie dalszych komend, sprawdzających nazwę oraz
+sumę kontrolną otrzymanego od klienta pliku, usunięcie go oraz zakończenie
+testu.
+
+\subsection{Uruchomienie}
+
+\FIXME{Opis uruchomienia. Omówienie laboratorium i mapowania.}
+
+\subsection{Przebieg}
+
+\FIXME{Diagram sekwencji - niestety DIA mnie tak w******, że nie jestem w stanie
+tego zrobić. Poszukam czegoś innego, albo Ty to zrobisz...}
+
+\subsection{Wyniki}
+
+\FIXME{Zaprezentowanie jak wyglądają otrzymane wyniki, że się sumy kontrolne
+zgadzają itt (i takie tam).}
+
+\section{iperf DCCP}
+
 \FIXME{Na razie jest tu tylko kopia tekstu, który opisywał przykładowe
 scenariusze. Tekst w pierwotnym miejscu został streszczony, a tutaj jest jego
 oryginalna postać. Trzeba ją pociąć do odpowiednich podrozdziałów.}
-
-Najprostszy scenariusz ma miejsce w czasie tworzenia oprogramowania typu
-klient-serwer. Załóżmy, że tworzymy prosty program mający umożliwiać transfer
-plików. Zarówno serwer jak i klient będzie sterowany z linii poleceń. W teście
-chcemy sprawdzić czy transfer przebiegł poprawnie, tj. czy zgadza się z nazwa
-pliku i czy jego zawartość jest identyczna.
-
-Klient łączy się z serwerem i korzystając z protokołu TCP przesyła nazwę i
-zawartość wskazanego pliku. Serwer nasłuchuje na przychodzące połączenia i
-odbiera transmitowany plik, który zapisuje w lokalnym systemie plików.
-
-Aby wykonać pomiar musimy zbudować aktualną wersję kodu źródłowego i
-przygotować pliki wykonywalne serwera do transmisji. Odpowiedni plik (np. Java
-Archive) powinien wygenerować używany przez nas skrypt budujący.
-
-Gotowe pliki trzeba przesłać na maszynę docelową i uruchomić serwer odpowiednim
-poleceniem. Pliki aplikacji klienckiej będą uruchamiane lokalnie.
-
-Aby sprawdzić poprawność tranmisji, po jej zakończeniu na obu systemach
-wykonujemy polecenia \code{ls} i \code{md5sum}.
-
-W idealnej sytuacji, wszystkie opisane wyżej czynności będą wymagały wydania
-tylko dwóch poleceń.
-
-Zadanie narzędzia polega tutaj na:
-\begin{enumerate}
-\item przesłaniu aktualnej implementacji serwera na wyznaczone urządzenie,
-\item uruchomieniu serwera i klienta z odpowiednimi parametrami,
-\item zakończeniu serwera po wykonaniu testu,
-\item obliczeniu sum kontrolnych plików,
-\item zapamiętaniu wyników z obu komponentów,
-\item usunięcie pliku ze zdalnej maszyny.
-\end{enumerate}
 
 Drugi scenariusz dotyczy pomiaru szybkości transferu danych przy użyciu
 protokołu DCCP (Datagram Congestion Control Protocol) oraz wpływu innych
@@ -68,6 +226,10 @@ Aby zautomatyzować te testy, program musi:
 
 Ważne jest też, żeby w czasie testu program nie przesyłał żadnych danych, aby
 nie wpływał na uzyskiwane wyniki.
+
+\section{BitTorrent}
+
+\FIXME{tmp}
 
 Trzeci scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
 Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
