@@ -5,6 +5,7 @@ import socket
 import SocketServer
 import logging
 import datetime
+import os
 
 try:
     import paramiko
@@ -145,12 +146,14 @@ class Handler(SocketServer.StreamRequestHandler):
                             path = result[0]
                             size = result[1]
                             copied = 0
-                            with open(path, 'wb') as f:
+                            test_dir = manager.workdir + os.sep + parent_id
+                            if not os.path.isdir(test_dir):
+                                os.mkdir(test_dir)
+                            with open(test_dir + os.sep + path, 'wb') as f:
                                 while copied < size:
                                     read = min(size - copied, 1000000)
                                     f.write(self.rfile.read(read))
                                     copied += read
-
                         if type == 'results_get':
                             type = result[0]
                             to_send = result[1]

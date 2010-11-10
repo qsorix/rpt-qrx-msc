@@ -142,6 +142,12 @@ class Scheduler:
         command = str(Command.get_by(test_id=self.test_id, id=task_id).command)
 
         if cmd_type == 'shell':
+            from modules.Daemon import Daemon
+            manager = Daemon.get_manager()
+            test_dir = manager.workdir + os.sep + self.test_id
+            if not os.path.isdir(test_dir):
+                os.mkdir(test_dir)
+            os.chdir(test_dir)
             try:
                 command = Scheduler.subst(command, self.test_id)
                 args = shlex.split(str(command))
@@ -165,18 +171,14 @@ class Scheduler:
                 Invocation(command=Command.get_by(test_id=self.test_id, \
                     id=task_id), start_time=dt)
                 session.commit()
-
-#                from modules.Daemon import Daemon
-#                manager = Daemon.get_manager()
-#                manager.stop_test(None, self.test_id)
-                # FIXME: See if that works:)
+                os.chdir(os.pardir + os.sep + os.pardir)
             else:
                 Invocation(\
                     command=Command.get_by(test_id=self.test_id, \
                         id=task_id), output=p.stdout.read(), start_time=dt, \
                         duration=td, return_code=p.returncode)
                 session.commit()
-                pass
+                os.chdir(os.pardir + os.sep + os.pardir)
 
         elif cmd_type == 'notify':
             from modules.Daemon import Daemon

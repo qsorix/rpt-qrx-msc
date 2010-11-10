@@ -51,6 +51,7 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--port', help="use port other than 4567", required=False, type=int)
     parser.add_argument('-d', '--database', help="use database file other than 'aretes.db'", required=False, type=str)
     parser.add_argument('-l', '--log', help="use log file other than 'aretes.log'", required=False, type=str)
+    parser.add_argument('-w', '--workdir', help="set working directory", required=False, type=str)
     parser.add_argument('-v', '--verbose', help="print everything to stderr too", required=False, action='store_true')
     parser.add_argument('-n', '--new', help="delete current database and log", required=False, action='store_true')
     parser.add_argument('--clean', help="delete temporary file directory", required=False, action='store_true')
@@ -64,6 +65,7 @@ if __name__ == "__main__":
     port = 4567
     database = 'aretes.db'
     log = 'aretes.log'
+    workdir = 'tmp'
     verbose = False
     new = False
     clean = False
@@ -75,7 +77,7 @@ if __name__ == "__main__":
         check = config.read(args.config)
 
         def relative(filename):
-            return os.path.join(os.path.dirname(args.config), filename)
+            return os.sep.join(os.path.abspath(args.config).split(os.sep)[:-1]) + os.sep + filename
 
         if check and config.has_section('Arete'):
             if config.has_option('Arete', 'port'):
@@ -84,6 +86,8 @@ if __name__ == "__main__":
                 database = relative(config.get('Arete', 'database'))
             if config.has_option('Arete', 'log'):
                 log = relative(config.get('Arete', 'log'))
+            if config.has_option('Arete', 'workdir'):
+                workdir = relative(config.get('Arete', 'workdir'))
             if config.has_option('Arete', 'verbose'):
                 verbose = config.getboolean('Arete', 'verbose')
             if config.has_option('Arete', 'new'):
@@ -107,6 +111,8 @@ if __name__ == "__main__":
         database = args.database
     if args.log != None:
         log = args.log
+    if args.workdir != None:
+        workdir = args.workdir
     if args.verbose:
         verbose = True
     if args.new:
@@ -121,8 +127,8 @@ if __name__ == "__main__":
         host_key = args.host_key
 
     if clean:
-        if os.path.isdir("./tmp"):
-            shutil.rmtree("./tmp")
+        if os.path.isdir(workdir):
+            shutil.rmtree(workdir)
     if new:
         if os.path.isfile(database):
             os.remove(database)
@@ -140,9 +146,9 @@ if __name__ == "__main__":
 
         host_key = load_host_key(host_key)
         authorized_keys = load_authorized_keys(authorized_keys)
-        daemon = Daemon(port=port, database=database, log=log, verbose=verbose, ssh=True, authorized_keys=authorized_keys, host_key=host_key)
+        daemon = Daemon(port=port, database=database, log=log, workdir=workdir, verbose=verbose, ssh=True, authorized_keys=authorized_keys, host_key=host_key)
 
     else:
-        daemon = Daemon(port=port, database=database, log=log, verbose=verbose, ssh=False)
+        daemon = Daemon(port=port, database=database, log=log, workdir=workdir, verbose=verbose, ssh=False)
 
     daemon.run()

@@ -14,12 +14,11 @@ class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 class Daemon:
     manager = Manager()
 
-    def __init__(self, port, database, log, verbose, ssh=False, authorized_keys=None, host_key=None):
+    def __init__(self, port, database, log, workdir, verbose, ssh=False, authorized_keys=None, host_key=None):
         self._setup_database(database)
 
-        #FIXME: tmp-path in arguments
-        if not os.path.isdir("./tmp"): 
-            os.mkdir("./tmp")
+        if not os.path.isdir(workdir):
+            os.mkdir(workdir)
         logging.basicConfig(filename=log, level=logging.DEBUG, format="%(asctime)s %(levelname)s: %(message)s")
         if verbose:
             logger = logging.getLogger()
@@ -35,6 +34,7 @@ class Daemon:
             self.tcp_server.host_key = host_key
 
         self.manager.port = port
+        self.manager.workdir = workdir
 
     def _setup_database(self, database):
         metadata.bind = 'sqlite:///' + database
