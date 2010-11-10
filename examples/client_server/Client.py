@@ -6,7 +6,8 @@ import socket
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
-        print >>sys.stderr, "Usage: {0} <ip> <port> <file> <destname>".format(sys.argv[0])
+        print >>sys.stderr, \
+            "Usage: {0} <ip> <port> <file> <destname>".format(sys.argv[0])
         sys.exit(1)
 
     ip = sys.argv[1]
@@ -14,15 +15,14 @@ if __name__ == "__main__":
     filename = sys.argv[3]
     destname = sys.argv[4]
 
-    file = open(filename, 'r')
-
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((ip, port))
 
     sock.send(destname+'\n')
-    sock.sendall(file.read())
+
+    with open(filename, 'r') as file:
+        sock.sendall(file.read())
 
     sock.close()
-    file.close()
 
     print 'transfer done'

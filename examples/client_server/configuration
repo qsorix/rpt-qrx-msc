@@ -9,12 +9,17 @@ add_host('server')
 create_schedule('client-server-test')
 
 test_end_policy('complete', setup_phase_delay=0.0)
+create_trigger('kill-server', 1)
 
 add_resource(File('serverdist', 'Server.py', chmod='+x'))
 add_resource(File('clientdist', 'Client.py', chmod='+x'))
 add_resource(File('testfile', 'datafile.txt'))
 
-create_trigger('kill-server', 1) # 1 -- number of clients
+append_schedule('client', [
+    ('client',  at(1),                  shell('@{clientdist.path} @{server.ip} 6666 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'], check_executable=False)),
+    ('md5sum',  after('client'),        shell('md5sum @{testfile.path}')),
+    ('notify',  after('md5sum'),        notify('kill-server'))
+])
 
 append_schedule('server', [
     ('server',  at(0),                  shell('@{serverdist.path} 0.0.0.0 6666', use_resources=['serverdist'], check_executable=False)),
@@ -23,12 +28,5 @@ append_schedule('server', [
     ('rm',      after('md5sum'),        shell('rm -f dest_path')),
     ('trigger', trigger('kill-server'), shell('kill @{server.pid}'))
 ])
-
-append_schedule('client', [
-    ('client',  at(1),                  shell('@{clientdist.path} @{server.ip} 6666 @{testfile.path} dest_path', use_resources=['clientdist', 'testfile'], check_executable=False)),
-    ('md5sum',  after('client'),        shell('md5sum @{testfile.path}')),
-    ('notify',  after('md5sum'),        notify('kill-server'))
-])
-
 
 # vim: ft=python
