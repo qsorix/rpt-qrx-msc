@@ -370,7 +370,7 @@ pośrednich adapterów możliwe jest łączenie portów poszczególnych komponen
 sobą (aby testować sam protokół) lub portami działających węzłów, co umożliwia
 np. testowanie implementacji stosu TCP/IP systemu operacyjnego.
 
-\subsubsection{Przykład użycia}
+\subsubsection{Przykład}
 
 Załóżmy, że tworzony przez nas komponent (np. urządzenie sprzętowe) ma za
 zadanie natychmiast odsyłać (echo) odbierane dane. Chcemy zweryfikować tę
@@ -474,9 +474,20 @@ komponentami. Istnieje szereg narzędzi zbudowanych na bazie środowiska OMNeT++
 które zostały stworzone z myślą o konkretnych rodzajach sieci, jak np. OverSim
 będący symulatorem sieci peer2peer.
 
+\begin{figure}
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{intro-omnet-network}
+\end{center}
+\caption{Wizualizacja przebiegu symulacji w sieci złożonej z sześciu węzłów.
+OMNeT++ umożliwia pełną instrumentację uruchomionego modelu. Na rysunku widać
+(czerwona kropka) właśnie przesyłany komunikat.}
+\label{fig:intro-omnet-network}
+\end{figure}
+
 Framework umożliwia pracę w IDE opartym na Eclipse i wspiera wiele pożądanych
-funkcji jak np.~symulacje w czasie rzeczywistych czy integracja z bazą danych.
-Tworzone symulacje można wykonywać jako samodzielne programy sterowane linią
+funkcji jak np.~symulacje w czasie rzeczywistym czy integracja z bazą danych.
+Tworzone symulacje można wykonywać jako samodzielne programy sterowane z linii
 polecenia, aby zyskać na szybkości, lub pod kontrolą interfejsu graficznego
 umożliwiającego dokładny wgląd w stan każdego elementu systemu.
 
@@ -485,17 +496,75 @@ jak np.~algorytmów routingu. Nie został zaprojektowany z myślą o symulacji
 złożonych systemów, takich jak pełna implementacja stosu sieciowego w systemie
 operacyjnym. Tego typu realizacje są możliwe, ale działają niewydajnie.
 
-\FIXME{Chociaż istnieje możliwość uruchomienia symulacji na kilku urządzeniach
-jednocześnie, wykonywany kod pozostaje pod kontrolą środowiska OMNeT++.
+\subsubsection{Przykład}
 
-\emph{Wyjaśnić dlaczego, bo nie jest to jasne.}
+Pełna konfiguracja testu dla środowiska OMNeT++ jest zbyt złożona, żeby ją tu w
+całości przytaczać. Prezentujemy tylko wybrane fragmenty.
 
-Nie jest możliwy przypadek użycia, w którym za pomocą OMNeT++ sterujemy pracą
-zdalnych systemów, wykonując na nich własną aplikację.}
+Podstawowe moduły, tj. takie, których działanie programuje użytkownik,
+definiowane są dyrektywą \code{simple}. Poniżej przykład komponentu o nazwie
+\code{EtherMAC}. Zawiera on parametr \code{address}, którego wartość można
+podać uruchamiając test lub zapisać w pliku konfiguracyjnym. Zdefiniowane są
+także porty służące do komunikacji z innymi modułami. W tym wypadku warstwą LLC
+oraz łącza danych.
 
-\subsubsection{Przykład użycia}
+\begin{textcode}
+  simple EtherMAC {
+      parameters:
+          string address;
+      gates:
+          input phyIn;
+          output phyOut;
+          input llcIn;
+          output llcOut;
+  }
+\end{textcode}
 
-\FIXME{Przykład użycia...}
+Komponenty typu \code{simple} można składać tworząc większe moduły, których
+zadaniem jest organizacja podstawowych komponentów i definiowanie połączeń
+między nimi.
+
+Poniższy kod pokazuje jak z komponentów \code{EtherTrafficGen}, \code{EtherLLC}
+oraz \code{EtherMAC} tworzony jest moduł \code{EtherStation}.
+
+\begin{textcode}
+  module EtherStation {
+      parameters: ...
+      gates: ...
+          input in;
+          output out;  
+      submodules:
+          app: EtherTrafficGen;
+          llc: EtherLLC;
+          mac: EtherMAC;
+      connections:
+          app.out --> llc.hlIn;
+          app.in <-- llc.hlOut;
+          llc.macIn <-- mac.llcOut;
+          llc.macOout --> mac.llcIn;
+          mac.phyIn <-- in;
+          mac.phyOut --> out;
+  }
+\end{textcode}
+
+Aby przykład był kompletny, należałoby jeszcze zdefiniować sieć i jej
+topologię.  Powyższy moduł zawiera definicje dwóch portów (sekcja
+\code{gates}), które mają posłużyć właśnie połączeniu z innymi komponentami
+(np. modelującymi hub). Dodatkowo całość potrzebuje konfiguracji
+uruchomieniowej. Graficzne środowisko ułatwia tworzenie tych brakujących elementów.
+
+\begin{figure}
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{intro-omnet-histogram}
+\end{center}
+\caption{Poza umożliwieniem uruchomienia zdefiniowania i uruchomienia
+symulacji, pakiet OMNeT++ zawiera także narzędzia ułatwiające gromadzenie
+danych statystycznych oraz graficzną analizę wyników. Na rysunku widać
+przykładowy histogram uzyskany po wykonaniu testu.}
+\label{fig:intro-omnet-histogram}
+\end{figure}
+
 
 \subsection{Podsumowanie}
 
