@@ -10,7 +10,12 @@ import ConfigParser
 from modules.Daemon import Daemon
 
 try:
-    import paramiko
+    import warnings
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        import paramiko
+
     import base64
     has_ssh_support = True
 except:
