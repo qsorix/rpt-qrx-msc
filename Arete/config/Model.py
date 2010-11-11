@@ -4,7 +4,6 @@
 from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
 from common import Exceptions
 import Utils
-import Resources
 
 class Model(NamedMixin):
     """ Konfiguracja modelu. """
