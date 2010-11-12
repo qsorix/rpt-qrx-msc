@@ -728,16 +728,44 @@ Szersze omówienie interfejsu \code{Resource} znajduje się w rozdziale
 
 \section{Przechowywanie wyników}
 
+Wyniki testów zapisywane są w bazie danych SQLite. Schemat tabel przedstawia
+rysunek \ref{fig:arete-master-db}.
+
 \begin{figure}[htb]
 \begin{center}
 \leavevmode
 \includegraphics[width=1\textwidth]{arete-master-db}
 \end{center}
-\caption{Schemat bazy danych}
+\caption{Schemat bazy danych modułu Master.}
 \label{fig:arete-master-db}
 \end{figure}
 
-\FIXME{Opis bazy danych.}
+Główna tabela \code{tests} zawiera informacje dotyczące pojedyńczego wykonania
+testu. Kolumna \code{id} to automatycznie generowany, unikalny identyfikator.
+Kolejne uruchomienia tego samego testu będą posiadały inne identyfikatory.
+Kolumna \code{comment} przeznaczona jest do przechowywania dowolnych komentarzy
+użytkownika (podawane przy uruchamianiu testu). Naszym zamiarem jest
+umożliwienie dokonywania pewnych adnotacji, jak np. opisania szczególnych
+warunków wykonywania testu. W kolumnach \code{model}, \code{laboratory},
+\code{schedule} i \code{mapping} zapisywane są nazwy podawane w argumentach
+odpowiednich funkcji, np. \code{create\_model}. O ile użytkownik
+dobierze opisowe nazwy, kolumny te pozwolą określić, która konfiguracja została
+użyta w teście.
+
+Tabela \code{nodes} wymienia wszystkie urządzenia zdefiniowane w modelu podając
+ich nazwy (kolumna \code{node}). Kolumy \code{start\_time} oraz \code{duration}
+to data (z zegaru urządzenia) rozpoczęcia testu oraz czas jego wykonania.
+Wartości te nie są określone w przypadku, kiedy test na urządzeniu nie wykona
+się (np. z powodu błędów).
+
+W tabeli \code{commands} zapisane są komendy uruchamiane na urządzeniach.
+Kolumna \code{phase} określa fazę testu, natomiast \code{type} mówi o rodzaju
+komendy (np. komenda powłoki systemowej).
+
+Ponieważ komendy mogą wykonywać się wielokrotnie, wyniki każdego uruchomienia
+zapisane są w tabeli \code{invocations}. Ponieważ niektóre komendy (jak np.
+\code{notify}) nie produkują żadnych wyników, wartości w kolumnach
+\code{output}, \code{duration} oraz \code{return\_code} mogą pozostać puste.
 
 \subsection{Uruchamianie}
 
