@@ -769,6 +769,57 @@ zapisane są w tabeli \code{invocations}. Ponieważ niektóre komendy (jak np.
 
 \subsection{Uruchamianie}
 
-\FIXME{Opis uruchamiania.}
+Program \code{arete} w celu poprawnej pracy wymaga podania argumentów
+określających test. W przypadku minimalnym należy tylko wskazać zestaw plików
+zawierających kompletną konfigurację. Wszystkie argumenty programu przedstawione
+są poniżej.
+
+\begin{description}
+\item[\code{--help}]
+
+Wyświetla informacje dotyczące opcji programu.
+
+\item[\code{--config}]
+
+Określa pliki z konfiguracją testu. Opcja przyjmuje wiele parametrów.
+
+\item[\code{--set}]
+
+Definiuje wartości parametrów używanych w konfiguracji. Przyjmuje wiele
+parametrów w formacie \code{nazwa=wartość}.
+
+\item[\code{--askparams}]
+
+Zezwala na interaktywne podanie brakujących wartości parametrów, tj. używanych w
+konfiguracji, a nie określonych opcją \code{--set}. Pozwala w bezpieczny sposób
+korzystać z haseł. \fixme{W opisie konfiguracji chyba nie ma słowa o
+parametrach.}
+
+\item[\code{--plugins}]
+
+Określa dodatkowe ścieżki, z których ładowane będą wtyczki. Opcja przyjmuje
+wiele parametrów.
+
+\item[\code{--hooks}]
+
+Określa nazwy \fixme{hook'ów} do uruchomienia po zbudowaniu konfiguracji.
+Wybrane hooki muszą być dostępne w wybranych katalogach wtyczek (opcja
+\code{--plugins})
+
+\item[\code{--map}]
+
+Definiuje odwzorowania z poziomu linii poleceń. W takim wypadku nie należy
+podawać go w konfiguracji testu. Można podać wiele odwzorować w formacie
+\code{host:urządzenie}.
+
+\item[\code{--message}]
+
+Określa komentarz dotyczący danego wykonania testu.
+
+\item[\code{--database}]
+
+Określa ścieżkę do bazy danych SQLite, która ma być użyta do zapisania wyników.
+
+\end{description}
 
 \end{document}
