@@ -11,11 +11,11 @@ torrent = add_resource(File('torrent', 'big-data-file.torrent'))
 data    = add_resource(File('data',    'big-data-file'))
 
 # there are W+E-1 downloading peers
-#create_trigger('stop-torrent', len(west+east)-1)
-create_trigger('stop-torrent', len(west+east))
+create_trigger('stop-torrent', len(west+east)-1)
+#create_trigger('stop-torrent', len(west+east))
 
 tracker_schedule = [
-    ('tracker', at(0), shell('bittorrent-tracker --port 9876')),
+    ('tracker', at(0), shell('xbt_tracker')),
     ('stop-tracker', trigger('stop-torrent'), shell('kill @{tracker.pid}'))
 ]
 

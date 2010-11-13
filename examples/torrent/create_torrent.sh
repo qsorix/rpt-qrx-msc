@@ -14,5 +14,5 @@ if [ -f big-data-file.torrent ]; then
 fi
 
 echo "Creating torrent file..."
-ctorrent -t -s ./big-data-file.torrent -u http://$1:9876/announce -p ./big-data-file
+ctorrent -t -s ./big-data-file.torrent -u http://$1:$2/announce -p ./big-data-file
 # FIXME Tutaj powinien byc adres trackera z testu...
