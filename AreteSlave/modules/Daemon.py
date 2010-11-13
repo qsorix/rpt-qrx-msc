@@ -4,6 +4,7 @@
 import os
 import SocketServer
 import logging
+import signal
 
 from database.Models import *
 from modules.Manager import Manager
