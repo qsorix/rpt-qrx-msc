@@ -1,5 +1,5 @@
 dev-python/argparse
-dev-python/py
+dev-python/py (python-codespeak-lib pod ubuntu)
 dev-python/elixir
 dev-python/sqlalchemy
 
