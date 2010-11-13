@@ -10,7 +10,6 @@ def configure(conf):
     conf.env.PDFLATEXFLAGS = ['-shell-escape']
 
 def build(bld):
-
     def dia(src, tgt, layers=None):
         ls = ''
         if layers:
@@ -37,6 +36,10 @@ def build(bld):
 
     dia('arete-architecture', 'arete-architecture', 'nodes')
     dia('arete-architecture', 'arete-architecture-triggers', 'nodes,triggers')
+
+    # i don't know how to copy those files to the build directory without this (-in) suffix
+    bld(source='diagrams' + os.sep + 'intro-omnet-network-in.png', target='diagrams' + os.sep + 'intro-omnet-network.png', rule='cp ${SRC} ${TGT}')
+    bld(source='diagrams' + os.sep + 'intro-omnet-histogram-in.png', target='diagrams' + os.sep + 'intro-omnet-histogram.png', rule='cp ${SRC} ${TGT}')
 
     bld.add_group()
 

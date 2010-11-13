@@ -177,9 +177,6 @@ powtarzać.
 
 \section{Dostępne rozwiązania}
 
-\FIXME{Przykłady użycia tych rozwiązań. Zilustrowanie kodem i jakimiś
-screenshotami. Ogólnie to więcej obrazków ma być.}
-
 Istnieje wiele programów rozwiązujących problem automatyzacji testowania, które
 w różnym stopniu i na różnych poziomach pozwalają na ułatwienie i przyspieszenie
 przeprowadzania testów aplikacji i protokołów sieciowych. Jednak spośród znanych
@@ -204,17 +201,128 @@ Wykorzystanie formalnych metod opisu pozwala na automatyczne tworzenie koderów 
 dekoderów. W przypadku pracy z istniejącymi protokołami, PDU zwykle na stałe
 wiąże przenoszone dane z ich kodowaniem. Przykładem może być opis pakietów TCP w
 RFC 793, gdzie dane (np. numer sekwencyjny) i ich kodowanie (rozmiar i
-położenie bitów w pakiecie) określone są w tym samym miejscu. Nie ma więc podziału między semantyką informacji i jej bitową reprezentacją. Korzystanie z ASN.1 w takich wypadkach jest
-trudniejsze, ale możliwe dzięki ECN.
+położenie bitów w pakiecie) określone są w tym samym miejscu. Nie ma więc
+podziału między semantyką informacji i jej bitową reprezentacją. Korzystanie z
+ASN.1 w takich wypadkach jest trudniejsze, ale możliwe dzięki ECN.
 
 ECN (Explicit Coding Notation) umożliwia formalny opis niestandardowych metod
 kodowania. Jest to standard ściśle związany z ASN.1 i opis danego kodowania
 zawsze łączy się z pewnym opisem danych wyrażonych w ASN.1. Z tego powodu często
 spotyka się określenie ASN.1+ECN.
 
-\subsubsection{Przykład użycia}
+\subsubsection{Przykład}
 
-\FIXME{Przykład użycia...}
+Prezentujemy tutaj proste przykłady użycia ASN.1 oraz ASN.1+ECN. Zostały one
+pobrane z materiałów szkoleniowych dostępnych w internecie. \fixme{Link? Odesłanie do bibliografii?}
+
+Poniżej definiujemy prosty protokół składający się z jednego typu PDU:
+(\code{Message}). Wiadomość zbudowana jest z identyfikatora oraz jej
+zawartości, będącej napisem zakodowanym w UTF-8.
+
+\begin{textcode}
+  Protocol DEFINITIONS ::= BEGIN
+       Message::= SEQUENCE {
+          identifier INTEGER,
+          content    UTF8String
+      }
+  END
+\end{textcode}
+
+Taka definicja, po wybraniu kodowania, może zostać użyta do wygenerowania
+odpowiednich koderów i dekoderów, aby następnie użyć jej w tworzonej aplikacji.
+Dekoder zgłaszający wszelkie napotkane błędy jest doskonałym narzędziem do
+przetestowania pracy innego uczestnika komunikacji (którego poprawną
+implementację chcemy zweryfikować).
+
+PDU powyższego protokołu może mieć taką postać:
+
+\begin{textcode}
+  sampleMessage Message ::= {
+      identifier     3,
+      content        "Hello!"
+  }
+\end{textcode}
+
+Istotną cechą ASN.1 jest odseparowanie definicji danych od ich kodowania.
+Dzięki temu możliwe jest zakodowanie tych samych informacji na różne sposoby. I
+tak np. możemy użyć kodowania XER uzyskując poniższy XML:
+
+\begin{xmlcode}
+  <Message>
+      <identifier>3</identifier>
+      <content>Hello!</content>
+  </FooQuestion>
+\end{xmlcode}
+
+Czasem żadne z dostępnych, uniwersalnych, kodowań nie będzie odpowiadać naszym
+wymaganiom. Dzieje się tak najczęściej w przypadku protokołów sztywno
+definiujących sposób kodowania informacji, jak np. wspomniany wcześniej TCP. W
+takich wypadkach możemy zastosować ECN.
+
+ECN dostarcza mechanizmów do zdefiniowania dowolnego sposobu kodowania
+informacji. Założmy, że w PDU naszego protokołu występuje liczba przyjmująca
+wartości od 0 do 7 i używamy kodowania PER. Taka liczba zostałaby zakodowana
+koszytając z 3 bitów. Ze względu jednak na przewidywaną możliwość rozwoju
+chcemy aby zakodowana ona była na 5 bitach. Oto jak możemy to zrobić przy
+pomocy ECN.
+
+Najpierw definicja typu w ASN.1:
+
+\begin{textcode}
+  Example-ASN1 DEFINITIONS AUTOMATIC TAGS ::=
+  BEGIN
+    MyType ::= INTEGER (0..7)
+  END
+\end{textcode}
+
+A następnie definicja kodowania w ECN:
+
+\begin{textcode}
+  Example-EDM ENCODING-DEFINITIONS ::=
+  BEGIN
+  
+  IMPORTS
+    #MyType
+  FROM Example-ASN1;
+  
+  MyEncodings #ENCODINGS ::= { myType-encoding }
+  
+  myType-encoding #MyType ::= {
+    ENCODING {
+      ENCODING-SPACE
+      SIZE 5
+      MULTIPLE OF bit
+      ENCODING positive-int
+    }
+  }
+  END
+\end{textcode}
+
+Aby tej definicji użyć potrzebny jest jeszcze moduł łączący zdefiniowane kodowanie z definicją w ASN:
+
+\begin{textcode}
+  Example-ELM LINK-DEFINITIONS ::=
+  BEGIN
+  
+  IMPORTS
+    #MyType
+  FROM Example-ASN1
+    MyEncodings
+  FROM Example-EDM;
+  
+  ENCODE #MyType
+    WITH          MyEncodings
+    COMPLETED BY  PER-BASIC-UNALIGNED
+  END
+\end{textcode}
+
+Instrukcja \code{COMPLETED BY} powoduje, że do pozostałych danych zostaną użyte
+standardowe reguły kodowania PER.
+
+Oczywiście możliwości ECN są o wiele większe i biorą pod uwagę wszystkie
+spotykane w praktyce sposoby kodowania złożonych struktur, jak określanie
+sposobu budowania sekwencji, wybierania typu opcji, obliczanie sum kontrolnych,
+wprowadzanie wyrównań, itd.
 
 \subsubsection{Podsumowanie}
 
@@ -259,9 +367,87 @@ pośrednich adapterów możliwe jest łączenie portów poszczególnych komponen
 sobą (aby testować sam protokół) lub portami działających węzłów, co umożliwia
 np. testowanie implementacji stosu TCP/IP systemu operacyjnego.
 
-\subsubsection{Przykład użycia}
+\subsubsection{Przykład}
 
-\FIXME{Przykład użycia...}
+Załóżmy, że tworzony przez nas komponent (np. urządzenie sprzętowe) ma za
+zadanie natychmiast odsyłać (echo) odbierane dane. Chcemy zweryfikować tę
+cechę. Dodatkowo, ponieważ w przypadku gdy błędnie pracujący komponent w ogóle
+by nie odpowiedział, czekalibyśmy w nieskończoność na wynik, wprowadzamy limit
+czasowy równy jednej sekundzie.
+
+Poniżej prezentujemy przykład zaczerpnięty z materiałów szkoleniowych
+TTCN. \fixme{link? bibliografia?}
+
+W teście tym definiujemy komponent \code{MainComponent} wyposażony w jeden port
+komunikacyjny oraz zegar, który użyty jest do implementacji limitu czasowego.
+
+Nasz kompoment, w celu uruchomienia, wymaga środowiska systemowego. TSI (Test
+System Interface) zapewnia komunikację z testowanym komponentem, w terminologii
+TTCN nazywanym SUT (System Under Test). Dzięki tym dwóm konceptom możemy
+połączyć naszą "wirtualną" maszynę testującą z rzeczywistym komponentem, który
+chcemy testować, korzystając z mechanizmów dostarczanych przez odpowiedni
+adapter oraz system operacyjny.
+
+\begin{textcode}
+  type port PortType mixed { inout all; }
+  
+  type component MainComponent
+  {
+      port PortType p;
+      timer T_WAIT := 1.0;
+  }
+  
+  type component TSI_Type
+  {
+      port PortType tsiPort;
+  }
+\end{textcode}
+
+Obie definicje łączymy tworząc przypadek testowy:
+
+\begin{textcode}
+  testcase TC_send() runs on MainComponent system TSI_Type
+  {
+      map(mtc:p, system:tsiPort);
+  
+      p.send(10);
+      T_WAIT.start;
+  
+      alt
+      {
+          [] p.receive(10)
+          {
+              setverdict(pass);
+          }
+  
+          [] p.receive /* any */
+          {
+              setverdict(fail);
+          }
+  
+          [] T_WAIT.timeout
+          {
+              setverdict(fail);
+          }
+      }
+  }
+\end{textcode}
+
+Powyższy kod stwierdza, że test został spełniony (\code{setverdict(pass)})
+jeśli na porcie \code{p} otrzymamy, wcześniej wysłaną, wartość \code{10}.
+Jeżeli otrzymamy cokolwiek innego test się nie powiedzie
+(\code{setverdict(fail)}).  Tak samo postępujemy, jeśli przekroczymy wcześniej
+określony limit czasowy.
+
+Tak przygotowany test tłumaczy się na kod, np. w C++, który po skompilowaniu i
+zlinkowaniu z biblitekami TTCN jest gotowy do uruchomienia.
+
+Zależnie od wybranych adapterów komunikacyjnych, możemy wybrać, gdzie
+faktycznie zostaną wysłane dane. Mogą to być inne urządzenia, jeśli np.
+testujemy implementację protokołu działającą na routerze sprzętowym lub inny
+komponent TTCN, dzięki czemu uzyskujemy możliwość tworzenia prototypowych
+implementacji protokołów. Możliwości są nieograniczone ponieważ możemy
+dostarczyć własny adapter komunikacyjny.
 
 \subsubsection{Podsumowanie}
 
@@ -285,9 +471,20 @@ komponentami. Istnieje szereg narzędzi zbudowanych na bazie środowiska OMNeT++
 które zostały stworzone z myślą o konkretnych rodzajach sieci, jak np. OverSim
 będący symulatorem sieci peer2peer.
 
+\begin{figure}
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{intro-omnet-network}
+\end{center}
+\caption{Wizualizacja przebiegu symulacji w sieci złożonej z sześciu węzłów.
+OMNeT++ umożliwia pełną instrumentację uruchomionego modelu. Na rysunku widać
+(czerwona kropka) właśnie przesyłany komunikat.}
+\label{fig:intro-omnet-network}
+\end{figure}
+
 Framework umożliwia pracę w IDE opartym na Eclipse i wspiera wiele pożądanych
-funkcji jak np.~symulacje w czasie rzeczywistych czy integracja z bazą danych.
-Tworzone symulacje można wykonywać jako samodzielne programy sterowane linią
+funkcji jak np.~symulacje w czasie rzeczywistym czy integracja z bazą danych.
+Tworzone symulacje można wykonywać jako samodzielne programy sterowane z linii
 polecenia, aby zyskać na szybkości, lub pod kontrolą interfejsu graficznego
 umożliwiającego dokładny wgląd w stan każdego elementu systemu.
 
@@ -296,17 +493,83 @@ jak np.~algorytmów routingu. Nie został zaprojektowany z myślą o symulacji
 złożonych systemów, takich jak pełna implementacja stosu sieciowego w systemie
 operacyjnym. Tego typu realizacje są możliwe, ale działają niewydajnie.
 
-\FIXME{Chociaż istnieje możliwość uruchomienia symulacji na kilku urządzeniach
-jednocześnie, wykonywany kod pozostaje pod kontrolą środowiska OMNeT++.
+\subsubsection{Przykład}
 
-\emph{Wyjaśnić dlaczego, bo nie jest to jasne.}
+Pełna konfiguracja testu dla środowiska OMNeT++ jest zbyt złożona, żeby ją tu w
+całości przytaczać. Prezentujemy tylko wybrane fragmenty.
 
-Nie jest możliwy przypadek użycia, w którym za pomocą OMNeT++ sterujemy pracą
-zdalnych systemów, wykonując na nich własną aplikację.}
+Podstawowe moduły, tj. takie, których działanie programuje użytkownik,
+definiowane są dyrektywą \code{simple}. Poniżej przykład komponentu o nazwie
+\code{EtherMAC}. Zawiera on parametr \code{address}, którego wartość można
+podać uruchamiając test lub zapisać w pliku konfiguracyjnym. Zdefiniowane są
+także porty służące do komunikacji z innymi modułami. W tym wypadku warstwą LLC
+oraz łącza danych.
 
-\subsubsection{Przykład użycia}
+\begin{textcode}
+  simple EtherMAC {
+      parameters:
+          string address;
+      gates:
+          input phyIn;
+          output phyOut;
+          input llcIn;
+          output llcOut;
+  }
+\end{textcode}
 
-\FIXME{Przykład użycia...}
+Komponenty typu \code{simple} można składać tworząc większe moduły, których
+zadaniem jest organizacja podstawowych komponentów i definiowanie połączeń
+między nimi.
+
+Poniższy kod pokazuje jak z komponentów \code{EtherTrafficGen}, \code{EtherLLC}
+oraz \code{EtherMAC} tworzony jest moduł \code{EtherStation}.
+
+\begin{textcode}
+  module EtherStation {
+      parameters: ...
+      gates: ...
+          input in;
+          output out;  
+      submodules:
+          app: EtherTrafficGen;
+          llc: EtherLLC;
+          mac: EtherMAC;
+      connections:
+          app.out --> llc.hlIn;
+          app.in <-- llc.hlOut;
+          llc.macIn <-- mac.llcOut;
+          llc.macOout --> mac.llcIn;
+          mac.phyIn <-- in;
+          mac.phyOut --> out;
+  }
+\end{textcode}
+
+Aby przykład był kompletny, należałoby jeszcze zdefiniować sieć i jej
+topologię.  Powyższy moduł zawiera definicje dwóch portów (sekcja
+\code{gates}), które mają posłużyć właśnie połączeniu z innymi komponentami
+(np. modelującymi hub). Dodatkowo całość potrzebuje konfiguracji
+uruchomieniowej. Graficzne środowisko ułatwia tworzenie tych brakujących elementów.
+
+\begin{figure}
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{intro-omnet-histogram}
+\end{center}
+\caption{Poza umożliwieniem uruchomienia zdefiniowania i uruchomienia
+symulacji, pakiet OMNeT++ zawiera także narzędzia ułatwiające gromadzenie
+danych statystycznych oraz graficzną analizę wyników. Na rysunku widać
+przykładowy histogram uzyskany po wykonaniu testu.}
+\label{fig:intro-omnet-histogram}
+\end{figure}
+
+\subsubsection{Podsumowanie}
+
+OMNeT++ to rozbudowane środowisko umożliwiające tworzenie testów modelujących
+złożone systemy. Pracę wspiera graficzny interfejs oraz framework
+udostępniający szeroką gamę najczęściej potrzebnych funkcji.
+
+Pewną wadą jest niska wydajność w sytuacji, gdy modeluje się systemy z dużą
+liczbą komponentów intensywnie się komunikujących.
 
 \subsection{Podsumowanie}
 

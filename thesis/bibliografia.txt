@@ -18,6 +18,9 @@ Bibliografia
  * http://en.wikipedia.org/wiki/Encoding_Control_Notation
  * http://www.ttcn-3.org/
 
+http://www.itu.int/ITU-T/asn1/ecn/tutorial.htm -- tutoriale, z ktorych sa przyklady ASN.1 + ECN
+http://wiki.openttcn.com/media/index.php/OpenTTCN/Language_reference -- przykład TTCN
+
 http://www.python.org/dev/peps/pep-0008/
 http://www.python.org/dev/peps/pep-0257/
 http://www.python.org/dev/peps/pep-0263/

@@ -8,7 +8,10 @@ import datetime
 import os
 
 try:
-    import paramiko
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        import paramiko
     has_ssh_support = True
 except:
     has_ssh_support = False

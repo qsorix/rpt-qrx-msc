@@ -10,7 +10,7 @@
 
 \usepackage{color}
 \usepackage{graphicx}
-\DeclareGraphicsExtensions{.eps}
+\DeclareGraphicsExtensions{.eps,.png}
 \graphicspath{{./diagrams/}}
 \usepackage{array}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
@@ -20,6 +20,8 @@
 
 \usepackage{minted}
 \newminted{python}{gobble=2,fontsize=\small}
+\newminted{text}{gobble=2,fontsize=\small}
+\newminted{xml}{gobble=2,fontsize=\small}
 
 \newcommand{\code}[1] {{\textbf{\texttt{#1}}}}
 \newcommand{\FIXME}[1] {

@@ -31,7 +31,7 @@ def consume_parameters(params):
 if __name__ == "__main__":
     plugins = [sys.path[0]+os.sep+'plugins']
 
-    parser = argparse.ArgumentParser(prog='Main.py')
+    parser = argparse.ArgumentParser(prog='arete')
     parser.add_argument('-c', '--config',   help='configuration files', required=True, nargs='+')
     parser.add_argument('-s', '--set', help='set a test parameter, the format is name=value', required=False, nargs='+', default=[])
     parser.add_argument('--askparams', help='ask for values of missing parameters', required=False, action='store_true', default=False, dest='ask_parameters')

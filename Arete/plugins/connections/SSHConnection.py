@@ -12,7 +12,10 @@ class SSHConnection(ConnectionPlugin):
 
     def __init__(self, host):
         try:
-            import paramiko
+            import warnings
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore", DeprecationWarning)
+                import paramiko
         except:
             raise Exceptions.ConfigurationError("SSHConnection plugin needs paramiko library. Connection type 'ssh' will not be available.")
 

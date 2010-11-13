@@ -10,7 +10,12 @@ import ConfigParser
 from modules.Daemon import Daemon
 
 try:
-    import paramiko
+    import warnings
+
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", DeprecationWarning)
+        import paramiko
+
     import base64
     has_ssh_support = True
 except:
@@ -45,7 +50,7 @@ def load_host_key(filename):
     return paramiko.RSAKey(filename=filename)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog='Main.py')
+    parser = argparse.ArgumentParser(prog='arete-slave')
     
     parser.add_argument('-c', '--config', help="use config file", required=False, type=str)
     parser.add_argument('-p', '--port', help="use port other than 4567", required=False, type=int)
