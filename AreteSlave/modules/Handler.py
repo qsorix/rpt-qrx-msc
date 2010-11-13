@@ -13,34 +13,34 @@ try:
         warnings.simplefilter("ignore", DeprecationWarning)
         import paramiko
     has_ssh_support = True
+    class SSHServer (paramiko.ServerInterface):
+        def __init__(self, authorized_keys):
+            self.authorized_keys = authorized_keys
+    
+        def check_auth_publickey(self, username, key):
+            if key in self.authorized_keys:
+                logging.info("[ SSH ] User %s authenticated using pubkey." % (username))
+                return paramiko.AUTH_SUCCESSFUL
+    
+            logging.warn("[ SSH ] Pubkey authentication failed for %s" % (username))
+            return paramiko.AUTH_FAILED
+    
+        def check_channel_request(self, kind, chanid):
+            if kind=='session':
+                logging.warn("[ SSH ] Opening channel %s" % (kind))
+                return paramiko.OPEN_SUCCEEDED
+    
+            logging.warn("[ SSH ] Request for unknown channel kind %s" % (kind))
+            return paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
+    
+        def get_allowed_auths(self, username):
+            return 'pubkey'
+
 except:
     has_ssh_support = False
 
 from modules.Parser import parse
 from common.Exceptions import *
-
-class SSHServer (paramiko.ServerInterface):
-    def __init__(self, authorized_keys):
-        self.authorized_keys = authorized_keys
-
-    def check_auth_publickey(self, username, key):
-        if key in self.authorized_keys:
-            logging.info("[ SSH ] User %s authenticated using pubkey." % (username))
-            return paramiko.AUTH_SUCCESSFUL
-
-        logging.warn("[ SSH ] Pubkey authentication failed for %s" % (username))
-        return paramiko.AUTH_FAILED
-
-    def check_channel_request(self, kind, chanid):
-        if kind=='session':
-            logging.warn("[ SSH ] Opening channel %s" % (kind))
-            return paramiko.OPEN_SUCCEEDED
-
-        logging.warn("[ SSH ] Request for unknown channel kind %s" % (kind))
-        return paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
-
-    def get_allowed_auths(self, username):
-        return 'pubkey'
 
 class Handler(SocketServer.StreamRequestHandler):
     def setup(self):

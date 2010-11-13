@@ -33,7 +33,7 @@ class Invocation(Entity):
 
     command = ManyToOne('Command')
 
-    output = Field(LargeBinary, default=None)
+    output = Field(Binary, default=None)
     start_time = Field(DateTime, required=True)
     duration = Field(Interval, default=None)
     return_code = Field(Integer, default=None)
