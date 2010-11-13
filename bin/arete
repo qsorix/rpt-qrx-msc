@@ -1,4 +1,3 @@
 #!/bin/sh
 
-cd "../Arete"
-exec python Arete.py "$@"
+exec python ../Arete/Arete.py "$@"

@@ -1,4 +1,3 @@
 #!/bin/sh
 
-cd "../AreteSlave"
-exec python AreteSlave.py "$@"
+exec python ../AreteSlave/AreteSlave.py "$@"
