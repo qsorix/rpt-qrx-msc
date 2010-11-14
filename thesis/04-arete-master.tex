@@ -454,16 +454,23 @@ statycznej. Plan służy do określenia co urządzenia występujące w teście b
 robić. Kod poniżej przedstawia prosty plan, w którym host wykonuje polecenie
 \code{ping}.
 
-\FIXME{Uzupełnić o obowiązkowe test\_end\_policy.}
-
 \begin{pythoncode}
   create_schedule('schedule_ping')
+
+  test_end_policy('complete', setup_phase_delay=1.0)
 
   append_schedule('alice', [('ping', at(0), shell('ping @{bob.eth.ip}')])
 \end{pythoncode}
 
 Tym razem framework również udostępnia funkcję (\code{create\_schedule}) do
 zapewnienia, że użyjemy tylko jednego planu.
+
+Funkcja \code{test\_end\_policy} służy określeniu kiedy test się zakończy.
+Wartość ta powinna być zrozumiała dla wybranej wtyczki frontendu. W powyższym
+przykładzie test zostanie zakończony po wykonaniu wszystkich komend. Parametr
+\code{setup\_phase\_delay} określa jaki margines czasowy (w sekundach)
+przeznaczyć na wykonanie komend konfiguracyjnych. Jest to parametr opcjonalny,
+domyślnie wynoszący zero.
 
 Wywołanie funkcji \code{append\_schedule} jest bardziej złożone, poświęcimy mu
 zatem więcej czasu.
@@ -526,9 +533,70 @@ pozwoli lepiej zrozumieć w jaki sposób wykorzystać dostępny interfejs.
 
 \subsubsection{Pozostałe}
 
-\FIXME{Tutaj opisać jeszce funkcje create\_trigger}
+Aby umożliwić prosty mechanizm synchronizacji zadań na hostach wykonujących
+test, w sytuacjach gdzie trudno przewidzieć ramy czasowe wykonywanych operacji,
+wprowadziliśmy mechanizm powiadomień.
 
-\FIXME{Opisać tutaj parametry.}
+Po stworzeniu planu, dostępna jest funkcja \code{create\_trigger}, która tworzy
+wyzwalacz o wartości podanej przy tworzeniu.
+
+\begin{pythoncode}
+  create_trigger('stop-server', 3)
+\end{pythoncode}
+
+Powyższy wyzwalacz o nazwie \code{stop-server} zostanie aktywowany, kiedy moduł
+master otrzyma 3 powiadomienia dla tego wyzwalacza. Nie jest istotne, z jakich
+źródeł one pochodzą (np. jedno urządzenie może wysłać wszystkie trzy).
+
+Demonstracja zastosowania dostępna jest w rozdziale \fixref{Przykłady}.
+
+Ostatni pomocniczy mechanizm dostępny w konfiguracji to możliwość
+parametryzowania testów. Został on wprowadzony z myślą o ułatwieniu wykonywania
+tego samego testu z różną wartością parametrów, jak np. ilością uczestników.
+
+Wartości parametrów mogą być definiowane w linii polecenia, dzięki czemu łatwo
+jest stworzyć skrypt uruchamiający test dla różnych wartości. Program może też
+zapytać o podanie wartości dla parametrów, których wartości nie zostały
+określone. Można dzięki temu w bezpieczny sposób korzystać z haseł, nie trzeba
+ich bowiem zapisywać w plikach tekstowych.
+
+\begin{pythoncode}
+  from config.Global import parameters
+
+  add_host(
+      'milan',
+      ip = parameters['ip'],
+      port = parameters['port'])
+
+  add_device(
+      'm103',
+      password = parameters.get_secure('password'))
+\end{pythoncode}
+
+Powyższy przykład najpierw importuje obiekt \code{parameters} dostarczający
+odpowiedni interfejs. Operator nawiasów kwadratowych powoduje zwrócenie
+wartości parametru \code{ip} (taki sam efekt ma metoda \code{get}). Metoda
+\code{get\_secure} różni się tylko tym, że w przypadku kiedy program zapyta
+użytkownika o wprowadzenie wartości, zostanie użyty tryb, w którym tekst
+zostanie ukryty\footnote{Pod warunkiem, że używany przez nas terminal umożliwia
+wprowadzanie znaków bez wyświetlania ich.}.
+
+Gdybyśmy uzupełnili powyższą konfigurację o brakujące elementy, przy
+uruchomieniu wartości parametrów można byłoby podać w ten sposób:
+
+\begin{textcode}
+  % arete -c parameters_example --set ip=192.168.2.1 --askparams
+  No value set for requested parameter 'port'. Please provide it now.
+  port = 2710
+  No value set for requested parameter 'password'. Please provide it now.
+  Note that secure value has been requested. The input you type won't be echoed
+  to the screen.
+  password = 
+\end{textcode}
+
+Co zaowocowałoby przekazaniem do konfiguracji wartości \code{192.168.2.1} dla
+parametru \code{ip}, \code{2710} dla parametru \code{port} oraz nie
+wyświetlonej na ekranie wartości hasła dla parametru \code{password}.
 
 \subsection{Podsumowanie}
 
