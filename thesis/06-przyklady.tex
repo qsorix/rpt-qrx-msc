@@ -184,8 +184,14 @@ testu.
 
 \subsection{Przebieg}
 
-\FIXME{Diagram sekwencji - niestety DIA mnie tak w******, że nie jestem w stanie
-tego zrobić. Poszukam czegoś innego, albo Ty to zrobisz...}
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{example-01-sequence}
+\end{center}
+\caption{Schemat przebiegu testu klient-serwer.}
+\label{fig:example-01-sequence}
+\end{figure}
 
 \subsection{Wyniki}
 
@@ -227,6 +233,15 @@ Aby zautomatyzować te testy, program musi:
 Ważne jest też, żeby w czasie testu program nie przesyłał żadnych danych, aby
 nie wpływał na uzyskiwane wyniki.
 
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{example-03-sequence}
+\end{center}
+\caption{Schemat przebiegu testu dccp.}
+\label{fig:example-03-sequence}
+\end{figure}
+
 \section{BitTorrent}
 
 \FIXME{tmp}
@@ -250,5 +265,14 @@ Program w tym teście:
 \item zapamiętuje wyniki,
 \item przywraca konfigurację.
 \end{enumerate}
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{example-02-sequence}
+\end{center}
+\caption{Schemat przebiegu testu torrent.}
+\label{fig:example-02-sequence}
+\end{figure}
 
 \end{document}

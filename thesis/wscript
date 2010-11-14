@@ -38,6 +38,10 @@ def build(bld):
     dia('arete-architecture', 'arete-architecture', 'nodes')
     dia('arete-architecture', 'arete-architecture-triggers', 'nodes,triggers')
 
+    dia('example-01-sequence', 'example-01-sequence', 'seq')
+    dia('example-02-sequence', 'example-02-sequence', 'seq')
+    dia('example-03-sequence', 'example-03-sequence', 'seq')
+
     # i don't know how to copy those files to the build directory without this (-in) suffix
     bld(source='diagrams' + os.sep + 'intro-omnet-network-in.png', target='diagrams' + os.sep + 'intro-omnet-network.png', rule='cp ${SRC} ${TGT}')
     bld(source='diagrams' + os.sep + 'intro-omnet-histogram-in.png', target='diagrams' + os.sep + 'intro-omnet-histogram.png', rule='cp ${SRC} ${TGT}')
