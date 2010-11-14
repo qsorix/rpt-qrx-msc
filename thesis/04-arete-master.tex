@@ -4,11 +4,77 @@
 
 \chapter{Moduł Arete Master}
 
+\FIXME{Wstęp do rozdziału}
+
+%W tym rozdziale prezentujemy stworzone przez nas narzędzie Arete – Auto-
+%mated Real Environment Testing Engine. Jego zadaniem jest automatyzacja
+%powtarzających się czynności występujących przy przeprowadzaniu testów w
+%środowiskach rozproszonych w warunkach rzeczywistych.
+%Omówienie rozpoczynamy od przedstawienia, popartych przykładami, zastoso-
+%wań, z myślą o których stworzone zostało Arete. Są to sytuacje, w których nasze
+%narzędzie pozwoli usprawnić pracę osób przeprowadzających testy.
+%Następnie opisujemy wynikające z zastosowań wymagania funkcjonalne. Wyma-
+%gania te krótko podsumowują podstawowe możliwości programu.
+%W dalszej części prezentujemy dodatkowe założenia mające wpływ na charakter
+%tworzonego rozwiązania, jednocześnie argumentując podjęte przez nas decyzje
+%w świetle jego użyteczności.
+%Rozdział zamyka prezentacja architektury programu.
+
 \section{Architektura}
 
-\FIXME{ Obrazek. }
+Arete Master zarządza wykonaniem testów przez moduły Arete Slave. Master
+posiada dwa kluczowe zadania. Pierwszym jest przetworzenie konfiguracji
+dostarczonej przez użytkownika w plany testów dla poszczególnych urządzeń
+biorących w nim udział. Drugie, to dostarczenie tych planów do poszczególnych
+urządzeń i kontrola wykonania testu.
 
-\FIXME { Wprowadzić pojęcia: konfiguracja, frontend, połączenie, sterownik. }
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{arete-master-arch}
+\end{center}
+\caption{Architektura modułu Arete Master}
+\label{fig:arete-master-arch}
+\end{figure}
+
+Widoczną na rysunku \ref{fig:arete-master-arch} architekturę modułu można
+podzielić na dwie części. Pierwsza, to implementacja frameworku, na którą
+użytkownik nie ma wpływu. Dostarcza ona takie mechanizmy jak wczytywanie plików
+konfiguracyjnych i analiza ich poprawności (komponent Configuration),
+sterowanie przebiegiem testu (komponent Controller) oraz przechowywanie wyników
+w bazie danych.
+
+Pozostałe części architektury użytkownik może rozwijać i uzupełniać ich
+funkcjonalność w zależności od potrzeb wynikających z testów, jakie chce
+przeprowadzić. Odbywa się to przez dostarczenie własnych wtyczek
+implementujących wymagane zachowanie. Więcej na ten temat w dalszej części
+rozdziału, tutaj przedstawiam tylko rolę poszczególnych komponentów.
+
+Najważniejsze elementy, wymagane do poprawnego działania każdego testu, to
+wtyczki Frontend oraz Connection. Connection zestawia fizyczne połączenie ze
+zdalnym urządzeniem (np. tunel SSH), Frontend korzysta z tego połączenia i
+implementuje protokół komunikacyjny rozumiany przez drugą stronę (np. moduł
+Arete Slave).
+
+Wtyczki Drivers na podstawie konfiguracji generują komendy dla zdalnych
+urządzeń. Przykładem może być driver, który na czas testu konfiguruje adresy IP
+urządzeń. Wtyczki te są szerzej omówione w sekcji \fixref{sekcja o drivers}.
+
+Komponenty Hooks\footnote{W tym znaczeniu polskie tłumaczenie ang. \emph{hook}
+to punkt zaczepienia. W pracy używamy terminu hook, ponieważ jest zwięzły a w
+informatyce termin ten jest często spotykany i jednoznaczny.} to wtyczki dające
+użytkownikowi możliwość ingerencji w generowane plany testów. Obecnie możliwe
+jest wykonanie własnego kodu po wygenerowaniu wszystkich planów, ale jeszcze
+przed rozpoczęciem wykonywania testu. W sekcji \fixref{Sekcja o Hooks}
+prezentujemy przykład, który pozwala w wygodny sposób rozbudować test o
+pobieranie informacji o zdalnych hostach.
+
+Komponent Utils mógłby być pominięty, ponieważ nie jest wymagany. Pod tą nazwą
+grupujemy wszystkie pomocnicze algorytmy, dzięki którym tworzenie testów jest
+prostsze. Zainteresowanych odsyłamy do plików źródłowych w katalogu
+\code{Arete/utils}. Czytelnik będzie miał możliwość zapoznania się z częścią
+funkcjonalności tego komponentu, ponieważ wielu funkcji używamy w
+prezentowanych przykładach.
 
 \section{Konfiguracja}
 

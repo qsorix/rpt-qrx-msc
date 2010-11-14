@@ -27,6 +27,7 @@ def build(bld):
     dia('reference-config', 'reference-config-laboratory', 'laboratory')
     dia('reference-config', 'reference-config-schedule', 'schedule')
 
+    dia('arete-master-arch', 'arete-master-arch')
     dia('arete-master-db', 'arete-master-db', 'db')
 
     dia('arete-master-controller-frontend-sequence', 'arete-master-controller-frontend-sequence')
