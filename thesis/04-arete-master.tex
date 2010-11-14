@@ -679,16 +679,55 @@ urządzeniu zakończył się.
 Pobieranie wyników (komunikat \code{fetch\_results}) odbywa się, gdy test
 zakończy się wykonywać na wszystkich urządzeniach.
 
+Powyższy schemat działania może zostać zaburzony w przypadku wystąpienia
+błędów, jak zerwane połączenie lub urządzenie, którego konfiguracja nie spełnia
+wymogów testu. W takich wypadkach kontroler wykonuje na wszystkich frontendach
+metodę \code{abort\_test}, aby powiadomić urządzenia, że dalsze wykonywanie
+testu należy przerwać.
 
-\FIXME{
-Reszta opisu FrontendPlugin.
+Zamieszczony diagram sekwencji pomija również możliwość komunikacji w obrębie
+metody \code{check\_test\_end}. Frontend w tej metodzie może nawiązywać
+komunikację z kontrolowanym urządzeniem, np. w celu sprawdzenia czy test się
+zakończył. Ponieważ metoda ta jest wywoływana cyklicznie na wszystkich
+frontendach w teście, istotne jest, aby wykonanie jej miało charakter
+nieblokujący. W przeciwnym razie jeden frontend mógłby zablokować innym
+możliwość komunikacji.
 
-Diagram sekwencji obrazujący działanie triggerów.
+W czasie komunikacji frontend może także odbierać powiadomienia dla
+zdefiniowanych wyzwalaczy. Jeżeli kontroler stwierdzi, że któryś z wyzwalaczy
+należy aktywować, wykonana na frontendzie metodę \code{trigger}, przekazując w
+parametrach jego nazwę.
 
-Dokładny opis metod pluginu FrontendPlugin będzie w Reference. Odesłać tam.
-}
+Ostatni aspekt implementacji frontendu to wykonywanie testu w trybie
+bezpołączeniowym. Frontend z konfiguracji otrzymuje informację na temat
+polityki zakończenia testu. Jeżeli jest to możliwe, powinien on na czas
+wykonywania testu zamknąć połączenie z kontrolowanym urządzeniem i ponownie
+otworzyć je dopiero, kiedy będzie pobierał wyniki. Dzięki temu urządzenia mogą
+na czas testu zmieniać swoją konfigurację sieciową bez powodowania błędów
+komunikacyjnych.
 
-\FIXME{Umieścić gdzieś opis opcji synchronize=False.}
+Zainteresowanych szczegółami implementacji odsyłamy do kodu źródłowego
+\code{AreteSlaveFrontend} -- standardowo dostępnej wtyczki typu frontend.
+
+\subsubsection{AreteSlaveFrontend}
+
+Jest to standardowo dostepna implementacja wtyczki frontend służąca komunikacji
+z modułem Arete Slave opisanym szczegółowo w kolejnym rozdziale.
+
+Aby skorzystać z tej wtyczki należy w konfiguracji urządzenia użyć nazwy
+\code{arete\_slave}, jak w przykładzie poniżej:
+
+\begin{pythoncode}
+  add_device('local1',
+    frontend='arete_slave',
+    synchronize=False)
+\end{pythoncode}
+
+Opcja \code{synchronize} jest opcjonalna i domyślnie aktywna. Ustawienie jej na
+\code{False} powoduje pominięcie kroku synchronizacji z zegarem zdalnego
+urządzenia. Jeżeli komputery, na których wykonujemy test, synchronizowane są
+niezależnym źródłem (np. korzystając z NTP), zaleca się wyłączyć wbudowany
+algorytm synchronizacji wtyczki \code{AreteSlavePlugin}.
 
 \subsection{Połączenie ze zdalnym urządzeniem}
 
