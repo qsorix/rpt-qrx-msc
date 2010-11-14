@@ -104,24 +104,20 @@ je do stworzonego modelu.
 \begin{pythoncode}
   create_schedule('client-server')
 
-  test_end_policy('complete', setup_phase_delay=0.0)
+  test_end_policy('complete')
   create_trigger('kill-server', 1)
 \end{pythoncode}
 
-Tworzymy również plan testu \code{client-server}, aby móc określić jakie
-komendy będę wykonywane na urządzeniach, a następnie konfigurujemy globalne
-ustawienia testu. Ponieważ ciężko przewidzieć nam jak długo potrwa test,
-ustawiamy politykę zakończenia testu na \code{complete}. Spowoduje to
-zakończenie testu dopiero w momencie, gdy zakończy się on na wszystkich
-urządzeniach biorących w nim udział. Zwróćmy uwagę, że jednym z urządzeń jest
-serwer, który z założenia nie kończy swojego działania. Z tego powodu tworzymy
-wyzwalacz o nazwie \code{kill-server}, mający za zadanie zakończyć działanie
-serwera, gdy określona ilość urządzeń (w naszym przypadku jeden klient),
-powiadomi o zakończeniu testu. Wartość tę podajemy jako drugi parametr komendy
-\code{create\_trigger}.  W komendzie \code{test\_end\_policy} jak parametr
-\code{setup\_phase\_delay} podajemy czas potrzebny na uruchomienie komend
-konfiguracyjnych. W naszym przypadku czas ten wynosi \code{0.0} ponieważ nie
-jest wymagana dodatkowa konfiguracja.
+Tworzymy również plan testu \code{client-server}, aby móc określić jakie komendy
+będę wykonywane na urządzeniach, a następnie konfigurujemy globalne ustawienia
+testu. Ponieważ nie wiemy jak długo potrwa test, ustawiamy politykę zakończenia
+testu na \code{complete}. Spowoduje to zakończenie testu dopiero w momencie, gdy
+zakończy się on na wszystkich urządzeniach biorących w nim udział. Zwróćmy
+uwagę, że jednym z urządzeń jest serwer, który z założenia nie kończy swojego
+działania. Z tego powodu tworzymy wyzwalacz o nazwie \code{kill-server}, mający
+za zadanie zakończyć działanie serwera, gdy określona ilość urządzeń (w naszym
+przypadku jeden klient), powiadomi o zakończeniu testu. Wartość tę podajemy jako
+drugi parametr komendy \code{create\_trigger}.
 
 \begin{pythoncode}
   add_resource(File('clientdist', 'Client.py', chmod='+x'))
@@ -187,6 +183,9 @@ testu.
 
 \subsection{Uruchomienie}
 
+\FIXME{Możliwe, że przeniesiemy to do ogólnego rozdziału o instalacji, żeby nie
+powtarzać przy uruchamianiu każdego testu.}
+
 Rozpoczynamy od uruchomienia programów Arete Slave na komputerach biorących
 udział w teście.
 
@@ -224,15 +223,15 @@ Jeśli chcielibyśmy zawrzeć go w pliku konfiguracyjnym, wyglądałoby to
 następująco.
 
 \begin{pythoncode}
-  create_mapping('model-to-laboratory')
+  create_mapping('client-server-to-example_laboratory')
 
   bind('client', 'marvin')
   bind('server', 'defteros')
 \end{pythoncode}
 
-Dla uproszczenia odwzorowanie podamy jednak jako argument programu Arete Master.
+Alternatywnie, odwzorowanie możemy podać w linii poleceń programu Arete Master.
 Uruchamiamy test uwzględniając stworzone wcześniej pliki konfiguracyjne oraz
-odwzorowanie, jak przedstawiono poniżej.
+argument \code{--map}, jak przedstawiono poniżej.
 
 \code{\$ arete -c examples/client-server/configuration examples/example\_laboratory --map client:marvin server:defteros}
 
@@ -324,9 +323,9 @@ jak czas jego rozpoczęcia i długość trwania na każdym z komputerów, mamy d
 dyspozycji szczegółowe dane na temat każdej z wykonanych komend, tj. wyjście,
 zwrócony kod wyjścia, czas rozpoczęcia oraz długość trwania.
 
-Choć interpretacja wyników nie jest celem naszej pracy, w tym prostym przypadku
-możemy zaobserwować, że nazwa pliku otrzymana z komendy ls na serwerze jest
-poprawna, a sumy kontrolne na obu urządzeniach są zgodne. Możemy zatem
+Choć interpretacja wyników nie jest celem naszej pracy, na potrzeby opisanego
+przykładu możemy zaobserwować, że nazwa pliku otrzymana z komendy ls na serwerze
+jest poprawna, a sumy kontrolne na obu urządzeniach są zgodne. Możemy zatem
 wywnioskować, że stworzone przez nas implementacje programów klient-serwer są
 poprawne.
 
@@ -408,7 +407,7 @@ parametru \code{setup\_phase\_delay}.
 
 Korzystając z gotowej klasy \code{ClientServer} z modułu \code{Utils} tworzymy
 komendy uruchamiające \code{iperf} w trybie klienta (\code{-c}) oraz serwera
-(\code{-s}) dla protokołów DCCP (opcja \code{-d}) oraz TCP.
+(\code{-s}) dla protokołów DCCP (opcja \code{-d}) oraz TCP (domyślnie).
 
 \begin{pythoncode}
   append_schedule('server', dccp.server(start=0, end=20))
