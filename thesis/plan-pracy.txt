@@ -36,10 +36,6 @@
   Omówienie podziału zadań na 4 grupy (check, setup, task, cleanup).
   Zwięzłe omówienie bazy danych.
 
-3.3. Instalacja
-
-  1 strona. Wymagane oprogramowanie, procedura instalacji na hostach.
-
 4. NAZWA - opis Mastera
 
 4.1 Konfiguracja testu
@@ -107,6 +103,11 @@
 
 6. NAZWA - działanie, przykłady konfiguracji i użycia
 
+6.0. Instalacja
+
+  1 strona. Wymagane oprogramowanie, procedura instalacji na hostach.
+
+
 6.1. Wykonanie testów
 
   2 strony. Uruchomienie prostej konfiguracji, omówienie zachodzących akcji i przepływu
@@ -139,13 +140,9 @@
   wprowadzane są duże straty pakietów i opóźnienia transmisji. Mierzony jest
   czas dystrybucji pliku.
 
-7. Reference
+7. Podsumowanie
 
-  X stron. Dokumentacja techniczna całego API frameworku i standardowo
-  dostarczanych utilities. Dokładny opis bazy danych.
+  Plany na przyszłość, możliwości rozwoju.
 
-8-1. Plany na przyszłość, możliwości rozwoju.
+  Podsumowanie ;-)
 
-8. Podsumowanie
-
-  1 strona. Podsumowanie ;-)
