@@ -720,7 +720,8 @@ Aby skorzystać z tej wtyczki należy w konfiguracji urządzenia użyć nazwy
 \begin{pythoncode}
   add_device('local1',
     frontend='arete_slave',
-    synchronize=False)
+    synchronize=False,
+    ...)
 \end{pythoncode}
 
 Opcja \code{synchronize} jest opcjonalna i domyślnie aktywna. Ustawienie jej na
@@ -731,14 +732,8 @@ algorytm synchronizacji wtyczki \code{AreteSlavePlugin}.
 
 \subsection{Połączenie ze zdalnym urządzeniem}
 
-\FIXME{To trzeba przepisać i ustalić jakąś wersję oficjalną.}
-
 Przez połączenie ze zdalnym urządzeniem będziemy tutaj rozumieć kanał
-komunikacyjny pomiędzy Frontendem i kontrolowanym przez niego urządzeniem. W
-typowych zastosowaniach połączenie po prostu zestawia komunikację z modułem
-Arete Slave. 
-
-\FIXME{Inne możliwości połączenia się.}
+komunikacyjny pomiędzy frontendem i kontrolowanym przez niego urządzeniem.
 
 Najprostszym przykładem takiego połączenia może być połączenie TCP. Nieco
 trudniejszy technicznie, choć koncepcyjnie identyczny, jest tunel SSH.
@@ -750,18 +745,57 @@ dostarczanie i odbiór danych z kontrolującego go Frontendu. Otrzymuje on takż
 pomocnicze rozkazy określające moment, w którym można nawiązać fizyczne
 połączenie oraz kiedy należy je przerwać.
 
-\FIXME{
-Diagram sekwencji interakcji Frontend i Connection w czasie testu.
+Standardowo udostępniamy dwie wtyczki typu \code{ConnectionPlugin}, są to
+\code{TCPConnection} oraz \code{SSHConnection}. Zainteresowanych szczegółami
+współpracy między frontendem a połączeniem odsyłamy do kodu źródłowego tych
+wtyczek.
 
-Omówienie connect, disconnect, output, input.
+\subsubsection{TCPConnection}
 
-Omówić znaczenie setblocking!
-}
+Wtyczka ta służy do nawiązania połączenia korzystającego z protokołu TCP i może
+być użyta w większości przypadków, kiedy nie jest wymagane szyfrowanie.
 
+Poniżej przedstawiona jest przykładowa konfiguracja korzystająca z tej wtyczki.
+Warto zwrócić uwagę na jej identyfikator \code{tcp}.
 
-\subsubsection{Komunikacja z innymi urządzeniami}
+\begin{pythoncode}
+  add_device('local1',
+    connection='tcp',
+    ip='127.0.0.1',
+    port='9998',
+    ...)
+\end{pythoncode}
 
-\FIXME{}
+Atrybuty \code{ip} oraz \code{port} są oczywiście wymagane.
+
+\subsubsection{SSHConnection}
+
+Wtyczka \code{SSHConnection} (o identyfikatorze \code{ssh}) umożliwia
+nawiązanie uwierzytelnionego i szyfrowanego połączenia korzystając z tunelu
+SSH. Do jej pracy wymagana jest instalacja biblioteki \code{paramiko}.
+
+Oto przykład konfiguracji urządzenia:
+
+\begin{pythoncode}
+  add_device('local2',
+    connection='ssh',
+    ip='127.0.0.1',
+    username='bob',
+    keyfile=path.relative('id_rsa'),
+    ...)
+\end{pythoncode}
+
+Wymagane atrybuty to oczywiście \code{ip} i \code{port}, a także
+\code{username} oraz jeden z poniższych:
+\begin{itemize}
+\item \code{keyfile} dla uwierzytelnienia opartego o klucz RSA,
+\item \code{password} dla uwierzytelnienia hasłem.
+\end{itemize}
+
+Na marginesie dodamy, że widoczna w przykładzie funckja \code{relative}
+dostępna jest w module \code{utils.path} i powoduje zbudowanie ścieżki względem
+bieżącego pliku konfiguracyjnego. Dzięki temu można umieścić plik
+\code{'id\_rsa'} w tym samym katalogu, co plik z konfiguracją laboratorium.
 
 \subsection{Sterowniki parametrów}
 
