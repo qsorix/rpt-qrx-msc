@@ -7,7 +7,7 @@
 
 \FIXME{Opis instalacji Arete.}
 
-\section{Klient-serwer}
+\section{Przykład: Klient-serwer}
 
 Pierwszym przykładem który omówimy jest prosty scenariusz, z którym często mamy
 do czynienia w czasie tworzenia oprogramowania typu klient-serwer. W naszym
@@ -202,11 +202,42 @@ testu.
 \FIXME{Zaprezentowanie jak wyglądają otrzymane wyniki, że się sumy kontrolne
 zgadzają itt (i takie tam).}
 
-\section{iperf DCCP}
+\section{Przykład: Torrent}
 
-\FIXME{Na razie jest tu tylko kopia tekstu, który opisywał przykładowe
-scenariusze. Tekst w pierwotnym miejscu został streszczony, a tutaj jest jego
-oryginalna postać. Trzeba ją pociąć do odpowiednich podrozdziałów.}
+\FIXME{tmp}
+
+Trzeci scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
+Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
+BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test należy
+zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
+klient wysłał danych i ile trwała pełna dystrybucja pliku. Zadana topologia
+urządzeń to dwie sieci IP po cztery urządzenia, połączone routerem sztucznie
+generującym opóźnienia.
+
+Program w tym teście:
+\begin{enumerate}
+\item do każdego uczestnika wysyła plik torrent,
+\item konfiguruje interfejsy routera,
+\item konfiguruje adresy sieciowe uczestników,
+\item jednocześnie uruchamia klientów sieci BitTorrent,
+\item oczekuje aż każdy otrzyma pełny plik,
+\item zatrzymuje klientów,
+\item zapamiętuje wyniki,
+\item przywraca konfigurację.
+\end{enumerate}
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{example-02-sequence}
+\end{center}
+\caption{Schemat przebiegu testu torrent.}
+\label{fig:example-02-sequence}
+\end{figure}
+
+\section{Przykład: DCCP}
+
+\FIXME{tmp}
 
 Drugi scenariusz dotyczy pomiaru szybkości transferu danych przy użyciu
 protokołu DCCP (Datagram Congestion Control Protocol) oraz wpływu innych
@@ -244,39 +275,6 @@ nie wpływał na uzyskiwane wyniki.
 \end{center}
 \caption{Schemat przebiegu testu dccp.}
 \label{fig:example-03-sequence}
-\end{figure}
-
-\section{BitTorrent}
-
-\FIXME{tmp}
-
-Trzeci scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
-Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
-BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test należy
-zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
-klient wysłał danych i ile trwała pełna dystrybucja pliku. Zadana topologia
-urządzeń to dwie sieci IP po cztery urządzenia, połączone routerem sztucznie
-generującym opóźnienia.
-
-Program w tym teście:
-\begin{enumerate}
-\item do każdego uczestnika wysyła plik torrent,
-\item konfiguruje interfejsy routera,
-\item konfiguruje adresy sieciowe uczestników,
-\item jednocześnie uruchamia klientów sieci BitTorrent,
-\item oczekuje aż każdy otrzyma pełny plik,
-\item zatrzymuje klientów,
-\item zapamiętuje wyniki,
-\item przywraca konfigurację.
-\end{enumerate}
-
-\begin{figure}[htb]
-\begin{center}
-\leavevmode
-\includegraphics[width=0.8\textwidth]{example-02-sequence}
-\end{center}
-\caption{Schemat przebiegu testu torrent.}
-\label{fig:example-02-sequence}
 \end{figure}
 
 \end{document}
