@@ -241,13 +241,22 @@ odwzorowanie, jak przedstawiono poniżej.
 \begin{figure}[htb]
 \begin{center}
 \leavevmode
-\includegraphics[width=0.8\textwidth]{example-01-sequence}
+\includegraphics[width=0.6\textwidth]{example-01-sequence}
 \end{center}
 \caption{Schemat przebiegu testu klient-serwer.}
 \label{fig:example-01-sequence}
 \end{figure}
 
-\FIXME{Opisać przebieg.}
+Prześledźmy teraz zobrazowany na rysunku \ref{fig:example-01-sequence} przebieg
+testu. Zaczynamy od wystartowania serwera (\code{1}) na urządzeniu \code{server}.
+Następnie na drugim urządzeniu uruchamiany jest klient (\code{2}), który łączy się z
+serwerem, przesyła do niego wskazany plik. Po zakończeniu transferu klient kończy
+działanie i uruchamiane jest obliczenie sumy kontrolnej (\code{3}) oraz wysyłane
+jest powiadomienie (\code{4}) do modułu Arete Master. Ten wysyła wyzwalacz do
+Arete Slave na urządzeniu \code{server}, który odbiera go (\code{5}) i kończy
+pracę serwera. Na koniec na urządzeniu \code{server} sprawdzana jest nazwa pliku
+(\code{6}) oraz suma kontrolna (\code{7}), a następnie przesłany plik jest
+usuwany (\code{8}).
 
 \subsection{Wyniki}
 
@@ -255,12 +264,64 @@ Po zakończeniu testu Arete Master odbiera wyniki od obu modułów Slave
 uczestniczących w teście i zapisuje je do swojej bazy danych. W tym przykładzie
 wyglądają one następująco.
 
-\FIXME{Tutaj jakoś przedstawić wyniki z bazy danych.}
+\begin{description}
+\item[]
+  node: client
+  \begin{description}
+  \item[start time] 2010-11-14 21:46:46.171340
+  \item[duration] 1.442621
+  \item[]
+    command: 'client'
+    \begin{description}
+      \item[output] transfer done
+      \item[start time] 2010-11-14 21:46:47.171994
+      \item[duration] 0.049891
+      \item[return code] 0
+    \end{description}
+  \item[]
+    command: 'md5sum'
+    \begin{description}
+      \item[output] 015f88fc887a556bf7eab90ec32c8c46  testfile
+      \item[start time] 2010-11-14 21:46:47.371130
+      \item[duration] 0.057670
+      \item[return code] 0
+    \end{description}
+  \end{description}
+\item[]
+  node: server
+  \begin{description}
+  \item[start time] 2010-11-14 21:46:46.172080
+  \item[duration] 1.802907
+  \item[]
+    command: 'server'
+    \begin{description}
+      \item[output] 
+      \item[start time] 2010-11-14 21:46:46.179522
+      \item[duration] 1.532876
+      \item[return code] -15
+    \end{description}
+  \item[]
+    command: 'ls'
+    \begin{description}
+      \item[output] dest\_path
+      \item[start time] 2010-11-14 21:46:47.733533
+      \item[duration] 0.056964
+      \item[return code] 0
+    \end{description}
+  \item[]
+    command: 'md5sum'
+    \begin{description}
+      \item[output] 015f88fc887a556bf7eab90ec32c8c46  dest\_path
+      \item[start time] 2010-11-14 21:46:47.823826
+      \item[duration] 0.049728
+      \item[return code] 0
+    \end{description}
+  \end{description}
+\end{description}
 
 Jak widzimy w bazie danych oprócz informacji dotyczących całego testu, takich
 jak czas jego rozpoczęcia i długość trwania na każdym z komputerów, mamy do
-dyspozycji szczegółowe dane na temat każdej z wykonanych komend. Zarówno komendy
-przygotowujące, jak i te uruchomiane zgodnie z planem testu, posiadają wyjście,
+dyspozycji szczegółowe dane na temat każdej z wykonanych komend, tj. wyjście,
 zwrócony kod wyjścia, czas rozpoczęcia oraz długość trwania.
 
 Choć interpretacja wyników nie jest celem naszej pracy, w tym prostym przypadku
@@ -384,11 +445,9 @@ argumentu \code{--map} uruchamiamy test w programie Arete Master.
 \code{\# arete -c examples/dccp\_flow/configuration examples/example\_laboratory
 -- map client:marvin server:defteros}
 
-\FIXME{Uruchomienie.}
-
 \subsection{Przebieg}
 
-\FIXME{Przebieg.}
+\FIXME{Opisać przebieg.}
 
 \begin{figure}[htb]
 \begin{center}
@@ -411,14 +470,13 @@ BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test na
 zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
 klient wysłał danych i ile trwała pełna dystrybucja pliku.
 
-\FIXME{Zadana topologia urządzeń to dwie sieci IP po cztery urządzenia,
-połączone routerem sztucznie generującym opóźnienia.}
-
-\FIXME{Różne sytuacje, tu opiszemy taką...}
+\FIXME{"Zadana topologia urządzeń to dwie sieci IP po cztery urządzenia,
+połączone routerem sztucznie generującym opóźnienia." - różne sytuacje, tu
+opiszemy jedną.}
 
 \subsection{Konfiguracja}
 
-\FIXME{Model}
+\FIXME{Dodać jakiś model.}
 
 \begin{pythoncode}
   create_schedule('torrent')
@@ -473,7 +531,7 @@ połączone routerem sztucznie generującym opóźnienia.}
 
 \subsection{Przebieg}
 
-\FIXME{Przebieg.}
+\FIXME{Opisać przebieg.}
 
 \begin{figure}[htb]
 \begin{center}
