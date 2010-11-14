@@ -824,8 +824,8 @@ sposobu działania.
   
       def transfer_with_arete_slave(self, frontend):
           with open(self._path, 'rb') as file:
-              frontend.output().write('file @{id=%(id)s} @{size=%(size)s}\n' %
-                  {'id':self['name'], 'size':self._size})
+              frontend.output().write('file @{id=%(id)s} @{size=%(size)s}\n'
+                  % {'id':self['name'], 'size':self._size})
               frontend.output().write(file.read())
   
               response = frontend.input().readline().strip()
@@ -906,7 +906,7 @@ rysunek \ref{fig:arete-master-db}.
 \begin{figure}[htb]
 \begin{center}
 \leavevmode
-\includegraphics[width=1\textwidth]{arete-master-db}
+\includegraphics[width=0.8\textwidth]{arete-master-db}
 \end{center}
 \caption{Schemat bazy danych modułu Master.}
 \label{fig:arete-master-db}
