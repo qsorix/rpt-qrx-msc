@@ -505,6 +505,11 @@ polecenie powłoki), ale także do kilku pomocniczych zadań jak dołączania
 zasobów czy stworzenia testów poprawności środowiska (np. sprawdzenia czy
 potrzebny program jest dostępny na urządzeniu).
 
+Warto zwrócić uwagę na składnię \code{@\{...\}}, która pozwala w treści komendy
+podstawiać wartości zależne od innych elementów konfiguracji. W przykładzie
+powyżej ciąg \code{@\{bob.eth.ip\}} zostanie zamieniony wartością atrybutu
+\code{ip} interfejsu \code{eth} hosta \code{bob}.
+
 Wydawać się może, że taki rozbudowany interfejs będzie niewygodny w użyciu, ale
 zwięzłość i funkcje narzędziowe dostępne wraz z frameworkiem pozwalają w prosty
 i ekspresywny sposób przekazać to, co chcemy osiągnąć. Przykładem może być taki
