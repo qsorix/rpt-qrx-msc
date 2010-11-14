@@ -94,32 +94,33 @@ zostaną przedstawione później. Zakładamy, że użytkownik zapoznał się z d
 
   add_host('client')
   add_host('server')
-
-  create_schedule('client-server-test')
 \end{pythoncode}
 
-Na początku tworzymy model o nazwie \emph{client-server}. Ponieważ do
+Na początku tworzymy model o nazwie \code{client-server}. Ponieważ do
 przeprowadzenia testu potrzebujemy dwóch urządzeń - klienta i serwer, dodajemy
-je do stworzonego modelu. Tworzymy również plan testu \emph{client-server-test},
-aby móc określić jakie komendy będę wykonywane na urządzeniach.
+je do stworzonego modelu. 
 
 \begin{pythoncode}
+  create_schedule('client-server')
+
   test_end_policy('complete', setup_phase_delay=0.0)
   create_trigger('kill-server', 1)
 \end{pythoncode}
 
-Następnie konfigurujemy globalne ustawienia testu. Ponieważ ciężko przewidzieć
-nam jak długo potrwa test, ustawiamy politykę zakończenia testu na
-\emph{complete}. Spowoduje to zakończenie testu dopiero w momencie, gdy zakończy
-się on na wszystkich urządzeniach biorących w nim udział. Zwróćmy uwagę, że
-jednym z urządzeń jest serwer, który z założenia nie kończy swojego działania. Z
-tego powodu tworzymy \fixme{trigger}, mający za zadanie zakończyć działanie
-serwera, gdy określona ilość urządzeń (w naszym przypadku jeden klient),
-powiadomi o zakończeniu testu. Wartość tę podajemy jako drugi parametr komendy
-\code{create\_trigger}. W komendzie \code{test\_end\_policy} jak parametr
-\code{setup\_phase\_delay} podajemy czas potrzebny na uruchomienie komend
-konfiguracyjnych. W naszym przypadku czas ten wynosi \emph{0.0} ponieważ nie
-jest wymagana dodatkowa konfiguracja.
+Tworzymy również plan testu \code{client-server}, aby móc określić jakie
+komendy będę wykonywane na urządzeniach, a następnie konfigurujemy globalne
+ustawienia testu. Ponieważ ciężko przewidzieć nam jak długo potrwa test,
+ustawiamy politykę zakończenia testu na \code{complete}. Spowoduje to
+zakończenie testu dopiero w momencie, gdy zakończy się on na wszystkich
+urządzeniach biorących w nim udział. Zwróćmy uwagę, że jednym z urządzeń jest
+serwer, który z założenia nie kończy swojego działania. Z tego powodu tworzymy
+\fixme{trigger}, mający za zadanie zakończyć działanie serwera, gdy określona
+ilość urządzeń (w naszym przypadku jeden klient), powiadomi o zakończeniu
+testu. Wartość tę podajemy jako drugi parametr komendy \code{create\_trigger}.
+W komendzie \code{test\_end\_policy} jak parametr \code{setup\_phase\_delay}
+podajemy czas potrzebny na uruchomienie komend konfiguracyjnych. W naszym
+przypadku czas ten wynosi \code{0.0} ponieważ nie jest wymagana dodatkowa
+konfiguracja.
 
 \begin{pythoncode}
   add_resource(File('clientdist', 'Client.py', chmod='+x'))
@@ -128,7 +129,7 @@ jest wymagana dodatkowa konfiguracja.
 \end{pythoncode}
 
 Kolejnym etapem jest dodanie zasobów biorących udział w teście. Będą to
-oczywiście programy \emph{Client.py} oraz \emph{Server.py}. Aby zapewnić im
+oczywiście programy \code{Client.py} oraz \code{Server.py}. Aby zapewnić im
 odpowiednie prawa po przesłaniu na zdalne urządzenia, koszystamy z parametru
 \code{chmod}. Jako trzeci dodajemy plik który zostanie przesłany między
 urządzeniami.
@@ -145,21 +146,22 @@ urządzeniami.
 
 Najważniejszą częścią konfiguracji jest określenie szczegółowego planu
 wykonywania komend na urządzeniach. W przypadku klienta uruchamiamy program
-\emph{Client.py} z odpowiednimi parametrami, tj. adresem i portem serwera, nazwą
+\code{Client.py} z odpowiednimi parametrami, tj. adresem i portem serwera, nazwą
 pliku który zostanie przesłany oraz docelową nazwą pliku. W parametrze
 \code{use\_resources} podajemy nazwy stworzonych wcześniej zasobów. Parametr
-\code{check\_executable=False} zapobiega sprawdzeniu czy komenda którą chcemy wykonać
-jest wykonywalna, ponieważ sami zadbaliśmy o to nadając plikom odpowiednie prawa
-podczas ich tworzenia. Zwróćmy uwagę, że komenda \emph{client} uruchamiana jest
-z sekundowym opóźnieniem (\code{at(1)}), by mieć pewność, że serwer zdąży się uruchomić.
+\code{check\_executable=False} zapobiega sprawdzeniu czy komenda którą chcemy
+wykonać jest wykonywalna, ponieważ sami zadbaliśmy o to nadając plikom
+odpowiednie prawa podczas ich tworzenia. Zwróćmy uwagę, że komenda \code{client}
+uruchamiana jest z sekundowym opóźnieniem (\code{at(1)}), aby pozostawić czas na
+uruchomienie serwera.
 
-Następnie dodajemy dwa zadania, które będą wykonywane gdy program klienta zakończy
-działanie (funkcja \code{after()}). Pierwsze z nich to komenda sprawdzająca sumę
-kontrolną przesyłanego pliku korzystając z polecenia \code{md5sum}. Drugie
-powoduje powiadomienie Arete Master o zakończeniu działania. Ponieważ
-\fixme{trigger} o nazwie \emph{kill-server} czeka tylko na jedno powiadomienie,
-serwer otrzyma dzięki niemu sygnał do wykonania komendy kończącej swoje
-działanie.
+Następnie dodajemy dwa zadania, które będą wykonywane gdy program klienta
+zakończy działanie (funkcja \code{after()}). Pierwsze z nich to komenda
+sprawdzająca sumę kontrolną przesyłanego pliku korzystając z polecenia
+\code{md5sum}. Drugie powoduje powiadomienie Arete Master o zakończeniu
+działania. Ponieważ \fixme{trigger} o nazwie \code{kill-server} czeka tylko na
+jedno powiadomienie, Arete Slave otrzyma dzięki niemu sygnał do wykonania
+komendy kończącej działanie serwera.
 
 \begin{pythoncode}
   append_schedule('server', [
@@ -173,11 +175,11 @@ działanie.
   ])
 \end{pythoncode}
 
-W przypadku serwera na początku uruchamiany jest program \emph{Server.py} z
+W przypadku serwera na początku uruchamiany jest program \code{Server.py} z
 odpowiednimi parametrami. Podobnie jak w kliencie przesyłane są wymagane zasoby
 oraz flaga \code{check\_executable} ustawiana jest na \code{False}. Następnie
-tworzona jest komenda kończąca działanie komendy \emph{server}, która zostanie
-uruchomiona po otrzymaniu sygnału o nazwie \emph{kill-server} od modułu Arete
+tworzona jest komenda kończąca działanie komendy \code{server}, która zostanie
+uruchomiona po otrzymaniu sygnału o nazwie \code{kill-server} od modułu Arete
 Master. Pozwoli to na uruchomienie dalszych komend, sprawdzających nazwę oraz
 sumę kontrolną otrzymanego od klienta pliku, usunięcie go oraz zakończenie
 testu.
