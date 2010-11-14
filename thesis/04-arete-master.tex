@@ -865,7 +865,38 @@ Szersze omówienie interfejsu \code{Resource} znajduje się w rozdziale
 
 \subsection{Wtyczki typu Hook}
 
-\FIXME{Opisać...}
+Wtyczki typu Hook umożliwiają rozszerzenie przedstawionego przez nas schematu
+konfiguracji o własne algorytmu modyfikujące tworzony test. Aktualnie dostępny
+jest tylko jeden hook, wykonywany po przygotowaniu konfiguracji, ale jeszcze
+przed uruchomieniem testu.
+
+Poniżej prezentujemy wtyczkę \code{Uname}, która go wykorzystuje.
+
+\begin{pythoncode}
+  from common.Hooks import HookPlugin
+  
+  class Uname(HookPlugin):
+      hook_name = 'uname'
+  
+      def visit_configured_test(self, configured_test):
+          for host in configured_test.hosts.values():
+              host.commands.add_check('uname -a')
+\end{pythoncode}
+
+Metoda \code{visit\_configured\_test} jako parametr otrzyma przygotowaną
+konfigurację. W przykładzie, do każdego zdefiniowanego hosta, dodajemy komendę,
+dzięki której zapamiętamy wersję jądra systemu.
+
+Hooki należy aktywować opcją linii poleceń \code{--hooks}. W tym wypadku
+program należałoby więc uruchomić tak:
+
+\begin{textcode}
+  % arete -c ... --hooks uname
+\end{textcode}
+
+Kod hooków musi zostać wcześniej załadowany. Jeżeli stanowi on część plików
+konfiguracyjnych nie będzie to problemem. W innych wypadkach można skorzystać z
+opcji \code{--plugins}.
 
 \section{Przechowywanie wyników}
 
