@@ -305,6 +305,19 @@ im wymagania dotyczące zarówno funkcjonalności, jak i bezpieczeństwa.
 
 \section{Architektura}
 
+Rozpoczynając opis architektury powtórzmy jescze raz, że narzędzie Arete
+pracuje w sieci komputerowej. Wyróżniamy komputer kontrolujący test, na którym
+uruchomiony jest moduł Arete Master, oraz komputery uczestniczące w teście, na
+których uruchomiony jest moduł Arete Slave.
+
+Moduł Slave jest zaprojektowany jako demon pracujący przez cały czas. Master
+natomiast uruchamiany jest tylko na czas trwania testu. Możliwa jest sytuacja,
+w której moduł Slave zainstalowany jest na wszystkich komputerach w sieci.
+Możliwe jest także uruchomienie kilku jego instancji na jednym urządzeniu.
+Konfiguracja, w której moduł Master jest uruchomiany na urządzeniu, gdzie
+jednocześnie pracuje moduł Slave jest dopuszczalne i jak najbardziej
+prawidłowa.
+
 \begin{figure}[htb]
 \begin{center}
 \leavevmode
@@ -314,8 +327,57 @@ im wymagania dotyczące zarówno funkcjonalności, jak i bezpieczeństwa.
 \label{fig:arete-arch}
 \end{figure}
 
-\FIXME{Opisać fazy testu (check -- tę nazywam w treście fazą przygotowania,
-setup -- a tę fazą konfiguracji, ...). Może słabo te nazwy dobrałem, trzeba
-jakieś ładne polskie odpowiedniki dobrać.}
+Na rysunku \ref{fig:arete-arch} widać przykładowe rozmieszczenie urządzeń w
+sieci i ich rolę w czasie testu. W dalszej części pracy mowiąc o modułach
+Master i Slave, jeśli nie precyzujemy, na jakich urządzeniach są uruchomione,
+oznacza to, że fizyczna konfiguracja jest dowolna.
+
+Architektura wewnętrzna modułów Master oraz Slave opisana jest w dwóch
+kolejnych rozdziałach. Opis instalacji przedstawiamy w
+\fixref{rozdziale Instalacja}. Tutaj natomiast przedstawiamy w jaki sposób
+moduły te współpracują ze sobą, aby umożliwić przeprowadzenie testu.
+
+\FIXME{Rysunek z przebiegiem testu i zaznaczonymi fazami.}
+
+Użytkownik rozpoczyna test uruchamiając moduł Master i przekazując mu zadaną
+konfigurację testową. Master analizuje otrzymaną konfigurację i przygotowuje
+plan działania dla poszczególnych urządzeń, a następnie przesyła im ją i
+koordynuje ich pracę.
+
+W celu spełnienia wymagań stawianych przed programem, wprowadziliśmy cztery
+fazy przeprowadzenia testu.
+
+Faza pierwsza to sprawdzenie poprawności. Slave po otrzymaniu konfiguracji
+sprawdza, czy kontrolowane urządzenie jest w stanie przeprowadzić test. Faza ta
+ma na celu eliminację oczywistych błędów, które wystąpiłyby w czasie testu, a
+mogą być wcześnie i szybko wykryte. Przykładem możliwego kryterium poprawności
+jest dostępność wszystkich komend, które mają zostać wykonane.
+
+Faza druga to konfiguracja urządzenia. Slave na tym etapie wykonuje komendy,
+które tymczasowo dostosują środowisko urządzenia do potrzeb testu. Możliwa jest
+tutaj np. instalacje reguł zapory ogniowej czy konfiguracja interfejsu
+sieciowego. Komendy te mogą uniemożliwić dalszą komunikację między modułami
+Master i Slave. Z tego też powodu całość konfiguracji testu przesyłana jest
+wcześniej.
+
+Jeżeli na etapie konfiguracji nie wystąpią żadne błędy, Slave przechodzi do
+fazy wykonania testu, tj. wykonania tych komend, na których faktycznie zależy
+użytkownikowi.
+
+Faza czwarta to przywrócenie konfiguracji. Wykonuje się ona zawsze, jeśli tylko
+test osiągnął fazę konfiguracji. Komendy zdefiniowane w tej fazie powinny
+przywrócić pierwotne środowisko pracy urządzenia, dzięki czemu moduł Master
+ponownie ma możliwość nawiązania połączenia i pobrania wyników.
+
+Jak widać, istnieje możliwość, że moduł Master przez długi czas trwania testu
+będzie oczekiwał na jego zakończenie bez połączenia z modułem Slave. Jeśli test
+ma trwać godzinę, a w pierwszych sekundach (w czasie fazy konfiguracji) wystąpi
+błąd, test nie wykona się, ale Master dowie się o tym dopiero po godzinie.
+Dlatego właśnie wcześniej występuje faza sprawdzenia poprawności, w czasie
+której komunikacja jeszcze jest możliwa.
+
+Na koniec Master zgłasza się do każdego modułu Slave i pobiera zgromadzone
+wyniki wszystkich komend. Są one zapisywane w lokalnej bazie danych i stanowią
+wyjście programu -- wynik testu.
 
 \end{document}
