@@ -4,21 +4,17 @@
 
 \chapter{Moduł Arete Master}
 
-\FIXME{Wstęp do rozdziału}
+Prezentujemy tutaj szczegółowy opis modułu Master. Jest to moduł zarządzający
+definicją i wykonywaniem testów. Jest on też interfejsem użytkownika do naszego
+narzędzia -- za jego pomocą użytkownik wykonuje testy.
 
-%W tym rozdziale prezentujemy stworzone przez nas narzędzie Arete – Auto-
-%mated Real Environment Testing Engine. Jego zadaniem jest automatyzacja
-%powtarzających się czynności występujących przy przeprowadzaniu testów w
-%środowiskach rozproszonych w warunkach rzeczywistych.
-%Omówienie rozpoczynamy od przedstawienia, popartych przykładami, zastoso-
-%wań, z myślą o których stworzone zostało Arete. Są to sytuacje, w których nasze
-%narzędzie pozwoli usprawnić pracę osób przeprowadzających testy.
-%Następnie opisujemy wynikające z zastosowań wymagania funkcjonalne. Wyma-
-%gania te krótko podsumowują podstawowe możliwości programu.
-%W dalszej części prezentujemy dodatkowe założenia mające wpływ na charakter
-%tworzonego rozwiązania, jednocześnie argumentując podjęte przez nas decyzje
-%w świetle jego użyteczności.
-%Rozdział zamyka prezentacja architektury programu.
+Rozdział rozpoczynamy przedstawienie architektury modułu i wprowadzając nazwy
+komponentów omawianych w dalszej części. Następnie szeroko opisujemy format
+plików definiujących testy, rzecz bardzo istotną z punktu widzenia użytkownika.
+Osoby chcące przeprowadzać bardziej złożone testy skorzystają z opisu części
+wykonawczej modułu i możliwości rozbudowy jego funkcjonalności poprzez własne
+wtyczki. Następnie opisujemy sposób przechowywania wyników testu w bazie
+danych. Na końcu przedstawiamy opcje linii poleceń programu \code{arete}.
 
 \section{Architektura}
 
