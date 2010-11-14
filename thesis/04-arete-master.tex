@@ -423,8 +423,8 @@ zadanie jest analogiczne jak poprzednio w przypadku modelu i laboratorium.
   bind(alice, defteros)
   bind(bob,   marvin)
 
-  bind(a_eth, d_eth0))
-  bind(b_eth, m_eth0))
+  bind(a_eth, d_eth0)
+  bind(b_eth, m_eth0)
 \end{pythoncode}
 
 Warto zwrócić uwagę, że zmienne utworzone w dwóch poprzednich częściach
@@ -454,16 +454,23 @@ statycznej. Plan służy do określenia co urządzenia występujące w teście b
 robić. Kod poniżej przedstawia prosty plan, w którym host wykonuje polecenie
 \code{ping}.
 
-\FIXME{Uzupełnić o obowiązkowe test\_end\_policy.}
-
 \begin{pythoncode}
   create_schedule('schedule_ping')
+
+  test_end_policy('complete', setup_phase_delay=1.0)
 
   append_schedule('alice', [('ping', at(0), shell('ping @{bob.eth.ip}')])
 \end{pythoncode}
 
 Tym razem framework również udostępnia funkcję (\code{create\_schedule}) do
 zapewnienia, że użyjemy tylko jednego planu.
+
+Funkcja \code{test\_end\_policy} służy określeniu kiedy test się zakończy.
+Wartość ta powinna być zrozumiała dla wybranej wtyczki frontendu. W powyższym
+przykładzie test zostanie zakończony po wykonaniu wszystkich komend. Parametr
+\code{setup\_phase\_delay} określa jaki margines czasowy (w sekundach)
+przeznaczyć na wykonanie komend konfiguracyjnych. Jest to parametr opcjonalny,
+domyślnie wynoszący zero.
 
 Wywołanie funkcji \code{append\_schedule} jest bardziej złożone, poświęcimy mu
 zatem więcej czasu.
@@ -498,6 +505,11 @@ polecenie powłoki), ale także do kilku pomocniczych zadań jak dołączania
 zasobów czy stworzenia testów poprawności środowiska (np. sprawdzenia czy
 potrzebny program jest dostępny na urządzeniu).
 
+Warto zwrócić uwagę na składnię \code{@\{...\}}, która pozwala w treści komendy
+podstawiać wartości zależne od innych elementów konfiguracji. W przykładzie
+powyżej ciąg \code{@\{bob.eth.ip\}} zostanie zamieniony wartością atrybutu
+\code{ip} interfejsu \code{eth} hosta \code{bob}.
+
 Wydawać się może, że taki rozbudowany interfejs będzie niewygodny w użyciu, ale
 zwięzłość i funkcje narzędziowe dostępne wraz z frameworkiem pozwalają w prosty
 i ekspresywny sposób przekazać to, co chcemy osiągnąć. Przykładem może być taki
@@ -526,9 +538,70 @@ pozwoli lepiej zrozumieć w jaki sposób wykorzystać dostępny interfejs.
 
 \subsubsection{Pozostałe}
 
-\FIXME{Tutaj opisać jeszce funkcje create\_trigger}
+Aby umożliwić prosty mechanizm synchronizacji zadań na hostach wykonujących
+test, w sytuacjach gdzie trudno przewidzieć ramy czasowe wykonywanych operacji,
+wprowadziliśmy mechanizm powiadomień.
 
-\FIXME{Opisać tutaj parametry.}
+Po stworzeniu planu, dostępna jest funkcja \code{create\_trigger}, która tworzy
+wyzwalacz o wartości podanej przy tworzeniu.
+
+\begin{pythoncode}
+  create_trigger('stop-server', 3)
+\end{pythoncode}
+
+Powyższy wyzwalacz o nazwie \code{stop-server} zostanie aktywowany, kiedy moduł
+master otrzyma 3 powiadomienia dla tego wyzwalacza. Nie jest istotne, z jakich
+źródeł one pochodzą (np. jedno urządzenie może wysłać wszystkie trzy).
+
+Demonstracja zastosowania dostępna jest w rozdziale \fixref{Przykłady}.
+
+Ostatni pomocniczy mechanizm dostępny w konfiguracji to możliwość
+parametryzowania testów. Został on wprowadzony z myślą o ułatwieniu wykonywania
+tego samego testu z różną wartością parametrów, jak np. ilością uczestników.
+
+Wartości parametrów mogą być definiowane w linii polecenia, dzięki czemu łatwo
+jest stworzyć skrypt uruchamiający test dla różnych wartości. Program może też
+zapytać o podanie wartości dla parametrów, których wartości nie zostały
+określone. Można dzięki temu w bezpieczny sposób korzystać z haseł, nie trzeba
+ich bowiem zapisywać w plikach tekstowych.
+
+\begin{pythoncode}
+  from config.Global import parameters
+
+  add_host(
+      'milan',
+      ip = parameters['ip'],
+      port = parameters['port'])
+
+  add_device(
+      'm103',
+      password = parameters.get_secure('password'))
+\end{pythoncode}
+
+Powyższy przykład najpierw importuje obiekt \code{parameters} dostarczający
+odpowiedni interfejs. Operator nawiasów kwadratowych powoduje zwrócenie
+wartości parametru \code{ip} (taki sam efekt ma metoda \code{get}). Metoda
+\code{get\_secure} różni się tylko tym, że w przypadku kiedy program zapyta
+użytkownika o wprowadzenie wartości, zostanie użyty tryb, w którym tekst
+zostanie ukryty\footnote{Pod warunkiem, że używany przez nas terminal umożliwia
+wprowadzanie znaków bez wyświetlania ich.}.
+
+Gdybyśmy uzupełnili powyższą konfigurację o brakujące elementy, przy
+uruchomieniu wartości parametrów można byłoby podać w ten sposób:
+
+\begin{textcode}
+  % arete -c parameters_example --set ip=192.168.2.1 --askparams
+  No value set for requested parameter 'port'. Please provide it now.
+  port = 2710
+  No value set for requested parameter 'password'. Please provide it now.
+  Note that secure value has been requested. The input you type won't be echoed
+  to the screen.
+  password = 
+\end{textcode}
+
+Co zaowocowałoby przekazaniem do konfiguracji wartości \code{192.168.2.1} dla
+parametru \code{ip}, \code{2710} dla parametru \code{port} oraz nie
+wyświetlonej na ekranie wartości hasła dla parametru \code{password}.
 
 \subsection{Podsumowanie}
 
@@ -611,27 +684,61 @@ urządzeniu zakończył się.
 Pobieranie wyników (komunikat \code{fetch\_results}) odbywa się, gdy test
 zakończy się wykonywać na wszystkich urządzeniach.
 
+Powyższy schemat działania może zostać zaburzony w przypadku wystąpienia
+błędów, jak zerwane połączenie lub urządzenie, którego konfiguracja nie spełnia
+wymogów testu. W takich wypadkach kontroler wykonuje na wszystkich frontendach
+metodę \code{abort\_test}, aby powiadomić urządzenia, że dalsze wykonywanie
+testu należy przerwać.
 
-\FIXME{
-Reszta opisu FrontendPlugin.
+Zamieszczony diagram sekwencji pomija również możliwość komunikacji w obrębie
+metody \code{check\_test\_end}. Frontend w tej metodzie może nawiązywać
+komunikację z kontrolowanym urządzeniem, np. w celu sprawdzenia czy test się
+zakończył. Ponieważ metoda ta jest wywoływana cyklicznie na wszystkich
+frontendach w teście, istotne jest, aby wykonanie jej miało charakter
+nieblokujący. W przeciwnym razie jeden frontend mógłby zablokować innym
+możliwość komunikacji.
 
-Diagram sekwencji obrazujący działanie triggerów.
+W czasie komunikacji frontend może także odbierać powiadomienia dla
+zdefiniowanych wyzwalaczy. Jeżeli kontroler stwierdzi, że któryś z wyzwalaczy
+należy aktywować, wykonana na frontendzie metodę \code{trigger}, przekazując w
+parametrach jego nazwę.
 
-Dokładny opis metod pluginu FrontendPlugin będzie w Reference. Odesłać tam.
-}
+Ostatni aspekt implementacji frontendu to wykonywanie testu w trybie
+bezpołączeniowym. Frontend z konfiguracji otrzymuje informację na temat
+polityki zakończenia testu. Jeżeli jest to możliwe, powinien on na czas
+wykonywania testu zamknąć połączenie z kontrolowanym urządzeniem i ponownie
+otworzyć je dopiero, kiedy będzie pobierał wyniki. Dzięki temu urządzenia mogą
+na czas testu zmieniać swoją konfigurację sieciową bez powodowania błędów
+komunikacyjnych.
 
-\FIXME{Umieścić gdzieś opis opcji synchronize=False.}
+Zainteresowanych szczegółami implementacji odsyłamy do kodu źródłowego
+\code{AreteSlaveFrontend} -- standardowo dostępnej wtyczki typu frontend.
+
+\subsubsection{AreteSlaveFrontend}
+
+Jest to standardowo dostepna implementacja wtyczki frontend służąca komunikacji
+z modułem Arete Slave opisanym szczegółowo w kolejnym rozdziale.
+
+Aby skorzystać z tej wtyczki należy w konfiguracji urządzenia użyć nazwy
+\code{arete\_slave}, jak w przykładzie poniżej:
+
+\begin{pythoncode}
+  add_device('local1',
+    frontend='arete_slave',
+    synchronize=False,
+    ...)
+\end{pythoncode}
+
+Opcja \code{synchronize} jest opcjonalna i domyślnie aktywna. Ustawienie jej na
+\code{False} powoduje pominięcie kroku synchronizacji z zegarem zdalnego
+urządzenia. Jeżeli komputery, na których wykonujemy test, synchronizowane są
+niezależnym źródłem (np. korzystając z NTP), zaleca się wyłączyć wbudowany
+algorytm synchronizacji wtyczki \code{AreteSlavePlugin}.
 
 \subsection{Połączenie ze zdalnym urządzeniem}
 
-\FIXME{To trzeba przepisać i ustalić jakąś wersję oficjalną.}
-
 Przez połączenie ze zdalnym urządzeniem będziemy tutaj rozumieć kanał
-komunikacyjny pomiędzy Frontendem i kontrolowanym przez niego urządzeniem. W
-typowych zastosowaniach połączenie po prostu zestawia komunikację z modułem
-Arete Slave. 
-
-\FIXME{Inne możliwości połączenia się.}
+komunikacyjny pomiędzy frontendem i kontrolowanym przez niego urządzeniem.
 
 Najprostszym przykładem takiego połączenia może być połączenie TCP. Nieco
 trudniejszy technicznie, choć koncepcyjnie identyczny, jest tunel SSH.
@@ -643,18 +750,57 @@ dostarczanie i odbiór danych z kontrolującego go Frontendu. Otrzymuje on takż
 pomocnicze rozkazy określające moment, w którym można nawiązać fizyczne
 połączenie oraz kiedy należy je przerwać.
 
-\FIXME{
-Diagram sekwencji interakcji Frontend i Connection w czasie testu.
+Standardowo udostępniamy dwie wtyczki typu \code{ConnectionPlugin}, są to
+\code{TCPConnection} oraz \code{SSHConnection}. Zainteresowanych szczegółami
+współpracy między frontendem a połączeniem odsyłamy do kodu źródłowego tych
+wtyczek.
 
-Omówienie connect, disconnect, output, input.
+\subsubsection{TCPConnection}
 
-Omówić znaczenie setblocking!
-}
+Wtyczka ta służy do nawiązania połączenia korzystającego z protokołu TCP i może
+być użyta w większości przypadków, kiedy nie jest wymagane szyfrowanie.
 
+Poniżej przedstawiona jest przykładowa konfiguracja korzystająca z tej wtyczki.
+Warto zwrócić uwagę na jej identyfikator \code{tcp}.
 
-\subsubsection{Komunikacja z innymi urządzeniami}
+\begin{pythoncode}
+  add_device('local1',
+    connection='tcp',
+    ip='127.0.0.1',
+    port='9998',
+    ...)
+\end{pythoncode}
 
-\FIXME{}
+Atrybuty \code{ip} oraz \code{port} są oczywiście wymagane.
+
+\subsubsection{SSHConnection}
+
+Wtyczka \code{SSHConnection} (o identyfikatorze \code{ssh}) umożliwia
+nawiązanie uwierzytelnionego i szyfrowanego połączenia korzystając z tunelu
+SSH. Do jej pracy wymagana jest instalacja biblioteki \code{paramiko}.
+
+Oto przykład konfiguracji urządzenia:
+
+\begin{pythoncode}
+  add_device('local2',
+    connection='ssh',
+    ip='127.0.0.1',
+    username='bob',
+    keyfile=path.relative('id_rsa'),
+    ...)
+\end{pythoncode}
+
+Wymagane atrybuty to oczywiście \code{ip} i \code{port}, a także
+\code{username} oraz jeden z poniższych:
+\begin{itemize}
+\item \code{keyfile} dla uwierzytelnienia opartego o klucz RSA,
+\item \code{password} dla uwierzytelnienia hasłem.
+\end{itemize}
+
+Na marginesie dodamy, że widoczna w przykładzie funckja \code{relative}
+dostępna jest w module \code{utils.path} i powoduje zbudowanie ścieżki względem
+bieżącego pliku konfiguracyjnego. Dzięki temu można umieścić plik
+\code{'id\_rsa'} w tym samym katalogu, co plik z konfiguracją laboratorium.
 
 \subsection{Sterowniki parametrów}
 
@@ -756,8 +902,8 @@ sposobu działania.
   
       def transfer_with_arete_slave(self, frontend):
           with open(self._path, 'rb') as file:
-              frontend.output().write('file @{id=%(id)s} @{size=%(size)s}\n' %
-                  {'id':self['name'], 'size':self._size})
+              frontend.output().write('file @{id=%(id)s} @{size=%(size)s}\n'
+                  % {'id':self['name'], 'size':self._size})
               frontend.output().write(file.read())
   
               response = frontend.input().readline().strip()
@@ -797,7 +943,38 @@ Szersze omówienie interfejsu \code{Resource} znajduje się w rozdziale
 
 \subsection{Wtyczki typu Hook}
 
-\FIXME{Opisać...}
+Wtyczki typu Hook umożliwiają rozszerzenie przedstawionego przez nas schematu
+konfiguracji o własne algorytmu modyfikujące tworzony test. Aktualnie dostępny
+jest tylko jeden hook, wykonywany po przygotowaniu konfiguracji, ale jeszcze
+przed uruchomieniem testu.
+
+Poniżej prezentujemy wtyczkę \code{Uname}, która go wykorzystuje.
+
+\begin{pythoncode}
+  from common.Hooks import HookPlugin
+  
+  class Uname(HookPlugin):
+      hook_name = 'uname'
+  
+      def visit_configured_test(self, configured_test):
+          for host in configured_test.hosts.values():
+              host.commands.add_check('uname -a')
+\end{pythoncode}
+
+Metoda \code{visit\_configured\_test} jako parametr otrzyma przygotowaną
+konfigurację. W przykładzie, do każdego zdefiniowanego hosta, dodajemy komendę,
+dzięki której zapamiętamy wersję jądra systemu.
+
+Hooki należy aktywować opcją linii poleceń \code{--hooks}. W tym wypadku
+program należałoby więc uruchomić tak:
+
+\begin{textcode}
+  % arete -c ... --hooks uname
+\end{textcode}
+
+Kod hooków musi zostać wcześniej załadowany. Jeżeli stanowi on część plików
+konfiguracyjnych nie będzie to problemem. W innych wypadkach można skorzystać z
+opcji \code{--plugins}.
 
 \section{Przechowywanie wyników}
 
@@ -807,7 +984,7 @@ rysunek \ref{fig:arete-master-db}.
 \begin{figure}[htb]
 \begin{center}
 \leavevmode
-\includegraphics[width=1\textwidth]{arete-master-db}
+\includegraphics[width=0.8\textwidth]{arete-master-db}
 \end{center}
 \caption{Schemat bazy danych modułu Master.}
 \label{fig:arete-master-db}
