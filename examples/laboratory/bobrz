@@ -1,0 +1,14 @@
+create_laboratory('bobrz')
+
+add_device('marvin',
+  connection='tcp',
+  ip='192.168.12.12',
+  port='9999',
+  frontend='arete_slave')
+
+add_device('rydzyn',
+  connection='tcp',
+  ip='192.168.12.26',
+  port='9999',
+  frontend='arete_slave')
+
