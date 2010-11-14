@@ -4,21 +4,17 @@
 
 \chapter{Moduł Arete Master}
 
-\FIXME{Wstęp do rozdziału}
+Prezentujemy tutaj szczegółowy opis modułu Master. Jest to moduł zarządzający
+definicją i wykonywaniem testów. Jest on też interfejsem użytkownika do naszego
+narzędzia -- za jego pomocą użytkownik wykonuje testy.
 
-%W tym rozdziale prezentujemy stworzone przez nas narzędzie Arete – Auto-
-%mated Real Environment Testing Engine. Jego zadaniem jest automatyzacja
-%powtarzających się czynności występujących przy przeprowadzaniu testów w
-%środowiskach rozproszonych w warunkach rzeczywistych.
-%Omówienie rozpoczynamy od przedstawienia, popartych przykładami, zastoso-
-%wań, z myślą o których stworzone zostało Arete. Są to sytuacje, w których nasze
-%narzędzie pozwoli usprawnić pracę osób przeprowadzających testy.
-%Następnie opisujemy wynikające z zastosowań wymagania funkcjonalne. Wyma-
-%gania te krótko podsumowują podstawowe możliwości programu.
-%W dalszej części prezentujemy dodatkowe założenia mające wpływ na charakter
-%tworzonego rozwiązania, jednocześnie argumentując podjęte przez nas decyzje
-%w świetle jego użyteczności.
-%Rozdział zamyka prezentacja architektury programu.
+Rozdział rozpoczynamy przedstawienie architektury modułu i wprowadzając nazwy
+komponentów omawianych w dalszej części. Następnie szeroko opisujemy format
+plików definiujących testy, rzecz bardzo istotną z punktu widzenia użytkownika.
+Osoby chcące przeprowadzać bardziej złożone testy skorzystają z opisu części
+wykonawczej modułu i możliwości rozbudowy jego funkcjonalności poprzez własne
+wtyczki. Następnie opisujemy sposób przechowywania wyników testu w bazie
+danych. Na końcu przedstawiamy opcje linii poleceń programu \code{arete}.
 
 \section{Architektura}
 
@@ -387,8 +383,6 @@ sposób w jaki przebiega komunikacja z danym urządzeniem (protokół przesyłan
 komunikatów).
 \end{itemize}
 
-\FIXME{Umieścić gdzieś opis opcji synchronize=False.}
-
 Więcej na temat wtyczek piszemy w rozdziale \fixref{referencja do rozdziału o
 wtyczkach}.
 
@@ -460,6 +454,8 @@ statycznej. Plan służy do określenia co urządzenia występujące w teście b
 robić. Kod poniżej przedstawia prosty plan, w którym host wykonuje polecenie
 \code{ping}.
 
+\FIXME{Uzupełnić o obowiązkowe test\_end\_policy.}
+
 \begin{pythoncode}
   create_schedule('schedule_ping')
 
@@ -527,6 +523,12 @@ w 29.
 Inne przykłady definicji planów można znaleźć w rozdziale prezentującym
 przykładowe zastosowania \fixref{ref do rozdziału Przykłady}. Ich lektura
 pozwoli lepiej zrozumieć w jaki sposób wykorzystać dostępny interfejs.
+
+\subsubsection{Pozostałe}
+
+\FIXME{Tutaj opisać jeszce funkcje create\_trigger}
+
+\FIXME{Opisać tutaj parametry.}
 
 \subsection{Podsumowanie}
 
@@ -618,6 +620,8 @@ Diagram sekwencji obrazujący działanie triggerów.
 Dokładny opis metod pluginu FrontendPlugin będzie w Reference. Odesłać tam.
 }
 
+\FIXME{Umieścić gdzieś opis opcji synchronize=False.}
+
 \subsection{Połączenie ze zdalnym urządzeniem}
 
 \FIXME{To trzeba przepisać i ustalić jakąś wersję oficjalną.}
@@ -703,10 +707,9 @@ funkcji \code{process\_interface} sprawdza czy \code{'ip'} należy do listy
 nieprzetworzonych atrybutów, a na końcu ten element z listy usuwa.
 
 Parametr \code{cmd} to obiekt, w którym gromadzone są tworzone komendy. W fazie
-przygotowania\footnote{\fixme{zakładam, że fazy testu i grupy komend będą
-omówione wcześniej, w architekturze systemu}} za pomocą polecenia \code{which}
-zostanie sprawdzone, czy program \code{ip} jest dostępny. W fazie konfiguracji
-odpowiedni adres zostanie dodany, a po zakończeniu testu usunięty z interfejsu.
+przygotowania za pomocą polecenia \code{which} zostanie sprawdzone, czy program
+\code{ip} jest dostępny. W fazie konfiguracji odpowiedni adres zostanie dodany,
+a po zakończeniu testu usunięty z interfejsu.
 
 Metoda \code{interface.bound()} zwraca związany (poprzez zdefiniowane
 odwzorowanie) z tym interfejsem interfejs urządzenia. Dzięki temu mamy dostęp do
@@ -792,6 +795,10 @@ odpowiednim formacie.
 Szersze omówienie interfejsu \code{Resource} znajduje się w rozdziale
 \fixref{Reference}.
 
+\subsection{Wtyczki typu Hook}
+
+\FIXME{Opisać...}
+
 \section{Przechowywanie wyników}
 
 Wyniki testów zapisywane są w bazie danych SQLite. Schemat tabel przedstawia
@@ -833,7 +840,7 @@ zapisane są w tabeli \code{invocations}. Ponieważ niektóre komendy (jak np.
 \code{notify}) nie produkują żadnych wyników, wartości w kolumnach
 \code{output}, \code{duration} oraz \code{return\_code} mogą pozostać puste.
 
-\subsection{Uruchamianie}
+\section{Uruchamianie}
 
 Program \code{arete} w celu poprawnej pracy wymaga podania argumentów
 określających test. W przypadku minimalnym należy tylko wskazać zestaw plików
@@ -858,8 +865,7 @@ parametrów w formacie \code{nazwa=wartość}.
 
 Zezwala na interaktywne podanie brakujących wartości parametrów, tj. używanych w
 konfiguracji, a nie określonych opcją \code{--set}. Pozwala w bezpieczny sposób
-korzystać z haseł. \fixme{W opisie konfiguracji chyba nie ma słowa o
-parametrach.}
+korzystać z haseł.
 
 \item[\code{--plugins}]
 
