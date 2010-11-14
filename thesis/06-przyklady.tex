@@ -186,7 +186,43 @@ testu.
 
 \subsection{Uruchomienie}
 
-\FIXME{Opis uruchomienia. Omówienie laboratorium i mapowania.}
+
+Uruchamiamy Arete Slave na komputerach biorących udział w teście.
+
+\code{\$ arete-slave -v}
+
+Następnie tworzymy laboratorium. Może ono przykładowo wyglądać tak:
+
+\begin{pythoncode}
+  create_laboratory('example-laboratory')
+
+  add_device('marvin',
+      connection='tcp',
+      ip='192.168.0.2',
+      port='4567',
+      frontend='arete_slave')
+
+  add_device('defteros',
+      connection='tcp',
+      ip='192.168.0.3',
+      port='4567',
+      frontend='arete_slave')
+\end{pythoncode}
+
+Odwzorowanie.
+
+\begin{pythoncode}
+  create_mapping('example-mapping')
+
+  bind('client', 'marvin')
+  bind('server', 'defteros')
+\end{pythoncode}
+
+Aby rozpocząć test uruchamiamy Arete Master.
+
+\code{\$ arete -c examples/client-server/configuration example\_laboratory --map client:marvin server:defteros}
+
+
 
 \subsection{Przebieg}
 
@@ -203,39 +239,6 @@ testu.
 
 \FIXME{Zaprezentowanie jak wyglądają otrzymane wyniki, że się sumy kontrolne
 zgadzają itt (i takie tam).}
-
-\section{Przykład: Torrent}
-
-\FIXME{tmp}
-
-Trzeci scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
-Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
-BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test należy
-zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
-klient wysłał danych i ile trwała pełna dystrybucja pliku. Zadana topologia
-urządzeń to dwie sieci IP po cztery urządzenia, połączone routerem sztucznie
-generującym opóźnienia.
-
-Program w tym teście:
-\begin{enumerate}
-\item do każdego uczestnika wysyła plik torrent,
-\item konfiguruje interfejsy routera,
-\item konfiguruje adresy sieciowe uczestników,
-\item jednocześnie uruchamia klientów sieci BitTorrent,
-\item oczekuje aż każdy otrzyma pełny plik,
-\item zatrzymuje klientów,
-\item zapamiętuje wyniki,
-\item przywraca konfigurację.
-\end{enumerate}
-
-\begin{figure}[htb]
-\begin{center}
-\leavevmode
-\includegraphics[width=0.8\textwidth]{example-02-sequence}
-\end{center}
-\caption{Schemat przebiegu testu torrent.}
-\label{fig:example-02-sequence}
-\end{figure}
 
 \section{Przykład: DCCP}
 
@@ -270,6 +273,69 @@ Aby zautomatyzować te testy, program musi:
 Ważne jest też, żeby w czasie testu program nie przesyłał żadnych danych, aby
 nie wpływał na uzyskiwane wyniki.
 
+\subsection{Konfiguracja}
+
+\FIXME{Konfiguracja.}
+
+\begin{pythoncode}
+  class IPTablesCounters(HostDriverPlugin):
+      def process(self, cmd, host, attributes):
+          if 'iptables_counters' not in attributes:
+              return 
+
+          protocols = host.model['iptables_counters']
+
+          cmd.add_setup('iptables -F')
+          for proto in protocols:
+              cmd.add_setup('iptables -I INPUT -p {0}'.format(proto))
+              cmd.add_setup('iptables -I OUTPUT -p {0}'.format(proto))
+
+          cmd.add_cleanup('iptables -F')
+
+          attributes.remove('iptables_counters')
+\end{pythoncode}
+
+\begin{pythoncode}
+  create_model('dccp_flow')
+
+  add_host('client', iptables_counters=['33', 'tcp', 'udp']) # 33 is DCCP
+  add_host('server', iptables_counters=['33', 'tcp', 'udp'])
+\end{pythoncode}
+
+\begin{pythoncode}
+  create_schedule('dccp_flow')
+  test_end_policy('duration 20', setup_phase_delay=2.0)
+\end{pythoncode}
+
+\begin{pythoncode}
+  dccp = ClientServer('dccp',
+      server_command='iperf -s -p 7999 -d', # -d is for DCCP
+      client_command='iperf -c @{server.ip} -p 7999 -d -t 18') # -d is for DCCP
+
+  tcp = ClientServer('tcp',
+      server_command='iperf -s -p 7998',
+      client_command='iperf -c @{server.ip} -p 7998 -t 9')
+\end{pythoncode}
+
+\begin{pythoncode}
+  append_schedule('server', dccp.server(start=0, end=20))
+  append_schedule('client', dccp.client(start=1, end=None, server='server'))
+
+  append_schedule('server', tcp.server(start=0, end=20))
+  append_schedule('client', tcp.client(start=10, end=None, server='server'))
+
+  append_schedule('server', [('counters', every(1), shell('iptables -L -v -n -Z -x'))])
+  append_schedule('client', [('counters', every(1), shell('iptables -L -v -n -Z -x'))])
+\end{pythoncode}
+
+\subsection{Uruchomienie}
+
+\FIXME{Uruchomienie.}
+
+\subsection{Przebieg}
+
+\FIXME{Przebieg.}
+
 \begin{figure}[htb]
 \begin{center}
 \leavevmode
@@ -278,5 +344,107 @@ nie wpływał na uzyskiwane wyniki.
 \caption{Schemat przebiegu testu dccp.}
 \label{fig:example-03-sequence}
 \end{figure}
+
+\subsection{Wyniki}
+
+\FIXME{Wyniki.}
+
+\section{Przykład: Torrent}
+
+\FIXME{tmp}
+
+Trzeci scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
+Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
+BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test należy
+zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
+klient wysłał danych i ile trwała pełna dystrybucja pliku. Zadana topologia
+urządzeń to dwie sieci IP po cztery urządzenia, połączone routerem sztucznie
+generującym opóźnienia.
+
+Program w tym teście:
+\begin{enumerate}
+\item do każdego uczestnika wysyła plik torrent,
+\item konfiguruje interfejsy routera,
+\item konfiguruje adresy sieciowe uczestników,
+\item jednocześnie uruchamia klientów sieci BitTorrent,
+\item oczekuje aż każdy otrzyma pełny plik,
+\item zatrzymuje klientów,
+\item zapamiętuje wyniki,
+\item przywraca konfigurację.
+\end{enumerate}
+
+\subsection{Konfiguracja}
+
+\FIXME{Konfiguracja.}
+
+
+
+\begin{pythoncode}
+  create_schedule('torrent-distribution-time')
+    
+  test_end_policy('complete', setup_phase_delay=0.0)
+  create_trigger('stop-torrent', len(west+east)-1)
+\end{pythoncode}
+
+\begin{pythoncode}
+  torrent = add_resource(File('torrent', 'big-data-file.torrent'))
+  data    = add_resource(File('big-data-file',    'big-data-file'))
+  trackcfg = add_resource(File('trackcfg', 'xbt_tracker.conf'))
+\end{pythoncode}
+
+\begin{pythoncode}
+  tracker_schedule = [
+      ('tracker', at(0), shell('xbt_tracker --conf_file @{trackcfg.path}', \
+          use_resources=[trackcfg])),
+      ('stop-tracker', trigger('stop-torrent'), shell('kill @{tracker.pid}'))
+  ]
+\end{pythoncode}
+
+\begin{pythoncode}
+  seed_schedule = [ 
+      ('ctorrent', at(1), shell('ctorrent -f "@{torrent.path}"', \
+          use_resources=[torrent, data])),
+      ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
+  ]
+\end{pythoncode}
+
+\begin{pythoncode}
+  peer_schedule = [
+      ('ctorrent', at(2), \
+          shell('ctorrent "@{torrent.path}" -X @{poke stop-torrent}', \
+          use_resources=[torrent])),
+      ('poke', poke('stop-torrent'), notify('stop-torrent')),
+      ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
+  ]
+\end{pythoncode}
+
+\begin{pythoncode}
+  append_schedule(east[0], tracker_schedule)
+  append_schedule(east[0], seed_schedule)
+
+  for host in west + east[1:]:
+      append_schedule(host, peer_schedule)
+\end{pythoncode}
+
+\subsection{Uruchomienie}
+
+\FIXME{Uruchomienie.}
+
+\subsection{Przebieg}
+
+\FIXME{Przebieg.}
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{example-02-sequence}
+\end{center}
+\caption{Schemat przebiegu testu torrent.}
+\label{fig:example-02-sequence}
+\end{figure}
+
+\subsection{Wyniki}
+
+\FIXME{Wyniki.}
 
 \end{document}
