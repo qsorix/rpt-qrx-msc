@@ -14,8 +14,8 @@ przez moduł Master za pomocą protokołu opisanego w rozdziale
 \section{Architektura}
 \label{arete-slave-arch}
 
-W skład architektury programu Arete Slave wchodzą cztery moduły oraz baza danych
-służąca do przechowywania informacji o uruchamianych testach, jak zostało to
+W skład architektury programu Arete Slave wchodzi pięć modułów oraz baza danych
+służąca do przechowywania wyników uruchamianych testów, jak zostało to
 przedstawione na rysunku \ref{fig:arete-slave-arch}.
 
 \begin{figure}[htb]
@@ -33,8 +33,6 @@ przychodzące komunikaty są zgodne z protokołem komunikacji (Rozdział
 \ref{arete-slave-protokol}). Otrzymane dane przekazuje do modułu Manager, który
 zajmuje się ich interpretacją.
 
-\paragraph{Parser} służy do analizy składniowej przychodzących komunikatów.
-
 \paragraph{Manager} to główny moduł zarządzający testami. Na podstawie danych
 otrzymanych od modułu Handler tworzy testy, dodaje do nich komendy oraz zapisuje te
 informacje do bazy danych. Następnie zajmuje się uruchamianiem i zatrzymywaniem
@@ -44,6 +42,14 @@ określonym momencie testu przekazywane są do modułu Scheduler.
 \paragraph{Scheduler} pozwala uruchomić komendy w określonych punktach czasowych
 testu. Moduł ten korzysta z bazy danych w celu pobrania niezbędnych danych i
 zapisania wyników uruchamianych komend.
+
+\paragraph{Parser} służy do analizy składniowej przychodzących komunikatów.
+
+\paragraph{Poker} realizuje funkcję \emph{poke}\footnote{\fixme{...?}}, będącą
+częścią mechanizmu powiadomień (Rozdział \fixref{Mechanizm Powiadomień}).
+Pozwala on na wysyłanie powiadomień w dowolnym momencie testu przez uruchamiane
+w jego ramach komendy. Korzysta się z niego przez \code{@\{poke <nazwa
+powiadomienia>\}}.
 
 \section{Protokół komunikacji z Arete Master}
 \label{arete-slave-protokol}
@@ -165,7 +171,7 @@ identyfikatorze oraz wszystkie należące do niego komendy i pliki.}
 
 \subsection{Wysyłanie wyników testu}
 
-Po zakończeniu testu możliwe jest obebranie jest wyników w celu zapisania do
+Po zakończeniu testu możliwe jest odebranie jest wyników w celu zapisania do
 bazy danych modułu Arete Master i dalszej analizy. Wykorzystujemy do tego celu
 polecenia:
 
@@ -261,6 +267,15 @@ sygnalizować o poprawnym lub błędnym działaniu:
 \item{\code{100 Test Finished} - zwracany po wykonaniu wszystkich komend
 wchodzących w skład testu. Obowiązuje wyłącznie w trybie \emph{complete}.}
 
+\item{\code{100 Notify <identyfikator testu> <nazwa wyzwalacza>} - wysyłany w
+przypadku korzystania z mechanizmu powiadomień (Rozdział \fixref{Mechanizm
+Powiadomień}).}
+
+\item{\code{200 OK} - zwracany po odebraniu każdego prawidłowego polecenia oraz
+poprawnym jego wykonaniu.}
+
+\item{\code{200 OK <czas>} - wysyłany w trakcie synchronizacji.}
+
 \item{\code{200 OK <lista rozmiarów>} - zwracany do potwierdzenia poprawnie wykonanego
 polecenia; w przypadku pobierania wyników wykonanego testu przesyła również
 listę rozmiarów kolejnych wyników (np. \code{get @\{<id>.output\}}).}
@@ -294,10 +309,7 @@ o konkretnych zastosowaniach (tabele \emph{check\_commands},
 
 Każda komenda posiada cztery parametry, które są zwracane jako wyniki po
 zakończeniu testu: wyjście, zwracany kod wyjścia, czas rozpoczęcia oraz długość
-trwania, znajdujące się kolejno w tabelach \emph{output}, \emph{returncode},
-\emph{start\_time} oraz \emph{duration}.  Stworzenie osobnych tabel dla tych
-wartości umożliwia wielokrotne uruchomienie danej komendy i każdorazowe
-zapamiętanie wszystkich parametrów.
+trwania, które zapisywane są do tabeli \emph{invocations}.
 
 \begin{figure}[htb]
 \begin{center}
@@ -311,17 +323,59 @@ zapamiętanie wszystkich parametrów.
 \section{Uruchamianie}
 \label{arete-slave-uruchamianie}
 
-\begin{minted}{text}
-  usage: Main.py [-h] [-p PORT] [-d DATABASE] [-l LOG]
+Program \code{arete-slave} pozwala na zmianę domyślnych parametrów poprzez
+określenie następujących argumentów.
 
-  optional arguments:
-    -h, --help            show this help message and exit
-    -p PORT, --port PORT
-                          use port other than 4567
-    -d DATABASE, --database DATABASE
-                          use database file other than 'aretes.db'
-    -l LOG, --log LOG
-                          use log file other than 'aretes.log'
-\end{minted}
+\begin{description}
+\item[\code{--help}]
+
+Wyświetla informacje dotyczące opcji programu.
+
+\item[\code{--config}]
+
+Określa plik z konfiguracją. Użycie pozostałych argumentów spowoduje nadpisanie
+parametrów wczytanych z pliku.
+
+\item[\code{--port}]
+
+Pozwala określić port na którym uruchmiony zostanie Arete Slave.
+
+\item[\code{--database}]
+
+Określa plik w którym przechowywana będzie baza danych.
+
+\item[\code{--log}]
+
+Określa plik w którym przechowywany będzie log.
+
+\item[\code{--workdir}]
+
+Określa tymczasowy katalog roboczy dla wykonywanych testów.
+
+\item[\code{--verbose}]
+
+Włącza tryb gadatliwy, wyświetlający zawartość loga na standardowe wyjście.
+
+\item[\code{--new}]
+
+Powoduje usunięcie bierzącej bazy danych oraz loga.
+
+\item[\code{--clean}]
+
+Powoduje usunięcie katalogu z plikami tymczasowymi.
+
+\item[\code{--ssh}]
+
+Włącza obsługę SSH. Wymagane jest podanie dwóch kolejnych parametrów.
+
+\item[\code{--authorized-keys}]
+
+Określa plik z kluczami autoryzowanych hostów.
+
+\item[\code{--host-key}]
+
+Określa plik z kluczem hosta.
+
+\end{description}
 
 \end{document}
