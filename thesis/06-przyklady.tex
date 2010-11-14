@@ -90,6 +90,7 @@ zostaną przedstawione później. Zakładamy, że użytkownik zapoznał się z d
 \fixref{Konfiguracja}.
 
 \begin{pythoncode}
+  # examples/client-server/configuration:
   create_model('client-server')
 
   add_host('client')
@@ -114,13 +115,13 @@ ustawiamy politykę zakończenia testu na \code{complete}. Spowoduje to
 zakończenie testu dopiero w momencie, gdy zakończy się on na wszystkich
 urządzeniach biorących w nim udział. Zwróćmy uwagę, że jednym z urządzeń jest
 serwer, który z założenia nie kończy swojego działania. Z tego powodu tworzymy
-\fixme{trigger}, mający za zadanie zakończyć działanie serwera, gdy określona
-ilość urządzeń (w naszym przypadku jeden klient), powiadomi o zakończeniu
-testu. Wartość tę podajemy jako drugi parametr komendy \code{create\_trigger}.
-W komendzie \code{test\_end\_policy} jak parametr \code{setup\_phase\_delay}
-podajemy czas potrzebny na uruchomienie komend konfiguracyjnych. W naszym
-przypadku czas ten wynosi \code{0.0} ponieważ nie jest wymagana dodatkowa
-konfiguracja.
+wyzwalacz o nazwie \code{kill-server}, mający za zadanie zakończyć działanie
+serwera, gdy określona ilość urządzeń (w naszym przypadku jeden klient),
+powiadomi o zakończeniu testu. Wartość tę podajemy jako drugi parametr komendy
+\code{create\_trigger}.  W komendzie \code{test\_end\_policy} jak parametr
+\code{setup\_phase\_delay} podajemy czas potrzebny na uruchomienie komend
+konfiguracyjnych. W naszym przypadku czas ten wynosi \code{0.0} ponieważ nie
+jest wymagana dodatkowa konfiguracja.
 
 \begin{pythoncode}
   add_resource(File('clientdist', 'Client.py', chmod='+x'))
@@ -138,7 +139,7 @@ urządzeniami.
   append_schedule('client', [
       ('client', at(1), \
           shell('./@{clientdist.path} @{server.ip} 6666 @{testfile.path} dest_path', \
-	  use_resources=['clientdist', 'testfile'], check_executable=False)),
+          use_resources=['clientdist', 'testfile'], check_executable=False)),
       ('md5sum', after('client'), shell('md5sum @{testfile.path}')),
       ('notify', after('md5sum'), notify('kill-server'))
   ])
@@ -159,15 +160,15 @@ Następnie dodajemy dwa zadania, które będą wykonywane gdy program klienta
 zakończy działanie (funkcja \code{after()}). Pierwsze z nich to komenda
 sprawdzająca sumę kontrolną przesyłanego pliku korzystając z polecenia
 \code{md5sum}. Drugie powoduje powiadomienie Arete Master o zakończeniu
-działania. Ponieważ \fixme{trigger} o nazwie \code{kill-server} czeka tylko na
+działania. Ponieważ wyzwalacz o nazwie \code{kill-server} czeka tylko na
 jedno powiadomienie, Arete Slave otrzyma dzięki niemu sygnał do wykonania
 komendy kończącej działanie serwera.
 
 \begin{pythoncode}
   append_schedule('server', [
       ('server', at(0), \
-          shell('./@{serverdist.path} 0.0.0.0 6666', use_resources=['serverdist'], \
-	  check_executable=False)),
+          shell('./@{serverdist.path} 0.0.0.0 6666', \
+          use_resources=['serverdist'], check_executable=False)),
       ('trigger', trigger('kill-server'), shell('kill @{server.pid}')),
       ('ls', after('server'), shell('ls dest_path')),
       ('md5sum', after('ls'), shell('md5sum dest_path')),
@@ -186,15 +187,24 @@ testu.
 
 \subsection{Uruchomienie}
 
-
-Uruchamiamy Arete Slave na komputerach biorących udział w teście.
+Rozpoczynamy od uruchomienia programów Arete Slave na komputerach biorących
+udział w teście.
 
 \code{\$ arete-slave -v}
 
-Następnie tworzymy laboratorium. Może ono przykładowo wyglądać tak:
+Ponieważ na każdym z urządzeń będzie działać tylko jeden demon, możemy
+skorzystać z domyślnych ustawień. W przeciwnym wypadku wymagane jest użycie
+dodatkowych parametrów opisancych w rozdziale \ref{arete-slave-run}, aby
+zróżnicować porty i nazwy plików bazy danych. Użycie parametru \code{-v}
+spowoduje wypisywanie loga na standardowe wyjście, co ułatwi nam obserwację
+przebiegu testu.
+
+Następnie tworzymy konfigurację laboratorium. Przykładowy plik konfiguracyjny
+przedstawiono poniżej.
 
 \begin{pythoncode}
-  create_laboratory('example-laboratory')
+  # examples/example_laboratory:
+  create_laboratory('example_laboratory')
 
   add_device('marvin',
       connection='tcp',
@@ -209,20 +219,22 @@ Następnie tworzymy laboratorium. Może ono przykładowo wyglądać tak:
       frontend='arete_slave')
 \end{pythoncode}
 
-Odwzorowanie.
+Kolejnym krokiem jest stworzenie odwzorowania między modelem a labolatorium.
+Jeśli chcielibyśmy zawrzeć go w pliku konfiguracyjnym, wyglądałoby to
+następująco.
 
 \begin{pythoncode}
-  create_mapping('example-mapping')
+  create_mapping('model-to-laboratory')
 
   bind('client', 'marvin')
   bind('server', 'defteros')
 \end{pythoncode}
 
-Aby rozpocząć test uruchamiamy Arete Master.
+Dla uproszczenia odwzorowanie podamy jednak jako argument programu Arete Master.
+Uruchamiamy test uwzględniając stworzone wcześniej pliki konfiguracyjne oraz
+odwzorowanie, jak przedstawiono poniżej.
 
-\code{\$ arete -c examples/client-server/configuration example\_laboratory --map client:marvin server:defteros}
-
-
+\code{\$ arete -c examples/client-server/configuration examples/example\_laboratory --map client:marvin server:defteros}
 
 \subsection{Przebieg}
 
@@ -235,47 +247,45 @@ Aby rozpocząć test uruchamiamy Arete Master.
 \label{fig:example-01-sequence}
 \end{figure}
 
+\FIXME{Opisać przebieg.}
+
 \subsection{Wyniki}
 
-\FIXME{Zaprezentowanie jak wyglądają otrzymane wyniki, że się sumy kontrolne
-zgadzają itt (i takie tam).}
+Po zakończeniu testu Arete Master odbiera wyniki od obu modułów Slave
+uczestniczących w teście i zapisuje je do swojej bazy danych. W tym przykładzie
+wyglądają one następująco.
+
+\FIXME{Tutaj jakoś przedstawić wyniki z bazy danych.}
+
+Jak widzimy w bazie danych oprócz informacji dotyczących całego testu, takich
+jak czas jego rozpoczęcia i długość trwania na każdym z komputerów, mamy do
+dyspozycji szczegółowe dane na temat każdej z wykonanych komend. Zarówno komendy
+przygotowujące, jak i te uruchomiane zgodnie z planem testu, posiadają wyjście,
+zwrócony kod wyjścia, czas rozpoczęcia oraz długość trwania.
+
+Choć interpretacja wyników nie jest celem naszej pracy, w tym prostym przypadku
+możemy zaobserwować, że nazwa pliku otrzymana z komendy ls na serwerze jest
+poprawna, a sumy kontrolne na obu urządzeniach są zgodne. Możemy zatem
+wywnioskować, że stworzone przez nas implementacje programów klient-serwer są
+poprawne.
 
 \section{Przykład: DCCP}
 
-\FIXME{tmp}
-
-Drugi scenariusz dotyczy pomiaru szybkości transferu danych przy użyciu
-protokołu DCCP (Datagram Congestion Control Protocol) oraz wpływu innych
-transmisji na tę szybkość. Sposób pomiaru jest prosty. Wykorzystujemy program
-\code{iperf}, który umożliwia uruchomienie serwera i klienta wybranego
-protokołu. Klient transmituje do serwera strumień losowych danych korzystając
-ze wskazanego protokołu transportowego i zapamiętuje uzyskaną szybkość
-transmisji. Dodatkowo, przy użyciu reguł \code{iptables} mierzy się ilość
-pakietów i bajtów całego ruchu sieciowego.
+Drugi przykład dotyczy pomiaru szybkości transferu danych przy użyciu protokołu
+DCCP oraz wpływu innych transmisji na tę szybkość. Sposób pomiaru jest prosty.
+Wykorzystujemy program \code{iperf}, który umożliwia uruchomienie serwera i
+klienta wybranego protokołu. Klient transmituje do serwera strumień losowych
+danych korzystając ze wskazanego protokołu transportowego i zapamiętuje uzyskaną
+szybkość transmisji. Dodatkowo, przy użyciu reguł \code{iptables} mierzy się
+ilość pakietów i bajtów całego ruchu sieciowego.
 
 Stworzyliśmy kilka różnych testów badających m.in.: samodzielną pracę DCCP,
 wpływ transmisji TCP i UDP na pracę DCCP, porównanie DCCP z TCP i UDP, itd.
 Różniły się one kolejnością i momentami, w których na uczestniczących w teście
-urządzeniach należało uruchomić lub zakończyć \code{iperf}.
-
-Aby zautomatyzować te testy, program musi:
-\begin{enumerate}
-\item korzystając z interfejsu \code{sysctl} skonfigurować parametry DCCP,
-\item stworzyć reguły \code{iptables} do mierzenia ruchu,
-\item przeprowadzić synchronizację, 
-\item rozpocząć test,
-\item w wyznaczonych momentach rozpocząć lub zakończyć działanie \code{iperf},
-\item zbierać wartości liczników \code{iptables},
-\item zapamiętać wszystkie uzyskiwane wyniki,
-\item przywrócić opcje DCCP i konfigurację \code{iptables}.
-\end{enumerate}
-
-Ważne jest też, żeby w czasie testu program nie przesyłał żadnych danych, aby
-nie wpływał na uzyskiwane wyniki.
+urządzeniach należało uruchomić lub zakończyć \code{iperf}. W tym przykładzie
+zaprezentujemy test przedstawiający wpływ transmisji TCP na pracę DCCP. 
 
 \subsection{Konfiguracja}
-
-\FIXME{Konfiguracja.}
 
 \begin{pythoncode}
   class IPTablesCounters(HostDriverPlugin):
@@ -295,27 +305,49 @@ nie wpływał na uzyskiwane wyniki.
           attributes.remove('iptables_counters')
 \end{pythoncode}
 
+Zaczynamy od stworzenia \fixme{sterownika parametrów} (\code{HostDriverPlugin}),
+który dla każdego z urządzeń doda komendy konfiguracyjne i czyszczące tworzące
+odpowiednie wpisy w \code{iptables} dla podanych protokołów.
+
 \begin{pythoncode}
   create_model('dccp_flow')
 
-  add_host('client', iptables_counters=['33', 'tcp', 'udp']) # 33 is DCCP
+  add_host('client', iptables_counters=['33', 'tcp', 'udp'])
   add_host('server', iptables_counters=['33', 'tcp', 'udp'])
 \end{pythoncode}
 
+Następnie tworzymy model o nazwie \code{dccp\_flow} i podobnie jak w poprzednim
+przykładzie dodajemy dwa urządzenia - klienta i serwer. W parametrze
+\code{iptables\_counters} podajemy listę protokołów dla wcześniej stworzonego
+\fixme{sterownika parametrów}. Liczba \code{33} odpowiada protokołowi DCCP.
+
 \begin{pythoncode}
   create_schedule('dccp_flow')
+
   test_end_policy('duration 20', setup_phase_delay=2.0)
 \end{pythoncode}
 
+Tworzymy także plan testu o nazwie \code{dccp\_flow}. Ponieważ ważne jest, żeby
+w czasie testu program nie przesyłał żadnych nadmiarowych danych, które
+wpłynęłyby na uzyskane wyniki, ustawiamy czas trwania testu na stałą wartość
+\code{20} sekund. Spowoduje to rozłączenie się Arete Master po przesłaniu testu
+i ponowne połączenie po zakończeniu testu. Ponieważ test wymaga wykonania komend
+konfiguracyjnych ustawiamy opóźnienie testu na \code{2.0} korzystając z
+parametru \code{setup\_phase\_delay}.
+
 \begin{pythoncode}
   dccp = ClientServer('dccp',
-      server_command='iperf -s -p 7999 -d', # -d is for DCCP
-      client_command='iperf -c @{server.ip} -p 7999 -d -t 18') # -d is for DCCP
+      server_command='iperf -s -p 7999 -d',
+      client_command='iperf -c @{server.ip} -p 7999 -d -t 18')
 
   tcp = ClientServer('tcp',
       server_command='iperf -s -p 7998',
       client_command='iperf -c @{server.ip} -p 7998 -t 9')
 \end{pythoncode}
+
+Korzystając z gotowej klasy \code{ClientServer} z modułu \code{Utils} tworzymy
+komendy uruchamiające \code{iperf} w trybie klienta (\code{-c}) oraz serwera
+(\code{-s}) dla protokołów DCCP (opcja \code{-d}) oraz TCP.
 
 \begin{pythoncode}
   append_schedule('server', dccp.server(start=0, end=20))
@@ -324,11 +356,33 @@ nie wpływał na uzyskiwane wyniki.
   append_schedule('server', tcp.server(start=0, end=20))
   append_schedule('client', tcp.client(start=10, end=None, server='server'))
 
-  append_schedule('server', [('counters', every(1), shell('iptables -L -v -n -Z -x'))])
-  append_schedule('client', [('counters', every(1), shell('iptables -L -v -n -Z -x'))])
+  append_schedule('server', [('counters', every(1), \
+      shell('iptables -L -v -n -Z -x'))])
+  append_schedule('client', [('counters', every(1), \
+      shell('iptables -L -v -n -Z -x'))])
 \end{pythoncode}
 
+Na koniec dodajemy do planu testu stworzone wcześniej komendy. Na urządzeniu
+\code{server} dodajemy serwery DCCP i TCP, które działać będą przez cały czas
+trwania testu. Na urządzeniu \code{client} w \code{1} sekundzie uruchamiamy
+klienta DCCP, a w \code{10} sekundzie klienta TCP. Na obu urządzeniach co
+sekundę zapisujemy wynik komendy wypisującej ilość przesłanych pakietów i
+bajtów.
+
 \subsection{Uruchomienie}
+
+Należy zwrócić uwagę, że przykład ten wymaga uprawnień administratora.
+
+Podobnie jak w poprzednim przykładzie najpierw uruchamiamy programy Arete Slave
+na komputerach biorących udział w teście.
+
+\code{\# arete-slave -v}
+
+Następnie korzystając ze stworzonego już pliku z konfiguracją laboratorium i
+argumentu \code{--map} uruchamiamy test w programie Arete Master.
+
+\code{\# arete -c examples/dccp\_flow/configuration examples/example\_laboratory
+-- map client:marvin server:defteros}
 
 \FIXME{Uruchomienie.}
 
@@ -351,36 +405,23 @@ nie wpływał na uzyskiwane wyniki.
 
 \section{Przykład: Torrent}
 
-\FIXME{tmp}
-
-Trzeci scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
+Trzeci, ostatni przykład, który przedstawimy, to ćwiczenie laboratoryjne z
 Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
 BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test należy
 zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
-klient wysłał danych i ile trwała pełna dystrybucja pliku. Zadana topologia
-urządzeń to dwie sieci IP po cztery urządzenia, połączone routerem sztucznie
-generującym opóźnienia.
+klient wysłał danych i ile trwała pełna dystrybucja pliku.
 
-Program w tym teście:
-\begin{enumerate}
-\item do każdego uczestnika wysyła plik torrent,
-\item konfiguruje interfejsy routera,
-\item konfiguruje adresy sieciowe uczestników,
-\item jednocześnie uruchamia klientów sieci BitTorrent,
-\item oczekuje aż każdy otrzyma pełny plik,
-\item zatrzymuje klientów,
-\item zapamiętuje wyniki,
-\item przywraca konfigurację.
-\end{enumerate}
+\FIXME{Zadana topologia urządzeń to dwie sieci IP po cztery urządzenia,
+połączone routerem sztucznie generującym opóźnienia.}
+
+\FIXME{Różne sytuacje, tu opiszemy taką...}
 
 \subsection{Konfiguracja}
 
-\FIXME{Konfiguracja.}
-
-
+\FIXME{Model}
 
 \begin{pythoncode}
-  create_schedule('torrent-distribution-time')
+  create_schedule('torrent')
     
   test_end_policy('complete', setup_phase_delay=0.0)
   create_trigger('stop-torrent', len(west+east)-1)
