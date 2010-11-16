@@ -1,4 +1,4 @@
-\documentclass[a4paper,oneside]{mwbk}
+\documentclass[a4paper,oneside,12pt]{mwbk}
 
 \usepackage{ucs}
 \usepackage[utf8x]{inputenc}
@@ -19,9 +19,23 @@
 \usepackage{epstopdf}
 
 \usepackage{minted}
-\newminted{python}{gobble=2,fontsize=\small}
-\newminted{text}{gobble=2,fontsize=\small}
-\newminted{xml}{gobble=2,fontsize=\small}
+\newminted{python}{gobble=2,fontsize=\small,baselinestretch=1.0,frame=single,xleftmargin=0.3cm,xrightmargin=0.3cm}
+\newminted{text}{gobble=2,fontsize=\small,baselinestretch=1.0}
+\newminted{xml}{gobble=2,fontsize=\small,baselinestretch=1.0}
+
+\usepackage{fullpage}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{15.2pt}
+\setlength{\headsep}{15pt}
+\setlength{\topmargin}{0pt}
+\setlength{\voffset}{-20pt}
+\setlength{\footskip}{40pt}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter. #1}{}} % nie robi wielkich liter w naglowkach
+\lhead{}
+\cfoot{}
+\rfoot{\thepage}
+\oddsidemargin=0.5cm
 
 \newcommand{\code}[1] {{\textbf{\texttt{#1}}}}
 \newcommand{\FIXME}[1] {
@@ -41,6 +55,7 @@
 
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{1ex}
+\linespread{1.3}
 
 \title{Praca Magisterska}
 \author{Krzysztof Rutka \and Tomasz Rydzyński}
