@@ -47,6 +47,7 @@ def build(bld):
     # i don't know how to copy those files to the build directory without this (-in) suffix
     bld(source='diagrams' + os.sep + 'intro-omnet-network-in.png', target='diagrams' + os.sep + 'intro-omnet-network.png', rule='cp ${SRC} ${TGT}')
     bld(source='diagrams' + os.sep + 'intro-omnet-histogram-in.png', target='diagrams' + os.sep + 'intro-omnet-histogram.png', rule='cp ${SRC} ${TGT}')
+    bld(source='diagrams' + os.sep + '435_simpsons_under_construction.JPG', target='diagrams' + os.sep + 'under-construction.jpg', rule='cp ${SRC} ${TGT}')
 
     bld.add_group()
 

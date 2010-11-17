@@ -11,7 +11,7 @@
 
 \usepackage{color}
 \usepackage{graphicx}
-\DeclareGraphicsExtensions{.eps,.png}
+\DeclareGraphicsExtensions{.eps,.png,.jpg}
 \graphicspath{{./diagrams/}}
 \usepackage{array}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
@@ -64,7 +64,45 @@
 
 \begin{document}
 
-\maketitle
+\begin{titlepage}
+
+\begin{center}
+
+% Upper part of the page
+\includegraphics[width=0.7\textwidth]{under-construction}\\[1cm]    
+
+\textsc{\LARGE Akademia Górniczo-Hutnicza}\\[1.5cm]
+
+\textsc{\Large przedstawia}\\[0.5cm]
+
+
+% Title
+{ \huge \bfseries Arete}\\[0.4cm]
+
+
+% Author and supervisor
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Author:}\\
+Krzysztof \textsc{Rutka} \\
+Tomasz \textsc{Rydzyński} \\
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Supervisor:} \\
+Dr.~inż.~Łukasz \textsc{Czekierda}
+\end{flushright}
+\end{minipage}
+
+\vfill
+
+% Bottom of the page
+{\large \today}
+
+\end{center}
+
+\end{titlepage}
 
 \setcounter{tocdepth}{1}
 \tableofcontents
