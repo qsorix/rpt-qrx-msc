@@ -19,7 +19,7 @@ danych. Na końcu przedstawiamy opcje linii poleceń programu \code{arete}.
 \section{Architektura}
 
 Arete Master zarządza wykonaniem testów przez moduły Arete Slave. Master
-posiada dwa kluczowe zadania. Pierwszym jest przetworzenie konfiguracji
+odpowiada za dwa kluczowe zadania. Pierwszym jest przetworzenie konfiguracji
 dostarczonej przez użytkownika w plany testów dla poszczególnych urządzeń
 biorących w nim udział. Drugie, to dostarczenie tych planów do poszczególnych
 urządzeń i kontrola wykonania testu.
@@ -38,7 +38,8 @@ podzielić na dwie części. Pierwsza, to implementacja frameworku, na którą
 użytkownik nie ma wpływu. Dostarcza ona takie mechanizmy jak wczytywanie plików
 konfiguracyjnych i analiza ich poprawności (komponent Configuration),
 sterowanie przebiegiem testu (komponent Controller) oraz przechowywanie wyników
-w bazie danych.
+w bazie danych. Program korzysta z bazy wyłącznie jako ujścia danych, sam
+niczego z niej nie odczytując.
 
 Pozostałe części architektury użytkownik może rozwijać i uzupełniać ich
 funkcjonalność w zależności od potrzeb wynikających z testów, jakie chce
@@ -50,7 +51,8 @@ Najważniejsze elementy, wymagane do poprawnego działania każdego testu, to
 wtyczki Frontend oraz Connection. Connection zestawia fizyczne połączenie ze
 zdalnym urządzeniem (np. tunel SSH), Frontend korzysta z tego połączenia i
 implementuje protokół komunikacyjny rozumiany przez drugą stronę (np. moduł
-Arete Slave).
+Arete Slave). Każdemu urządzeniu odpowiada jedna instancja wtyczek Frontend i
+Connection.
 
 Wtyczki Drivers na podstawie konfiguracji generują komendy dla zdalnych
 urządzeń. Przykładem może być driver, który na czas testu konfiguruje adresy IP
