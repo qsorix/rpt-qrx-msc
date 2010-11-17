@@ -19,10 +19,11 @@
 % automatic conversion from .eps to .pdf so pdflatex can be used
 \usepackage{epstopdf}
 
+\definecolor{codebg}{rgb}{0.95,0.95,0.95}
 \usepackage{minted}
-\newminted{python}{gobble=2,fontsize=\small,baselinestretch=1.0,frame=single,xleftmargin=0.3cm,xrightmargin=0.3cm}
-\newminted{text}{gobble=2,fontsize=\small,baselinestretch=1.0}
-\newminted{xml}{gobble=2,fontsize=\small,baselinestretch=1.0}
+\newminted{python}{gobble=2,fontsize=\small,baselinestretch=1.0,bgcolor=codebg}
+\newminted{text}{gobble=2,fontsize=\small,baselinestretch=1.0,bgcolor=codebg}
+\newminted{xml}{gobble=2,fontsize=\small,baselinestretch=1.0,bgcolor=codebg}
 
 \usepackage{fullpage}
 \usepackage{fancyhdr}
