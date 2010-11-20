@@ -36,6 +36,7 @@ def build(bld):
     dia('arete-slave-db', 'arete-slave-db', 'db')
 
     dia('arete-deploy', 'arete-deploy', 'deploy')
+    dia('arete-test-sequence', 'arete-test-sequence', 'seq')
 
     dia('arete-trigger', 'arete-nodes', 'nodes')
     dia('arete-trigger', 'arete-triggers', 'nodes,triggers')
