@@ -6,6 +6,7 @@ import SocketServer
 import logging
 import datetime
 import os
+import time
 
 try:
     import warnings
@@ -197,8 +198,23 @@ class Handler(SocketServer.StreamRequestHandler):
                             if type not in ['trigger', 'time']:
                                 self.send_ok()
                             if type == 'start':
+                                run_value = result
+
+                                print params['id']
+
+                                manager.setup_test(params['id'])
+                                now = time.time()
+
+                                tooLong = False
+
+                                if run_value < now:
+                                    logging.error("[ Test %s ] [ %s < %s ] Setup took too much time." % (params['id'], run_value, now))
+                                    tooLong = True
+
                                 manager.register_handler(params['id'], self.send_100)
-                                manager.start_tasks(parent_id, **params)
+                                if not tooLong:
+                                    manager.start_tasks(parent_id, **params)
+
                     line = self.receive()
                     if line == '':
                         raise socket.error

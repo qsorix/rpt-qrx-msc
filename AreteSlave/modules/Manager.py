@@ -149,7 +149,7 @@ class Manager:
             raise DatabaseError("[ Test %s ] Test doesn't exist." % (id))
         self._run_commands(Check.query.filter_by(test_id=id).all(), id)
 
-    def _setup_test(self, test_id):
+    def setup_test(self, test_id):
         self._run_commands(Setup.query.filter_by(test_id=test_id).all(), test_id)
 
     def start_test(self, parent_id, id, run, end):
@@ -157,12 +157,7 @@ class Manager:
             raise DatabaseError("[ Test %s ] Test doesn't exist." % (id))
 
         run_type, run_value = self._resolv_test_run(run)
-        
-        self._setup_test(id)
-        now = time.time()
-
-        if run_value < now:
-            raise SetupTooLongError("[ Test %s ] [ %s < %s ] Setup took too much time." % (id, run_value, now))
+        return run_value
  
     def start_tasks(self, parent_id, id, run, end):
         run_type, run_value = self._resolv_test_run(run)
