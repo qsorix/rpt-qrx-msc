@@ -3,13 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Arete's documentation!
-=================================
+Bogus
+======
 
-.. toctree::
-   :maxdepth: 2
+--MAGIC-START-TAG--
 
-Klasy konfiguracji
+Konfiguracja
 ===================
 
 Configuration
@@ -29,10 +28,11 @@ Model
 ------
 .. module:: config.Model
 
-#FIXME: schemat UML
-  - Host
-  - Interface (agregacja w Host)
-  - Link (Klasa powiązania na połączeniu Interface-Interface)
+..
+        #FIXME: schemat UML
+          - Host
+          - Interface (agregacja w Host)
+          - Link (Klasa powiązania na połączeniu Interface-Interface)
 
 .. autoclass:: config.Model.Model
    :members:
@@ -60,9 +60,10 @@ Laboratory
 -----------
 .. module:: config.Laboratory
 
-#FIXME: schemat UML
-  - Device
-  - Interface (agregacja w Device)
+..
+        #FIXME: schemat UML
+          - Device
+          - Interface (agregacja w Device)
 
 .. autoclass:: config.Laboratory.Laboratory
    :members:
@@ -79,7 +80,8 @@ Mapping
 --------
 .. module:: config.Mapping
 
-#FIXME: schemat UML ?
+..
+        #FIXME: schemat UML ?
 
 .. autoclass:: config.Mapping.Mapping
    :members:
@@ -112,10 +114,4 @@ Klasy wykonawcze
 .. automodule:: common.Hooks
    :members:
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+--MAGIC-END-TAG--

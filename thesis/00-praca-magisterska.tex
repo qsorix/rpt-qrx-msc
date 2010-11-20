@@ -1,12 +1,15 @@
 \documentclass[a4paper,oneside,12pt]{mwbk}
 
 \usepackage{setspace}
-\usepackage{ucs}
 \usepackage[utf8x]{inputenc}
 \usepackage{polski}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{url}
+%\usepackage[pdfborder={0 0 0}]{hyperref}
+%\usepackage{hypcap}
+\usepackage{sphinx}
+\usepackage{ucs}
 
 \usepackage{subfiles}
 
@@ -40,7 +43,7 @@
 \rfoot{\thepage}
 \oddsidemargin=0.5cm
 
-\newcommand{\code}[1] {{\textbf{\texttt{#1}}}}
+%\newcommand{\code}[1] {{\textbf{\texttt{#1}}}}
 \newcommand{\FIXME}[1] {
   \vspace{0.2cm}
   \noindent\ignorespaces\fcolorbox{black}{red}{
@@ -110,7 +113,7 @@ Dr~inż.~Łukasz \textsc{Czekierda}
 
 \subfile{01-przedmowa}
 
-\begin{spacing}{0.7}
+\begin{spacing}{0.9}
 \tableofcontents
 \end{spacing}
 
@@ -125,6 +128,7 @@ Dr~inż.~Łukasz \textsc{Czekierda}
 
 \appendix
 \subfile{a1-skroty}
+\subfile{a2-reference}
 
 \backmatter
 \subfile{b-bibliografia}
