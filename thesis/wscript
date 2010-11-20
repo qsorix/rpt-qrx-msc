@@ -35,10 +35,10 @@ def build(bld):
     dia('arete-slave-arch', 'arete-slave-arch', 'arch')
     dia('arete-slave-db', 'arete-slave-db', 'db')
 
-    dia('arete-arch', 'arete-arch', 'arch')
+    dia('arete-deploy', 'arete-deploy', 'deploy')
 
-    dia('arete-architecture', 'arete-architecture', 'nodes')
-    dia('arete-architecture', 'arete-architecture-triggers', 'nodes,triggers')
+    dia('arete-trigger', 'arete-nodes', 'nodes')
+    dia('arete-trigger', 'arete-triggers', 'nodes,triggers')
 
     dia('example-01-sequence', 'example-01-sequence', 'seq')
     dia('example-02-sequence', 'example-02-sequence', 'seq')
