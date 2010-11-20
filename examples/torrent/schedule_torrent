@@ -8,24 +8,24 @@ test_end_policy('complete', setup_phase_delay=0.0)
 # east[0] will be seeding. All other hosts just download
 
 torrent = add_resource(File('torrent', 'big-data-file.torrent'))
-data    = add_resource(File('big-data-file',    'big-data-file'))
-trackcfg = add_resource(File('trackcfg', 'xbt_tracker.conf'))
+data    = add_resource(File('torrent-file', 'big-data-file'))
+trackcfg = add_resource(File('tracker-cfg', 'xbt_tracker.conf'))
 
 # there are W+E-1 downloading peers
 create_trigger('stop-torrent', len(west+east)-1)
 
 tracker_schedule = [
-    ('tracker', at(0), shell('xbt_tracker --conf_file @{trackcfg.path}', use_resources=[trackcfg])),
+    ('tracker', at(0), shell('xbt_tracker --conf_file @{tracker-cfg.name}', use_resources=[trackcfg])),
     ('stop-tracker', trigger('stop-torrent'), shell('kill @{tracker.pid}'))
 ]
 
 seed_schedule = [ 
-    ('ctorrent', at(1), shell('ctorrent -f "@{torrent.path}"', use_resources=[torrent, data])),
+    ('ctorrent', at(1), shell('ctorrent -f "@{torrent.name}"', use_resources=[torrent, data])),
     ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
 ]
 
 peer_schedule = [
-    ('ctorrent', at(2), shell('ctorrent "@{torrent.path}" -X @{poke stop-torrent}', use_resources=[torrent])),
+    ('ctorrent', at(2), shell('ctorrent "@{torrent.name}" -X @{poke stop-torrent}', use_resources=[torrent])),
     ('poke', poke('stop-torrent'), notify('stop-torrent')),
     ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
 ]
