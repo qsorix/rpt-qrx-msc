@@ -9,8 +9,8 @@ Welcome to Arete's documentation!
 .. toctree::
    :maxdepth: 2
 
-Master
-=======
+Klasy konfiguracji
+===================
 
 Configuration
 --------------
@@ -96,6 +96,20 @@ Schedule
 Global
 -------
 .. automodule:: config.Global
+   :members:
+
+Klasy wykonawcze
+=================
+.. automodule:: command.DriverPlugin
+   :members:
+
+.. automodule:: controller.ConnectionPlugin
+   :members:
+
+.. automodule:: controller.FrontendPlugin
+   :members:
+
+.. automodule:: common.Hooks
    :members:
 
 Indices and tables

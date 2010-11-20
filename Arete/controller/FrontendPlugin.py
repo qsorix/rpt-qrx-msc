@@ -5,34 +5,71 @@ from common.PluginMount import PluginMount
 
 class FrontendPlugin:
     """
-    Mount point for plugins which implement frontends
+    Klasa bazowa dla wtyczek typu Frontend. Dziedziczenie z tej klasy powoduje
+    automatyczną rejestrację wtyczki.
 
-    Plugins implementing this reference should provide the following attributes:
+
+    Wtyczki implementujące ten interfejs mają udostępniać wartości następujących atrybutów:
 
     =================  =======================================================
-    frontend_type      String naming frontend type for this plugin. This will
-                       be matched agains network host's frontend attribute.
+    frontend_type      Napis określający typu frontendu implementowanego przez
+                       wtyczkę. Zostanie on dopasowany do atrybutu 'frontend'
+                       urządzenia konfigurowanego w laboratorium.
+                      
 
-    needed_attributes  List of attributes that must be set for a device if
-                       this frontend is to be used. Will revoke configurations
-                       without those attributes set.
-                       Defaults to [].
+    needed_attributes  Lista atrybutów, które mają być określone dla urządzenia, aby
+                       działanie wtyczki było poprawne. Framework odrzuci konfigurację
+                       jeżeli wymienione tu atrybuty nie zostanę określone.
+
+                       Domyślnie [].
     =================  =======================================================
 
-    and reimplement methods:
-        FIXME: describe them better
-    ====================
-    start_sanity_check
-    wait_sanity_check
-    deploy_configuration
-    start_test
-    check_test_end
-      nonblocking call. returns true if the test has finished
-      can receive trigger notifications
-    fetch_results
-    abort_test
-    trigger(name) - send trigger event to slave
-    ====================
+    .. method:: deply_configuration()
+
+       Prześlij konfigurację na kontrolowane urządzenie.
+
+    .. method:: start_sanity_check()
+
+       Prześlij do kontrolowanego urządzenia rozkaz rozpoczęcia sprawdzania
+       poprawności konfiguracji. Metoda powinna wrócić natychmiast.
+
+       Opcjonalnym zachowaniem jest implementacja w tej metodzie synchronizacji
+       czasu z kontrolowanym urządzeniem. Z obliczonej różnicy czasowej należy
+       potem skorzystać w momencie uruchamiania testu.
+
+    .. method:: wait_sanity_check()
+
+       Zaczekaj aż kontrolowane urządzenie zakończy sprawdzania poprawności
+       konfiguracji. W przypadku stwierdzenia nieprawidłowości zgłoszone ma to
+       być wyjątkiem typu `Exceptions.SanityError`.
+
+    .. method:: start_test(duration_policy)
+
+       Rozpocznij wykonywać test. Przekazany obiekt `duration_policy`
+       udostępnia metody `start()` oraz `end_policy()` określające godzinę
+       rozpoczęcia testu oraz sposób jego zakończenia określony w konfiguracji.
+
+    .. method:: check_test_end()
+
+       Wykonywane periodycznie w czasie trwania testu aż do momentu, kiedy
+       zwróci `True`. Jeżeli frontend utrzymuje połączenie z kontrolowanym
+       urządzeniem, w metodzie tej może dokonywać komunikacji, pod warunkiem,
+       że wykonanie metody nie będzie miało charakteru blokującego.
+
+    .. method:: fetch_results()
+
+       Pobierz wyniki testu. Uruchamiane po zakończeniu testu na wszystkich
+       urządzeniach.
+
+    .. method:: abort_test()
+
+       Jeżeli któryś z frontendów zgłosi błąd, metoda ta jest wykonywana na
+       wszystkich frontendach, dając im możliwość przerwania wykonywanego
+       testu.
+
+    .. method:: trigger(name)
+
+       Przekaż urządzeniu, że wyzwalacz o nazwie `name` został aktywowany.
     """
 
     needed_attributes = []

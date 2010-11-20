@@ -5,28 +5,50 @@ from common.PluginMount import PluginMount
 
 class ConnectionPlugin:
     """
-    Mount point for plugins which can be used to connect with other hosts
+    Klasa bazowa dla wtyczek typu Connection, służących do zestawiania połączeń
+    z urządzeniami.
 
-    Plugins implementing this reference should provide the following attributes:
+    Wtyczki implementujące ten interfejs muszą definiować wartości atrybutów:
 
     =================  =======================================================
-    connection_type    String naming connection type a plugin can handle. This
-                       will be matched agains network host's connection
-                       attribute.
+    connection_type    String pozwalający w konfiguracji laboratorium
+                       jednoznacznie wybrać daną wtyczkę, używając atrybutu
+                       'connection' urządzenia.
 
-    needed_attributes  List of attributes that must be set for a device if
-                       this connection is to be used. Will revoke
-                       configurations without those attributes set.
-                       Defaults to [].
+    needed_attributes  List atrybutów, które maja być określone dla urządzenia
+                       korzystającego z danej wtyczki. Framework odrzuci
+                       konfigurację, w której atrybuty nie będą występować.
+
+                       Domyślnie [].
     =================  =======================================================
 
-    And methods FIXME: describe
-        connect()
-        disconnect()
-        setblocking(bool)
-        input()
-        output()
-        __init__(host)
+    W czasie tworzenia obiektu, konstruktor otrzymuje host, na rzecz którego
+    będzie używana dana instacja. Połączenie ma być nawiązywane korzystając
+    parametrów określanych przez atrybuty odwzorowanego urządzenia.
+
+    .. method:: connect()
+
+       Zestaw połączenie.
+
+    .. method:: disconnect()
+
+       Zamknij połączenie.
+
+    .. method:: setblocking(blocking)
+
+       Ustaw flagę określającą blokujący (lub nie, w przypadku przekazania
+       wartości `False`) tryb czytania. Jeśli wyłączono tryb blokowania,
+       wykonywanie metod `input` lub `output` ma natychmiast wracać.
+
+    .. method:: input()
+
+       Zwróć obiekt posiadający interfejs analogiczny do `file` i umożliwiający
+       czytanie.
+
+    .. method:: output()
+
+       Zwróć obiekt posiadający interfejs analogiczny do `file` i umożliwiający
+       pisanie.
     """
     needed_attributes = []
 

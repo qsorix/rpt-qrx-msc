@@ -5,40 +5,53 @@ from common.PluginMount import PluginMount
 
 class HostDriverPlugin:
     """
-    Moint point for plugins implementing host drivers.
+    Klasa bazowa dla wtyczek sterowników parametrów hosta. Dziedziczenie z niej
+    powoduje automatyczną rejestrację wtyczki.
 
-    Host driver is an object that renders model host's attributes into commands
-    to configure those attributes on a target host.
+    Sterownik parametrów hosta to wtyczka, która, na podstawie atrybutów
+    skonfigurowanych hostów, tworzy komendy, które w czasie wykonania
+    konfigurują środowisko urządzenia zgodnie z wartościami atrybutów.
 
-    Plugins implementing this interface should provide methods:
+    Wtyczka użytkownika musi udostępniać metodę:
 
-    process(self, cmd, host, attributes)
-        cmd        - instance of HostCommands for given host
-        host       - instance of Configuration.ConfiguredHost
-        attributes - set of hosts attributes that are left to process
+    .. method:: process(cmd, host, attributes)
 
-    process must remove handled attributes from the set
+      Zostanie uruchomiona dla każdego hosta z konfiguracji. Parametr
+      `attributes` jest zestawem atrybutów, które jeszcze nie zostały
+      obsłużone. Sterownik ma usuwać nazwy atrybutów, dla których stworzył
+      komendy.
+      
+      Parametr `cmd` to budowany obiekt
+      (:class:`~command.Generator.HostCommands`) zawierający komendy. Parametr
+      `host` typu :class:`~config.Configuration.ConfiguredHost`, umożliwia dostęp do
+      odwzorowanego urządzenia. 
     """
     __metaclass__ = PluginMount
 
 
 class InterfaceDriverPlugin:
     """
-    Moint point for plugins implementing host interface drivers.
+    Klasa bazowa dla wtyczek sterowników parametrów interfejsu. Dziedziczenie z
+    niej powoduje automatyczną rejestrację wtyczki.
 
-    Host interface driver is an object that renders model host's interface's
-    attributes into commands to configure those attributes on a binded
-    interface.
+    Sterownik parametrów interfejsu to wtyczka, która, na podstawie atrybutów
+    skonfigurowanego interfejsu, tworzy komendy, które w czasie wykonania konfigurują
+    środowisko urządzenia zgodnie z wartościami atrybutów.
 
-    Plugins implementing this interface should provide methods:
+    Wtyczka użytkownika musi udostępniać metodę:
 
-    process(self, cmd, host, attributes)
-        cmd        - instance of HostCommands for given host
-        host       - instance of Configuration.ConfiguredHost
-        interface  - the interface for which configuration is being prepared
-        attributes - set of hosts attributes that are left to process
+    .. method:: process(cmd, host, interface, attributes)
 
-    process must remove handled attributes from the set
+      Zostanie uruchomiona dla każdego interfejsu z konfiguracji. Parametr
+      `attributes` jest zestawem atrybutów, które jeszcze nie zostały
+      obsłużone. Sterownik ma usuwać nazwy atrybutów, dla których stworzył
+      komendy.
+      
+      Parametr `cmd` to budowany obiekt
+      (:class:`~command.Generator.HostCommands`) zawierający komendy. Parametr
+      `host` typu :class:`~config.Configuration.ConfiguredHost`, umożliwia dostęp do
+      odwzorowanego urządzenia. Natomiast parametr `interface` to interfejs dla
+      którego została uruchomiona metoda process.
     """
     __metaclass__ = PluginMount
 
