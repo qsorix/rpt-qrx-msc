@@ -10,17 +10,18 @@ class ConnectionPlugin:
 
     Wtyczki implementujące ten interfejs muszą definiować wartości atrybutów:
 
-    =================  =======================================================
-    connection_type    String pozwalający w konfiguracji laboratorium
-                       jednoznacznie wybrać daną wtyczkę, używając atrybutu
-                       'connection' urządzenia.
+    .. attribute:: connection_type
 
-    needed_attributes  List atrybutów, które maja być określone dla urządzenia
-                       korzystającego z danej wtyczki. Framework odrzuci
-                       konfigurację, w której atrybuty nie będą występować.
+        String pozwalający w konfiguracji laboratorium jednoznacznie wybrać
+        daną wtyczkę, używając atrybutu 'connection' urządzenia.
 
-                       Domyślnie [].
-    =================  =======================================================
+    .. attribute:: needed_attributes
+        
+        List atrybutów, które maja być określone dla urządzenia korzystającego
+        z danej wtyczki. Framework odrzuci konfigurację, w której atrybuty nie
+        będą występować.
+
+       Domyślnie [].
 
     W czasie tworzenia obiektu, konstruktor otrzymuje host, na rzecz którego
     będzie używana dana instacja. Połączenie ma być nawiązywane korzystając

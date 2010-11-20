@@ -11,18 +11,20 @@ class FrontendPlugin:
 
     Wtyczki implementujące ten interfejs mają udostępniać wartości następujących atrybutów:
 
-    =================  =======================================================
-    frontend_type      Napis określający typu frontendu implementowanego przez
-                       wtyczkę. Zostanie on dopasowany do atrybutu 'frontend'
-                       urządzenia konfigurowanego w laboratorium.
+    .. attribute:: frontend_type
+
+        Napis określający typu frontendu implementowanego przez wtyczkę.
+        Zostanie on dopasowany do atrybutu 'frontend' urządzenia
+        konfigurowanego w laboratorium.
                       
 
-    needed_attributes  Lista atrybutów, które mają być określone dla urządzenia, aby
-                       działanie wtyczki było poprawne. Framework odrzuci konfigurację
-                       jeżeli wymienione tu atrybuty nie zostanę określone.
+    .. attribute:: needed_attributes
 
-                       Domyślnie [].
-    =================  =======================================================
+        Lista atrybutów, które mają być określone dla urządzenia, aby działanie
+        wtyczki było poprawne. Framework odrzuci konfigurację jeżeli wymienione tu
+        atrybuty nie zostanę określone.
+
+       Domyślnie [].
 
     .. method:: deply_configuration()
 

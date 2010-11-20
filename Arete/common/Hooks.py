@@ -13,10 +13,9 @@ class HookPlugin:
 
     Imlementacja musi udostępniać wartość atrybutów:
 
-    ===========  ==========================================================
-    hook_name    Unikalny napis pozwalający na identyfikację i wybór danej
-                 wtyczki.
-    ===========  ==========================================================
+    .. attribute:: hook_name
+        
+        Unikalny napis pozwalający na identyfikację i wybór danej wtyczki.
 
     .. method:: visit_configured_test(configured_test)
 
