@@ -63,6 +63,7 @@
 \author{Krzysztof Rutka \and Tomasz Rydzyński}
 
 \begin{document}
+\frontmatter
 
 \begin{titlepage}
 
@@ -105,9 +106,13 @@ Dr~inż.~Łukasz \textsc{Czekierda}
 \end{titlepage}
 
 \setcounter{tocdepth}{1}
-\tableofcontents
 
 \subfile{01-przedmowa}
+
+\tableofcontents
+
+\mainmatter
+
 \subfile{02-wprowadzenie}
 \subfile{03-arete}
 \subfile{04-arete-master}
@@ -115,8 +120,10 @@ Dr~inż.~Łukasz \textsc{Czekierda}
 \subfile{06-przyklady}
 \subfile{07-podsumowanie}
 
+\appendix
 \subfile{a1-skroty}
 
+\backmatter
 \subfile{b-bibliografia}
 
 \end{document}
