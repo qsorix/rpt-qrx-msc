@@ -219,16 +219,16 @@ class Manager:
         self.clean_test(id)
 
     def _run_commands(self, commands, test_id):
-        test_dir = self.workdir + os.sep + test_id
-        if not os.path.isdir(test_dir):
-            os.mkdir(test_dir)
-        os.chdir(test_dir)
-
         for cmd in commands:
             if isinstance(cmd, Task) and cmd.cmd_type == 'notify':
                 self.notify_handlers[test_id](test_id, cmd.command)
             else:
                 try:
+                    test_dir = self.workdir + os.sep + test_id
+                    if not os.path.isdir(test_dir):
+                        os.mkdir(test_dir)
+                    os.chdir(test_dir)
+
                     command = str(cmd.command)
                     command = Scheduler.subst(command, test_id)
                     args = shlex.split(command)
@@ -241,8 +241,6 @@ class Manager:
                     Invocation(command=cmd, start_time=dt)
                     session.commit()
 
-                    os.chdir(os.pardir + os.sep + os.pardir)
-
                     raise DaemonError("[ Test %s ] Command '%s' failed." % (test_id, cmd.id))
                 else:
                     Invocation(command=cmd, output=p.stdout.read(), start_time=dt, duration=td, return_code=p.returncode)
@@ -251,7 +249,6 @@ class Manager:
                     if p.returncode != 0:
                         # For sanity_check and setup
                         raise CommandError("[ Test %s ] Command '%s' ended badly." % (test_id, cmd.id), cmd.id)
-        os.chdir(os.pardir + os.sep + os.pardir)
 
     def _resolv_test_run(self, run):
         run = run.split(' ')

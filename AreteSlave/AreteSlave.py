@@ -70,7 +70,8 @@ if __name__ == "__main__":
     port = 4567
     database = 'aretes.db'
     log = 'aretes.log'
-    workdir = 'tmp'
+    default_workdir = '/tmp/arete-slave-'
+    workdir = default_workdir + str(port)
     verbose = False
     new = False
     clean = False
@@ -87,6 +88,7 @@ if __name__ == "__main__":
         if check and config.has_section('Arete'):
             if config.has_option('Arete', 'port'):
                 port = config.getint('Arete', 'port')
+                workdir = default_workdir + str(port)
             if config.has_option('Arete', 'database'):
                 database = relative(config.get('Arete', 'database'))
             if config.has_option('Arete', 'log'):
@@ -112,6 +114,7 @@ if __name__ == "__main__":
     # arguments
     if args.port != None:
         port = args.port
+        workdir = default_workdir + str(port)
     if args.database != None:
         database = args.database
     if args.log != None:

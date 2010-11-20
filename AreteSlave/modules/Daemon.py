@@ -16,11 +16,14 @@ class Daemon:
     manager = Manager()
 
     def __init__(self, port, database, log, workdir, verbose, ssh=False, authorized_keys=None, host_key=None):
-        self._setup_database(database)
+        execdir = os.getcwd()
+
+        self._setup_database(execdir + os.sep + database)
 
         if not os.path.isdir(workdir):
             os.mkdir(workdir)
-        logging.basicConfig(filename=log, level=logging.DEBUG, format="%(asctime)s %(levelname)s: %(message)s")
+        logging.basicConfig(filename=execdir + os.sep + log, level=logging.DEBUG, \
+            format="%(asctime)s %(levelname)s: %(message)s")
         if verbose:
             logger = logging.getLogger()
             logger.addHandler(logging.StreamHandler())

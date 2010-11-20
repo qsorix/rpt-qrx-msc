@@ -137,8 +137,7 @@ class Scheduler:
     def _shell_command_execution(self, task_id):
         dt = datetime.now()
 
-        cmd_type = str(Command.get_by(test_id=self.test_id, id=task_id)\
-            .cmd_type)
+        cmd_type = str(Command.get_by(test_id=self.test_id, id=task_id).cmd_type)
         command = str(Command.get_by(test_id=self.test_id, id=task_id).command)
 
         if cmd_type == 'shell':
@@ -171,14 +170,12 @@ class Scheduler:
                 Invocation(command=Command.get_by(test_id=self.test_id, \
                     id=task_id), start_time=dt)
                 session.commit()
-                os.chdir(os.pardir + os.sep + os.pardir)
             else:
                 Invocation(\
                     command=Command.get_by(test_id=self.test_id, \
                         id=task_id), output=p.stdout.read(), start_time=dt, \
                         duration=td, return_code=p.returncode)
                 session.commit()
-                os.chdir(os.pardir + os.sep + os.pardir)
 
         elif cmd_type == 'notify':
             from modules.Daemon import Daemon
@@ -227,7 +224,7 @@ class Scheduler:
                 if ref[0].startswith('poke') and len(ref[0].split(' ')) is 2:
                     from modules.Daemon import Daemon
                     manager = Daemon.get_manager()
-                    return '"python ./modules/Poker.py %s %s %s"' \
+                    return '"arete-poker %s %s %s"' \
                         % (test_id, ref[0].split(' ')[1], str(manager.port))
 
             raise ResolvError("[ Test %s ] Cannot resolve '%s'." \
