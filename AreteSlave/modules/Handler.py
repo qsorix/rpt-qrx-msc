@@ -146,13 +146,13 @@ class Handler(SocketServer.StreamRequestHandler):
                             parent = None
                             parent_id = None
                         if type == 'test_file':
-                            path = result[0]
+                            name = result[0]
                             size = result[1]
                             copied = 0
                             test_dir = manager.workdir + os.sep + parent_id
                             if not os.path.isdir(test_dir):
                                 os.mkdir(test_dir)
-                            with open(test_dir + os.sep + path, 'wb') as f:
+                            with open(test_dir + os.sep + name, 'wb') as f:
                                 while copied < size:
                                     read = min(size - copied, 1000000)
                                     f.write(self.rfile.read(read))

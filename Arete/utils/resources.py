@@ -9,14 +9,19 @@ import inspect
 
 class File(Resources.Resource):
     """
-    Constructs resource representing specified *name*
+    Constructs resource representing specified *id*
 
-    :param name: name for this resource
+    :param id: id for this resource
     :param path: path of the file
+    :param name: name for this resource
     :param chmod: if passed, chmod will be called with given value
     """
-    def __init__(self, name, path, chmod=None):
-        self.rename(name)
+    def __init__(self, id, path, name=None, chmod=None):
+        self.rename(id)
+        if name is None:
+            self._name = os.path.basename(path)
+        else:
+            self._name = name
         self._chmod = chmod
 
         try:
@@ -50,7 +55,8 @@ class File(Resources.Resource):
 
     def transfer_with_arete_slave(self, frontend):
         with open(self._path, 'rb') as file:
-            frontend.output().write('file @{id=%(id)s} @{size=%(size)s}\n' % {'id':self['name'], 'size':self._size})
+            frontend.output().write('file @{id=%(id)s} @{size=%(size)s} @{name=%(name)s}\n' \
+                % {'id':self['name'], 'size':self._size, 'name':self._name})
             try:
                 while True:
                     READ_SIZE = 1000000
@@ -71,7 +77,7 @@ class File(Resources.Resource):
         """
         if self._chmod:
             cmd.add_check_unique('which chmod')
-            cmd.add_setup('chmod ' + self._chmod + ' @{' + self['name'] + '.path}')
+            cmd.add_setup('chmod ' + self._chmod + ' @{' + self['name'] + '.name}')
 
 # FIXME: just a test of generate_commands. not production ready
 class TarBall(File):

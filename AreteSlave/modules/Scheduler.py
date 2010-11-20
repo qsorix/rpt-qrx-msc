@@ -220,7 +220,7 @@ class Scheduler:
                     file = File.get_by(test_id=test_id, id=unicode(id))
                     param_map = {}
                     param_map['size'] = file.size
-                    param_map['path'] = file.path
+                    param_map['name'] = file.name
                     if param in param_map.keys():
                         return str(param_map[param])
             elif len(ref) is 1:

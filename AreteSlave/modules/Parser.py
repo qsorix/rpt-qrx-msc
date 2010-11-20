@@ -18,7 +18,7 @@ digit_types       = ['size']
 start_run_types   = ['run']
 task_run_types    = ['run']
 
-file_required     = ['size']
+file_required     = ['size', 'name']
 task_required     = ['run', 'type']
 start_required    = ['run', 'end']
 trigger_required  = ['name']

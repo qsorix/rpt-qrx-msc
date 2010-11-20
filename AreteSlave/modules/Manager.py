@@ -61,20 +61,19 @@ class Manager:
         Clean(test_id=test_id, id=id, command=command)
         session.commit()
 
-    def add_file(self, test_id, id, size):
+    def add_file(self, test_id, id, size, name):
         if self._id_exists(test_id, id):
             raise DatabaseError("[ Test %s ] File or command named '%s' already exists." % (test_id, id))
-        path = id
-        File(test_id=test_id, id=id, size=size, path=path)
+        File(test_id=test_id, id=id, size=size, name=name)
         session.commit()
-        return (path, size)
+        return (name, size)
 
     def delete_command_or_file(self, test_id, id):
         if not Command.get_by(test_id=test_id, id=id):
             if not File.get_by(test_id=test_id, id=id):
                 raise DatabaseError("[ Test %s ] Command or file named '%s' doesn't exist." % (test_id, id))
             else:
-                os.remove(file.path)
+                os.remove(file.name)
                 session.delete(file)
         else:
             session.delete(cmd)

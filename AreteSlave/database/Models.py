@@ -6,7 +6,7 @@ from elixir import *
 class Test(Entity):
     using_options(tablename='tests')
 
-    id = Field(Unicode(128), required=True, primary_key=True)
+    id = Field(Unicode, required=True, primary_key=True)
     start_time = Field(DateTime, default=None, required=False)
     duration = Field(Integer, default=None, required=False)
 
@@ -19,9 +19,9 @@ class Test(Entity):
 class File(Entity):
     using_options(tablename='files')
 
-    id = Field(Unicode(128), required=True, primary_key=True)
+    id = Field(Unicode, required=True, primary_key=True)
     size = Field(Integer, required=True)
-    path = Field(Unicode(128), default=None)
+    name = Field(Unicode, required=True)
 
     test = ManyToOne('Test', primary_key=True)
 
@@ -33,7 +33,7 @@ class Invocation(Entity):
 
     command = ManyToOne('Command')
 
-    output = Field(Binary, default=None)
+    output = Field(LargeBinary, default=None)
     start_time = Field(DateTime, required=True)
     duration = Field(Interval, default=None)
     return_code = Field(Integer, default=None)
@@ -44,8 +44,8 @@ class Invocation(Entity):
 class Command(Entity):
     using_options(tablename='commands')
 
-    id = Field(Unicode(128), required=True, primary_key=True)
-    command = Field(Unicode(128), required=True)
+    id = Field(Unicode, required=True, primary_key=True)
+    command = Field(Unicode, required=True)
 
     test = ManyToOne('Test', primary_key=True)
     invocations = OneToMany('Invocation')
@@ -68,8 +68,8 @@ class Setup(Command):
 class Task(Command):
     using_options(inheritance='multi', tablename='tasks')
 
-    run = Field(Unicode(128), required=True)
-    cmd_type = Field(Unicode(128), required=True)
+    run = Field(Unicode, required=True)
+    cmd_type = Field(Unicode, required=True)
     pid = Field(Integer, default=None)
     
     def __repr__(self):
