@@ -40,8 +40,8 @@ try:
 except:
     has_ssh_support = False
 
-from modules.Parser import parse
-from common.Exceptions import *
+from AreteSlave.modules.Parser import parse
+from AreteSlave.common.Exceptions import *
 
 class Handler(SocketServer.StreamRequestHandler):
     def setup(self):
@@ -87,7 +87,7 @@ class Handler(SocketServer.StreamRequestHandler):
 
 
     def handle(self):
-        from modules.Daemon import Daemon
+        from AreteSlave.modules.Daemon import Daemon
         manager = Daemon.get_manager()
 
         try:

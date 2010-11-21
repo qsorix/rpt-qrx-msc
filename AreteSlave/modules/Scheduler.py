@@ -12,8 +12,8 @@ import threading
 import os
 import signal
 
-from database.Models import *
-from common.Exceptions import ResolvError
+from AreteSlave.database.Models import *
+from AreteSlave.common.Exceptions import ResolvError
 
 class Scheduler:
     def __init__(self, test_id, start_time, condition=None, duration=None):
@@ -141,7 +141,7 @@ class Scheduler:
         command = str(Command.get_by(test_id=self.test_id, id=task_id).command)
 
         if cmd_type == 'shell':
-            from modules.Daemon import Daemon
+            from AreteSlave.modules.Daemon import Daemon
             manager = Daemon.get_manager()
             test_dir = manager.workdir + os.sep + self.test_id
             if not os.path.isdir(test_dir):
@@ -178,7 +178,7 @@ class Scheduler:
                 session.commit()
 
         elif cmd_type == 'notify':
-            from modules.Daemon import Daemon
+            from AreteSlave.modules.Daemon import Daemon
             manager = Daemon.get_manager()
             manager.notify_handlers[self.test_id](self.test_id, command)
 
@@ -222,7 +222,7 @@ class Scheduler:
                         return str(param_map[param])
             elif len(ref) is 1:
                 if ref[0].startswith('poke') and len(ref[0].split(' ')) is 2:
-                    from modules.Daemon import Daemon
+                    from AreteSlave.modules.Daemon import Daemon
                     manager = Daemon.get_manager()
                     return '"arete-poker %s %s %s"' \
                         % (test_id, ref[0].split(' ')[1], str(manager.port))

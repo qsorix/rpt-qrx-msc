@@ -12,9 +12,9 @@ import thread
 #import uuid
 from datetime import datetime
 
-from database.Models import *
-from modules.Scheduler import Scheduler
-from common.Exceptions import *
+from AreteSlave.database.Models import *
+from AreteSlave.modules.Scheduler import Scheduler
+from AreteSlave.common.Exceptions import *
 
 class Manager:
     def __init__(self):

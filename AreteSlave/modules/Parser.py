@@ -3,7 +3,7 @@
 
 import re
 
-from common.Exceptions import LineError, ParentError, TypeError, ParamError, ValueError
+from AreteSlave.common.Exceptions import LineError, ParentError, TypeError, ParamError, ValueError
 
 main_regex        = r'^(?P<type>\w+)(?P<parameters>( \@\{\w+\=[a-zA-Z0-9 -_\.]+\})*)(?P<command> .+)?\s*$'
 start_run_regex   = r'^(at\s[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6})$'

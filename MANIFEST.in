@@ -1,0 +1,3 @@
+include arete arete-slave arete-poker
+recursive-include AreteMaster *.py
+recursive-include AreteSlave *.py

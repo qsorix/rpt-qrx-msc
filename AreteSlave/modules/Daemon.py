@@ -6,8 +6,8 @@ import SocketServer
 import logging
 import signal
 
-from database.Models import *
-from modules.Manager import Manager
+from AreteSlave.database.Models import *
+from AreteSlave.modules.Manager import Manager
 
 class ThreadedTCPServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
     pass
@@ -28,7 +28,7 @@ class Daemon:
             logger = logging.getLogger()
             logger.addHandler(logging.StreamHandler())
         
-        from modules.Handler import Handler
+        from AreteSlave.modules.Handler import Handler
         SocketServer.TCPServer.allow_reuse_address = True
         self.tcp_server = ThreadedTCPServer(('', port), Handler)
         self.tcp_server.daemon_threads = True
