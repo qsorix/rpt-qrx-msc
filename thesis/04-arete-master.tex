@@ -2,6 +2,7 @@
 
 \begin{document}
 
+\label{arete-master}
 \chapter{Moduł Master}
 
 Prezentujemy tutaj szczegółowy opis modułu Master. Jest to moduł zarządzający
@@ -16,6 +17,7 @@ wykonawczej modułu i możliwości rozbudowy jego funkcjonalności poprzez włas
 wtyczki. Następnie opisujemy sposób przechowywania wyników testu w bazie
 danych. Na końcu przedstawiamy opcje linii poleceń programu \code{arete}.
 
+\label{arete-master-arch}
 \section{Architektura}
 
 Arete Master zarządza wykonaniem testów przez moduły Arete Slave. Master
@@ -74,6 +76,7 @@ prostsze. Zainteresowanych odsyłamy do plików źródłowych w katalogu
 funkcjonalności tego komponentu, ponieważ wielu funkcji używamy w
 prezentowanych przykładach.
 
+\label{arete-master-config}
 \section{Konfiguracja}
 
 Cechą dobrze zaplanowanego testu jest możliwość przeprowadzania go
@@ -185,6 +188,7 @@ Ryzyko ogranicza fakt, że kod źródłowy programu jak i treść konfiguracji j
 zapisana w postaci tekstowej i można samodzielnie skontrolować akcje
 podejmowane przez uruchamiany kod.
 
+\label{arete-master-config-format}
 \subsection{Format konfiguracji}
 
 Aby zwiększyć szanse na ponowne wykorzystanie poprzednio definiowanych
@@ -224,6 +228,7 @@ W dalszej części opisujemy szczegółowo poszczególne fragmenty konfiguracji,
 ograniczając się jednak tylko do podstawowego interfejsu zapewnianego przez
 framework. \fixref{Odesłać do rozdziału z opisem toolsetów i pełnego API}
 
+\label{arete-master-config-model}
 \subsubsection{Model}
 
 Zadaniem modelu jest przedstawienie koncepcyjnej topologii sieci. W tym
@@ -324,6 +329,7 @@ Ostatecznie otrzymujemy konfigurację, która odpowiada diagramowi \ref{fig:konf
 \label{fig:konfiguracja-model}
 \end{figure}
 
+\label{arete-master-config-lab}
 \subsubsection{Laboratorium}
 
 Laboratorium prezentuje zestaw dostępnych urządzeń i sposób, w jaki można się
@@ -410,6 +416,7 @@ miałoby to sensu ponieważ połączenia te muszą istnieć w rzeczywistości.
 Wykonuje je użytkownik wpinając odpowiednie kable i nie ma możliwości zmiany
 połączeń z poziomu oprogramowania.
 
+\label{arete-master-config-mapping}
 \subsubsection{Odwzorowanie}
 
 Odwzorowanie to najprostsza część konfiguracji. Jej zadaniem jest przypisanie
@@ -452,6 +459,7 @@ przeciwnym razie framework odmówi działania, ponieważ koncepcyjnemu urządzen
 nie będzie odpowiadać żadna realizacja sprzętowa, na której można by wykonać
 zadane akcje.
 
+\label{arete-master-config-plan}
 \subsubsection{Plan}
 
 Trzy poprzednie części konfiguracji opisywały test od strony sprzętowej --
@@ -541,6 +549,7 @@ Inne przykłady definicji planów można znaleźć w rozdziale prezentującym
 przykładowe zastosowania \fixref{ref do rozdziału Przykłady}. Ich lektura
 pozwoli lepiej zrozumieć w jaki sposób wykorzystać dostępny interfejs.
 
+\label{arete-master-others}
 \subsubsection{Pozostałe}
 
 Aby umożliwić prosty mechanizm synchronizacji zadań na hostach wykonujących
@@ -608,6 +617,7 @@ Co zaowocowałoby przekazaniem do konfiguracji wartości \code{192.168.2.1} dla
 parametru \code{ip}, \code{2710} dla parametru \code{port} oraz nie
 wyświetlonej na ekranie wartości hasła dla parametru \code{password}.
 
+\label{arete-master-summary}
 \subsection{Podsumowanie}
 
 Zaprezentowany sposób konfiguracji dostarcza prostego interfejsu pozwalającego
@@ -1023,6 +1033,7 @@ zapisane są w tabeli \code{invocations}. Ponieważ niektóre komendy (jak np.
 \code{notify}) nie produkują żadnych wyników, wartości w kolumnach
 \code{output}, \code{duration} oraz \code{return\_code} mogą pozostać puste.
 
+\label{arete-master-run}
 \section{Uruchamianie}
 
 Program \code{arete} w celu poprawnej pracy wymaga podania argumentów
