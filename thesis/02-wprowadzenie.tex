@@ -213,7 +213,7 @@ spotyka się określenie ASN.1+ECN.
 \subsubsection{Przykład}
 
 Prezentujemy tutaj proste przykłady użycia ASN.1 oraz ASN.1+ECN. Zostały one
-pobrane z materiałów szkoleniowych dostępnych w internecie. \fixme{Link? Odesłanie do bibliografii?}
+pobrane z materiałów szkoleniowych dostępnych w internecie \cite{asn1-main,ecn-tutorial1,ecn-tutorial2,ecn-tutorial3}.
 
 Poniżej definiujemy prosty protokół składający się z jednego typu PDU:
 (\code{Message}). Wiadomość zbudowana jest z identyfikatora oraz jej
@@ -337,7 +337,7 @@ przeprowadzania pierwszego rodzaju testów, badających poprawność PDU.
 
 TTCN-3 (Testing \& Test Control Notation v.~3) to język skryptowy stworzony i
 rozwijany przez grupę TC-MTS (Methods for Testing and Specification Technical
-Committee) w ramach ETSI.
+Committee) w ramach ETSI \cite{ttcn-main}.
 
 Język swoimi korzeniami (TTCN-2) sięga do lat 80 minionego wieku. Wersja 3
 została zaprojektowana z myślą o tych samych zastosowaniach, korzystając z wielu
@@ -376,7 +376,7 @@ by nie odpowiedział, czekalibyśmy w nieskończoność na wynik, wprowadzamy li
 czasowy równy jednej sekundzie.
 
 Poniżej prezentujemy przykład zaczerpnięty z materiałów szkoleniowych
-TTCN. \fixme{link? bibliografia?}
+TTCN \cite{ttcn-reference}.
 
 W teście tym definiujemy komponent \code{MainComponent} wyposażony w jeden port
 komunikacyjny oraz zegar, który użyty jest do implementacji limitu czasowego.
@@ -465,11 +465,11 @@ reguł, po czym obserwować jej efektywność.
 \subsection{OMNeT++}
 
 OMNeT++ to biblioteka i framework do tworzenia symulacji sieci. Użytkownik może korzystać z
-szerokiej gamy modułów oraz tworzyć własne. Środowisko to wspiera symulacje
-sterowane zdarzeniami przesyłanymi między występującymi w realizowanej sieci
-komponentami. Istnieje szereg narzędzi zbudowanych na bazie środowiska OMNeT++,
-które zostały stworzone z myślą o konkretnych rodzajach sieci, jak np. OverSim
-będący symulatorem sieci peer2peer.
+szerokiej gamy modułów oraz tworzyć własne \cite{omnet-main}. Środowisko to
+wspiera symulacje sterowane zdarzeniami przesyłanymi między występującymi w
+realizowanej sieci komponentami. Istnieje szereg narzędzi zbudowanych na bazie
+środowiska OMNeT++, które zostały stworzone z myślą o konkretnych rodzajach
+sieci, jak np. OverSim będący symulatorem sieci peer2peer.
 
 \begin{figure}
 \begin{center}
@@ -496,7 +496,8 @@ operacyjnym. Tego typu realizacje są możliwe, ale działają niewydajnie.
 \subsubsection{Przykład}
 
 Pełna konfiguracja testu dla środowiska OMNeT++ jest zbyt złożona, żeby ją tu w
-całości przytaczać. Prezentujemy tylko wybrane fragmenty.
+całości przytaczać. Prezentujemy tylko wybrane fragmenty, bazując na
+materiałach szkoleniowych dostepych w \cite{omnet-doc}.
 
 Podstawowe moduły, tj. takie, których działanie programuje użytkownik,
 definiowane są dyrektywą \code{simple}. Poniżej przykład komponentu o nazwie
