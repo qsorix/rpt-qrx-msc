@@ -381,20 +381,19 @@ Funkcja \code{add\_device} zachowuje się analogicznie do \code{add\_host}.
 Pierwszy, obowiązkow parametr to nazwa urządzenia. Framework wymaga
 zdefiniowania kilku dodatkowych atrybutów:
 \begin{itemize}
-\item \code{connection} -- określa, z którego pluginu korzystać w celu
+\item \code{connection} -- określa, z której wtyczki korzystać w celu
 nawiązania komunikacji z danym urządzeniem,
-\item \code{frontend} -- mówi, która wtyczka\footnote{ang. plugin} określa
-sposób w jaki przebiega komunikacja z danym urządzeniem (protokół przesyłanych
-komunikatów).
+\item \code{frontend} -- mówi, która wtyczka określa sposób w jaki przebiega
+komunikacja z danym urządzeniem (protokół przesyłanych komunikatów).
 \end{itemize}
 
 Więcej na temat wtyczek piszemy w rozdziale \fixref{referencja do rozdziału o
 wtyczkach}.
 
 Framework nie wymaga podawania parametrów \code{ip} oraz \code{port}. Są to
-atrybuty, z których korzysta plugin \code{tcp} i w przypadku ich braku,
+atrybuty, z których korzysta wtyczka \code{tcp} i w przypadku ich braku,
 zgłosiłby błąd w czasie przetwarzania konfiguracji. Opis wymaganych atrybutów
-znajduje się w dokumentacji każdego z pluginów.
+znajduje się w dokumentacji każdej z wtyczek.
 
 Sposób tworzenia interfejsów jest identyczny jak w przypadku modelu. Ważne, aby
 nazwy odpowiadały rzeczywistym nazwom, jakich używa się na danej platformie do
@@ -645,7 +644,7 @@ przez moduł Master, frontend tłumaczy te rozkazy na protokół zrozumiały prz
 kontrolowane urządzenie i przesyła mu odpowiednie instrukcje.
 
 Sam sposób dostarczania rozkazów jest poza zasięgiem klas \code{FrontendPlugin}.
-Odpowiadają za to pluginy typu \code{ConnectionPlugin}. Frontend nie musi
+Odpowiadają za to wtyczki typu \code{ConnectionPlugin}. Frontend nie musi
 wiedzieć, że rozkazy przesłane będą połączeniem TCP, wystarczy, że od niższej
 warstwy otrzyma interfejs do wysyłania i odbierania danych. Więcej informacji o
 interfejsie \code{ConnectionPlugin} dostępnych jest w dalszej części tego
@@ -749,7 +748,7 @@ Najprostszym przykładem takiego połączenia może być połączenie TCP. Nieco
 trudniejszy technicznie, choć koncepcyjnie identyczny, jest tunel SSH.
 Najważniejsze, żeby możliwe było wysyłanie i odbiór danych.
 
-We frameworku Arete połączenia modelowane są przez pluginy implementujące
+We frameworku Arete połączenia modelowane są przez wtyczki implementujące
 interfejs \code{ConnectionPlugin}. Jedyne zadanie tego interfejsu to
 dostarczanie i odbiór danych z kontrolującego go Frontendu. Otrzymuje on także
 pomocnicze rozkazy określające moment, w którym można nawiązać fizyczne

@@ -198,22 +198,6 @@ slave\footnote{Jak np.~większość routerów sprzętowych}, użytkownik ma moż
 dostarczenia własnej wtyczki, dzięki której wciąż będzie można przeprowadzić
 test. Więcej na ten temat w rozdziale \fixref{o wtyczkach typu FrontendPlugin}.
 
-% FIXME: To jest przykład sytuacji, kiedy w teście występuje urządzenie bez
-% modułu Slave, i powoduje to, że jakiegoś rodzaju testu się nie da
-% przeprowadzić.
-%
-% Być może warto go przenieść do rozdziału o pluginach
-%
-% -----------------------------------------------------------------------------
-% Przykładowo załóżmy, że chcemy przeprowadzić test mierzący ilość pakietów
-% RIP\footnote{ang. Routing Information Protocol}, jakie routery wymieniają aby
-% zapewnić poprawne tablice routingu po awarii łącza. Po połączeniu z routerem
-% będziemy mieli możliwość wydania polecenia zatrzymującego wybrany interfejs.
-% Jeżeli jednak jest to jednocześnie interfejs, którym się z routerem
-% komunikujemy, a dane urządzenie nie będzie umożliwiać automatycznego
-% przywrócenia pracy interfejsu, stracimy nad nim kontrolę.
-% -----------------------------------------------------------------------------
-
 \paragraph{Synchronizacja urządzeń nie zmienia wskazań ich zegarów.}
 Najprostszym rozwiązaniem problemu synchronizacji byłoby wykorzystanie ogólnie
 dostępnego protokołu synchronizacji czasu (np.~NTP) do ustawienia czasu

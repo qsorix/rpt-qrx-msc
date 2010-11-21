@@ -16,8 +16,8 @@ class ConfiguredHost:
 
     Każdy obiekt odpowiada jednemu hostowi ze zdefiniowanego modelu. Nie
     powinieneś modyfikować udostępnianych wartości. Wyjątkiem jest sytuacja, w
-    której tworzysz plugin generujący komendy i obiekt tej klasy jest
-    argumentem metod pluginu.
+    której tworzysz wtyczkę generującą komendy i obiekt tej klasy jest
+    argumentem metod wtyczki.
 
     Zależnie od stadium przetwarzania, nie wszystkie atrybuty będą wypełnione.
 
@@ -54,7 +54,7 @@ class ConfiguredTest:
     """ Pełna konfiguracja testu.
 
     Obiekt gromadzi całą wiedzę o teście odczytaną z plików konfiguracyjnych
-    oraz komendy wygenerowane przez uruchomione pluginy.
+    oraz komendy wygenerowane przez uruchomione wtyczki.
 
     Zależnie od stadium przetwarzania, nie wszystkie atrybuty będą wypełnione.
 
