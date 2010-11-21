@@ -36,11 +36,11 @@ class Mapping(NamedMixin):
         self.bindings().add(b)
 
     def bindings(self):
-        """Zwróć zdefiniowane powiązania."""
+        """Zwróć zdefiniowane odwzorowania."""
         return self._bindings
 
     def clear(self):
-        """Usuń zdefiniowane powiązania."""
+        """Usuń zdefiniowane odwzorowania."""
         for (a, b) in self._bindings:
             a.unbind()
             b.unbind()

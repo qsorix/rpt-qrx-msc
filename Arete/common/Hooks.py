@@ -11,7 +11,7 @@ class HookPlugin:
     które z wtyczek Hook należy wykonać.
 
 
-    Imlementacja musi udostępniać wartość atrybutów:
+    Implementacja musi udostępniać wartość atrybutów:
 
     .. attribute:: hook_name
         

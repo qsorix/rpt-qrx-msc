@@ -47,15 +47,15 @@ class BindableMixin:
     def bind(self, bindable):
         """Powiąż z przekazanym obiektem.
 
-        Aby nie naruszyć poprawności modelu, powinieneś powiązywać obiekty
-        modelu z obiektami laboratorium: hosty z urządzeniami i odpowiadające
+        Aby nie naruszyć poprawności modelu, powinieneś odwzorowywać obiekty
+        modelu na obiekty laboratorium: hosty z urządzeniami i odpowiadające
         sobie interfejsy.
         
         """
         self._bound_with = bindable
 
     def bound(self):
-        """Zwróć powiązany obiekt.
+        """Zwróć odwzorowany obiekt.
 
         Zwraca ``None`` jeśli żaden obiekt nie został związany.
 
@@ -66,7 +66,7 @@ class BindableMixin:
             return None
 
     def unbind(self):
-        """Usuń powiązanie."""
+        """Usuń odwzorowanie."""
         self._bound_with = None
 
 class InterfacesMixin:

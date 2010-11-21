@@ -27,8 +27,8 @@ class ConfiguredHost:
 
     .. attribute:: device
 
-       Urządzenie (:class:`~config.Laboratory.Device`), które zostało zmapowane
-       z tym hostem.
+       Urządzenie (:class:`~config.Laboratory.Device`), które zostało odwzorowane
+       dla tego hosta.
 
     .. attribute:: schedule
 
@@ -140,7 +140,7 @@ class ConfiguredTest:
 class Configuration:
     """ Odczytywanie konfiguracji.
 
-    Klasa implementuje metody pozwalajace odczytać konfigurację definiowana w plikach.
+    Klasa implementuje metody pozwalające odczytać konfigurację definiowana w plikach.
 
     """
     def __init__(self):
