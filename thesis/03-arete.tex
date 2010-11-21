@@ -308,45 +308,68 @@ im wymagania dotyczące zarówno funkcjonalności, jak i bezpieczeństwa.
 Rozpoczynając opis architektury powtórzmy jescze raz, że narzędzie Arete
 pracuje w sieci komputerowej. Wyróżniamy komputer kontrolujący test, na którym
 uruchomiony jest moduł Arete Master, oraz komputery uczestniczące w teście, na
-których uruchomiony jest moduł Arete Slave.
+których uruchomiony jest moduł Arete Slave, patrz rysunek \ref{fig:arete-arch}.
 
-Moduł Slave jest zaprojektowany jako demon pracujący przez cały czas. Master
-natomiast uruchamiany jest tylko na czas trwania testu. Możliwa jest sytuacja,
-w której moduł Slave zainstalowany jest na wszystkich komputerach w sieci.
-Możliwe jest także uruchomienie kilku jego instancji na jednym urządzeniu.
-Konfiguracja, w której moduł Master jest uruchomiany na urządzeniu, gdzie
-jednocześnie pracuje moduł Slave jest dopuszczalne i jak najbardziej
-prawidłowa.
-
-\begin{figure}[htb]
+\begin{figure}
 \begin{center}
 \leavevmode
 \includegraphics[width=0.6\textwidth]{arete-arch}
 \end{center}
-\caption{Architektura narzędzia Arete.}
+\caption{Architektura narzędzia Arete. Moduł kontrolujący -- Master, oraz
+moduły wykonawcze -- Slave.}
 \label{fig:arete-arch}
 \end{figure}
 
-\begin{figure}[htb]
-\begin{center}
-\leavevmode
-\includegraphics[width=0.7\textwidth]{arete-deploy}
-\end{center}
-\caption{Diagram wdrożenia narzędzia Arete.}
-\label{fig:arete-deploy}
-\end{figure}
+Konieczność wprowadzenia takiej architektury wynika wprost z wymagań.
+Uruchamianie złożonego planu testu i gromadzenie wyników wymaga programu --
+Slave, który te zadania przeprowadzi. Jednocześnie, niezależnie jaki sposób
+komunikacji wybierzemy, jeżeli test używa tej samej fizycznej infrastruktury
+sieci, może on wymagać, aby nasze narzędzie wstrzymało komunikację, więc
+programy muszą być uruchamiane lokalnie na urządzeniach. Wreszcie,
+nieporządane jest ręczne uruchamianie testu na kilku urządzeniach, potrzebny
+jest więc centralny moduł kontrolujący -- Master.
+
+Chociaż taka architektura wynika z chęci przeprowadzania testu na kilku
+urządzeniach, to jednocześnie nie odbiera ona możliwości pracy tylko na jednym.
+Możliwa jest zarówno sytuacja, w której moduł Slave zainstalowany jest na
+wielu komputerach w sieci, jak i uruchamienie kilku jego instancji na
+jednym urządzeniu. Konfiguracja, w której moduły Master i Slave są uruchomione
+na tym samym urządzeniu, także jest prawidłowa.
+
+Moduł Slave jest zaprojektowany jako demon pracujący przez cały czas. Master
+natomiast uruchamiany jest tylko na czas trwania testu.
 
 Na rysunku \ref{fig:arete-deploy} widać przykładowe rozmieszczenie urządzeń w
 sieci i ich rolę w czasie testu. W dalszej części pracy mowiąc o modułach
 Master i Slave, jeśli nie precyzujemy, na jakich urządzeniach są uruchomione,
 oznacza to, że fizyczna konfiguracja jest dowolna.
 
+\begin{figure}
+\begin{center}
+\leavevmode
+\includegraphics[width=0.7\textwidth]{arete-deploy}
+\end{center}
+\caption{Diagram wdrożenia narzędzia Arete w sieci komputerowej. Topologia
+sieci nie jest istotna, o ile tylko zapewnia ona poprawną komunikację między
+modułami Master i Slave.}
+\label{fig:arete-deploy}
+\end{figure}
+
 Architektura wewnętrzna modułów Master oraz Slave opisana jest w dwóch
-kolejnych rozdziałach. Opis instalacji przedstawiamy w
+kolejnych rozdziałach. Opis wdrożenia i instalacji narzędzia przedstawiamy w
 \fixref{rozdziale Instalacja}. Tutaj natomiast przedstawiamy w jaki sposób
 moduły te współpracują ze sobą, aby umożliwić przeprowadzenie testu.
 
-\begin{figure}[htb]
+Użytkownik rozpoczyna test uruchamiając moduł Master i przekazując mu zadaną
+konfigurację testową. Master analizuje otrzymaną konfigurację i przygotowuje
+plan działania dla poszczególnych urządzeń, tj. zestaw komend do wykonania oraz
+instrukcje o tym, kiedy je wykonać. Przygotowane plany są następnie przesyłane
+do modułów Slave i cały system jest gotowy do rozpoczęcia pracy.
+
+W celu spełnienia wymagań stawianych przed programem, wprowadziliśmy cztery
+fazy przeprowadzenia testu.
+
+\begin{figure}
 \begin{center}
 \leavevmode
 \includegraphics[width=0.7\textwidth]{arete-test-sequence-deploy}
@@ -355,7 +378,14 @@ moduły te współpracują ze sobą, aby umożliwić przeprowadzenie testu.
 \label{fig:arete-test-seq-deploy}
 \end{figure}
 
-\begin{figure}[htb]
+Faza pierwsza to sprawdzenie poprawności (rys.~\ref{fig:arete-test-seq-deploy}).
+Slave po otrzymaniu konfiguracji sprawdza, czy kontrolowane urządzenie jest w
+stanie przeprowadzić test. Faza ta ma na celu eliminację oczywistych błędów,
+które wystąpiłyby w czasie testu, a mogą być wcześnie i szybko wykryte.
+Przykładem możliwego kryterium poprawności jest dostępność programów dla
+wszystkich komend, które mają zostać wykonane.
+
+\begin{figure}
 \begin{center}
 \leavevmode
 \includegraphics[width=0.55\textwidth]{arete-test-sequence-test}
@@ -364,53 +394,28 @@ moduły te współpracują ze sobą, aby umożliwić przeprowadzenie testu.
 \label{fig:arete-test-seq-test}
 \end{figure}
 
-\begin{figure}[htb]
-\begin{center}
-\leavevmode
-\includegraphics[width=0.55\textwidth]{arete-test-sequence-trigger}
-\end{center}
-\caption{Przebieg testu. Mechanizm powiadomień.}
-\label{fig:arete-test-seq-trigger}
-\end{figure}
+Wykonanie komend z kolejnych faz testu (rys.~\ref{fig:arete-test-seq-test})
+może uniemożliwić dalszą wymianę informacji poprzez sieć, dlatego moduły Master
+i Slave mogą zamknąć połączenie po zakończeniu fazy testowej.
 
-\begin{figure}[htb]
-\begin{center}
-\leavevmode
-\includegraphics[width=0.55\textwidth]{arete-test-sequence-results}
-\end{center}
-\caption{Przebieg testu. Faza pobierania wyników.}
-\label{fig:arete-test-seq-results}
-\end{figure}
+Faza druga (oznaczona na rys.~\ref{fig:arete-test-seq-test} kolorem niebieskim)
+to konfiguracja urządzenia. Slave na tym etapie wykonuje komendy, które
+tymczasowo dostosują środowisko urządzenia do potrzeb testu. Możliwa jest tutaj
+np. instalacja reguł zapory ogniowej czy konfiguracja interfejsu sieciowego i
+właśnie z tego powodu kanał komunikacyjny między modułami Master i Slave
+zostaje wcześniej zamknięty. Dlatego też całość konfiguracji testu przesyłana
+jest wcześniej.
 
-Użytkownik rozpoczyna test uruchamiając moduł Master i przekazując mu zadaną
-konfigurację testową. Master analizuje otrzymaną konfigurację i przygotowuje
-plan działania dla poszczególnych urządzeń, a następnie przesyła im ją i
-koordynuje ich pracę.
+Jeżeli na etapie konfiguracji nie wystąpiły żadne błędy, Slave przechodzi do
+fazy wykonania testu (kolor czerwony na rys.~\ref{fig:arete-test-seq-test}), tj.
+wykonania tych komend, na których faktycznie zależy użytkownikowi. Jest to
+główna, zwykle najdłuższa faza testu.
 
-W celu spełnienia wymagań stawianych przed programem, wprowadziliśmy cztery
-fazy przeprowadzenia testu.
-
-Faza pierwsza to sprawdzenie poprawności. Slave po otrzymaniu konfiguracji
-sprawdza, czy kontrolowane urządzenie jest w stanie przeprowadzić test. Faza ta
-ma na celu eliminację oczywistych błędów, które wystąpiłyby w czasie testu, a
-mogą być wcześnie i szybko wykryte. Przykładem możliwego kryterium poprawności
-jest dostępność wszystkich komend, które mają zostać wykonane.
-
-Faza druga to konfiguracja urządzenia. Slave na tym etapie wykonuje komendy,
-które tymczasowo dostosują środowisko urządzenia do potrzeb testu. Możliwa jest
-tutaj np. instalacje reguł zapory ogniowej czy konfiguracja interfejsu
-sieciowego. Komendy te mogą uniemożliwić dalszą komunikację między modułami
-Master i Slave. Z tego też powodu całość konfiguracji testu przesyłana jest
-wcześniej.
-
-Jeżeli na etapie konfiguracji nie wystąpią żadne błędy, Slave przechodzi do
-fazy wykonania testu, tj. wykonania tych komend, na których faktycznie zależy
-użytkownikowi.
-
-Faza czwarta to przywrócenie konfiguracji. Wykonuje się ona zawsze, jeśli tylko
-test osiągnął fazę konfiguracji. Komendy zdefiniowane w tej fazie powinny
-przywrócić pierwotne środowisko pracy urządzenia, dzięki czemu moduł Master
-ponownie ma możliwość nawiązania połączenia i pobrania wyników.
+Faza czwarta (kolor zielony na rys.~\ref{fig:arete-test-seq-test}) to
+przywrócenie konfiguracji. Wykonuje się ona zawsze, jeśli tylko test osiągnął
+fazę konfiguracji. Komendy zdefiniowane w tej fazie powinny przywrócić
+pierwotne środowisko pracy urządzenia, dzięki czemu moduł Master ponownie ma
+możliwość nawiązania połączenia i pobrania wyników.
 
 Jak widać, istnieje możliwość, że moduł Master przez długi czas trwania testu
 będzie oczekiwał na jego zakończenie bez połączenia z modułem Slave. Jeśli test
@@ -419,8 +424,81 @@ błąd, test nie wykona się, ale Master dowie się o tym dopiero po godzinie.
 Dlatego właśnie wcześniej występuje faza sprawdzenia poprawności, w czasie
 której komunikacja jeszcze jest możliwa.
 
-Na koniec Master zgłasza się do każdego modułu Slave i pobiera zgromadzone
-wyniki wszystkich komend. Są one zapisywane w lokalnej bazie danych i stanowią
-wyjście programu -- wynik testu.
+\begin{figure}
+\begin{center}
+\leavevmode
+\includegraphics[width=0.55\textwidth]{arete-test-sequence-results}
+\end{center}
+\caption{Przebieg testu. Faza pobierania wyników.}
+\label{fig:arete-test-seq-results}
+\end{figure}
+
+Po zakończeniu wszystkich faz testu Master zgłasza się do każdego modułu Slave
+i pobiera zgromadzone wyniki wszystkich komend
+(rys.~\ref{fig:arete-test-seq-results}). Są one zapisywane w lokalnej bazie
+danych i stanowią wyjście programu -- wynik testu.
+
+Stwierdzenie, że test się zakończył nie jest zupełnie oczywiste. Zależnie od
+konfiguracji, moment ten wyznacza się w inny sposób, o czym pisaliśmy omawiając
+wymagania funkcjonalne programu. Dla testów, które mają się zakończyć na
+podstawie kooperatywnej decyzji uczestników (jak np. zakończenie testu po
+wykonaniu wszystkich komend na jednym z urządzeń) wprowadziliśmy pewien
+kompromis w założeniach. Testy takie mogą się wykonywać bez przerywania
+połączenia pomiędzy modułami Master i Slave, dzięki czemu Slave może powiadomić
+o tym, że zakończył pracę. Na rysunku \ref{fig:arete-test-seq-test} przedstawia
+to końcowy komunikat ,,test finished''. Nie jest on przesyłany przy braku
+połączenia -- w takich wypadkach test kończy się po upłynięciu zadanego w
+konfiguracji czasu.
+
+Problem zakończenia testu był na tyle złożony, że w celu jego rozwiązania
+wprowadziliśmy jeszcze jeden mechanizm (wymagający połączeniowego trybu
+przeprowadzania testu). Jest to mechanizm powiadomień, który z założenia służyć
+miał realizacji scenariusza, w którym test kończy się, kiedy zadana liczba
+uczestników wykona wszystkie komendy. Okazało się, że mechanizm jest na tyle
+uniwersalny, że można go wykorzystać także do przeprowadzania prostej
+synchronizacji w czasie trwania testu.
+
+Powiadomienia (rys.~\ref{fig:arete-test-seq-trigger}) pozwalają stworzyć
+licznik (wyzwalacz), który po otrzymaniu określonej liczby powiadomień,
+spowoduje wysłanie komunikatu do wszystkich uczestników testu. Wyzwalacze
+definiuje się w konfiguracji testu, o której szeroko piszemy w rozdziale
+\fixref{Moduł Master}. Licznik jest inicjowany wartością początkową i odlicza w
+dół. Komunikat wyzwolenia (aktywacji) wysyłany jest, kiedy osiągnie on zero.
+Nie jest narzucone, który Slave może wysyłać powiadomienia. Jeden Slave może
+też wysłać ich kilka.
+
+W omawianym przypadku zakończenia testu, wybrane urządzenia wysyłają
+powiadomienie gdy zakończą wykonywać swoje komendy. W momencie, kiedy licznik w
+module Master osiągnie zero, pozostałe są informowane o tym, aby zakończyły
+test. Wystarczy więc ustalić początkową wartość wyzwalacza na ilość urządzeń,
+na których zakończenie będziemy oczekiwać.
+
+Do mechanizmu powiadomień powracamy jeszcze prezentując przykładowe
+zastosowania programu.
+
+\begin{figure}
+\begin{center}
+\leavevmode
+\includegraphics[width=0.55\textwidth]{arete-test-sequence-trigger}
+\end{center}
+\caption{Przebieg testu. Mechanizm powiadomień.}
+\label{fig:arete-test-seq-trigger}
+\end{figure}
+
+\section{Podsumowanie}
+
+W rozdziale tym przedstawiliśmy zastosowania, z myślą o których tworzyliśmy
+narzędzie Arete. Zastosowania te stawiają szereg wymagań, których spełnienie
+było kluczowym zadaniem w celu uzyskania potrzebnej funkcjonalności.
+
+Projektując rozwiązanie, staraliśmy poczynić jak najmniej założeń
+wpływających na użytkownika. Kierowaliśmy się przekonaniem, że w ten sposób w
+najmniejszym stopniu ograniczymy możliwe spektrum zastosowań i pozostawimy
+użytkownikom możliwość adaptacji narzędzia do własnych potrzeb.
+
+Rozdział zakończyliśmy omówieniem zastosowanej architektury master-slave oraz
+sposobu działania Arete, dając kompletne wyobrażenie o tym, jakiego rodzaju
+jest to narzędzie. W kolejnych rozdziałach pracy szczegółowo omówimy oba moduły
+programu.
 
 \end{document}
