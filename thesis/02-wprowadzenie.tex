@@ -68,7 +68,7 @@ powtarzalny, a jego poprzednie wyniki dostępne dla porównania z bieżącymi.
 \section{Testy aplikacji sieciowych}
 
 W sieciach komputerowych oprogramowanie wykorzystuje się na różnych warstwach
-modelu OSI powierzając mu różne zadania i inaczej je implementujec. Od każdego
+modelu OSI powierzając mu różne zadania i inaczej je implementując. Od każdego
 składnika sieciowego stosu oczekujemy poprawnej pracy, którą można weryfikować
 testami. Inaczej wyglądają testy protokołu CSMA/CD, inaczej protokołu TCP,
 wreszcie zupełnie inne są testy aplikacji synchronizującej kalendarz z
@@ -135,7 +135,7 @@ wykonania.
 
 Aby sprawdzić czy algorytm generuje poprawne PDU najwygodniej jest skorzystać
 ze środowiska testowego, debuggera czy symulatora. Opóźnienia związane z realną
-transmisją są niepotrzebne, a nawet nieporządane. Możemy nawet uruchomić
+transmisją są niepotrzebne, a nawet niepożądane. Możemy nawet uruchomić
 algorytm osobno, poza stosem sieciowym, i analizować jego działanie
 niezależnie. W przypadku sekwencji komunikatów również wystarczy symulowanie
 uczestników komunikacji, gdyż zakładając poprawne działanie pozostałych
@@ -260,9 +260,9 @@ definiujących sposób kodowania informacji, jak np. wspomniany wcześniej TCP. 
 takich wypadkach możemy zastosować ECN.
 
 ECN dostarcza mechanizmów do zdefiniowania dowolnego sposobu kodowania
-informacji. Założmy, że w PDU naszego protokołu występuje liczba przyjmująca
+informacji. Załóżmy, że w PDU naszego protokołu występuje liczba przyjmująca
 wartości od 0 do 7 i używamy kodowania PER. Taka liczba zostałaby zakodowana
-koszytając z 3 bitów. Ze względu jednak na przewidywaną możliwość rozwoju
+korzystając z 3 bitów. Ze względu jednak na przewidywaną możliwość rozwoju
 chcemy aby zakodowana ona była na 5 bitach. Oto jak możemy to zrobić przy
 pomocy ECN.
 
@@ -381,7 +381,7 @@ TTCN \cite{ttcn-reference}.
 W teście tym definiujemy komponent \code{MainComponent} wyposażony w jeden port
 komunikacyjny oraz zegar, który użyty jest do implementacji limitu czasowego.
 
-Nasz kompoment, w celu uruchomienia, wymaga środowiska systemowego. TSI (Test
+Nasz komponent, w celu uruchomienia, wymaga środowiska systemowego. TSI (Test
 System Interface) zapewnia komunikację z testowanym komponentem, w terminologii
 TTCN nazywanym SUT (System Under Test). Dzięki tym dwóm konceptom możemy
 połączyć naszą "wirtualną" maszynę testującą z rzeczywistym komponentem, który
@@ -440,7 +440,7 @@ Jeżeli otrzymamy cokolwiek innego test się nie powiedzie
 określony limit czasowy.
 
 Tak przygotowany test tłumaczy się na kod, np. w C++, który po skompilowaniu i
-zlinkowaniu z biblitekami TTCN jest gotowy do uruchomienia.
+linkowaniu z bibliotekami TTCN jest gotowy do uruchomienia.
 
 Zależnie od wybranych adapterów komunikacyjnych, możemy wybrać, gdzie
 faktycznie zostaną wysłane dane. Mogą to być inne urządzenia, jeśli np.
@@ -497,7 +497,7 @@ operacyjnym. Tego typu realizacje są możliwe, ale działają niewydajnie.
 
 Pełna konfiguracja testu dla środowiska OMNeT++ jest zbyt złożona, żeby ją tu w
 całości przytaczać. Prezentujemy tylko wybrane fragmenty, bazując na
-materiałach szkoleniowych dostepych w \cite{omnet-doc}.
+materiałach szkoleniowych dostępnych w \cite{omnet-doc}.
 
 Podstawowe moduły, tj. takie, których działanie programuje użytkownik,
 definiowane są dyrektywą \code{simple}. Poniżej przykład komponentu o nazwie

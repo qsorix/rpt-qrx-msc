@@ -268,7 +268,7 @@ raz. Z tego powodu powinna się pojawić na początku każdego definiowanego
 modelu.
 
 Dwie pozostałe linie tworzą i dodają do modelu dwa urządzenia przy pomocy
-funkcji \code{add\_host}. Pierwszym i obowiazkowym argumentem jest nazwa
+funkcji \code{add\_host}. Pierwszym i obowiązkowym argumentem jest nazwa
 urządzenia. Dla wygody funkcja zwraca referencję do utworzonego urządzenia.
 
 Taka konfiguracja wystarczy do przeprowadzenia szerokiej gamy testów, w
@@ -287,7 +287,7 @@ Podobnie jak \code{add\_host} dla wygody zwracana jest referencja do
 stworzonego interfejsu.
 
 Pierwszy parametr (nazwa interfejsu) jest obowiązkowy. Dalsze, nazwane
-parametry\footnote{keyword arguments} są dowolne i służą do przypisania
+parametry\footnote{ang. keyword arguments} są dowolne i służą do przypisania
 interfejsowi pożądanych cech.  W tym wypadku podajemy parametr \code{ip}. W
 czasie przetwarzania konfiguracji, odpowiedni sterownik widząc ten parametr
 wygeneruje komendy konfigurujące podany adres na odpowiednim interfejsie
@@ -330,7 +330,7 @@ Laboratorium prezentuje zestaw dostępnych urządzeń i sposób, w jaki można s
 z nimi komunikować.
 
 W danym teście może być zdefiniowanych więcej urządzeń, niż wykorzystujemy, podobnie
-jak w prawdziwym laboratorium sieciowym zwykle znajduje się wiecej sprzętu niż
+jak w prawdziwym laboratorium sieciowym zwykle znajduje się więcej sprzętu niż
 wymagają tego proste ćwiczenia.
 
 Sposób definiowania urządzeń jest bardzo podobny do tego zaprezentowanego w
@@ -358,7 +358,7 @@ modelu, dlatego od razu prezentujemy pełną konfigurację:
 Konfiguracja ta mówi, że w laboratorium \code{myroom} dysponujemy komputerami
 \code{defteros} i \code{marvin}. Na obu uruchomiony jest demon
 \code{arete\_slave}\footnote{Taki jest identyfikator modułu slave dostarczanego
-razem z framework'iem.} i połaczyć się z nim można korzystając z TCP. Plugin
+razem z Arete.} i połączyć się z nim można korzystając z TCP. Plugin
 połączenia typu \code{tcp} korzysta z atrybutów \code{ip} i \code{port}. Oba
 komputery posiadają interfejs sieciowy nazwany \code{eth0}. Przedstawione jest
 to na diagramie \ref{fig:konfiguracja-laboratory}.
@@ -378,7 +378,7 @@ Funkcja \code{create\_laboratory}, podobnie jak w przypadku modelu, służy
 uniemożliwieniu przypadkowego mieszania kilku definicji laboratoriów.
 
 Funkcja \code{add\_device} zachowuje się analogicznie do \code{add\_host}.
-Pierwszy, obowiązkow parametr to nazwa urządzenia. Framework wymaga
+Pierwszy, obowiązkowy parametr to nazwa urządzenia. Framework wymaga
 zdefiniowania kilku dodatkowych atrybutów:
 \begin{itemize}
 \item \code{connection} -- określa, z której wtyczki korzystać w celu
@@ -515,8 +515,8 @@ powyżej ciąg \code{@\{bob.eth.ip\}} zostanie zamieniony wartością atrybutu
 \code{ip} interfejsu \code{eth} hosta \code{bob}.
 
 Wydawać się może, że taki rozbudowany interfejs będzie niewygodny w użyciu, ale
-zwięzłość i funkcje narzędziowe dostępne wraz z frameworkiem pozwalają w prosty
-i ekspresywny sposób przekazać to, co chcemy osiągnąć. Przykładem może być taki
+zwięzłość i funkcje narzędziowe dostępne wraz z Arete pozwalają w prosty i
+ekspresywny sposób przekazać to, co chcemy osiągnąć. Przykładem może być taki
 plan:
 
 \begin{pythoncode}
@@ -720,7 +720,7 @@ Zainteresowanych szczegółami implementacji odsyłamy do kodu źródłowego
 
 \subsubsection{AreteSlaveFrontend}
 
-Jest to standardowo dostepna implementacja wtyczki frontend służąca komunikacji
+Jest to standardowo dostępna implementacja wtyczki frontend służąca komunikacji
 z modułem Arete Slave opisanym szczegółowo w kolejnym rozdziale.
 
 Aby skorzystać z tej wtyczki należy w konfiguracji urządzenia użyć nazwy
@@ -801,7 +801,7 @@ Wymagane atrybuty to oczywiście \code{ip} i \code{port}, a także
 \item \code{password} dla uwierzytelnienia hasłem.
 \end{itemize}
 
-Na marginesie dodamy, że widoczna w przykładzie funckja \code{relative}
+Na marginesie dodamy, że widoczna w przykładzie funkcja \code{relative}
 dostępna jest w module \code{utils.path} i powoduje zbudowanie ścieżki względem
 bieżącego pliku konfiguracyjnego. Dzięki temu można umieścić plik
 \code{'id\_rsa'} w tym samym katalogu, co plik z konfiguracją laboratorium.
@@ -863,13 +863,13 @@ a po zakończeniu testu usunięty z interfejsu.
 
 Metoda \code{interface.bound()} zwraca związany (poprzez zdefiniowane
 odwzorowanie) z tym interfejsem interfejs urządzenia. Dzięki temu mamy dostęp do
-jego nazwy w rzeczywistym urządzeniu i możemy podać argument wymaganay przez
+jego nazwy w rzeczywistym urządzeniu i możemy podać argument wymagany przez
 program \code{ip}.
 
 Dokładne wyjaśnienie znaczenia każdej funkcji znajduje się w \fixref{rozdział
 Reference}. Tutaj dodamy jeszcze tylko, że sterowniki dzielą się na te
 przetwarzające argumenty hostów i te, które przetwarzają argumenty interfejsów.
-Pluginy dziedziczą odpowiednio z klas \code{HostDriverPlugin} i
+Wtyczki dziedziczą odpowiednio z klas \code{HostDriverPlugin} i
 \code{InterfaceDriverPlugin}.
 
 \subsection{Przesyłanie zasobów}
@@ -936,7 +936,7 @@ skorzystać z tej możliwości należy zaimplementować metodę
 	  ...
 \end{pythoncode}
 
-Metoda ta w argumentach otrzymuje instację klasy \code{HostCommands}, do której
+Metoda ta w argumentach otrzymuje instancję klasy \code{HostCommands}, do której
 może dodać nowe komendy. Dzięki przekazaniu argumentu \code{host} możliwe jest
 sprawdzenie atrybutów zdefiniowanych w konfiguracji. Można w ten sposób
 określić np. system operacyjny docelowego urządzenia i wygenerować komendy w
@@ -995,7 +995,7 @@ uruchamianych testów.}
 \label{fig:arete-master-db}
 \end{figure}
 
-Główna tabela \code{tests} zawiera informacje dotyczące pojedyńczego wykonania
+Główna tabela \code{tests} zawiera informacje dotyczące pojedynczego wykonania
 testu. Kolumna \code{id} to automatycznie generowany, unikalny identyfikator.
 Kolejne uruchomienia tego samego testu będą posiadały inne identyfikatory.
 Kolumna \code{comment} przeznaczona jest do przechowywania dowolnych komentarzy
