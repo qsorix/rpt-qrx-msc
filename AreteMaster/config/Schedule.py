@@ -62,7 +62,7 @@ class RunPolicy:
 
     .. method:: schedule_for_frontend(self)
 
-       Zwraca napis, który przesłanie zostany do kontrolowanego urządzenia.
+       Zwraca napis, który zostanie przesłany do kontrolowanego urządzenia.
        
     Gdzie `frontend` należy zastąpić odpowiednią nazwą.
     """

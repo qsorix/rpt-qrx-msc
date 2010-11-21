@@ -26,7 +26,7 @@ class FrontendPlugin:
 
        Domyślnie [].
 
-    .. method:: deply_configuration()
+    .. method:: deploy_configuration()
 
        Prześlij konfigurację na kontrolowane urządzenie.
 

@@ -41,7 +41,7 @@ class Laboratory(NamedMixin):
 class Device(NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin):
     """Urządzenie w laboratorium."""
     def __init__(self, name, **kwargs):
-        """Stworz urządzenie o nazwie `name` przypisując mu atrybuty przekazane
+        """Stwórz urządzenie o nazwie `name` przypisując mu atrybuty przekazane
         w `kwargs`.
         """
         self.rename(name)

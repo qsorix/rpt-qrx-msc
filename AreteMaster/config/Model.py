@@ -91,7 +91,7 @@ class Link:
         """
         Tworzy połączenie pomiędzy interfejsami `first_interface` i
         `second_interface`. Oba argumenty mogą być interfejsami zwróconymi z
-        :meth:`~config.Model.Host.add_interface` lub łańcuchami w formanie
+        :meth:`~config.Model.Host.add_interface` lub łańcuchami w formalnie
         ``<nazwa hosta>.<nazwa interfejsu>``.
         """
         if isinstance(first_interface, str):

@@ -24,7 +24,7 @@ class ConnectionPlugin:
        Domyślnie [].
 
     W czasie tworzenia obiektu, konstruktor otrzymuje host, na rzecz którego
-    będzie używana dana instacja. Połączenie ma być nawiązywane korzystając
+    będzie używana dana instancja. Połączenie ma być nawiązywane korzystając
     parametrów określanych przez atrybuty odwzorowanego urządzenia.
 
     .. method:: connect()

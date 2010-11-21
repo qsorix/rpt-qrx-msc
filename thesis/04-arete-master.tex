@@ -60,8 +60,8 @@ Wtyczki Drivers na podstawie konfiguracji generują komendy dla zdalnych
 urządzeń. Przykładem może być driver, który na czas testu konfiguruje adresy IP
 urządzeń. Wtyczki te są szerzej omówione w sekcji \fixref{sekcja o drivers}.
 
-Komponenty Hooks\footnote{W tym znaczeniu polskie tłumaczenie \emph{ang. hook}
-to punkt zaczepienia. W pracy używamy terminu \emph{hook}, ponieważ jest zwięzły, a w
+Komponenty Hooks\footnote{W tym znaczeniu polskie tłumaczenie \ang{hook}
+to punkt zaczepienia. W pracy używamy terminu \textit{hook}, ponieważ jest zwięzły, a w
 informatyce termin ten jest często spotykany i jednoznaczny.} to wtyczki dające
 użytkownikowi możliwość ingerencji w generowane plany testów. Obecnie możliwe
 jest wykonanie własnego kodu po wygenerowaniu wszystkich planów, ale jeszcze
@@ -273,7 +273,7 @@ raz. Z tego powodu powinna się pojawić na początku każdego definiowanego
 modelu.
 
 Dwie pozostałe linie tworzą i dodają do modelu dwa urządzenia przy pomocy
-funkcji \code{add\_host}. Pierwszym i obowiazkowym argumentem jest nazwa
+funkcji \code{add\_host}. Pierwszym i obowiązkowym argumentem jest nazwa
 urządzenia. Dla wygody funkcja zwraca referencję do utworzonego urządzenia.
 
 Taka konfiguracja wystarczy do przeprowadzenia szerokiej gamy testów, w
@@ -292,7 +292,7 @@ Podobnie jak \code{add\_host} dla wygody zwracana jest referencja do
 stworzonego interfejsu.
 
 Pierwszy parametr (nazwa interfejsu) jest obowiązkowy. Dalsze, nazwane
-parametry\footnote{keyword arguments} są dowolne i służą do przypisania
+parametry\footnote{\ang{keyword arguments}} są dowolne i służą do przypisania
 interfejsowi pożądanych cech.  W tym wypadku podajemy parametr \code{ip}. W
 czasie przetwarzania konfiguracji, odpowiedni sterownik widząc ten parametr
 wygeneruje komendy konfigurujące podany adres na odpowiednim interfejsie
@@ -336,7 +336,7 @@ Laboratorium prezentuje zestaw dostępnych urządzeń i sposób, w jaki można s
 z nimi komunikować.
 
 W danym teście może być zdefiniowanych więcej urządzeń, niż wykorzystujemy, podobnie
-jak w prawdziwym laboratorium sieciowym zwykle znajduje się wiecej sprzętu niż
+jak w prawdziwym laboratorium sieciowym zwykle znajduje się więcej sprzętu niż
 wymagają tego proste ćwiczenia.
 
 Sposób definiowania urządzeń jest bardzo podobny do tego zaprezentowanego w
@@ -364,7 +364,7 @@ modelu, dlatego od razu prezentujemy pełną konfigurację:
 Konfiguracja ta mówi, że w laboratorium \code{myroom} dysponujemy komputerami
 \code{defteros} i \code{marvin}. Na obu uruchomiony jest demon
 \code{arete\_slave}\footnote{Taki jest identyfikator modułu slave dostarczanego
-razem z framework'iem.} i połaczyć się z nim można korzystając z TCP. Plugin
+razem z Arete.} i połączyć się z nim można korzystając z TCP. Plugin
 połączenia typu \code{tcp} korzysta z atrybutów \code{ip} i \code{port}. Oba
 komputery posiadają interfejs sieciowy nazwany \code{eth0}. Przedstawione jest
 to na diagramie \ref{fig:konfiguracja-laboratory}.
@@ -384,23 +384,22 @@ Funkcja \code{create\_laboratory}, podobnie jak w przypadku modelu, służy
 uniemożliwieniu przypadkowego mieszania kilku definicji laboratoriów.
 
 Funkcja \code{add\_device} zachowuje się analogicznie do \code{add\_host}.
-Pierwszy, obowiązkow parametr to nazwa urządzenia. Framework wymaga
+Pierwszy, obowiązkowy parametr to nazwa urządzenia. Framework wymaga
 zdefiniowania kilku dodatkowych atrybutów:
 \begin{itemize}
-\item \code{connection} -- określa, z którego pluginu korzystać w celu
+\item \code{connection} -- określa, z której wtyczki korzystać w celu
 nawiązania komunikacji z danym urządzeniem,
-\item \code{frontend} -- mówi, która wtyczka\footnote{ang. plugin} określa
-sposób w jaki przebiega komunikacja z danym urządzeniem (protokół przesyłanych
-komunikatów).
+\item \code{frontend} -- mówi, która wtyczka określa sposób w jaki przebiega
+komunikacja z danym urządzeniem (protokół przesyłanych komunikatów).
 \end{itemize}
 
 Więcej na temat wtyczek piszemy w rozdziale \fixref{referencja do rozdziału o
 wtyczkach}.
 
 Framework nie wymaga podawania parametrów \code{ip} oraz \code{port}. Są to
-atrybuty, z których korzysta plugin \code{tcp} i w przypadku ich braku,
+atrybuty, z których korzysta wtyczka \code{tcp} i w przypadku ich braku,
 zgłosiłby błąd w czasie przetwarzania konfiguracji. Opis wymaganych atrybutów
-znajduje się w dokumentacji każdego z pluginów.
+znajduje się w dokumentacji każdej z wtyczek.
 
 Sposób tworzenia interfejsów jest identyczny jak w przypadku modelu. Ważne, aby
 nazwy odpowiadały rzeczywistym nazwom, jakich używa się na danej platformie do
@@ -524,8 +523,8 @@ powyżej ciąg \code{@\{bob.eth.ip\}} zostanie zamieniony wartością atrybutu
 \code{ip} interfejsu \code{eth} hosta \code{bob}.
 
 Wydawać się może, że taki rozbudowany interfejs będzie niewygodny w użyciu, ale
-zwięzłość i funkcje narzędziowe dostępne wraz z frameworkiem pozwalają w prosty
-i ekspresywny sposób przekazać to, co chcemy osiągnąć. Przykładem może być taki
+zwięzłość i funkcje narzędziowe dostępne wraz z Arete pozwalają w prosty i
+ekspresywny sposób przekazać to, co chcemy osiągnąć. Przykładem może być taki
 plan:
 
 \begin{pythoncode}
@@ -655,7 +654,7 @@ przez moduł Master, frontend tłumaczy te rozkazy na protokół zrozumiały prz
 kontrolowane urządzenie i przesyła mu odpowiednie instrukcje.
 
 Sam sposób dostarczania rozkazów jest poza zasięgiem klas \code{FrontendPlugin}.
-Odpowiadają za to pluginy typu \code{ConnectionPlugin}. Frontend nie musi
+Odpowiadają za to wtyczki typu \code{ConnectionPlugin}. Frontend nie musi
 wiedzieć, że rozkazy przesłane będą połączeniem TCP, wystarczy, że od niższej
 warstwy otrzyma interfejs do wysyłania i odbierania danych. Więcej informacji o
 interfejsie \code{ConnectionPlugin} dostępnych jest w dalszej części tego
@@ -731,7 +730,7 @@ Zainteresowanych szczegółami implementacji odsyłamy do kodu źródłowego
 
 \subsubsection{AreteSlaveFrontend}
 
-Jest to standardowo dostepna implementacja wtyczki frontend służąca komunikacji
+Jest to standardowo dostępna implementacja wtyczki frontend służąca komunikacji
 z modułem Arete Slave opisanym szczegółowo w kolejnym rozdziale.
 
 Aby skorzystać z tej wtyczki należy w konfiguracji urządzenia użyć nazwy
@@ -759,7 +758,7 @@ Najprostszym przykładem takiego połączenia może być połączenie TCP. Nieco
 trudniejszy technicznie, choć koncepcyjnie identyczny, jest tunel SSH.
 Najważniejsze, żeby możliwe było wysyłanie i odbiór danych.
 
-We frameworku Arete połączenia modelowane są przez pluginy implementujące
+We frameworku Arete połączenia modelowane są przez wtyczki implementujące
 interfejs \code{ConnectionPlugin}. Jedyne zadanie tego interfejsu to
 dostarczanie i odbiór danych z kontrolującego go Frontendu. Otrzymuje on także
 pomocnicze rozkazy określające moment, w którym można nawiązać fizyczne
@@ -812,7 +811,7 @@ Wymagane atrybuty to oczywiście \code{ip} i \code{port}, a także
 \item \code{password} dla uwierzytelnienia hasłem.
 \end{itemize}
 
-Na marginesie dodamy, że widoczna w przykładzie funckja \code{relative}
+Na marginesie dodamy, że widoczna w przykładzie funkcja \code{relative}
 dostępna jest w module \code{utils.path} i powoduje zbudowanie ścieżki względem
 bieżącego pliku konfiguracyjnego. Dzięki temu można umieścić plik
 \code{'id\_rsa'} w tym samym katalogu, co plik z konfiguracją laboratorium.
@@ -825,10 +824,10 @@ pewne -- dowolne -- atrybuty. Atrybuty te mają na celu w zwięzły sposób opis
 cechy jakich od elementu będziemy oczekiwać. Samo ich podanie niczego jednak nie
 powoduje, framework musi jeszcze zostać poinformowany o ich znaczeniu.
 
-Sterowniki parametrów\footnote{\fixme{kiepska nazwa}} służą do przetłumaczenia
-wartości atrybutów na odpowiednie akcje. Rodzaj akcji jest zależny od atrybutu.
-Dla przykładu, określenie atrybutu \code{ip} powinno owocować wykonaniem komend,
-które na docelowym urządzeniu odpowiednio skonfigurują interfejs sieciowy.
+Sterowniki parametrów służą do przetłumaczenia wartości atrybutów na
+odpowiednie akcje. Rodzaj akcji jest zależny od atrybutu.  Dla przykładu,
+określenie atrybutu \code{ip} powinno owocować wykonaniem komend, które na
+docelowym urządzeniu odpowiednio skonfigurują interfejs sieciowy.
 
 Użytkownik ma pełną swobodę w definiowaniu atrybutów i określaniu ich
 znaczenia. Konfiguracja jest jednak przewidziana w taki sposób, aby atrybuty
@@ -874,13 +873,13 @@ a po zakończeniu testu usunięty z interfejsu.
 
 Metoda \code{interface.bound()} zwraca związany (poprzez zdefiniowane
 odwzorowanie) z tym interfejsem interfejs urządzenia. Dzięki temu mamy dostęp do
-jego nazwy w rzeczywistym urządzeniu i możemy podać argument wymaganay przez
+jego nazwy w rzeczywistym urządzeniu i możemy podać argument wymagany przez
 program \code{ip}.
 
 Dokładne wyjaśnienie znaczenia każdej funkcji znajduje się w \fixref{rozdział
 Reference}. Tutaj dodamy jeszcze tylko, że sterowniki dzielą się na te
 przetwarzające argumenty hostów i te, które przetwarzają argumenty interfejsów.
-Pluginy dziedziczą odpowiednio z klas \code{HostDriverPlugin} i
+Wtyczki dziedziczą odpowiednio z klas \code{HostDriverPlugin} i
 \code{InterfaceDriverPlugin}.
 
 \subsection{Przesyłanie zasobów}
@@ -947,7 +946,7 @@ skorzystać z tej możliwości należy zaimplementować metodę
 	  ...
 \end{pythoncode}
 
-Metoda ta w argumentach otrzymuje instację klasy \code{HostCommands}, do której
+Metoda ta w argumentach otrzymuje instancję klasy \code{HostCommands}, do której
 może dodać nowe komendy. Dzięki przekazaniu argumentu \code{host} możliwe jest
 sprawdzenie atrybutów zdefiniowanych w konfiguracji. Można w ten sposób
 określić np. system operacyjny docelowego urządzenia i wygenerować komendy w
@@ -1006,7 +1005,7 @@ uruchamianych testów.}
 \label{fig:arete-master-db}
 \end{figure}
 
-Główna tabela \code{tests} zawiera informacje dotyczące pojedyńczego wykonania
+Główna tabela \code{tests} zawiera informacje dotyczące pojedynczego wykonania
 testu. Kolumna \code{id} to automatycznie generowany, unikalny identyfikator.
 Kolejne uruchomienia tego samego testu będą posiadały inne identyfikatory.
 Kolumna \code{comment} przeznaczona jest do przechowywania dowolnych komentarzy
@@ -1068,9 +1067,8 @@ wiele parametrów.
 
 \item[\code{--hooks}]
 
-Określa nazwy \fixme{hook'ów} do uruchomienia po zbudowaniu konfiguracji.
-Wybrane hooki muszą być dostępne w wybranych katalogach wtyczek (opcja
-\code{--plugins})
+Określa nazwy hooków do uruchomienia po zbudowaniu konfiguracji. Wybrane hooki
+muszą być dostępne w wybranych katalogach wtyczek (opcja \code{--plugins})
 
 \item[\code{--map}]
 

@@ -153,7 +153,7 @@ dostępie.
 
 Urządzenia w laboratoriach są przeznaczone do wykonywania na nich
 eksperymentów.  Ich pierwotna konfiguracja jest po wykonaniu testów
-przywracana. Sieci takie są najczęściej odizolowane, a wieć szansa zdalnego
+przywracana. Sieci takie są najczęściej odizolowane, a więc szansa zdalnego
 dostępu do tego typu sieci jest znikoma.
 
 Sieci domowe składają się z urządzeń, których administratorem jest właściciel i
@@ -184,7 +184,7 @@ dostęp przez osoby postronne.
 wykonywać test w sytuacji kiedy nie ma połączenia między urządzeniem, z którego
 uruchamiamy test, a innym w teście uczestniczącym, konieczne było wprowadzenie
 dodatkowego programu pomocniczego. Wyróżniamy więc program nadzorujący
-przebieg testu (master), oraz programy wykonujące go (worker), zainstalowane na
+przebieg testu (master), oraz programy wykonujące go (slave), zainstalowane na
 występujących w teście urządzeniach.
 
 Wprowadzenie takiej architektury powoduje, że instalacja programu wykonującego
@@ -197,22 +197,6 @@ W przypadkach, gdy na urządzeniu nie można zainstalować modułu
 slave\footnote{Jak np.~większość routerów sprzętowych}, użytkownik ma możliwość
 dostarczenia własnej wtyczki, dzięki której wciąż będzie można przeprowadzić
 test. Więcej na ten temat w rozdziale \fixref{o wtyczkach typu FrontendPlugin}.
-
-% FIXME: To jest przykład sytuacji, kiedy w teście występuje urządzenie bez
-% modułu Slave, i powoduje to, że jakiegoś rodzaju testu się nie da
-% przeprowadzić.
-%
-% Być może warto go przenieść do rozdziału o pluginach
-%
-% -----------------------------------------------------------------------------
-% Przykładowo załóżmy, że chcemy przeprowadzić test mierzący ilość pakietów
-% RIP\footnote{ang. Routing Information Protocol}, jakie routery wymieniają aby
-% zapewnić poprawne tablice routingu po awarii łącza. Po połączeniu z routerem
-% będziemy mieli możliwość wydania polecenia zatrzymującego wybrany interfejs.
-% Jeżeli jednak jest to jednocześnie interfejs, którym się z routerem
-% komunikujemy, a dane urządzenie nie będzie umożliwiać automatycznego
-% przywrócenia pracy interfejsu, stracimy nad nim kontrolę.
-% -----------------------------------------------------------------------------
 
 \paragraph{Synchronizacja urządzeń nie zmienia wskazań ich zegarów.}
 Najprostszym rozwiązaniem problemu synchronizacji byłoby wykorzystanie ogólnie
@@ -305,7 +289,7 @@ im wymagania dotyczące zarówno funkcjonalności, jak i bezpieczeństwa.
 
 \section{Architektura}
 
-Rozpoczynając opis architektury powtórzmy jescze raz, że narzędzie Arete
+Rozpoczynając opis architektury powtórzmy jeszcze raz, że narzędzie Arete
 pracuje w sieci komputerowej. Wyróżniamy komputer kontrolujący test, na którym
 uruchomiony jest moduł Arete Master, oraz komputery uczestniczące w teście, na
 których uruchomiony jest moduł Arete Slave, patrz rysunek \ref{fig:arete-arch}.
@@ -326,13 +310,13 @@ Slave, który te zadania przeprowadzi. Jednocześnie, niezależnie jaki sposób
 komunikacji wybierzemy, jeżeli test używa tej samej fizycznej infrastruktury
 sieci, może on wymagać, aby nasze narzędzie wstrzymało komunikację, więc
 programy muszą być uruchamiane lokalnie na urządzeniach. Wreszcie,
-nieporządane jest ręczne uruchamianie testu na kilku urządzeniach, potrzebny
+niepożądane jest ręczne uruchamianie testu na kilku urządzeniach, potrzebny
 jest więc centralny moduł kontrolujący -- Master.
 
 Chociaż taka architektura wynika z chęci przeprowadzania testu na kilku
 urządzeniach, to jednocześnie nie odbiera ona możliwości pracy tylko na jednym.
 Możliwa jest zarówno sytuacja, w której moduł Slave zainstalowany jest na
-wielu komputerach w sieci, jak i uruchamienie kilku jego instancji na
+wielu komputerach w sieci, jak i uruchomienie kilku jego instancji na
 jednym urządzeniu. Konfiguracja, w której moduły Master i Slave są uruchomione
 na tym samym urządzeniu, także jest prawidłowa.
 
@@ -340,7 +324,7 @@ Moduł Slave jest zaprojektowany jako demon pracujący przez cały czas. Master
 natomiast uruchamiany jest tylko na czas trwania testu.
 
 Na rysunku \ref{fig:arete-deploy} widać przykładowe rozmieszczenie urządzeń w
-sieci i ich rolę w czasie testu. W dalszej części pracy mowiąc o modułach
+sieci i ich rolę w czasie testu. W dalszej części pracy mówiąc o modułach
 Master i Slave, jeśli nie precyzujemy, na jakich urządzeniach są uruchomione,
 oznacza to, że fizyczna konfiguracja jest dowolna.
 
