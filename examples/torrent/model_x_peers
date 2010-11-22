@@ -1,0 +1,10 @@
+create_model('torrent-minimalistic')
+
+tracker = add_host('tracker')
+seed = add_host('seed')
+
+peers = []
+for i in range(1):
+    peers.append(add_host('peer{0}'.format(i)))
+
+# vim: ft=python

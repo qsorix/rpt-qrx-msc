@@ -1,15 +1,18 @@
 from utils.resources import File
 from utils.schedule import at, after, shell, trigger, notify, poke
 
-create_schedule('torrent')
+create_schedule('torrent-distribution-time')
     
-test_end_policy('complete')
+test_end_policy('complete', setup_phase_delay=0.0)
+
+# east[0] will be seeding. All other hosts just download
 
 torrent = add_resource(File('torrent', 'big-data-file.torrent'))
 data    = add_resource(File('torrent-file', 'big-data-file'))
 trackcfg = add_resource(File('tracker-cfg', 'xbt_tracker.conf'))
 
-create_trigger('stop-torrent', len(peers)-1)
+# there are W+E-1 downloading peers
+create_trigger('stop-torrent', len(west+east)-1)
 
 tracker_schedule = [
     ('tracker', at(0), shell('xbt_tracker --conf_file @{tracker-cfg.name}', use_resources=[trackcfg])),
@@ -27,10 +30,10 @@ peer_schedule = [
     ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
 ]
 
-append_schedule(tracker, tracker_schedule)
-append_schedule(seed, seed_schedule)
+append_schedule(east[0], tracker_schedule)
+append_schedule(east[0], seed_schedule)
 
-for host in peers:
+for host in west + east[1:]:
     append_schedule(host, peer_schedule)
 
 # vim: ft=python
