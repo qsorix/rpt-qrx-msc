@@ -17,8 +17,8 @@ wykonawczej modułu i możliwości rozbudowy jego funkcjonalności poprzez włas
 wtyczki. Następnie opisujemy sposób przechowywania wyników testu w bazie
 danych. Na końcu przedstawiamy opcje linii poleceń programu \code{arete}.
 
-\label{arete-master-arch}
 \section{Architektura}
+\label{arete-master-arch}
 
 Arete Master zarządza wykonaniem testów przez moduły Arete Slave. Master
 odpowiada za dwa kluczowe zadania. Pierwszym jest przetworzenie konfiguracji
@@ -76,8 +76,8 @@ prostsze. Zainteresowanych odsyłamy do plików źródłowych w katalogu
 funkcjonalności tego komponentu, ponieważ wielu funkcji używamy w
 prezentowanych przykładach.
 
-\label{arete-master-config}
 \section{Konfiguracja}
+\label{arete-master-config}
 
 Cechą dobrze zaplanowanego testu jest możliwość przeprowadzania go
 wielokrotnie. Aby test można było powtarzać, trzeba go opisać. Opis taki
@@ -188,8 +188,8 @@ Ryzyko ogranicza fakt, że kod źródłowy programu jak i treść konfiguracji j
 zapisana w postaci tekstowej i można samodzielnie skontrolować akcje
 podejmowane przez uruchamiany kod.
 
-\label{arete-master-config-format}
 \subsection{Format konfiguracji}
+\label{arete-master-config-format}
 
 Aby zwiększyć szanse na ponowne wykorzystanie poprzednio definiowanych
 testów, konfiguracja logicznie podzielona jest na cztery osobne części:
@@ -228,8 +228,8 @@ W dalszej części opisujemy szczegółowo poszczególne fragmenty konfiguracji,
 ograniczając się jednak tylko do podstawowego interfejsu zapewnianego przez
 framework. \fixref{Odesłać do rozdziału z opisem toolsetów i pełnego API}
 
-\label{arete-master-config-model}
 \subsubsection{Model}
+\label{arete-master-config-model}
 
 Zadaniem modelu jest przedstawienie koncepcyjnej topologii sieci. W tym
 elemencie konfiguracji opisuje się występujące urządzenia, ich interfejsy i
@@ -329,8 +329,8 @@ Ostatecznie otrzymujemy konfigurację, która odpowiada diagramowi \ref{fig:konf
 \label{fig:konfiguracja-model}
 \end{figure}
 
-\label{arete-master-config-lab}
 \subsubsection{Laboratorium}
+\label{arete-master-config-lab}
 
 Laboratorium prezentuje zestaw dostępnych urządzeń i sposób, w jaki można się
 z nimi komunikować.
@@ -415,8 +415,8 @@ miałoby to sensu ponieważ połączenia te muszą istnieć w rzeczywistości.
 Wykonuje je użytkownik wpinając odpowiednie kable i nie ma możliwości zmiany
 połączeń z poziomu oprogramowania.
 
-\label{arete-master-config-mapping}
 \subsubsection{Odwzorowanie}
+\label{arete-master-config-mapping}
 
 Odwzorowanie to najprostsza część konfiguracji. Jej zadaniem jest przypisanie
 hostów z modelu do konkretnych urządzeń w laboratorium. Jeśli w modelu
@@ -458,8 +458,8 @@ przeciwnym razie framework odmówi działania, ponieważ koncepcyjnemu urządzen
 nie będzie odpowiadać żadna realizacja sprzętowa, na której można by wykonać
 zadane akcje.
 
-\label{arete-master-config-plan}
 \subsubsection{Plan}
+\label{arete-master-config-plan}
 
 Trzy poprzednie części konfiguracji opisywały test od strony sprzętowej --
 statycznej. Plan służy do określenia co urządzenia występujące w teście będą
@@ -548,8 +548,8 @@ Inne przykłady definicji planów można znaleźć w rozdziale prezentującym
 przykładowe zastosowania \fixref{ref do rozdziału Przykłady}. Ich lektura
 pozwoli lepiej zrozumieć w jaki sposób wykorzystać dostępny interfejs.
 
-\label{arete-master-others}
 \subsubsection{Pozostałe}
+\label{arete-master-others}
 
 Aby umożliwić prosty mechanizm synchronizacji zadań na hostach wykonujących
 test, w sytuacjach gdzie trudno przewidzieć ramy czasowe wykonywanych operacji,
@@ -616,7 +616,6 @@ Co zaowocowałoby przekazaniem do konfiguracji wartości \code{192.168.2.1} dla
 parametru \code{ip}, \code{2710} dla parametru \code{port} oraz nie
 wyświetlonej na ekranie wartości hasła dla parametru \code{password}.
 
-\label{arete-master-summary}
 \subsection{Podsumowanie}
 
 Zaprezentowany sposób konfiguracji dostarcza prostego interfejsu pozwalającego
@@ -629,6 +628,7 @@ wielokrotne użycie tych samych definicji bez konieczności powtarzania się. W
 wyraźny sposób oddziela to też koncepcję testu od jego sprzętowej realizacji.
 
 \section{Wykonawcza część frameworku}
+\label{arete-master-czesc-wykonawcza}
 
 Zdefiniowany w konfiguracji test jest wykonywany przez moduł Master. Odpowiada
 on za wczytanie i walidację konfiguracji, połączenie z występującymi w teście
@@ -641,6 +641,7 @@ W dalszej części omawiamy te miejsca i wyjaśniamy w jaki sposób zaimplemento
 własne wtyczki realizujące odpowiednią funkcjonalność.
 
 \subsubsection{Komunikacja z modułem Slave}
+\label{arete-master-komunikacja-slave}
 
 Moduł Master w czasie testu kontroluje pracę uczestniczących w nim urządzeń.
 Dialog z nimi odbywa się za pośrednictwem klas implementujących interfejs
@@ -729,6 +730,7 @@ Zainteresowanych szczegółami implementacji odsyłamy do kodu źródłowego
 \code{AreteSlaveFrontend} -- standardowo dostępnej wtyczki typu frontend.
 
 \subsubsection{AreteSlaveFrontend}
+\label{arete-master-slave-frontend}
 
 Jest to standardowo dostępna implementacja wtyczki frontend służąca komunikacji
 z modułem Arete Slave opisanym szczegółowo w kolejnym rozdziale.
@@ -770,6 +772,7 @@ współpracy między frontendem a połączeniem odsyłamy do kodu źródłowego 
 wtyczek.
 
 \subsubsection{TCPConnection}
+\label{arete-master-tcpconnection}
 
 Wtyczka ta służy do nawiązania połączenia korzystającego z protokołu TCP i może
 być użyta w większości przypadków, kiedy nie jest wymagane szyfrowanie.
@@ -788,6 +791,7 @@ Warto zwrócić uwagę na jej identyfikator \code{tcp}.
 Atrybuty \code{ip} oraz \code{port} są oczywiście wymagane.
 
 \subsubsection{SSHConnection}
+\label{arete-master-sshconnection}
 
 Wtyczka \code{SSHConnection} (o identyfikatorze \code{ssh}) umożliwia
 nawiązanie uwierzytelnionego i szyfrowanego połączenia korzystając z tunelu
@@ -817,6 +821,7 @@ bieżącego pliku konfiguracyjnego. Dzięki temu można umieścić plik
 \code{'id\_rsa'} w tym samym katalogu, co plik z konfiguracją laboratorium.
 
 \subsection{Sterowniki parametrów}
+\label{arete-master-drivers}
 
 W tym fragmencie pracy wracamy do kwestii poruszonych w opisie konfiguracji.
 Najpierw przypomnijmy, że host, urządzenie oraz interfejs mogły mieć określone
@@ -883,6 +888,7 @@ Wtyczki dziedziczą odpowiednio z klas \code{HostDriverPlugin} i
 \code{InterfaceDriverPlugin}.
 
 \subsection{Przesyłanie zasobów}
+\label{arete-master-resources}
 
 Komendy wykonywanie w czasie testu często wymagać będą pewnych zewnętrznych
 danych, jak na przykład plik konfiguracyjny. Framework zapewnia możliwość
@@ -956,6 +962,7 @@ Szersze omówienie interfejsu \code{Resource} znajduje się w rozdziale
 \fixref{Reference}.
 
 \subsection{Wtyczki typu Hook}
+\label{arete-master-hook}
 
 Wtyczki typu Hook umożliwiają rozszerzenie przedstawionego przez nas schematu
 konfiguracji o własne algorytmu modyfikujące tworzony test. Aktualnie dostępny
@@ -991,6 +998,7 @@ konfiguracyjnych nie będzie to problemem. W innych wypadkach można skorzystać
 opcji \code{--plugins}.
 
 \section{Przechowywanie wyników}
+\label{arete-master-db}
 
 Wyniki testów zapisywane są w bazie danych SQLite. Schemat tabel przedstawia
 rysunek \ref{fig:arete-master-db}.
@@ -1032,8 +1040,8 @@ zapisane są w tabeli \code{invocations}. Ponieważ niektóre komendy (jak np.
 \code{notify}) nie produkują żadnych wyników, wartości w kolumnach
 \code{output}, \code{duration} oraz \code{return\_code} mogą pozostać puste.
 
-\label{arete-master-run}
 \section{Uruchamianie}
+\label{arete-master-run}
 
 Program \code{arete} w celu poprawnej pracy wymaga podania argumentów
 określających test. W przypadku minimalnym należy tylko wskazać zestaw plików
