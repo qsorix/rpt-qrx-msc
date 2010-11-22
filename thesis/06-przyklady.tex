@@ -5,11 +5,87 @@
 
 \FIXME{Rozpocząć od wstępu, w którym odpisany jest proces weryfikacji naszego programu. Coś o wydajności, użyteczności, testowaniu itd.}
 
-\section{Instalacja Arete}
+\FIXME{Napisać o unit-testach.}
 
-\FIXME{Opis instalacji Arete.}
+\section{Instalacja i uruchomienie Arete}
+
+Instalacja narzędzia Arete jest bardzo prosta dzięki wykorzystaniu wbudowanej w
+język Python biblioteki \code{distutils} \cite{distutils}. Polega ona na
+wykonaniu poniższej komendy z uprawnieniami administratora.
+
+\code{\# python setup.py install}
+
+Do poprawnego działania wymagane jest również zainstalowanie następujących
+zależności:
+
+\begin{itemize}
+\item{argparse \cite{argparse} - parsowanie argumentów,}
+\item{elixir \cite{elixir} - obsługa bazy danych,}
+\item{paramiko \cite{paramiko} - obsługa połączeń SSH}
+\end{itemize}
+
+Kolejnym krokiem jest uruchomienie demonów Arete Slave na komputerach biorących
+udział w teście. Jeśli uruchamiane przez nas testy będą wymagać uprawnień
+administratora musimy wykonać poniższą komendę z takimi uprawnieniami.
+
+\code{\# arete-slave -v}
+
+Ponieważ na każdym z urządzeń będzie działać tylko jeden demon, możemy
+skorzystać z domyślnych ustawień. W przeciwnym wypadku wymagane jest użycie
+dodatkowych parametrów opisanych w rozdziale \ref{arete-slave-run}, aby
+zróżnicować porty i nazwy plików bazy danych. Użycie parametru \code{-v}
+spowoduje wypisywanie loga na standardowe wyjście, co ułatwi nam obserwację
+przebiegu testu. 
+
+Następnie tworzymy konfigurację testu. Po szczegółowy opis tej części
+testowania przy pomocy Arete odsyłamy do rozdziału \ref{arete-master-config}.
+W omówionych w dalszej części tego rozdziału przykładach krok po kroku omówimy
+tworzone modele i plany testów. Tymczasem na potrzeby tej instrukcji założymy,
+że stworzyliśmy już wspomniane elementy w pliku \code{configuration}.
+
+Niezależnie od tego jaki test chcemy wykonać, potrzebujemy konfiguracji
+laboratorium. Zostało to szerzej opisane w rozdziale
+\ref{arete-master-config-lab}. Przykładowy plik laboratorium przedstawiono
+poniżej. 
+
+\begin{pythoncode}
+  # laboratory:
+  create_laboratory('laboratory')
+
+  add_device('marvin',
+      connection='tcp',
+      ip='192.168.0.2',
+      port='4567',
+      frontend='arete_slave')
+
+  add_device('defteros',
+      connection='tcp',
+      ip='192.168.0.3',
+      port='4567',
+      frontend='arete_slave')
+\end{pythoncode}
+
+Kolejnym krokiem jest stworzenie odwzorowania między modelem a labolatorium.
+Odwzorowania były omówione w rozdziale \ref{arete-master-config-mapping}. 
+Jeśli chcielibyśmy zawrzeć go w pliku konfiguracyjnym, wyglądałoby to
+następująco.
+
+\begin{pythoncode}
+  create_mapping('configuration-to-laboratory')
+
+  bind('host1', 'marvin')
+  bind('host2', 'defteros')
+\end{pythoncode}
+
+Alternatywnie, odwzorowanie możemy podać w linii poleceń programu Arete Master,
+korzystając z argumentu \code{--map}, jak przedstawiono w przykładzie poniżej.
+Test uruchamiamy podając wszystkie pliki konfiguracyjne po argumencie \code{-c}.
+Opis wszystkiech parametrów znajduje się w rozdziale \ref{arete-master-run}.
+
+\code{\$ arete -c configuration laboratory --map host1:marvin host2:defteros}
 
 \section{Przykład: Aplikacja klient-serwer}
+\label{example-client-server}
 
 Pierwszym przykładem który omówimy jest prosty scenariusz, z którym często mamy
 do czynienia w czasie tworzenia oprogramowania typu klient-serwer. W naszym
@@ -84,12 +160,35 @@ następnie zapisuje go w lokalnym systemie plików.
 
 \end{pythoncode}
 
+\subsection{Przebieg}
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.6\textwidth]{example-01-sequence}
+\end{center}
+\caption{Schemat przebiegu testu aplikacji klient-serwer.}
+\label{fig:example-01-sequence}
+\end{figure}
+
+Zacznijmy od prześledzenia zobrazowany na rysunku \ref{fig:example-01-sequence}
+przebieg testu. Zaczynamy od wystartowania serwera (\code{1}) na urządzeniu
+\code{Server}.  Następnie na drugim urządzeniu uruchamiany jest klient
+(\code{2}), który łączy się z serwerem i przesyła do niego wskazany plik. Po
+zakończeniu transferu klient kończy działanie i uruchamiane jest obliczenie sumy
+kontrolnej (\code{3}) oraz wysyłane jest powiadomienie (\code{4}) do modułu
+Arete Master. Ten wysyła wyzwalacz do Arete Slave na urządzeniu \code{Server},
+który odbiera go (\code{5}) i kończy pracę serwera. Na koniec na urządzeniu
+\code{Server} sprawdzana jest nazwa pliku (\code{6}) oraz suma kontrolna
+(\code{7}), a następnie przesłany plik jest usuwany (\code{8}).
+
 \subsection{Konfiguracja}
 
-Poniżej omówiliśmy szczegółowo konfigurację testu. Zawiera ona jedynie model i
-plan testu, natomiast laboratorium i odzworowanie między modelem a laboratorium
-zostaną przedstawione później. Zakładamy, że użytkownik zapoznał się z działem
-\fixref{Konfiguracja}.
+Poniżej omówiliśmy szczegółowo konfigurację testu w ramach którego zostaną
+wykonane opisane przed chwilą czynności. Zawiera ona jedynie model i plan testu.
+Zakładamy, że użytkownik zapoznał się z rozdziałami \ref{arete-master-config}
+oraz \ref{examples-install-run} omawiającymi konfigurację oraz uruchomienie
+testów za pomocą Arete.
 
 \begin{pythoncode}
   # examples/client-server/configuration:
@@ -136,9 +235,10 @@ urządzeniami.
 \begin{pythoncode}
   append_schedule('client', [
       ('client', at(1), \
-          shell('./@{clientdist.path} @{server.ip} 6666 @{testfile.path} dest_path', \
-          use_resources=['clientdist', 'testfile'], check_executable=False)),
-      ('md5sum', after('client'), shell('md5sum @{testfile.path}')),
+          shell('./@{clientdist.name} @{server.ip} 6666 \
+	  @{testfile.name} dest_path', \
+	  use_resources=['clientdist', 'testfile'], check_executable=False)),
+      ('md5sum', after('client'), shell('md5sum @{testfile.name}')),
       ('notify', after('md5sum'), notify('kill-server'))
   ])
 \end{pythoncode}
@@ -165,7 +265,7 @@ komendy kończącej działanie serwera.
 \begin{pythoncode}
   append_schedule('server', [
       ('server', at(0), \
-          shell('./@{serverdist.path} 0.0.0.0 6666', \
+          shell('./@{serverdist.name} 0.0.0.0 6666', \
           use_resources=['serverdist'], check_executable=False)),
       ('trigger', trigger('kill-server'), shell('kill @{server.pid}')),
       ('ls', after('server'), shell('ls dest_path')),
@@ -182,82 +282,6 @@ uruchomiona po otrzymaniu sygnału o nazwie \code{kill-server} od modułu Arete
 Master. Pozwoli to na uruchomienie dalszych komend, sprawdzających nazwę oraz
 sumę kontrolną otrzymanego od klienta pliku, usunięcie go oraz zakończenie
 testu.
-
-\subsection{Uruchomienie}
-
-\FIXME{Możliwe, że przeniesiemy to do ogólnego rozdziału o instalacji, żeby nie
-powtarzać przy uruchamianiu każdego testu.}
-
-Rozpoczynamy od uruchomienia programów Arete Slave na komputerach biorących
-udział w teście.
-
-\code{\$ arete-slave -v}
-
-Ponieważ na każdym z urządzeń będzie działać tylko jeden demon, możemy
-skorzystać z domyślnych ustawień. W przeciwnym wypadku wymagane jest użycie
-dodatkowych parametrów opisancych w rozdziale \ref{arete-slave-run}, aby
-zróżnicować porty i nazwy plików bazy danych. Użycie parametru \code{-v}
-spowoduje wypisywanie loga na standardowe wyjście, co ułatwi nam obserwację
-przebiegu testu.
-
-Następnie tworzymy konfigurację laboratorium. Przykładowy plik konfiguracyjny
-przedstawiono poniżej.
-
-\begin{pythoncode}
-  # examples/example_laboratory:
-  create_laboratory('example_laboratory')
-
-  add_device('marvin',
-      connection='tcp',
-      ip='192.168.0.2',
-      port='4567',
-      frontend='arete_slave')
-
-  add_device('defteros',
-      connection='tcp',
-      ip='192.168.0.3',
-      port='4567',
-      frontend='arete_slave')
-\end{pythoncode}
-
-Kolejnym krokiem jest stworzenie odwzorowania między modelem a labolatorium.
-Jeśli chcielibyśmy zawrzeć go w pliku konfiguracyjnym, wyglądałoby to
-następująco.
-
-\begin{pythoncode}
-  create_mapping('client-server-to-example_laboratory')
-
-  bind('client', 'marvin')
-  bind('server', 'defteros')
-\end{pythoncode}
-
-Alternatywnie, odwzorowanie możemy podać w linii poleceń programu Arete Master.
-Uruchamiamy test uwzględniając stworzone wcześniej pliki konfiguracyjne oraz
-argument \code{--map}, jak przedstawiono poniżej.
-
-\code{\$ arete -c examples/client-server/configuration examples/example\_laboratory --map client:marvin server:defteros}
-
-\subsection{Przebieg}
-
-\begin{figure}[htb]
-\begin{center}
-\leavevmode
-\includegraphics[width=0.6\textwidth]{example-01-sequence}
-\end{center}
-\caption{Schemat przebiegu testu klient-serwer.}
-\label{fig:example-01-sequence}
-\end{figure}
-
-Prześledźmy teraz zobrazowany na rysunku \ref{fig:example-01-sequence} przebieg
-testu. Zaczynamy od wystartowania serwera (\code{1}) na urządzeniu \code{server}.
-Następnie na drugim urządzeniu uruchamiany jest klient (\code{2}), który łączy się z
-serwerem, przesyła do niego wskazany plik. Po zakończeniu transferu klient kończy
-działanie i uruchamiane jest obliczenie sumy kontrolnej (\code{3}) oraz wysyłane
-jest powiadomienie (\code{4}) do modułu Arete Master. Ten wysyła wyzwalacz do
-Arete Slave na urządzeniu \code{server}, który odbiera go (\code{5}) i kończy
-pracę serwera. Na koniec na urządzeniu \code{server} sprawdzana jest nazwa pliku
-(\code{6}) oraz suma kontrolna (\code{7}), a następnie przesłany plik jest
-usuwany (\code{8}).
 
 \subsection{Wyniki}
 
@@ -288,6 +312,9 @@ wyglądają one następująco.
       \item[return code] 0
     \end{description}
   \end{description}
+\end{description}
+
+\begin{description}
 \item[]
   node: server
   \begin{description}
@@ -332,6 +359,7 @@ wywnioskować, że stworzone przez nas implementacje programów klient-serwer s�
 poprawne.
 
 \section{Przykład: Wpływ transmisji TCP na pracę DCCP}
+\label{example-dccp}
 
 Drugi przykład dotyczy pomiaru szybkości transferu danych przy użyciu protokołu
 DCCP oraz wpływu innych transmisji na tę szybkość. Sposób pomiaru jest prosty.
@@ -346,6 +374,29 @@ wpływ transmisji TCP i UDP na pracę DCCP, porównanie DCCP z TCP i UDP, itd.
 Różniły się one kolejnością i momentami, w których na uczestniczących w teście
 urządzeniach należało uruchomić lub zakończyć \code{iperf}. W tym przykładzie
 zaprezentujemy test przedstawiający wpływ transmisji TCP na pracę DCCP. 
+
+\subsection{Przebieg}
+
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{example-03-sequence}
+\end{center}
+\caption{Schemat przebiegu testu badającego wpływ transmisji TCP na pracę
+protokołu DCCP.}
+\label{fig:example-03-sequence}
+\end{figure}
+
+Przebieg testu przestawiliśmy na rysunku \ref{fig:example-03-sequence}. Na
+początku na urządzeniu \code{Server} uruchamiane są dwa serwery \code{iperf} -
+jeden dla protokołu TCP, drugi korzystający z DCCP. Następnie na obu
+urządzeniach rozpoczynamy wykonywanie komendy \code{iptables} zwracającej
+statystyki ruchu sieciowego. Komenda ta będzie wykonywana co sekundę aż do
+zakończenia testu. Z sekundowym opóźnieniem uruchamiamy na urządzeniu
+\code{Client} klienta \code{iperf} który rozpoczyna komunikację z odpowiednim
+serwerem z wykorzystaniem protokołu DCCP. W 10 sekundzie rozpoczynamy transmisję
+TCP uruchamiając kolejnego klienta \code{iperf}. Test kończy się po 20
+sekundach.
 
 \subsection{Konfiguracja}
 
@@ -367,9 +418,10 @@ zaprezentujemy test przedstawiający wpływ transmisji TCP na pracę DCCP.
           attributes.remove('iptables_counters')
 \end{pythoncode}
 
-Zaczynamy od stworzenia \fixme{sterownika parametrów} (\code{HostDriverPlugin}),
-który dla każdego z urządzeń doda komendy konfiguracyjne i czyszczące tworzące
-odpowiednie wpisy w \code{iptables} dla podanych protokołów.
+Zaczynamy od stworzenia sterownika parametrów (\code{HostDriverPlugin} - opisany
+szerzej w rozdziale \ref{arete-master-drivers}), który dla każdego z urządzeń doda
+komendy konfiguracyjne i czyszczące tworzące odpowiednie wpisy w \code{iptables}
+dla podanych protokołów.
 
 \begin{pythoncode}
   create_model('dccp_flow')
@@ -381,7 +433,7 @@ odpowiednie wpisy w \code{iptables} dla podanych protokołów.
 Następnie tworzymy model o nazwie \code{dccp\_flow} i podobnie jak w poprzednim
 przykładzie dodajemy dwa urządzenia - klienta i serwer. W parametrze
 \code{iptables\_counters} podajemy listę protokołów dla wcześniej stworzonego
-\fixme{sterownika parametrów}. Liczba \code{33} odpowiada protokołowi DCCP.
+sterownika parametrów. Liczba \code{33} odpowiada protokołowi DCCP.
 
 \begin{pythoncode}
   create_schedule('dccp_flow')
@@ -431,39 +483,18 @@ klienta DCCP, a w \code{10} sekundzie klienta TCP. Na obu urządzeniach co
 sekundę zapisujemy wynik komendy wypisującej ilość przesłanych pakietów i
 bajtów.
 
-\subsection{Uruchomienie}
-
-Należy zwrócić uwagę, że przykład ten wymaga uprawnień administratora.
-
-Podobnie jak w poprzednim przykładzie najpierw uruchamiamy programy Arete Slave
-na komputerach biorących udział w teście.
-
-\code{\# arete-slave -v}
-
-Następnie korzystając ze stworzonego już pliku z konfiguracją laboratorium i
-argumentu \code{--map} uruchamiamy test w programie Arete Master.
-
-\code{\# arete -c examples/dccp\_flow/configuration examples/example\_laboratory
--- map client:marvin server:defteros}
-
-\subsection{Przebieg}
-
-\FIXME{Opisać przebieg.}
-
-\begin{figure}[htb]
-\begin{center}
-\leavevmode
-\includegraphics[width=0.8\textwidth]{example-03-sequence}
-\end{center}
-\caption{Schemat przebiegu testu dccp.}
-\label{fig:example-03-sequence}
-\end{figure}
-
 \subsection{Wyniki}
 
-\FIXME{Wyniki.}
+Korzystając z otrzymanych w tym teście wyników w postaci statystyk zebranych
+przez cosekundowe wywołania komendy \code{iptables} byliśmy w stanie sporządzić
+wykres przedstawiony na rysunku \fixref{rysunek}.
+
+\FIXME{Rydzyn zrobi wykres ładny.}
+
+\FIXME{Wnioski z tego co otrzymaliśmy, czyli interpretacja tego wykresu.}
 
 \section{Przykład: Dystrybucja pliku w sieci BitTorrent}
+\label{example-torrent}
 
 Trzeci, ostatni przykład, który przedstawimy, to ćwiczenie laboratoryjne z
 Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
@@ -471,80 +502,157 @@ BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test na
 zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
 klient wysłał danych i ile trwała pełna dystrybucja pliku.
 
-\FIXME{"Zadana topologia urządzeń to dwie sieci IP po cztery urządzenia,
-połączone routerem sztucznie generującym opóźnienia." - różne sytuacje, tu
-opiszemy jedną.}
+Przykład ten można wykorzystać do stworzenia testów na różnych topologiach,
+poniżej omówimy sytuację z dowolną ilością urządzeń znajdujących się w tej samej
+podsieci. Oprócz urządzeń typu peer\footnote{\emph{ang. pośrednik} - użytkownik,
+który w danym momencie pobiera lub udostępnia dany plik.} wykorzystamy dwa
+osobne urządzenia, które będą pełnić rolę trackera\footnote{\emph{ang.
+tropiciel} - serwer przekazujący informacje użytkownikach pobierających dany
+plik.} i seeda\footnote{\emph{ang. obsiewacz} - użytkownik, który posiada
+kompletny plik i udostępnia go innym osobom.}.
 
-\subsection{Konfiguracja}
-
-\FIXME{Dodać jakiś model.}
-
-\begin{pythoncode}
-  create_schedule('torrent')
-    
-  test_end_policy('complete', setup_phase_delay=0.0)
-  create_trigger('stop-torrent', len(west+east)-1)
-\end{pythoncode}
-
-\begin{pythoncode}
-  torrent = add_resource(File('torrent', 'big-data-file.torrent'))
-  data    = add_resource(File('big-data-file',    'big-data-file'))
-  trackcfg = add_resource(File('trackcfg', 'xbt_tracker.conf'))
-\end{pythoncode}
-
-\begin{pythoncode}
-  tracker_schedule = [
-      ('tracker', at(0), shell('xbt_tracker --conf_file @{trackcfg.path}', \
-          use_resources=[trackcfg])),
-      ('stop-tracker', trigger('stop-torrent'), shell('kill @{tracker.pid}'))
-  ]
-\end{pythoncode}
-
-\begin{pythoncode}
-  seed_schedule = [ 
-      ('ctorrent', at(1), shell('ctorrent -f "@{torrent.path}"', \
-          use_resources=[torrent, data])),
-      ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
-  ]
-\end{pythoncode}
-
-\begin{pythoncode}
-  peer_schedule = [
-      ('ctorrent', at(2), \
-          shell('ctorrent "@{torrent.path}" -X @{poke stop-torrent}', \
-          use_resources=[torrent])),
-      ('poke', poke('stop-torrent'), notify('stop-torrent')),
-      ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
-  ]
-\end{pythoncode}
-
-\begin{pythoncode}
-  append_schedule(east[0], tracker_schedule)
-  append_schedule(east[0], seed_schedule)
-
-  for host in west + east[1:]:
-      append_schedule(host, peer_schedule)
-\end{pythoncode}
-
-\subsection{Uruchomienie}
-
-\FIXME{Uruchomienie.}
+Do stworzenia danych które będą przesyłane w czasie testu oraz pliku
+torrent\footnote{Metaplik zawierający niezbędne informacje do rozpoczęcia
+pobierania pliku, takich jak zawartość archiwum i adres trackera czy sumy
+kontrolne plików.} można wykorzystać stworzony przez nas skrypt
+\code{create\_torrent.sh} znajdujący się w katalogu z przykładem. Pobiera on
+trzy argumenty - adres i port, na których docelowo będzie uruchomiony tracker
+oraz rozmiar tworzonego pliku danych.
 
 \subsection{Przebieg}
-
-\FIXME{Opisać przebieg.}
 
 \begin{figure}[htb]
 \begin{center}
 \leavevmode
 \includegraphics[width=0.8\textwidth]{example-02-sequence}
 \end{center}
-\caption{Schemat przebiegu testu torrent.}
+\caption{Schemat przebiegu testu z wykorzystaniem sieci BitTorrent.}
 \label{fig:example-02-sequence}
 \end{figure}
 
+Zacznijmy od opisu przebiegu testu, który przedstawiono na rysunku
+\ref{fig:example-02-sequence}. Na urządzeniu \code{Tracker} uruchamiamy tracker
+BitTorrent, a następnie na urządzeniu \code{Seed} rozpoczynamy udostępnianie
+pliku przez jednego z klientów (\emph{ang. seeding}). Z parosekundowym
+opóźnieniem, równocześnie uruchamiamy na urządzeniach \code{Peer} klientów,
+którzy pobierają plik. Gdy klient kończy pobieranie wysyła powiadomienie do
+modułu Arete Master. W momencie gdy ten otrzyma powiadomienia od wszystkich
+klientów działających na urządzeniach \code{Peer} wysyła wyzwalacze do Arete
+Slave na wszystkich urządzeniach. Powoduje to zakończenie pracy trackera oraz
+wszystkich klientów i zakończenie testu.
+
+\subsection{Konfiguracja}
+
+\begin{pythoncode}
+  # examples/torrent/model_x_peers
+  create_model('torrent')
+
+  tracker = add_host('tracker')
+  seed = add_host('seed')
+
+  peers = []
+  for i in range(10):
+      peers.append(add_host('peer{0}'.format(i)))
+\end{pythoncode}
+
+Rozpoczynamy od stworzenia modelu o nazwie \code{torrent}. Dodajemy do niego dwa
+urządzenia, które będą pełnić rolę trackera i seeda, a następnie określoną ilość
+(w tym wypadku 10) pozostałych urządzeń które będę brały udział w teście.
+
+\begin{pythoncode}
+  # examples/torrent/schedule_torrent
+  create_schedule('torrent')
+    
+  test_end_policy('complete')
+  create_trigger('stop-torrent', len(peers))
+\end{pythoncode}
+
+Następnie przechodzimy do stworzenia planu testu \code{torrent}, określając jego
+politykę zakończenia na \code{complete}. Tworzymy również wyzwalacz o nazwie
+\code{stop-torrent}, ustawiając jego wartość na ilość urządzeń typu \code{peer}
+biorących udział w teście.
+
+\begin{pythoncode}
+  torrent = add_resource(File('torrent', 'big-data-file.torrent'))
+  data = add_resource(File('torrent-data', 'big-data-file'))
+  trackcfg = add_resource(File('trackcfg', 'xbt_tracker.conf'))
+\end{pythoncode}
+
+Kolejnym etapem jest stworzenie zasobów. Dodajemy stworzony wcześniej plik z
+danymi oraz plik torrent. Dodatkowo przesyłamy plik konfiguracyjny dla trackera
+XBT.
+
+\begin{pythoncode}
+  tracker_schedule = [
+      ('tracker', at(0), shell('xbt_tracker --conf_file @{trackcfg.name}', \
+          use_resources=[trackcfg])),
+      ('stop-torrent', trigger('stop-torrent'), shell('kill @{tracker.pid}'))
+  ]
+\end{pythoncode}
+
+Szczegółowy plan testu rozpoczynamy od urządzenia \code{Tracker}. Na początku testu
+uruchamiamy program \code{xbt\_tracker} podając jako argument przesłany z
+wykorzystaniem parametru \code{use\_resources}, stworzony wcześniej plik
+konfiguracyjny. Na koniec dodajemy komendę kończącą działanie trackera, która
+zostanie uruchomiona po otrzymaniu sygnału o nazwie \code{stop-torrent} od
+modułu Arete Master.
+
+\begin{pythoncode}
+  seed_schedule = [ 
+      ('ctorrent', at(1), shell('ctorrent "@{torrent.name}"', \
+          use_resources=[torrent, data])),
+      ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
+  ]
+\end{pythoncode}
+
+Następnie tworzymy plan testu dla urządzenia udostępniającego. Dodajemy komendę
+uruchamiającą klienta \code{ctorrent} oraz kończącą go w odpowiedzi na wyzwalacz
+\code{stop-torrent}. W parametrze \code{use\_resources} podajemy zarówno plik
+torrent jak i plik z danymi które mają być udostępniane.
+
+\begin{pythoncode}
+  peer_schedule = [
+      ('ctorrent', at(2), \
+          shell('ctorrent "@{torrent.name}" -X @{poke stop-torrent}', \
+          use_resources=[torrent])),
+      ('poke', poke('stop-torrent'), notify('stop-torrent')),
+      ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
+  ]
+\end{pythoncode}
+
+Podobnie jak w przypadku urządzenia \code{Seed}, plan testu na pozostałych
+urządzeniach rozpoczyna się od uruchomienia klienta \code{ctorrent}. Różnica
+polega na tym, że jest on uruchamiany dopiero w 2 sekundzie testu oraz nie
+posiada pliku danych, gdyż ten nie jest przesyłany w parametrze
+\code{use\_resources}.
+
+Ponieważ chcemy aby klient działał dalej i udostępniał dane pozostałym klientom
+po zakończeniu pobierania wykorzystujemy udostępniany przez klienta
+\code{ctorrent} argument \code{-X}. Podana po nim komenda \code{\@\{poke
+stop-torrent\}} uruchamia program \code{arete-poker} z odpowiednimi argumentami,
+który łączy się z Arete Slave i uruchamia polecenie \code{poke}, które z kolei
+wysyła powiadomienie do modułu Arete Master.
+
+Tak jak w przypadku pozostałych planów dodajemy wyzwalacz \code{stop-torrent}
+kończący działanie klienta.
+
+\begin{pythoncode}
+  append_schedule('tracker', tracker_schedule)
+  append_schedule('seed', seed_schedule)
+
+  for host in peers:
+      append_schedule(host, peer_schedule)
+\end{pythoncode}
+
+Na koniec dodajemy odpowiednie plany do stworzonych w modelu urządzeń.
+
 \subsection{Wyniki}
 
-\FIXME{Wyniki.}
+\FIXME{Też jakiś wykres można by zrobić.}
+
+\section{Podsumowanie}
+
+\FIXME{Napisać jak we wszystkich 3 przykładach sprawdziliśmy, że Arete działa
+świetnie, jest łatwy w obsłudze, efektywny i nadaje się do różnego rodzaju testów.}
 
 \end{document}
