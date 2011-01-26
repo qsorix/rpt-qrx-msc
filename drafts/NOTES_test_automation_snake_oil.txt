@@ -1,0 +1,250 @@
+Test Automation Snake Oil
+V2.1 6/13/99
+Copyright  1999, James Bach
+
+Test automation is hard, too.
+
+Strange, then, that almost all testing pundits,
+practicing testers, test managers, and of course,
+companies that sell test tools recommend test automation with such overwhelming enthusiasm.
+Well, perhaps "strange" is not the right word.
+After all, CASE tools were a big fad for a while,
+and test tools are just another species of CASE.
+From object-orientation to "programmerless"
+programming, starry-eyed advocacy is nothing
+new to our industry. So maybe the poor quality
+of public information and analysis about test
+automation is not so much strange as it is simply
+a sign of the immaturity of the field. As a
+community, perhaps we're still in the phase of
+admiring the cool idea of test automation, and
+not yet to the point of recognizing its pitfalls and
+gotchas
+
+Automated tests execute a sequence of actions
+without human intervention. This approach helps
+eliminate human error, and provides faster
+results. Since most products require tests to be
+run many times, automated testing generally
+leads to significant labor cost savings over time.
+Typically a company will pass the break-even
+point for labor costs after just two or three runs
+of an automated test."
+
+This quote is from a white paper on test
+automation published by a leading vendor of test
+tools. Similar statements can be found in
+advertisements and documentation for most
+commercial regression test tools. Sometimes
+they are accompanied by impressive graphs, too.
+The idea boils down to just this: computers are
+faster, cheaper, and more reliable than humans;
+therefore, automate.
+This line of reasoning rests on many reckless
+assumptions. Let's examine eight of them:
+
+
+Reckless Assumption #1
+Testing is a "sequence of actions."
+
+if
+we try to reduce testing to a rote series of actions
+the result will be a narrow and shallow set of
+tests.
+
+Manual testing, on the other hand, is a process
+that adapts easily to change and can cope with
+complexity.
+in a mere
+"sequence of actions" every evaluation must be
+explicitly planned.
+That's why automation is best
+applied only to a narrow spectrum of testing, not
+to the majority of the test process.
+
+If you set out to automate all the necessary test
+execution, you'll probably spend a lot of money
+and time creating relatively weak tests that
+ignore many interesting bugs, and find many
+"problems" that turn out to be merely
+unanticipated correct behavior.
+
+
+Reckless Assumption #2
+Testing means repeating the same
+actions over and over.
+
+Once a specific test case is executed a single
+time, and no bug is found, there is little chance
+that the test case will ever find a bug, unless a
+new bug is introduced into the system
+
+Variability is one of the great
+advantages of hand testing over script and
+playback testing.
+
+
+Reckless Assumption #3
+We can automate testing actions.
+Some tasks that are easy for people are hard for
+computers. Probably the hardest part of
+automation is interpreting test results. For GUI
+software, it is very hard to automatically notice
+all categories of significant problems while
+Even if we have a particular sequence of 
+operations that can in principle be automated, we 
+can only do so if we have an appropriate tool for 
+the job. Information about tools is hard to come 
+by, though, and the most critical aspects of a 
+regression test tool are impossible to evaluate 
+unless we create or review an industrial size test 
+suite using the tool. Here are some of the factors 
+to consider when selecting a test tool. Notice 
+how many of them could never be evaluated just 
+by perusing the users manual or watching a trade 
+show demo: 
+Capability: Does the tool have all the ♦ Reliability: Does the tool work for long ♦ Capacity: Beyond the toy examples and 
+critical features we need, especially in the periods without failure, or is it full of bugs? demos, does the tool work without failure in 
+area of test result validation and test suite Many test tools are developed by small an industrial environment? Can it handle 
+management? companies that do a poor job of testing large scale test suites that run for hours or 
+            them. days and involve thousands of scripts? 
+♦ Learnability: Can the tool be mastered in a
+short time? Are there training classes or
+books available to aid that process?
+♦ Operability: Are the features of the tool
+cumbersome to use, or prone to user error?
+♦ Performance: Is the tool quick enough to
+allow a substantial savings in test
+development and execution time versus
+hand testing
+♦ Compatibility: Does the tool work with
+the particular technology that we need to
+test?
+♦ Non-Intrusiveness: How well does the
+tool simulate an actual user? Is the behavior
+of the software under test the same with
+automation as without?
+
+
+Reckless Assumption #4:
+An automated test is faster, because
+it needs no human intervention.
+All automated test suites require human
+intervention, if only to diagnose the results and
+fix broken tests. It can also be surprisingly hard
+to make a complex test suite run without a hitch.
+Common culprits are changes to the software
+being tested, memory problems, file system
+problems, network glitches, and bugs in the test
+tool itself.
+
+
+Reckless Assumption #6
+We can quantify the costs and
+benefits of manual vs. automated
+testing.
+The truth is, hand testing and automated testing
+are really two different processes, rather than
+two different ways to execute the same process.
+
+
+The cost of automated testing is comprised of
+several parts:
+♦
+♦
+♦
+♦
+The cost of developing the automation.
+The cost of operating the automated tests.
+The cost of maintaining the automation as
+the product changes.
+The cost of any other new tasks necessitated
+by the automation.
+
+Most
+analyses of the cost of test automation
+completely ignore the special new tasks that
+must be done just because of the automation:
+Test cases must be documented carefully.
+
+The automation itself must be tested and
+documented.
+
+Each time the suite is executed someone
+must carefully pore over the results to tell
+the false negatives from real bugs.
+
+Radical changes in the product to be tested
+must be reviewed to evaluate their impact on
+the test suite, and new test code may have to
+be written to cope with them.
+
+If the test suite is shared, meetings must be
+held to coordinate the development,
+maintenance, and operation of the suite.
+
+The headache of porting the tests must be
+endured, if the product being tested is
+subsequently ported to a new platform, or
+even to a new version of the same platform.
+I know of many test suites that were blown
+away by hurricane Win95, and I'm sure
+many will also be wiped out by its sister
+storm, Windows 2000.
+
+
+Writing test code and performing
+interactive hand testing are such different
+activities that a person assigned to both duties
+will tend to focus on one to the exclusion of the
+other.
+
+
+Also, since automation development is
+software development, it requires a certain
+amount of development talent.
+
+
+Reckless Assumption #8
+Automation will not harm the test
+project.
+it's dangerous to automate something
+that we don't understand.
+The maintainers are afraid to
+throw any old tests out, even if they look
+meaningless, because they might later turn out to
+be important. So, the suite continues to accrete
+new tests, becoming an increasingly mysterious
+oracle,
+
+
+Manual testing is
+slower, yes, but much more flexible, and it can
+cope with the chaos of incomplete and changing
+products and specs.
+
+
+A Sensible Approach to
+Automation
+Despite the concerns raised in this article, I do
+believe in test automation. I am a test automation
+consultant, after all. Just as there can be quality
+software, there can be quality test automation. To
+create good test automation, though, we have to
+be careful. The path is strewn with pitfalls. Here
+are some key principles to keep in mind:
+
+Maintain a careful distinction between the
+automation and the process that it
+automates. The test process should be in a
+form that is convenient to review and that
+maps to the automation.
+
+Think of your automation as a baseline test
+suite to be used in conjunction with manual
+testing, rather than as a replacement for it.
+
+Assure that the product is mature enough so
+that maintenance costs from constantly
+changing tests don't overwhelm any benefits
+provided.
