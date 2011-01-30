@@ -1,0 +1,27 @@
+Practical Experience in Automated Testing
+Kerry Zallar, http://www.testingstuff.com
+http://www.methodsandtools.com/archive/archive.php?id=33
+
+	Testing tools, as sophisticated as they have become, are still
+	dependent upon consistency in the test environment. This should be
+	quite obvious, but having a dedicated test environment is absolutely
+	necessary. If testers don't have control of their test environment and
+	test data, the required setup for tests may not meet the requirements
+	of those tests. When manual testing is done testers may sometimes
+	'work around' test setup issues. Automated test scripts are less
+	flexible and require specific setup scenarios, thereby needing more
+	control.
+
+Testowanie automatyczne najlepiej przeprowadzać w dedykowanym środowisku.
+
+	Experience has shown that most bugs are not found by running automated
+	tests.  Most bugs are found in the process of creating the scripts, or
+	the first time the code is tested
+
+	That test automation mostly buys you is the opportunity to not spend
+	valuable man-hours re-testing code that has been tested before, but
+	which has to be tested in any case because the risk is too high not to
+	test it.
+
+Testowanie automatyczne do regresji, gdzie zaoszczędzamy godzin, które można
+przeznaczyć na manualne testowanie nowych funkcji.
