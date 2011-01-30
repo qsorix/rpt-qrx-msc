@@ -1,0 +1,38 @@
+Alliance Global Services
+Guidelines to create a ROBUST TEST AUTOMATION FRAMEWORK
+
+Poniżej kilka cytatów, z którymi się nie zgadzam...
+
+	Automating these frameworks and maintaining quality software releases
+	are critical to business performance. 
+
+W świetle innych artykułów, automatyzacja nie jest wcale taka wymagana. W
+artykule nie zwraca się uwagi na wady automatyzacji.
+
+	Script-­less representation of automated tests: The testing framework
+	should offer point-and-click interface for accessing and interacting
+	with the application components under test— as opposed to presenting
+	line after line of scripting. 
+  
+Wizualizacja jest możliwa tylko w wypadku występowania znanych artefaktów. W
+uniwersalnym frameworku testującym nie da się wizualizować wszystkiego. Jak
+np. wizualizować topologię sieci z setek komputerów. Klikanie tego nie jest
+wygodne.
+
+	Data driven tests: A key benefit of automating functional testing is
+	the ability to test large volumes of data on the system quickly. But
+	you must be able to manipulate the data sets, perform calculations,
+	and quickly create hundreds of test iterations and permutations with
+	minimal effort. Test Automation Frameworks must have capability to
+	integrate with spreadsheets and provide powerful calculation features. 
+
+"Powerful calculation features" to coś, czego chcą menadżerowie, a czego się
+nie da zdefiniować nie mając pojęcia o teście, jaki chcemy przeprowadzić.
+Róznorodność formatów wyjściowych danych uniemożliwia ich uniwersalną obróbkę.
+
+	Concise reporting: The ability to run high volume of tests is of
+	little benefit if the results of the tests are not easy to understand.
+	The framework must automatically generate reports of the test run and
+	show the results in an easy-to-read format. 
+  
+Jak wyżej. Bez znajomości i rozumienia danych wynikowych, framework nie jest w
