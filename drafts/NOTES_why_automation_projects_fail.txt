@@ -1,0 +1,61 @@
+MART pro-service solutions
+
+Why Automation Projects Fail
+(and what you can do to prevent failure)
+Art Beall, Chief Technical Officer
+
+	most if not all automation projects fail to live up to peoples’ expectations
+	and many automation projects are flat out abandoned.
+
+	Automation seems rather like a small problem superficially however
+	later it is realized that the problem domain is much bigger 
+Z automatyzacją wiążą się wygórowane oczekiwania, które często zostają
+zawiedzione, a projekt porzucony.
+
+Wynika to z faktu, że problem automatyzacji wydaje się o wiele mniejszy na
+pierwszy rzut oka, niż po dokładnym zbadaniu domeny.
+
+Cechy potrzebne w systemie automatyzacji
+-----------------------------------------
+	a. Logging capabilities
+	b. Graphical automation scenario creator
+	c. API for a remote procedure calls
+	d. Reporting
+	e. Resource Management of test/lab resources
+	f. Concurrent scripts
+	g. Capability to preparing or “clean up” the test environment
+	h. Versioning of test scripts
+	i. Documentation for administration/test script creation.
+
+
+	An automation project needs a framework and the framework needs to be
+	implemented and documented. 
+
+Projekt automatyzacji wymaga frameworku, a ten musi być zaimplementowany i
+udokumentowany.
+
+	a. Automation Architecture must be extensible.
+
+Framework musi być rozszerzalny.
+
+	b. Must have instrumentation for debugging purposes.
+
+Potrzebna jest możliwość 'instrumentacji' (pl?) do debugowania ;)
+
+	c. Your scripts (and the underlying libraries used by your scripts) should be
+	modularized.
+
+Modularność skryptów.
+
+	d. Consider the Long Term Implications of your Choices (i.e. don’t
+	bite off more than you can chew) Focus on the low hanging fruit early
+	on.
+
+Należy się skupić na tym, co łatwo osiągnąć.
+
+	e. Some scenarios introduce a much greater level of complexity to the
+	automation system. This complexity can affect the stability and the
+	scalability of the automation system as a whole. 
+
+Niektóre scenariusze wprowadzają o wiele większość złożoność w system
+automatyzacji. Może to mieć wpływ na stabilnośc i skalowalność całego systemu.
