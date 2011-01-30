@@ -1,0 +1,24 @@
+http://www.zimbio.com/Questioning+Software/articles/zzEAXEEUD-E/best+way+choose+test+automation+tool
+
+What's the best way to choose a test automation tool?
+Written by spike1030 on Nov-20-09 7:16pm
+From:  qa-skill.blogspot.com
+
+This means there must be a mechanism by which the computer can do an automatic
+comparison between actual and expected results for every automated test
+scenario and unambiguously make a pass or fail determination. This factor may
+require a significant change in the entire approach to testing, since in
+manual testing a human is involved and can:
+
+    * make mental adjustments to expected test results based on variations in
+      the pre-test state of the software system
+    * often make on-the-fly adjustments, if needed, to data used in the test
+    * make pass/fail judgements about results of each test
+    * make quick judgements and adjustments for changes to requirements.
+    * make a wide variety of other types of judgements and adjustments as needed.
+
+
+Automated testing rarely enables savings in the cost of testing, although it
+may result in software lifecycle savings (or increased sales) just as with any
+other quality-related initiative.
+
