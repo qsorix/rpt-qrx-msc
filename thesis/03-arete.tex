@@ -4,51 +4,52 @@
 \chapter{Arete}
 \label{arete}
 
-W tym rozdziale prezentujemy stworzone przez nas narzędzie Arete -- Automated
-Real Environment Testing Engine. Jego zadaniem jest automatyzacja
-powtarzających się czynności występujących przy przeprowadzaniu testów w
-środowiskach rozproszonych w warunkach rzeczywistych.
+Arete (Automated Real Environment Testing Engine) to środowisko automatyzacji
+testów, którego stworzenie jest celem naszej pracy. Zadaniem Arete jest
+automatyzacja powtarzających się czynności występujących przy przeprowadzaniu
+testów w środowiskach rozproszonych w warunkach rzeczywistych.
 
-Omówienie rozpoczynamy od przedstawienia, popartych przykładami, zastosowań, z
-myślą o których stworzone zostało Arete. Są to sytuacje, w których nasze
-narzędzie pozwoli usprawnić pracę osób przeprowadzających testy.
+Analizę rozpoczynamy od przedstawienia, popartych przykładami, zastosowań, z
+myślą o których tworzone jest Arete. Są to sytuacje, w których nasze narzędzie
+pozwoli usprawnić pracę osób przeprowadzających testy i badania.
 
 Następnie opisujemy wynikające z zastosowań wymagania funkcjonalne. Wymagania
-te krótko podsumowują podstawowe możliwości programu.
+te krótko podsumowują podstawowe możliwości jakie oferować musi program.
 
 W dalszej części prezentujemy dodatkowe założenia mające wpływ na charakter
 tworzonego rozwiązania, jednocześnie argumentując podjęte przez nas decyzje w
 świetle jego użyteczności.
 
-Rozdział zamyka prezentacja architektury programu.
+Rozdział zamyka prezentacja zaprojektowanej architektury programu.
 
 \section{Zastosowania}
 \label{arete-zastosowania}
 
-Arete zostało stworzone z myślą o testerach, zespołach badawczych oraz
-studentach kierunków informatycznych, zajmujących się tworzeniem oprogramowania
-sieciowego lub przeprowadzaniem eksperymentów w sieciach komputerowych. Może być
-ono również przydatne dla prowadzących zajęcia praktyczne, przygotowujących
+Arete jest tworzone z myślą o testerach, zespołach badawczych oraz studentach
+kierunków informatycznych, zajmujących się tworzeniem oprogramowania sieciowego
+lub przeprowadzaniem eksperymentów w sieciach komputerowych. Może być ono
+również przydatne dla prowadzących zajęcia praktyczne, przygotowujących
 ćwiczenia w takich środowiskach.
 
-Tworząc Arete skupiliśmy się na kilku przypadkach zastosowań, które pojawiły
-się w czasie naszych zajęć laboratoryjnych z różnych przedmiotów. Na uwadze
-mieliśmy trzy konkretne scenariusze omówione poniżej.
+Tworząc Arete skupimy się na kilku przypadkach zastosowań, które pojawiły się w
+czasie naszych zajęć laboratoryjnych z różnych przedmiotów. Na uwadze mamy
+trzy konkretne scenariusze omówione poniżej.
 
-Potrzebowaliśmy narzędzia, które zautomatyzuje najczęściej wykonywane
+Potrzebujemy narzędzia, które zautomatyzuje najczęściej wykonywane
 czynności: skonfiguruje maszyny, przeprowadzi testy, zapamięta wyniki i
 przywróci pierwotną konfigurację.
 
 Samo zaprojektowanie testu i stworzenie programów potrzebnych do jego
-przeprowadzenia (m.in. programów mierzących obserwowane wartości) pozostaje w
-kwestii użytkownika.
+przeprowadzenia (m.in. programów mierzących obserwowane wartości) pozostanie w
+kwestii użytkownika. Test modelowany będzie na poziomie poleceń systemowych,
+gdyż pracując ręcznie, użytkownik najczęściej działa na tej płaszczyźnie.
 
 Najprostszy scenariusz ma miejsce w czasie tworzenia oprogramowania typu
 klient-serwer. Załóżmy, że tworzymy prosty program mający umożliwiać transfer
 plików. W teście chcemy sprawdzić czy transfer przebiegł poprawnie, tj. czy
 zgadza się z nazwa pliku i czy jego zawartość jest identyczna.
 
-Zadanie narzędzia polega tutaj na:
+Zadanie narzędzia polegałoby tutaj na:
 \begin{enumerate}
 \item przesłaniu aktualnej implementacji serwera na wyznaczone urządzenie,
 \item uruchomieniu serwera i klienta z odpowiednimi parametrami,
@@ -80,8 +81,8 @@ Aby zautomatyzować ten test, program musi:
 Ważne jest też, żeby w czasie testu program nie przesyłał żadnych danych, aby
 nie wpływał w ten sposób na uzyskiwane wyniki.
 
-Trzeci scenariusz, który mieliśmy na uwadze, to ćwiczenie laboratoryjne z
-Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
+Trzeci scenariusz, który mamy na uwadze, to ćwiczenie laboratoryjne z Systemów
+Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
 BitTorrent rozpiętej nad dwiema sieciami IP. Klienci mają rozpocząć pobieranie
 w tym samym momencie, a test należy zakończyć kiedy wszyscy będą posiadać pełny
 plik. Interesuje nas, ile każdy klient wysłał danych i ile trwała pełna
@@ -102,11 +103,11 @@ Do powyższych scenariuszy wracamy ponownie w rozdziale \fixref{Przykłady}. Są
 tam one dokładnie omówione, przedstawiony jest też sposób przeprowadzenia ich
 przy użyciu Arete.
 
-Warto zauważyć, że w każdym ze wspomnianych scenariuszy test kończy się w
-innym momencie. W pierwszym jest to moment, kiedy pracę zakończy dany program.
-Testy z drugiego scenariusza kończą się w określonym momencie czasowym. W
-ostatnim wypadku decyzja o zakończeniu jest podejmowana przez wszystkich
-uczestników.
+Warto zauważyć, że w każdym ze wspomnianych scenariuszy test powinien się
+zakończyć w innym momencie. W pierwszym jest to moment, kiedy pracę skończy
+dany program. Testy z drugiego scenariusza kończą się w określonym momencie
+czasowym. W ostatnim wypadku decyzja o zakończeniu jest podejmowana przez
+wszystkich uczestników.
 
 \section{Wymagania}
 \label{arete-wymagania}
@@ -117,7 +118,7 @@ wynikające z omówionych przed chwilą scenariuszy. W skład możliwości musi 
 \item definiowanie testu,
 \item łączenie ze zdalnymi urządzeniami,
 \item konfiguracja zdalnych urządzeń,
-\item przesyłanie zasobów\footnote{np.~pliki konfiguracyjne wykonywanych programów}  wymaganych w testach,
+\item przesyłanie zasobów\footnote{np.~pliki konfiguracyjne wykonywanych programów} wymaganych w testach,
 \item uruchamianie programów,
 \item pobieranie wyników,
 \item katalogowanie wyników wielu testów,
@@ -131,8 +132,8 @@ wynikające z omówionych przed chwilą scenariuszy. W skład możliwości musi 
   \end{itemize}
 \end{itemize}
 
-Powyższe wymagania mieliśmy na uwadze projektując projekt. Będziemy do nich
-powracać w dalszej treści pracy, żeby wykazać, iż zostały one spełnione.
+Powyższe wymagania będziemy mieć na uwadze projektując projekt. Będziemy do
+nich powracać w dalszej treści pracy, żeby wykazać, iż zostały one spełnione.
 
 \section{Założenia}
 \label{arete-zalozenia}
@@ -294,8 +295,8 @@ im wymagania dotyczące zarówno funkcjonalności, jak i bezpieczeństwa.
 \section{Architektura}
 \label{arete-arch}
 
-Rozpoczynając opis architektury powtórzmy jeszcze raz, że narzędzie Arete
-pracuje w sieci komputerowej. Wyróżniamy komputer kontrolujący test, na którym
+Rozpoczynając opis architektury powtórzmy jeszcze raz, że narzędzie Arete ma
+pracować w sieci komputerowej. Wyróżniamy komputer kontrolujący test, na którym
 uruchomiony jest moduł Arete Master, oraz komputery uczestniczące w teście, na
 których uruchomiony jest moduł Arete Slave, patrz rysunek \ref{fig:arete-arch}.
 
@@ -476,16 +477,19 @@ zastosowania programu.
 
 \section{Podsumowanie}
 
-W rozdziale tym przedstawiliśmy zastosowania, z myślą o których tworzyliśmy
+W rozdziale tym przedstawiliśmy zastosowania, z myślą o których tworzymy
 narzędzie Arete. Zastosowania te stawiają szereg wymagań, których spełnienie
 było kluczowym zadaniem w celu uzyskania potrzebnej funkcjonalności.
 
 Projektując rozwiązanie, staraliśmy poczynić jak najmniej założeń
 wpływających na użytkownika. Kierowaliśmy się przekonaniem, że w ten sposób w
 najmniejszym stopniu ograniczymy możliwe spektrum zastosowań i pozostawimy
-użytkownikom możliwość adaptacji narzędzia do własnych potrzeb.
+użytkownikom możliwość adaptacji narzędzia do własnych potrzeb. Zgodnie z
+\cite{automation-fail,practical-automated} skupiamy się na wymaganiach
+stawianych przez wybrane scenariusze testów i nie próbujemy nadmiernie
+komplikować rozwiązania możliwościami dodatkowymi.
 
-Rozdział zakończyliśmy omówieniem zastosowanej architektury master-slave oraz
+Rozdział zakończyliśmy omówieniem architektury master-slave oraz przewidzianego
 sposobu działania Arete, dając kompletne wyobrażenie o tym, jakiego rodzaju
 jest to narzędzie. W kolejnych rozdziałach pracy szczegółowo omówimy oba moduły
 programu.
