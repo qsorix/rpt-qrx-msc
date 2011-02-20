@@ -65,6 +65,7 @@ def build(bld):
     bld(features='tex', source='04-arete-master.tex', prompt=0)
     bld(features='tex', source='05-arete-slave.tex', prompt=0)
     bld(features='tex', source='06-przyklady.tex', prompt=0)
+    bld(features='tex', source='06-weryfikacja.tex', prompt=0)
     bld(features='tex', source='07-podsumowanie.tex', prompt=0)
 
 # vim: ft=python
