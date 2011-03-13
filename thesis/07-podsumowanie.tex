@@ -4,27 +4,37 @@
 
 \chapter*{Podsumowanie}
 
-\FIXME{
-W tym rozdziale przedstawimy naszą ocenę pracy, tj. na ile jesteśmy zadowoleni
-z otrzymanego rozwiązania w świetle na wstępie poczynionych założeń.
+W pracy zaprezentowaliśmy narzędzie Arete, którego zadaniem jest ułatwienie
+automatyzacji testów w środowiskach rozproszonych. Arete jest przydatne zarówno
+w czasie przeprowadzania powtarzalnych testów, jak również eksperymentów
+mających charakter jednorazowy. Istotą narzędzia jest koordynowanie
+uruchamianiem poleceń na wielu urządzeniach oraz gromadzeniem ich wyników.
 
-Omówimy dalsze możliwości rozwoju, tj. funkcjonalność, której dodanie w
-najbliższym czasie będzie użyteczne. Tutaj też zaznaczymy, że warto byłoby
-stworzyć wtyczkę frontend współpracującego z routerami cisco.
+Pracę rozpoczęliśmy od zbadania oczekiwań jakie ludzie wiążą z testowaniem oraz
+automatyzacją testów. Pozwoliło nam to sprecyzować wymagania odnośnie narzędzia
+oraz sformułować pewne założenia co do obszaru jego zastosowań.  Następnie
+omówiliśmy architekturę Master--Slave wybraną do realizacji programu oraz
+architektury i sposób realizacji poszczególnych komponentów. Dokładnie
+omówiliśmy format konfiracji używany w celu opisu testu. Użyteczność narzędzia
+zademonstrowaliśmy na trzech przykładach realnych zastosowań. W pracy
+dokonaliśmy też krytycznej analizy naszego rozwiązania porównując je z
+pokrewnymi programami oraz konfrontując je z negatywnymi opiniami o
+automatyzacji testów.
 
-Inny pomysł rozwoju to możliwość kontrolowania urządzeń będących uruchamianymi
-instancjami maszyn wirtualnych (tj. w taki sposób, aby to framework uruchamiał
-wirtualne maszyny, a nie zakładał, że już są uruchomione).
+Tworząc Arete mieliśmy na uwadze spostrzeżenia z \cite{snake-oil} i
+świadomi ograniczeń, wybraliśmy do realizacji pewien zbiór możliwej
+funkcjonalności. Dołożyliśmy wszelkich starań, aby zachować pełną możliwość
+rozbudowy Arete o dodatkowe możliwości. Mieliśmy na uwadze przede wszystkim
+możliwość współpracy z zarządzalnym sprzętem sieciowym ale też z innymi
+urządzeniami. Tworzenie dodatkowych interfejsów do komunikacji jest naszym
+zdaniem priorytetowym kierunkiem rozwoju narzędzia. W dodatku \ref{reference:interfejs-programowy}
+prezentujemy interfejst programy, który pozwola tworzyć kolejne funkcjonalne
+komponenty Arete.
 
-Kolejna rzecz to wprowadzenie możliwości wykonywania komend w bardziej złożony
-sposób, np. 5 sekund po innej komendzie. Albo co 2 sekundy, ale między 10
-sekundą, a zakończeniem pracy innej komendy. To być może będzie wymagać
-kompletne innego podejścia do tworzenia planu testu.
-
-Poza tym jakieś podsumowanie całości pracy w paru zdaniach, żeby znudzony
-czytelnik przypomniał sobie, o czym tak właściwie pisaliśmy.
-}
-
-
+Jesteśmy zadowoleni z osiągniętego rezultatu. Jak zademonstrowaliśmy w
+rozdziale \ref{demonstracja-arete} narzędzie Arete jest gotowe do pracy i w
+bardzo wielu typach testów jego obecna funkcjonalność będzie w pełni
+wystarczająca.  Możemy je polecić studentom i pracownikom akademickim
+realizującym zajęcia laboratoryjne w środowiskach rozproszonych.
 
 \end{document}
