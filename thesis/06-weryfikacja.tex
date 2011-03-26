@@ -61,57 +61,10 @@ urządzenie zakończy test, również realizowany jest przy użyciu powiadomień
 Zakończenie testu w wybranym momencie czasowym to odzielny mechanizm, opisany w
 sekcji \ref{arete-master-config-plan}.
 
-
-
-\FIXME{Opisać jeszcze proces weryfikacji naszego programu. Coś o wydajności, użyteczności, testowaniu itd. Wspomnieć o unit-testach.}
-
-\FIXME{przejść przez założenia z początku i pokazać, że są spełnione}
-
-n fact, in my
-experience, they fail more often, mainly because
-most organizations don't apply the same care and
-professionalism to their testware as they do to
-their shipping products.
-
-As a
-community, perhaps we're still in the phase of
-admiring the cool idea of test automation, and
-not yet to the point of recognizing its pitfalls and
-gotchas
-
-Testing is a "sequence of actions."
-A more useful way to think about testing is as a
-sequence of interactions interspersed with
-evaluations. Some of those interactions are
-predictable, and some of them can be specified in
-purely objective terms.
-
-If you set out to automate all the necessary test
-execution, you'll probably spend a lot of money
-and time creating relatively weak tests that
-ignore many interesting bugs, and find many
-"problems" that turn out to be merely
-unanticipated correct behavior.
-
-
-When I was at Borland, the
-spreadsheet group used to track whether bugs
-were found through automation or manual
-testing-consistently, over 80% of bugs were
-found manually, despite several years of
-investment in automation. 
-
-All automated test suites require human
-intervention, if only to diagnose the results and
-fix broken tests. It can also be surprisingly hard
-to make a complex test suite run without a hitch.
-
-Maintain a careful distinction between the
-automation and the process that it
-automates. The test process should be in a
-form that is convenient to review and that
-maps to the automation.
-
+Realizację wszystkich wymagań testowaliśmy w czasie implementacji za pomocą
+tworzonych testów jednostkowych\footnote{\ang{unit test}} oraz wykonując
+przedstawione w rozdziale \ref{demonstracja-arete} przypadki testowe.
+Funkcjonalność Arete spełnia nasze oczekiwania.
 
 \section{Pokrewne rozwiązania}
 \label{dostepne-rozwiazania}
@@ -542,9 +495,9 @@ razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
 
 \begin{small}
 \begin{center}
-   \begin{tabular}{ l || C{1.1cm} | C{1.1cm} | C{1.1cm} | C{1.1cm}   }
+   \begin{tabular}{ l || C{1.6cm} | C{1.6cm} | C{1.6cm} | C{1.6cm}   }
       \hline
-      & \small{\parbox[top][2.4em][c]{1.1cm}{\centering{ASN.1+\\ECN}}} & \small{TTCN} & \small{OMNeT} & \small{Arete} \\
+      & \small{\parbox[top][3.4em][c]{1.6cm}{\centering{ASN.1+\\ECN}}} & \small{TTCN} & \small{OMNeT} & \small{Arete} \\
       \hline
       Powtarzanie eksperymentów & $+$ & $+$ & $+$ & $+$ \\
       \hline
@@ -575,7 +528,37 @@ razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
 \end{center}
 \end{small}
 
-\FIXME{może tę tabelę zrobić w poziomie?}
+\section{Podsumowanie}
+\FIXME{Opisać jeszcze proces weryfikacji naszego programu. Coś o wydajności, użyteczności, testowaniu itd. Wspomnieć o unit-testach.}
+
+As a community, perhaps we're still in the phase of admiring the cool idea of
+test automation, and not yet to the point of recognizing its pitfalls and
+gotchas
+
+Testing is a "sequence of actions." A more useful way to think about testing is
+as a sequence of interactions interspersed with evaluations. Some of those
+interactions are predictable, and some of them can be specified in purely
+objective terms.
+
+If you set out to automate all the necessary test execution, you'll probably
+spend a lot of money and time creating relatively weak tests that ignore many
+interesting bugs, and find many "problems" that turn out to be merely
+unanticipated correct behavior.
+
+
+When I was at Borland, the spreadsheet group used to track whether bugs were
+found through automation or manual testing-consistently, over 80% of bugs were
+found manually, despite several years of investment in automation. 
+
+All automated test suites require human intervention, if only to diagnose the
+results and fix broken tests. It can also be surprisingly hard to make a
+complex test suite run without a hitch.
+
+Maintain a careful distinction between the automation and the process that it
+automates. The test process should be in a form that is convenient to review
+and that maps to the automation.
+
+
 
 
 \end{document}
