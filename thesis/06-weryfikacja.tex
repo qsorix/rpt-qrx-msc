@@ -3,9 +3,68 @@
 
 \chapter{Weryfikacja}
 
-\FIXME{Opisać jeszcze proces weryfikacji naszego programu. Coś o wydajności, użyteczności, testowaniu itd. Wspomnieć o unit-testach.}
+W tym rozdziale wracamy do wymagań stawianych przed narzędziem na początku
+pracy. James Bach w \cite{snake-oil} pisze, że próby stworzenia systemów
+automatyzacji często kończą się porażką ponieważ tworzy się je mniej starannie
+niż właściwie produkty. W naszym wypadku to system automatyzacji był tym
+właściwym produktem, mimo to należy spojrzeć krytycznym okiem na końcowy wynik.
 
-\FIXME{przejść przez założenia z początku i pokazać, że są spełnione}
+\section{Wymagania}
+
+Jednym z podstawowym wymaganiem była możliwosć definiowania testu.
+Zastosowaliśmy rozwiązanie oparte o język Python i stworzone przez nas API, co
+szeroko opisaliśmy w rozdziale \ref{arete-master-config}.
+
+Łączenie ze zdalnymi urządzeniami możliwe jest przy użyciu wtyczek typu
+\code{ConnectionPlugin}. Dostępna jest wtyczka oparta o protokół TCP/IP oraz
+jej wersja korzystająca z tunelu SSH.
+
+Konfiguracja zdalnych urządzeń jest przeprowadzana w drugiej fazie testu, tj.
+fazie konfiguracji urządzeń oraz fazie czwartej czyli przywracaniu
+konfiguracji (patrz sekcja \ref{arete-arch}). Interfejs programy opisujemy w
+sekcji \ref{arete-master-drivers}.
+
+Przesyłanie zasobów wymaganych w testach dokumentujemy w sekcji
+\ref{arete-master-resources}. Ze względu na różne możliwości komunikacyjne
+sprzętu sieciowego, stworzyliśmy uniwersalny interfejs programy, który można
+dowolnie rozbudować na własne potrzeby.
+
+Funkcjonalność zwiazana z uruchamieniem poleceń na zdalnych urządzeniach
+zrealizowane jest w dwóch częściach. Moduł Master analizuje pliki z definicją
+testu i tworzy listy komend do wykonania na konkretnych urządzeniach. Za samo
+wykonanie komend odpowiedzialny jest moduł Slave.
+
+Pobieranie wyników ze zdalnych urządzeń odbywa się korzystając z prostego
+protokołu między modułami Master oraz Slave. Katalogowanie wyników z wielu
+testów zrealizowaliśmy przechowując wyniki w bazie danych SQLite, której
+strukturę przedstawiamy w sekcji \ref{arete-master-db}.
+
+Aby synchronizować w czasie start testu, moduł Master przesyła do urządzeń
+informację o godzinie, w której tes ma się rozpocząć. Udostępniliśmy prosty
+mechanizm synchronizacji między urządzeniami. Możliwe jest też poleganie
+wyłącznie na zegarach systemowych urządzeń, co jest przydatne, jeśli w sieci
+funkcjonuje inny mechanizm synchronizacji czasu.
+
+Dla testów, których przebieg uniemożliwia utrzymywanie ciągłego połączenia
+między modułami Master i Slave, istnieje możliwość rozłączenia na czas trwania
+testu. W tym celu każde wykonanie przypadku testowego otrzymuje nowy
+identyfikator aby po ponownym nawiązaniu połączenia moduł Master mógł określić,
+jakie wyniki chce otrzymać. W przypadku testów, których zakończenie wymaga
+kooperacji pomiędzy modułami Slave, rozłączenie na czas jego wykonania nie jest
+możliwe, komunikują one bowiem za pośrednictwem modułu Master. Mechanizm ten
+opisany jest w sekcji \ref{arete-master-others}.
+
+Wspomniany mechanizm powiadomień został pierwotnie zaimplementowany aby
+umożliwić zakończenie testu w momencie, gdy wykonanie zakończą wszystkie
+uczestniczące urządzenia. Inny przypadek, w którym test kończy się gdy wybrane
+urządzenie zakończy test, również realizowany jest przy użyciu powiadomień.
+Zakończenie testu w wybranym momencie czasowym to odzielny mechanizm, opisany w
+sekcji \ref{arete-master-config-plan}.
+
+Realizację wszystkich wymagań testowaliśmy w czasie implementacji za pomocą
+tworzonych testów jednostkowych\footnote{\ang{unit test}} oraz wykonując
+przedstawione w rozdziale \ref{demonstracja-arete} przypadki testowe.
+Funkcjonalność Arete spełnia nasze oczekiwania.
 
 \section{Pokrewne rozwiązania}
 \label{dostepne-rozwiazania}
@@ -435,9 +494,9 @@ razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
 
 \begin{small}
 \begin{center}
-   \begin{tabular}{ l || C{1.1cm} | C{1.1cm} | C{1.1cm} | C{1.1cm}   }
+   \begin{tabular}{ l || C{1.6cm} | C{1.6cm} | C{1.6cm} | C{1.6cm}   }
       \hline
-      & \small{\parbox[top][2.4em][c]{1.1cm}{\centering{ASN.1+\\ECN}}} & \small{TTCN} & \small{OMNeT} & \small{Arete} \\
+      & \small{\parbox[top][3.4em][c]{1.6cm}{\centering{ASN.1+\\ECN}}} & \small{TTCN} & \small{OMNeT} & \small{Arete} \\
       \hline
       Powtarzanie eksperymentów & $+$ & $+$ & $+$ & $+$ \\
       \hline
@@ -470,5 +529,36 @@ razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
 
 \FIXME{Cz.: co to są „deterministyczne wyniki” i „brak wpływu na wydajność”
 oraz „uwzględnienie wpływu środowiska”?}
+
+\section{Podsumowanie}
+
+\FIXME{Opisać jeszcze proces weryfikacji naszego programu. Coś o wydajności, użyteczności, testowaniu itd. Wspomnieć o unit-testach.}
+
+As a community, perhaps we're still in the phase of admiring the cool idea of
+test automation, and not yet to the point of recognizing its pitfalls and
+gotchas
+
+Testing is a "sequence of actions." A more useful way to think about testing is
+as a sequence of interactions interspersed with evaluations. Some of those
+interactions are predictable, and some of them can be specified in purely
+objective terms.
+
+If you set out to automate all the necessary test execution, you'll probably
+spend a lot of money and time creating relatively weak tests that ignore many
+interesting bugs, and find many "problems" that turn out to be merely
+unanticipated correct behavior.
+
+
+When I was at Borland, the spreadsheet group used to track whether bugs were
+found through automation or manual testing-consistently, over 80% of bugs were
+found manually, despite several years of investment in automation. 
+
+All automated test suites require human intervention, if only to diagnose the
+results and fix broken tests. It can also be surprisingly hard to make a
+complex test suite run without a hitch.
+
+Maintain a careful distinction between the automation and the process that it
+automates. The test process should be in a form that is convenient to review
+and that maps to the automation.
 
 \end{document}
