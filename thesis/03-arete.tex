@@ -44,6 +44,8 @@ przeprowadzenia (m.in. programów mierzących obserwowane wartości) pozostanie 
 kwestii użytkownika. Test modelowany będzie na poziomie poleceń systemowych,
 gdyż pracując ręcznie, użytkownik najczęściej działa na tej płaszczyźnie.
 
+\FIXME{Cz.: jakoś wyróżnijcie te scenariusze – nie widać, giną w tekście.}
+
 Najprostszy scenariusz ma miejsce w czasie tworzenia oprogramowania typu
 klient-serwer. Załóżmy, że tworzymy prosty program mający umożliwiać transfer
 plików. W teście chcemy sprawdzić czy transfer przebiegł poprawnie, tj. czy
@@ -222,10 +224,17 @@ w obie strony, różnicę czasu można wyznaczyć wzorem: $$\Delta t = r - \frac
 odebrania zapytania o czas a $l_1$ i $l_2$ to odpowiednio czasy wysłania
 zapytania i odebrania odpowiedzi.
 
+\FIXME{Cz.: „zakładając symetryczny czas” – kiedy to założenie nie będzie
+spełnione? Czy jego przyjęcie jest akceptowalne?}
+
 Synchronizacja ta jest domyślnie włączona, ale opcjonalna. Jeżeli testy
 uruchamiamy w sieci, gdzie aktywny jest zewnętrzny protokół synchronizacji,
 zegary urządzeń prawdopodobnie będą zsynchronizowane dokładniej i nasz prosty
 protokół mógłby raczej pogorszyć sytuację.
+
+\FIXME{Cz.: zegary urządzeń prawdopodobnie
+będą zsynchronizowane dokładniej – NTP daje dokładność kilku MS, więc
+pewnie nie będzie lepiej.}
 
 \paragraph{Wszystkie wyniki są cenne.} Ponieważ obecnie przechowywanie dużych
 ilości danych nie sprawia problemu, w czasie testu staramy się zebrać jak
