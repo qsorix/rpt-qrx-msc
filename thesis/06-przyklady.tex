@@ -349,7 +349,7 @@ jak czas jego rozpoczęcia i długość trwania na każdym z komputerów, mamy d
 dyspozycji szczegółowe dane na temat każdej z wykonanych komend, tj. wyjście,
 zwrócony kod wyjścia, czas rozpoczęcia oraz długość trwania.
 
-Choć interpretacja wyników nie jest celem naszej pracy, na potrzeby opisanego
+Choć interpretacja wyników nie jest celem naszej pracy, na potrzeby tego prostego
 przykładu możemy zaobserwować, że nazwa pliku otrzymana z komendy ls na serwerze
 jest poprawna, a sumy kontrolne na obu urządzeniach są zgodne. Możemy zatem
 wywnioskować, że stworzone przez nas implementacje programów klient-serwer są
@@ -482,13 +482,21 @@ bajtów.
 
 \subsection{Wyniki}
 
-Korzystając z otrzymanych w tym teście wyników w postaci statystyk zebranych
+Korzystając z otrzymanych wyników w postaci statystyk zebranych
 przez cosekundowe wywołania komendy \code{iptables} byliśmy w stanie sporządzić
-wykres przedstawiony na rysunku \fixref{rysunek}.
+wykresy, takie jak ten przedstawiony na rysunku \ref{fig:tcp-dccp}. Istotny jest
+tu fakt, że stworzenie kolejnych wykresów dla różnych sytuacji, polega jedynie
+na prostych zmianach w konfiguracji testu.
 
-\FIXME{Rydzyn zrobi wykres ładny.}
-
-\FIXME{Wnioski z tego co otrzymaliśmy, czyli interpretacja tego wykresu.}
+\begin{figure}[htb]
+\begin{center}
+\leavevmode
+\includegraphics[width=0.8\textwidth]{tcp-dccp}
+\end{center}
+\caption{Wykres przedstawiający wpływ transmisji TCP na pracę
+protokołu DCCP.}
+\label{fig:tcp-dccp}
+\end{figure}
 
 \section{Przykład: Dystrybucja pliku w sieci BitTorrent}
 \label{example-torrent}
@@ -496,8 +504,10 @@ wykres przedstawiony na rysunku \fixref{rysunek}.
 Trzeci, ostatni przykład, który przedstawimy, to ćwiczenie laboratoryjne z
 Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
 BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test należy
-zakończyć kiedy wszyscy będą posiadać pełny plik. Interesuje nas, ile każdy
-klient wysłał danych i ile trwała pełna dystrybucja pliku.
+zakończyć kiedy wszyscy będą posiadać pełny plik.
+
+%Interesuje nas, ile każdy
+%klient wysłał danych i ile trwała pełna dystrybucja pliku.
 
 Przykład ten można wykorzystać do stworzenia testów na różnych topologiach,
 poniżej omówimy sytuację z dowolną ilością urządzeń znajdujących się w tej samej
@@ -645,13 +655,11 @@ Na koniec dodajemy odpowiednie plany do stworzonych w modelu urządzeń.
 
 \subsection{Wyniki}
 
-\FIXME{Też jakiś wykres można by zrobić.}
+\FIXME{Wrzucić wyniki testu i krótko je opisać.}
 
 \section{Podsumowanie}
 
 \FIXME{Napisać jak we wszystkich 3 przykładach sprawdziliśmy, że Arete działa
 świetnie, jest łatwy w obsłudze, efektywny i nadaje się do różnego rodzaju testów.}
-
-
 
 \end{document}
