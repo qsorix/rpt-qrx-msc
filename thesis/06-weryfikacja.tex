@@ -528,37 +528,50 @@ razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
 \end{center}
 \end{small}
 
-\section{Podsumowanie}
-\FIXME{Opisać jeszcze proces weryfikacji naszego programu. Coś o wydajności, użyteczności, testowaniu itd. Wspomnieć o unit-testach.}
+\section{Krytyka}
 
-As a community, perhaps we're still in the phase of admiring the cool idea of
-test automation, and not yet to the point of recognizing its pitfalls and
-gotchas
+Zamykając ten rozdział pragniemy przytoczyć kilka krytycznych opinii
+dotyczących automatyzacji testów i ustosunkować się do nich jako twórcy jednego
+z rozwiązań.
 
-Testing is a "sequence of actions." A more useful way to think about testing is
-as a sequence of interactions interspersed with evaluations. Some of those
-interactions are predictable, and some of them can be specified in purely
-objective terms.
+W czasie pracy mieliśmy na uwadzę tezę jakoby współczesne społeczeństwo
+informatyczne nie dostrzegało pułapek i trudności procesu automatyzacji testów.
+Nie wdając się w dyskusję czy jest to teza prawdziwa, podeszliśmy do
+zagadnienia z ostrożnością. Pozwoliło nam to wykreślić z wymagań pewne ambitne,
+ale mało realne i tylko sporadycznie potrzebne funkcje.
 
-If you set out to automate all the necessary test execution, you'll probably
-spend a lot of money and time creating relatively weak tests that ignore many
-interesting bugs, and find many "problems" that turn out to be merely
-unanticipated correct behavior.
+Istotny zarzut stawiany w \ref{snake-oil} dotyczy postrzegania przypadku
+testowego jako sekwencji akcji do wykonania, podczas gdy bardziej praktyczne
+ujęcie zagadnienia powinno być sekwencją interakcji przeplecionych z
+wykonywaniem testu. W takim ujęciu osoba przeprowadzająca złożony test jest
+częścią interakcji między testowanym systemem a jego środowiskiem. Ma ona także
+możliwość na bieżąco zmieniać plan testu. Zgadzamy się, że w pewnych wypadkach
+taka interakcja daje możliwość tworzenia bardziej interesujących przypadków
+testowych. 
 
+Z drugiej strony w obronie możemy przytoczyć kolejny punkt krytyki: próba
+automatyzacji wszystkich potrzebnych testów prawdopodobnie będzie wymagać o
+wiele więcej środków a skończy się stworzeniem słabych testów, które przeoczą
+wiele problemów a znajdą wiele sytuacji, w których problem okaże się poprawnym,
+chociaż nieoczekiwanym, zachowaniem.
 
-When I was at Borland, the spreadsheet group used to track whether bugs were
-found through automation or manual testing-consistently, over 80% of bugs were
-found manually, despite several years of investment in automation. 
+Naszym zdaniem lepszą decyzją jest pozostanie przy prostej funkcjonalności,
+która sprawdza się tam, gdzie automatyzacja daje najlepsze rezultaty, niż
+rozbudowywanie narzędzia umożliwiając jego użycie w przypadkach, których sens
+automatyzacji pozostaje wątpliwy.
 
-All automated test suites require human intervention, if only to diagnose the
-results and fix broken tests. It can also be surprisingly hard to make a
-complex test suite run without a hitch.
+Wszystkie automatyzowane testy wymagają interwencji człowieka. W idealnym
+wypadku ogranicza się ona do analizy wyników, ale też naprawy złych przypadków
+testowych. Trzeba pamiętać, że nie łatwo jest stworzyć złożony zestaw testów
+bez żadnych błędów. Nawet jeśli nie ma ich w pierwotnej wersji, wraz z rozwojem
+testowanego systemu testy często trzeba zmieniać.
 
-Maintain a careful distinction between the automation and the process that it
-automates. The test process should be in a form that is convenient to review
-and that maps to the automation.
+Jeśli więc człowiek jest obecny także w procesie automatycznego testowania, nie
+powinien on przekazywać maszynie wykonywania tych czynności, które jest w
+stanie zrobić lepiej.
 
-
-
+Nie możemy zaprzeczyć powyższym postulatom. Trafnie uderzają one w słabe punkty
+automatyzacji. Mając jednak na uwadze przewidziany przez nas obszar zastosowań,
+uważamy, że storzone przez nas narzędzie dobrze spełnia swoją rolę.
 
 \end{document}
