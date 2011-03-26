@@ -47,7 +47,7 @@ Pozostałe części architektury użytkownik może rozwijać i uzupełniać ich
 funkcjonalność w zależności od potrzeb wynikających z testów, jakie chce
 przeprowadzić. Odbywa się to przez dostarczenie własnych wtyczek
 implementujących wymagane zachowanie. Więcej na ten temat w dalszej części
-rozdziału, tutaj przedstawiam tylko rolę poszczególnych komponentów.
+rozdziału, tutaj zostanie przedstawiona tylko rola poszczególnych komponentów.
 
 Najważniejsze elementy, wymagane do poprawnego działania każdego testu, to
 wtyczki Frontend oraz Connection. Connection zestawia fizyczne połączenie ze
@@ -107,6 +107,9 @@ zawierać ich kilkadziesiąt i definiować specyficzne sposoby komunikacji, jak
 np. Chord\footnote{http://en.wikipedia.org/wiki/Chord\_\%28peer-to-peer\%29}.
 Sposób opisu testu powinien umożliwiać zdefiniowanie rozbudowanych
 eksperymentów, a jednocześnie nie komplikować definicji tych prostych.
+
+\FIXME{Cz.: Str. 36: W skład najprostszego testu wchodzi jeden komputer -> jak wówczas
+wygląda/na czy polega test?.}
 
 Dzięki zwięzłości opisu można się szybko zorientować co w danym teście się
 dzieje. Łatwiej jest tworzyć nowe testy i wprowadzać zmiany. Odpowiednia
@@ -693,7 +696,7 @@ urządzeń stwierdzi, że konfiguracja nie jest poprawna.
 
 Po tym teście kontroler rozpoczyna wykonanie testu (komunikat
 \code{start\_test}). W czasie trwania testu za pomocą komunikatu
-\code{check\_test\_end} kontroler pyta frontendów czy test na podległym
+\code{check\_test\_end} kontroler pyta frontendy czy test na podległym
 urządzeniu zakończył się.
 
 Pobieranie wyników (komunikat \code{fetch\_results}) odbywa się, gdy test
@@ -735,6 +738,9 @@ Zainteresowanych szczegółami implementacji odsyłamy do kodu źródłowego
 Jest to standardowo dostępna implementacja wtyczki frontend służąca komunikacji
 z modułem Arete Slave opisanym szczegółowo w kolejnym rozdziale.
 
+\FIXME{Cz.: standardowo dostępnej wtyczki typu frontend? standardowo dostępna
+implementacja wtyczki frontend?}
+
 Aby skorzystać z tej wtyczki należy w konfiguracji urządzenia użyć nazwy
 \code{arete\_slave}, jak w przykładzie poniżej:
 
@@ -750,6 +756,8 @@ Opcja \code{synchronize} jest opcjonalna i domyślnie aktywna. Ustawienie jej na
 urządzenia. Jeżeli komputery, na których wykonujemy test, synchronizowane są
 niezależnym źródłem (np. korzystając z NTP), zaleca się wyłączyć wbudowany
 algorytm synchronizacji wtyczki \code{AreteSlavePlugin}.
+
+\FIXME{Cz.: dokładność?}
 
 \subsection{Połączenie ze zdalnym urządzeniem}
 
@@ -965,7 +973,7 @@ Szersze omówienie interfejsu \code{Resource} znajduje się w rozdziale
 \label{arete-master-hook}
 
 Wtyczki typu Hook umożliwiają rozszerzenie przedstawionego przez nas schematu
-konfiguracji o własne algorytmu modyfikujące tworzony test. Aktualnie dostępny
+konfiguracji o \fixme{własne algorytmu ???} modyfikujące tworzony test. Aktualnie dostępny
 jest tylko jeden hook, wykonywany po przygotowaniu konfiguracji, ale jeszcze
 przed uruchomieniem testu.
 

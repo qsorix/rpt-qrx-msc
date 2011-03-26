@@ -374,14 +374,14 @@ sieci, jak np. OverSim będący symulatorem sieci peer2peer.
 \end{center}
 \caption{Wizualizacja przebiegu symulacji w sieci złożonej z sześciu węzłów.
 OMNeT++ umożliwia pełną instrumentację uruchomionego modelu. Na rysunku widać
-(czerwona kropka) właśnie przesyłany komunikat.}
+właśnie przesyłany komunikat (oznaczony czerwoną kropką).}
 \label{fig:intro-omnet-network}
 \end{figure}
 
 Framework umożliwia pracę w IDE opartym na Eclipse i wspiera wiele pożądanych
 funkcji jak np.~symulacje w czasie rzeczywistym czy integracja z bazą danych.
 Tworzone symulacje można wykonywać jako samodzielne programy sterowane z linii
-polecenia, aby zyskać na szybkości, lub pod kontrolą interfejsu graficznego
+poleceń, aby zyskać na szybkości, lub pod kontrolą interfejsu graficznego
 umożliwiającego dokładny wgląd w stan każdego elementu systemu.
 
 Jest to program umożliwiający realizację i analizę prototypowych implementacji,
@@ -452,8 +452,7 @@ uruchomieniowej. Graficzne środowisko ułatwia tworzenie tych brakujących elem
 \leavevmode
 \includegraphics[width=0.8\textwidth]{intro-omnet-histogram}
 \end{center}
-\caption{Poza umożliwieniem uruchomienia zdefiniowania i uruchomienia
-symulacji, pakiet OMNeT++ zawiera także narzędzia ułatwiające gromadzenie
+\caption{OMNeT++ zawiera narzędzia ułatwiające gromadzenie
 danych statystycznych oraz graficzną analizę wyników. Na rysunku widać
 przykładowy histogram uzyskany po wykonaniu testu.}
 \label{fig:intro-omnet-histogram}
@@ -487,11 +486,11 @@ rzeczywistych sieciach, gdzie problemy takie jak synchronizacja urządzeń i
 zbieranie wyników powodują, że ręczne wykonywanie wszystkich czynności staje
 się bardzo czasochłonne i uciążliwe, choć sam test jest w swojej naturze prosty.
 
-W tabeli \fixref{tej poniżej} porównujemy naszym zdaniem najistotniejsze cechy
-wspomnianych narzędzi. Jak widać Arete nie jest idealnym narzędzie do każdego
-typu zastosowań. Nie jest to również narzędzie zdolne do samodzielnej pracy.
-Uważamy jednak, że dobrze uzupełnia funkcjonalne braki istniejących rozwiązań i
-razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
+W tabeli poniżej porównujemy naszym zdaniem najistotniejsze cechy wspomnianych
+narzędzi. Mówiąc o deterministycznych wynikach mamy na myśli wyniki, które będą
+identyczne po każdym wykonaniu testu. Przez brak wpływu na wydajność rozumiemy
+bezpośrednie wykonywanie testowanego systemu w jego naturalnym środowisku, np.
+bezpośrednio pod kontrolą systemu operacyjnego.
 
 \begin{small}
 \begin{center}
@@ -505,7 +504,7 @@ razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
       \hline
       Weryfikacja wyników & $+$ & $+$ & $-$ & $-$ \\
       \hline
-      Uwzględnienie wpływu środowiska & $-$ & $-$ & $-$ & $+$ \\
+      Brak izolacji wpływu środowiska & $-$ & $-$ & $-$ & $+$ \\
       \hline
       Wykorzystanie rzeczywistych urządzeń & $-$ & $-$ & $-$ & $+$ \\
       \hline
@@ -527,6 +526,11 @@ razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
   \end{tabular}
 \end{center}
 \end{small}
+
+Jak widać Arete nie jest idealnym narzędzie do każdego typu zastosowań. Nie
+jest to również narzędzie zdolne do samodzielnej pracy.  Uważamy jednak, że
+dobrze uzupełnia funkcjonalne braki istniejących rozwiązań i razem z nimi
+pozwala stworzyć praktyczne i wygodne środowisko testowe.
 
 \section{Krytyka}
 
