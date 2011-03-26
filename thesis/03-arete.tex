@@ -44,7 +44,7 @@ przeprowadzenia (m.in. programów mierzących obserwowane wartości) pozostanie 
 kwestii użytkownika. Test modelowany będzie na poziomie poleceń systemowych,
 gdyż pracując ręcznie, użytkownik najczęściej działa na tej płaszczyźnie.
 
-\FIXME{Cz.: jakoś wyróżnijcie te scenariusze – nie widać, giną w tekście.}
+\subsection{Aplikacja klient-serwer}
 
 Najprostszy scenariusz ma miejsce w czasie tworzenia oprogramowania typu
 klient-serwer. Załóżmy, że tworzymy prosty program mający umożliwiać transfer
@@ -60,6 +60,8 @@ Zadanie narzędzia polegałoby tutaj na:
 \item zapamiętaniu wyników z obu maszyn,
 \item usunięcie pliku ze zdalnej maszyny.
 \end{enumerate}
+
+\subsection{Wpływ transmisji TCP na pracę DCCP}
 
 Drugi scenariusz dotyczy pomiaru szybkości transferu danych przy użyciu
 protokołu DCCP (Datagram Congestion Control Protocol) oraz wpływu innych
@@ -82,6 +84,8 @@ Aby zautomatyzować ten test, program musi:
 
 Ważne jest też, żeby w czasie testu program nie przesyłał żadnych danych, aby
 nie wpływał w ten sposób na uzyskiwane wyniki.
+
+\subsection{Dystrybucja pliku w sieci BitTorrent}
 
 Trzeci scenariusz, który mamy na uwadze, to ćwiczenie laboratoryjne z Systemów
 Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
@@ -222,19 +226,22 @@ urządzenia, na którym jest uruchomiony. Zakładając symetryczny czas komunika
 w obie strony, różnicę czasu można wyznaczyć wzorem: $$\Delta t = r - \frac{l_1
 + l_2}{2}$$ gdzie $r$ to wskazanie zegara zdalnego urządzenia w momencie
 odebrania zapytania o czas a $l_1$ i $l_2$ to odpowiednio czasy wysłania
-zapytania i odebrania odpowiedzi.
+zapytania i odebrania odpowiedzi. Istnieją przypadki kiedy czas transmisji w
+dwóch kierunkach nie jest zbliżony, dzieje się tak np. kiedy transmisja w dwóch
+kierunkach odbywa się przy użyciu innego medium lub gdy wpisy tablic routingu
+(lub sama topologia sieci) tworzą w obu kierunkach różne ścieżki. Zastosowanie
+powyższego wzoru w takich sytuacjach owocuje większym błędem. Błąd ten jest
+równy wartości bezwzględnej różnicy czasów transmisji w obu kierunkach. Warto
+dodać, że nawet w najprostszych sieciach Ethernet czas transmisji także jest
+tylko zbliżony do równego i wciąż mamy do czynienia z pewnym błędem.
 
-\FIXME{Cz.: „zakładając symetryczny czas” – kiedy to założenie nie będzie
-spełnione? Czy jego przyjęcie jest akceptowalne?}
-
-Synchronizacja ta jest domyślnie włączona, ale opcjonalna. Jeżeli testy
-uruchamiamy w sieci, gdzie aktywny jest zewnętrzny protokół synchronizacji,
-zegary urządzeń prawdopodobnie będą zsynchronizowane dokładniej i nasz prosty
-protokół mógłby raczej pogorszyć sytuację.
-
-\FIXME{Cz.: zegary urządzeń prawdopodobnie
-będą zsynchronizowane dokładniej – NTP daje dokładność kilku MS, więc
-pewnie nie będzie lepiej.}
+Synchronizacja ta jest domyślnie włączona, ale opcjonalna. Jeżeli przypadek
+testowy będzie wymagać dokładnej synchronizacji to niestety, z uwagi na
+wspomniany problem czasu transmisji, jesteśmy zmuszeni samodzielnie zapewnić
+synchronizację urządzeń. W takich testach nasz prosty protokół synchronizacji
+mógłby raczej pogorszyć wskazania zegarów, tak więc wskazane może być
+wyłączenie go. Warto też wziąć pod uwagę możliwości samego sprzętu, tzn.
+rozdzielczość samych zegarów a także algorytmu planisty w systemie operacyjnym.
 
 \paragraph{Wszystkie wyniki są cenne.} Ponieważ obecnie przechowywanie dużych
 ilości danych nie sprawia problemu, w czasie testu staramy się zebrać jak

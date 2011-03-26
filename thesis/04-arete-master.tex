@@ -102,14 +102,13 @@ Przez koncepcję testu rozumiemy to, co w teście chcemy zrobić. Jeśli naszym
 celem jest nawiązanie komunikacji między dwoma komputerami w pracowni, zwykle
 nie interesuje nas, które konkretnie komputery wykorzystamy.
 
-W skład najprostszego testu wchodzi jeden komputer. Złożone konfiguracje mogą
-zawierać ich kilkadziesiąt i definiować specyficzne sposoby komunikacji, jak
-np. Chord\footnote{http://en.wikipedia.org/wiki/Chord\_\%28peer-to-peer\%29}.
+W skład najprostszego testu wchodzi jeden komputer\footnote{Przykładowo możemy
+zdecydowań, że zarówno aplikacja serwera jak i klienta będą wykonywać się na
+tym samym systemie}. Złożone konfiguracje mogą zawierać ich kilkadziesiąt i
+definiować specyficzne sposoby komunikacji, jak np.
+Chord\footnote{http://en.wikipedia.org/wiki/Chord\_\%28peer-to-peer\%29}.
 Sposób opisu testu powinien umożliwiać zdefiniowanie rozbudowanych
 eksperymentów, a jednocześnie nie komplikować definicji tych prostych.
-
-\FIXME{Cz.: Str. 36: W skład najprostszego testu wchodzi jeden komputer -> jak wówczas
-wygląda/na czy polega test?.}
 
 Dzięki zwięzłości opisu można się szybko zorientować co w danym teście się
 dzieje. Łatwiej jest tworzyć nowe testy i wprowadzać zmiany. Odpowiednia
@@ -735,11 +734,8 @@ Zainteresowanych szczegółami implementacji odsyłamy do kodu źródłowego
 \subsubsection{AreteSlaveFrontend}
 \label{arete-master-slave-frontend}
 
-Jest to standardowo dostępna implementacja wtyczki frontend służąca komunikacji
-z modułem Arete Slave opisanym szczegółowo w kolejnym rozdziale.
-
-\FIXME{Cz.: standardowo dostępnej wtyczki typu frontend? standardowo dostępna
-implementacja wtyczki frontend?}
+Jest to standardowo dostępna wtyczka typu frontend służąca komunikacji z
+modułem Arete Slave opisanym szczegółowo w kolejnym rozdziale.
 
 Aby skorzystać z tej wtyczki należy w konfiguracji urządzenia użyć nazwy
 \code{arete\_slave}, jak w przykładzie poniżej:
@@ -755,9 +751,13 @@ Opcja \code{synchronize} jest opcjonalna i domyślnie aktywna. Ustawienie jej na
 \code{False} powoduje pominięcie kroku synchronizacji z zegarem zdalnego
 urządzenia. Jeżeli komputery, na których wykonujemy test, synchronizowane są
 niezależnym źródłem (np. korzystając z NTP), zaleca się wyłączyć wbudowany
-algorytm synchronizacji wtyczki \code{AreteSlavePlugin}.
-
-\FIXME{Cz.: dokładność?}
+algorytm synchronizacji wtyczki \code{AreteSlavePlugin}. Dokładność uzyskiwana
+przy użyciu NTP jest zależna od wersji protokołu, zastosowanego sprzętu,
+systemu operacyjnego i rodzaju sieci \cite{ntp-research} i może wynosić od
+dziesiątek ms w sieciach WAN do nawet 50 µs w sieciach LAN przy zastosowaniu
+odbiorników GPS lub innych dokładnych źródeł czasu. Trzeba też pamiętać, że
+wpływ ma tutaj także planista systemowy, który może powodować opóźnienia w
+wykonywaniu programów.
 
 \subsection{Połączenie ze zdalnym urządzeniem}
 
