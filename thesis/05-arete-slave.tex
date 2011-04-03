@@ -12,7 +12,7 @@ przez moduł Master za pomocą protokołu opisanego w rozdziale
 \ref{arete-slave-protokol}.
 
 \section{Architektura}
-\label{arete-slave-arch}
+\label{arete-slave-architektura}
 
 W skład architektury programu Arete Slave wchodzi pięć modułów oraz baza danych
 służąca do przechowywania wyników uruchamianych testów, jak zostało to
@@ -54,7 +54,7 @@ przez uruchamiane w jego ramach komendy, korzysta się z wyrażenia
 \code{@\{poke <nazwa powiadomienia>\}}.
 
 \section{Protokół komunikacji z Arete Master}
-\label{arete-slave-protokol}
+\label{arete-slave-protokol-komunikacji-z-arete-master}
 
 Do komunikacji między modułami Master i Slave zastosowaliśmy prosty protokół
 opisany poniżej. Wymiana komunikatów składa się z trzech głównych faz. Na
@@ -74,7 +74,7 @@ wiadomości. W przypadku poleceń \code{check}, \code{setup}, \code{task} i
 wiadomości.
 
 \subsection{Odbieranie planu testu}
-\label{arete-slave-odbieranie-testu}
+\label{arete-slave-odbieranie-planu-testu}
 
 Do stworzenia testu oraz odebrania komend wchodzących w jego skład wykorzystane
 są następujące polecenia:
@@ -174,7 +174,7 @@ identyfikatorze oraz wszystkie należące do niego komendy i pliki.}
 \end{itemize}
 
 \subsection{Wysyłanie wyników testu}
-\label{arete-slave-wysylanie-wynikow}
+\label{arete-slave-wysylanie-wynikow-testu}
 
 Po zakończeniu testu możliwe jest odebranie jest wyników w celu zapisania do
 bazy danych modułu Arete Master i dalszej analizy. Wykorzystujemy do tego celu
@@ -226,7 +226,7 @@ Dostępne parametry komend to: \\
 \end{itemize}
 
 \subsection{Podstawianie parametrów}
-\label{arete-slave-podst-param}
+\label{arete-slave-podstawianie-parametrow}
 
 Komendy przesyłane do modułu Slave w ramach testu mogą korzystać z parametrów
 innych komend wchodzących w skład tego samego testu, lecz jest to możliwe
@@ -304,7 +304,7 @@ należy uruchomić test.}
 \end{itemize}
 
 \section{Przechowywanie danych}
-\label{arete-slave-db}
+\label{arete-slave-przechowywanie danych}
 
 Podstawową jednostką w bazie danych jest test (tabela \emph{tests}) w skład
 którego wchodzą komendy (tabela \emph{commands}) i pliki (tabela \emph{files}).
@@ -326,7 +326,7 @@ trwania, które zapisywane są do tabeli \emph{invocations}.
 \end{figure}
 
 \section{Uruchamianie}
-\label{arete-slave-run}
+\label{arete-slave-uruchamianie}
 
 Program \code{arete-slave} pozwala na zmianę domyślnych parametrów poprzez
 określenie następujących argumentów.
