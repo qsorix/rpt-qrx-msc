@@ -58,14 +58,14 @@ Connection.
 
 Wtyczki Drivers na podstawie konfiguracji generują komendy dla zdalnych
 urządzeń. Przykładem może być driver, który na czas testu konfiguruje adresy IP
-urządzeń. Wtyczki te są szerzej omówione w sekcji \fixref{sekcja o drivers}.
+urządzeń. Wtyczki te są szerzej omówione w sekcji \ref{arete-master-drivers}.
 
 Komponenty Hooks\footnote{W tym znaczeniu polskie tłumaczenie \ang{hook}
 to punkt zaczepienia. W pracy używamy terminu \textit{hook}, ponieważ jest zwięzły, a w
 informatyce termin ten jest często spotykany i jednoznaczny.} to wtyczki dające
 użytkownikowi możliwość ingerencji w generowane plany testów. Obecnie możliwe
 jest wykonanie własnego kodu po wygenerowaniu wszystkich planów, ale jeszcze
-przed rozpoczęciem wykonywania testu. W sekcji \fixref{Sekcja o Hooks}
+przed rozpoczęciem wykonywania testu. W sekcji \ref{arete-master-hook}
 prezentujemy przykład, który pozwala w wygodny sposób rozbudować test o
 pobieranie informacji o zdalnych hostach.
 
@@ -102,14 +102,13 @@ Przez koncepcję testu rozumiemy to, co w teście chcemy zrobić. Jeśli naszym
 celem jest nawiązanie komunikacji między dwoma komputerami w pracowni, zwykle
 nie interesuje nas, które konkretnie komputery wykorzystamy.
 
-W skład najprostszego testu wchodzi jeden komputer. Złożone konfiguracje mogą
-zawierać ich kilkadziesiąt i definiować specyficzne sposoby komunikacji, jak
-np. Chord\footnote{http://en.wikipedia.org/wiki/Chord\_\%28peer-to-peer\%29}.
+W skład najprostszego testu wchodzi jeden komputer\footnote{Przykładowo możemy
+zdecydowań, że zarówno aplikacja serwera jak i klienta będą wykonywać się na
+tym samym systemie}. Złożone konfiguracje mogą zawierać ich kilkadziesiąt i
+definiować specyficzne sposoby komunikacji, jak np.
+Chord\footnote{http://en.wikipedia.org/wiki/Chord\_\%28peer-to-peer\%29}.
 Sposób opisu testu powinien umożliwiać zdefiniowanie rozbudowanych
 eksperymentów, a jednocześnie nie komplikować definicji tych prostych.
-
-\FIXME{Cz.: Str. 36: W skład najprostszego testu wchodzi jeden komputer -> jak wówczas
-wygląda/na czy polega test?.}
 
 Dzięki zwięzłości opisu można się szybko zorientować co w danym teście się
 dzieje. Łatwiej jest tworzyć nowe testy i wprowadzać zmiany. Odpowiednia
@@ -229,7 +228,8 @@ praktyczne będzie umieszczenie ich osobno.
 
 W dalszej części opisujemy szczegółowo poszczególne fragmenty konfiguracji,
 ograniczając się jednak tylko do podstawowego interfejsu zapewnianego przez
-framework. \fixref{Odesłać do rozdziału z opisem toolsetów i pełnego API}
+framework. Dokładną dokumentacją zamieszczamy w dodatku
+\ref{reference:interfejs-programowy}.
 
 \subsubsection{Model}
 \label{arete-master-model}
@@ -246,7 +246,7 @@ i połączeń między nimi.
 Dodatkowo możliwe jest przypisanie dowolnych cech zarówno urządzeniom jak też
 ich interfejsom. Cechy te mają format par nazwa-wartość. Sposób ich
 wykorzystania zależy od użytkownika. Framework przekaże je do odpowiednich
-sterowników \fixref{ref do rozdziału o Host i Interface Drivers}, które można
+sterowników (patrz sekcja \ref{arete-master-drivers}), które można
 tworzyć samodzielnie. Cechy można wykorzystać na przykład do przypisywania
 adresów IP interfejsom, określania sztucznie generowanych opóźnień,
 sprawdzania czy system pracuje pod kontrolą danego systemu operacyjnego itp.
@@ -396,9 +396,6 @@ nawiązania komunikacji z danym urządzeniem,
 komunikacja z danym urządzeniem (protokół przesyłanych komunikatów).
 \end{itemize}
 
-Więcej na temat wtyczek piszemy w rozdziale \fixref{referencja do rozdziału o
-wtyczkach}.
-
 Framework nie wymaga podawania parametrów \code{ip} oraz \code{port}. Są to
 atrybuty, z których korzysta wtyczka \code{tcp} i w przypadku ich braku,
 zgłosiłby błąd w czasie przetwarzania konfiguracji. Opis wymaganych atrybutów
@@ -509,9 +506,8 @@ Strategia wykonania mówi w jaki sposób komenda ma być uruchamiana. W tym
 wypadku \code{at(0)} zleca jednokrotne wykonanie w zerowej sekundzie testu.
 Strategie muszą być wybierane z uwzględnieniem możliwości wybranej wtyczki
 frontendu (patrz opis laboratorium). Konstruktor \code{at} tworzy obiekt typu
-\code{RunPolicy}. Użytkownik może definiować własne strategie. Opis dostępnych
-strategii, a także informacje o ich tworzeniu znajdują się w rozdziale
-\fixref{ref do rozdziału}.
+\code{RunPolicy}. Użytkownik może definiować własne strategie -- patrz
+\ref{reference:config.Schedule.RunPolicy}.
 
 Ostatni element trójki to komenda do wykonania. Jest ona enkapsulowana w
 obiekcie typu \code{Command}, którego klasa dostarcza interfejsu
@@ -547,8 +543,8 @@ W teście tym serwer będzie uruchomiony między 0 a 30 sekundą na
 hoście \code{alice}, klient natomiast połączy się z nim w 1 sekundzie i rozłączy
 w 29.
 
-Inne przykłady definicji planów można znaleźć w rozdziale prezentującym
-przykładowe zastosowania \fixref{ref do rozdziału Przykłady}. Ich lektura
+Inne przykłady definicji planów można znaleźć w rozdziale
+\ref{demonstracja-arete} prezentującym przykładowe zastosowania. Ich lektura
 pozwoli lepiej zrozumieć w jaki sposób wykorzystać dostępny interfejs.
 
 \subsubsection{Pozostałe}
@@ -569,7 +565,7 @@ Powyższy wyzwalacz o nazwie \code{stop-server} zostanie aktywowany, kiedy modu�
 master otrzyma 3 powiadomienia dla tego wyzwalacza. Nie jest istotne, z jakich
 źródeł one pochodzą (np. jedno urządzenie może wysłać wszystkie trzy).
 
-Demonstracja zastosowania dostępna jest w rozdziale \fixref{Przykłady}.
+Demonstracja zastosowania dostępna jest w rozdziale \ref{demonstracja-arete}.
 
 Ostatni pomocniczy mechanizm dostępny w konfiguracji to możliwość
 parametryzowania testów. Został on wprowadzony z myślą o ułatwieniu wykonywania
@@ -736,11 +732,8 @@ Zainteresowanych szczegółami implementacji odsyłamy do kodu źródłowego
 \subsubsection{AreteSlaveFrontend}
 \label{arete-master-areteslavefrontend}
 
-Jest to standardowo dostępna implementacja wtyczki frontend służąca komunikacji
-z modułem Arete Slave opisanym szczegółowo w kolejnym rozdziale.
-
-\FIXME{Cz.: standardowo dostępnej wtyczki typu frontend? standardowo dostępna
-implementacja wtyczki frontend?}
+Jest to standardowo dostępna wtyczka typu frontend służąca komunikacji z
+modułem Arete Slave opisanym szczegółowo w kolejnym rozdziale.
 
 Aby skorzystać z tej wtyczki należy w konfiguracji urządzenia użyć nazwy
 \code{arete\_slave}, jak w przykładzie poniżej:
@@ -756,9 +749,13 @@ Opcja \code{synchronize} jest opcjonalna i domyślnie aktywna. Ustawienie jej na
 \code{False} powoduje pominięcie kroku synchronizacji z zegarem zdalnego
 urządzenia. Jeżeli komputery, na których wykonujemy test, synchronizowane są
 niezależnym źródłem (np. korzystając z NTP), zaleca się wyłączyć wbudowany
-algorytm synchronizacji wtyczki \code{AreteSlavePlugin}.
-
-\FIXME{Cz.: dokładność?}
+algorytm synchronizacji wtyczki \code{AreteSlavePlugin}. Dokładność uzyskiwana
+przy użyciu NTP jest zależna od wersji protokołu, zastosowanego sprzętu,
+systemu operacyjnego i rodzaju sieci \cite{ntp-research} i może wynosić od
+dziesiątek ms w sieciach WAN do nawet 50 µs w sieciach LAN przy zastosowaniu
+odbiorników GPS lub innych dokładnych źródeł czasu. Trzeba też pamiętać, że
+wpływ ma tutaj także planista systemowy, który może powodować opóźnienia w
+wykonywaniu programów.
 
 \subsection{Połączenie ze zdalnym urządzeniem}
 \label{arete-master-polaczenie-ze-zdalnym-urzadzeniem}
@@ -891,11 +888,11 @@ odwzorowanie) z tym interfejsem interfejs urządzenia. Dzięki temu mamy dostęp
 jego nazwy w rzeczywistym urządzeniu i możemy podać argument wymagany przez
 program \code{ip}.
 
-Dokładne wyjaśnienie znaczenia każdej funkcji znajduje się w \fixref{rozdział
-Reference}. Tutaj dodamy jeszcze tylko, że sterowniki dzielą się na te
-przetwarzające argumenty hostów i te, które przetwarzają argumenty interfejsów.
-Wtyczki dziedziczą odpowiednio z klas \code{HostDriverPlugin} i
-\code{InterfaceDriverPlugin}.
+Dokładne wyjaśnienie znaczenia każdej funkcji znajduje się w dodatku
+\ref{reference:interfejs-programy}.  Tutaj dodamy jeszcze tylko, że sterowniki
+dzielą się na te przetwarzające argumenty hostów i te, które przetwarzają
+argumenty interfejsów.  Wtyczki dziedziczą odpowiednio z klas
+\code{HostDriverPlugin} i \code{InterfaceDriverPlugin}.
 
 \subsection{Przesyłanie zasobów}
 \label{arete-master-przesylanie-zasobow}
@@ -968,16 +965,16 @@ sprawdzenie atrybutów zdefiniowanych w konfiguracji. Można w ten sposób
 określić np. system operacyjny docelowego urządzenia i wygenerować komendy w
 odpowiednim formacie.
 
-Szersze omówienie interfejsu \code{Resource} znajduje się w rozdziale
-\fixref{Reference}.
+Szersze omówienie interfejsu \code{Resource} znajduje się w dodatku
+\ref{reference-interfejs-programowy}.
 
 \subsection{Wtyczki typu Hook}
 \label{arete-master-wtyczki-typu-hook}
 
 Wtyczki typu Hook umożliwiają rozszerzenie przedstawionego przez nas schematu
-konfiguracji o \fixme{własne algorytmu ???} modyfikujące tworzony test. Aktualnie dostępny
-jest tylko jeden hook, wykonywany po przygotowaniu konfiguracji, ale jeszcze
-przed uruchomieniem testu.
+konfiguracji o własne algorytmy modyfikujące tworzoną definicję test. Aktualnie
+dostępny jest tylko jeden hook: wykonywany po przygotowaniu konfiguracji, ale
+jeszcze przed uruchomieniem testu.
 
 Poniżej prezentujemy wtyczkę \code{Uname}, która go wykorzystuje.
 

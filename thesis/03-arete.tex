@@ -44,7 +44,7 @@ przeprowadzenia (m.in. programów mierzących obserwowane wartości) pozostanie 
 kwestii użytkownika. Test modelowany będzie na poziomie poleceń systemowych,
 gdyż pracując ręcznie, użytkownik najczęściej działa na tej płaszczyźnie.
 
-\FIXME{Cz.: jakoś wyróżnijcie te scenariusze – nie widać, giną w tekście.}
+\subsection{Aplikacja klient-serwer}
 
 Najprostszy scenariusz ma miejsce w czasie tworzenia oprogramowania typu
 klient-serwer. Załóżmy, że tworzymy prosty program mający umożliwiać transfer
@@ -60,6 +60,8 @@ Zadanie narzędzia polegałoby tutaj na:
 \item zapamiętaniu wyników z obu maszyn,
 \item usunięcie pliku ze zdalnej maszyny.
 \end{enumerate}
+
+\subsection{Wpływ transmisji TCP na pracę DCCP}
 
 Drugi scenariusz dotyczy pomiaru szybkości transferu danych przy użyciu
 protokołu DCCP (Datagram Congestion Control Protocol) oraz wpływu innych
@@ -83,6 +85,8 @@ Aby zautomatyzować ten test, program musi:
 Ważne jest też, żeby w czasie testu program nie przesyłał żadnych danych, aby
 nie wpływał w ten sposób na uzyskiwane wyniki.
 
+\subsection{Dystrybucja pliku w sieci BitTorrent}
+
 Trzeci scenariusz, który mamy na uwadze, to ćwiczenie laboratoryjne z Systemów
 Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
 BitTorrent rozpiętej nad dwiema sieciami IP. Klienci mają rozpocząć pobieranie
@@ -101,7 +105,7 @@ Program w tym teście:
 \item przywraca konfigurację.
 \end{enumerate}
 
-Do powyższych scenariuszy wracamy ponownie w rozdziale \fixref{Przykłady}. Są
+Do powyższych scenariuszy wracamy ponownie w rozdziale \ref{demonstracja-arete}. Są
 tam one dokładnie omówione, przedstawiony jest też sposób przeprowadzenia ich
 przy użyciu Arete.
 
@@ -203,7 +207,7 @@ ze względów bezpieczeństwa.
 W przypadkach, gdy na urządzeniu nie można zainstalować modułu
 slave\footnote{Jak np.~większość routerów sprzętowych}, użytkownik ma możliwość
 dostarczenia własnej wtyczki, dzięki której wciąż będzie można przeprowadzić
-test. Więcej na ten temat w rozdziale \fixref{o wtyczkach typu FrontendPlugin}.
+test. Więcej na ten temat w sekcji \ref{arete-master-komunikacja-slave}.
 
 \paragraph{Synchronizacja urządzeń nie zmienia wskazań ich zegarów.}
 Najprostszym rozwiązaniem problemu synchronizacji byłoby wykorzystanie ogólnie
@@ -222,19 +226,22 @@ urządzenia, na którym jest uruchomiony. Zakładając symetryczny czas komunika
 w obie strony, różnicę czasu można wyznaczyć wzorem: $$\Delta t = r - \frac{l_1
 + l_2}{2}$$ gdzie $r$ to wskazanie zegara zdalnego urządzenia w momencie
 odebrania zapytania o czas a $l_1$ i $l_2$ to odpowiednio czasy wysłania
-zapytania i odebrania odpowiedzi.
+zapytania i odebrania odpowiedzi. Istnieją przypadki kiedy czas transmisji w
+dwóch kierunkach nie jest zbliżony, dzieje się tak np. kiedy transmisja w dwóch
+kierunkach odbywa się przy użyciu innego medium lub gdy wpisy tablic routingu
+(lub sama topologia sieci) tworzą w obu kierunkach różne ścieżki. Zastosowanie
+powyższego wzoru w takich sytuacjach owocuje większym błędem. Błąd ten jest
+równy wartości bezwzględnej różnicy czasów transmisji w obu kierunkach. Warto
+dodać, że nawet w najprostszych sieciach Ethernet czas transmisji także jest
+tylko zbliżony do równego i wciąż mamy do czynienia z pewnym błędem.
 
-\FIXME{Cz.: „zakładając symetryczny czas” – kiedy to założenie nie będzie
-spełnione? Czy jego przyjęcie jest akceptowalne?}
-
-Synchronizacja ta jest domyślnie włączona, ale opcjonalna. Jeżeli testy
-uruchamiamy w sieci, gdzie aktywny jest zewnętrzny protokół synchronizacji,
-zegary urządzeń prawdopodobnie będą zsynchronizowane dokładniej i nasz prosty
-protokół mógłby raczej pogorszyć sytuację.
-
-\FIXME{Cz.: zegary urządzeń prawdopodobnie
-będą zsynchronizowane dokładniej – NTP daje dokładność kilku MS, więc
-pewnie nie będzie lepiej.}
+Synchronizacja ta jest domyślnie włączona, ale opcjonalna. Jeżeli przypadek
+testowy będzie wymagać dokładnej synchronizacji to niestety, z uwagi na
+wspomniany problem czasu transmisji, jesteśmy zmuszeni samodzielnie zapewnić
+synchronizację urządzeń. W takich testach nasz prosty protokół synchronizacji
+mógłby raczej pogorszyć wskazania zegarów, tak więc wskazane może być
+wyłączenie go. Warto też wziąć pod uwagę możliwości samego sprzętu, tzn.
+rozdzielczość samych zegarów a także algorytmu planisty w systemie operacyjnym.
 
 \paragraph{Wszystkie wyniki są cenne.} Ponieważ obecnie przechowywanie dużych
 ilości danych nie sprawia problemu, w czasie testu staramy się zebrać jak
@@ -356,8 +363,8 @@ modułami Master i Slave.}
 
 Architektura wewnętrzna modułów Master oraz Slave opisana jest w dwóch
 kolejnych rozdziałach. Opis wdrożenia i instalacji narzędzia przedstawiamy w
-\fixref{rozdziale Instalacja}. Tutaj natomiast przedstawiamy w jaki sposób
-moduły te współpracują ze sobą, aby umożliwić przeprowadzenie testu.
+podrozdziale \ref{instalacja-arete}. Tutaj natomiast przedstawiamy w jaki
+sposób moduły te współpracują ze sobą, aby umożliwić przeprowadzenie testu.
 
 Użytkownik rozpoczyna test uruchamiając moduł Master i przekazując mu zadaną
 konfigurację testową. Master analizuje otrzymaną konfigurację i przygotowuje
@@ -461,7 +468,7 @@ Powiadomienia (rys.~\ref{fig:arete-test-seq-trigger}) pozwalają stworzyć
 licznik (wyzwalacz), który po otrzymaniu określonej liczby powiadomień,
 spowoduje wysłanie komunikatu do wszystkich uczestników testu. Wyzwalacze
 definiuje się w konfiguracji testu, o której szeroko piszemy w rozdziale
-\fixref{Moduł Master}. Licznik jest inicjowany wartością początkową i odlicza w
+\ref{arete-master}. Licznik jest inicjowany wartością początkową i odlicza w
 dół. Komunikat wyzwolenia (aktywacji) wysyłany jest, kiedy osiągnie on zero.
 Nie jest narzucone, który Slave może wysyłać powiadomienia. Jeden Slave może
 też wysłać ich kilka.

@@ -48,10 +48,10 @@ zapisania wyników uruchamianych komend.
 \paragraph{Poker} realizuje funkcję \textit{poke}\footnote{\ang{poke} -
 szturchać. W pracy będziemy używać terminu angielskiego, ponieważ polskie
 tłumaczenie brzmi kolokwialnie i nie sugeruje omawianej funkcjonalności.},
-będącą częścią mechanizmu powiadomień (Rozdział \fixref{Mechanizm
-Powiadomień}).  Pozwala on na wysyłanie powiadomień w dowolnym momencie testu
-przez uruchamiane w jego ramach komendy, korzysta się z wyrażenia 
-\code{@\{poke <nazwa powiadomienia>\}}.
+będącą częścią mechanizmu powiadomień (patrz sekcja \ref{arete-master-others}).
+Pozwala on na wysyłanie powiadomień w dowolnym momencie testu przez uruchamiane
+w jego ramach komendy, korzysta się z wyrażenia \code{@\{poke <nazwa
+powiadomienia>\}}.
 
 \section{Protokół komunikacji z Arete Master}
 \label{arete-slave-protokol-komunikacji-z-arete-master}
@@ -273,8 +273,7 @@ sygnalizować o poprawnym lub błędnym działaniu:
 wchodzących w skład testu. Obowiązuje wyłącznie w trybie \emph{complete}.}
 
 \item{\code{100 Notify <identyfikator testu> <nazwa wyzwalacza>} - wysyłany w
-przypadku korzystania z mechanizmu powiadomień (Rozdział \fixref{Mechanizm
-Powiadomień}).}
+przypadku korzystania z mechanizmu powiadomień (patrz sekcja \ref{arete-master-others}).}
 
 \item{\code{200 OK} - zwracany po odebraniu każdego prawidłowego polecenia oraz
 poprawnym jego wykonaniu.}

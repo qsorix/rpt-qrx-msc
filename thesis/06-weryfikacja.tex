@@ -490,11 +490,11 @@ rzeczywistych sieciach, gdzie problemy takie jak synchronizacja urządzeń i
 zbieranie wyników powodują, że ręczne wykonywanie wszystkich czynności staje
 się bardzo czasochłonne i uciążliwe, choć sam test jest w swojej naturze prosty.
 
-W tabeli \fixref{tej poniżej} porównujemy naszym zdaniem najistotniejsze cechy
-wspomnianych narzędzi. Jak widać Arete nie jest idealnym narzędzie do każdego
-typu zastosowań. Nie jest to również narzędzie zdolne do samodzielnej pracy.
-Uważamy jednak, że dobrze uzupełnia funkcjonalne braki istniejących rozwiązań i
-razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
+W tabeli poniżej porównujemy naszym zdaniem najistotniejsze cechy wspomnianych
+narzędzi. Mówiąc o deterministycznych wynikach mamy na myśli wyniki, które będą
+identyczne po każdym wykonaniu testu. Przez brak wpływu na wydajność rozumiemy
+bezpośrednie wykonywanie testowanego systemu w jego naturalnym środowisku, np.
+bezpośrednio pod kontrolą systemu operacyjnego.
 
 \begin{small}
 \begin{center}
@@ -508,7 +508,7 @@ razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
       \hline
       Weryfikacja wyników & $+$ & $+$ & $-$ & $-$ \\
       \hline
-      Uwzględnienie wpływu środowiska & $-$ & $-$ & $-$ & $+$ \\
+      Brak izolacji wpływu środowiska & $-$ & $-$ & $-$ & $+$ \\
       \hline
       Wykorzystanie rzeczywistych urządzeń & $-$ & $-$ & $-$ & $+$ \\
       \hline
@@ -531,38 +531,56 @@ razem z nimi pozwala stworzyć praktyczne i wygodne środowisko testowe.
 \end{center}
 \end{small}
 
-\FIXME{Cz.: co to są „deterministyczne wyniki” i „brak wpływu na wydajność”
-oraz „uwzględnienie wpływu środowiska”?}
+Jak widać Arete nie jest idealnym narzędziem do każdego typu zastosowań. Nie
+jest to również narzędzie zdolne do samodzielnej pracy.  Uważamy jednak, że
+dobrze uzupełnia funkcjonalne braki istniejących rozwiązań i razem z nimi
+pozwala stworzyć praktyczne i wygodne środowisko testowe.
 
-\section{Podsumowanie}
+\section{Krytyka}
 
-\FIXME{Opisać jeszcze proces weryfikacji naszego programu. Coś o wydajności, użyteczności, testowaniu itd. Wspomnieć o unit-testach.}
+Zamykając ten rozdział pragniemy przytoczyć kilka krytycznych opinii
+dotyczących automatyzacji testów i ustosunkować się do nich jako twórcy jednego
+z rozwiązań.
 
-As a community, perhaps we're still in the phase of admiring the cool idea of
-test automation, and not yet to the point of recognizing its pitfalls and
-gotchas
+W czasie pracy mieliśmy na uwadzę tezę mówiącą, że współczesne społeczeństwo
+informatyczne nie dostrzegało pułapek i trudności procesu automatyzacji testów.
+Nie wdając się w dyskusję czy jest to teza prawdziwa, podeszliśmy do
+zagadnienia z ostrożnością. Pozwoliło nam to wykreślić z wymagań pewne ambitne,
+ale mało realne i tylko sporadycznie potrzebne funkcje.
 
-Testing is a "sequence of actions." A more useful way to think about testing is
-as a sequence of interactions interspersed with evaluations. Some of those
-interactions are predictable, and some of them can be specified in purely
-objective terms.
+Istotny zarzut stawiany w \cite{snake-oil} dotyczy postrzegania przypadku
+testowego jako sekwencji akcji do wykonania, podczas gdy bardziej praktyczne
+ujęcie zagadnienia powinno być sekwencją interakcji przeplecionych z
+wykonywaniem testu. W takim ujęciu osoba przeprowadzająca złożony test jest
+częścią interakcji między testowanym systemem a jego środowiskiem. Ma ona także
+możliwość na bieżąco zmieniać plan testu. Zgadzamy się, że w pewnych wypadkach
+taka interakcja daje możliwość tworzenia bardziej interesujących przypadków
+testowych. 
 
-If you set out to automate all the necessary test execution, you'll probably
-spend a lot of money and time creating relatively weak tests that ignore many
-interesting bugs, and find many "problems" that turn out to be merely
-unanticipated correct behavior.
+Z drugiej strony w obronie możemy przytoczyć kolejny punkt krytyki: próba
+automatyzacji wszystkich potrzebnych testów prawdopodobnie będzie wymagać o
+wiele więcej środków a skończy się stworzeniem słabych testów, które przeoczą
+wiele problemów, jednocześnie znajdując wiele sytuacji, w których problem okaże
+się poprawnym -- chociaż nieoczekiwanym -- zachowaniem.
 
+Naszym zdaniem lepszą decyzją jest pozostanie przy prostej funkcjonalności,
+która sprawdza się tam, gdzie automatyzacja daje najlepsze rezultaty, niż
+rozbudowywanie narzędzia umożliwiając jego użycie w przypadkach, których sens
+automatyzacji pozostaje wątpliwy.
 
-When I was at Borland, the spreadsheet group used to track whether bugs were
-found through automation or manual testing-consistently, over 80% of bugs were
-found manually, despite several years of investment in automation. 
+Wszystkie automatyzowane testy wymagają interwencji człowieka. W idealnym
+wypadku ogranicza się ona do analizy wyników, ale często także do naprawy złych
+przypadków testowych. Trzeba pamiętać, że nie łatwo jest stworzyć złożony
+zestaw testów bez żadnych błędów. Nawet jeśli nie ma ich w pierwotnej wersji,
+wraz z rozwojem testowanego systemu testy często trzeba zmieniać, a każda
+zmiana to źródło potencjalnych błedów.
 
-All automated test suites require human intervention, if only to diagnose the
-results and fix broken tests. It can also be surprisingly hard to make a
-complex test suite run without a hitch.
+Skoro więc człowiek jest obecny także w procesie automatycznego testowania, nie
+powinien on przekazywać maszynie wykonywania tych czynności, które jest w
+stanie zrobić lepiej.
 
-Maintain a careful distinction between the automation and the process that it
-automates. The test process should be in a form that is convenient to review
-and that maps to the automation.
+Nie możemy zaprzeczyć tym słusznym uwagom. Trafnie uderzają one w słabe punkty
+automatyzacji. Mając jednak na uwadze przewidziany przez nas obszar zastosowań,
+uważamy, że storzone przez nas narzędzie dobrze spełnia swoją rolę.
 
 \end{document}
