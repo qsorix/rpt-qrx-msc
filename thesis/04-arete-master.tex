@@ -58,14 +58,14 @@ Connection.
 
 Wtyczki Drivers na podstawie konfiguracji generują komendy dla zdalnych
 urządzeń. Przykładem może być driver, który na czas testu konfiguruje adresy IP
-urządzeń. Wtyczki te są szerzej omówione w sekcji \ref{arete-master-drivers}.
+urządzeń. Wtyczki te są szerzej omówione w sekcji \ref{arete-master-sterowniki-parametrow}.
 
 Komponenty Hooks\footnote{W tym znaczeniu polskie tłumaczenie \ang{hook}
 to punkt zaczepienia. W pracy używamy terminu \textit{hook}, ponieważ jest zwięzły, a w
 informatyce termin ten jest często spotykany i jednoznaczny.} to wtyczki dające
 użytkownikowi możliwość ingerencji w generowane plany testów. Obecnie możliwe
 jest wykonanie własnego kodu po wygenerowaniu wszystkich planów, ale jeszcze
-przed rozpoczęciem wykonywania testu. W sekcji \ref{arete-master-hook}
+przed rozpoczęciem wykonywania testu. W sekcji \ref{arete-master-wtyczki-typu-hook}
 prezentujemy przykład, który pozwala w wygodny sposób rozbudować test o
 pobieranie informacji o zdalnych hostach.
 
@@ -246,7 +246,7 @@ i połączeń między nimi.
 Dodatkowo możliwe jest przypisanie dowolnych cech zarówno urządzeniom jak też
 ich interfejsom. Cechy te mają format par nazwa-wartość. Sposób ich
 wykorzystania zależy od użytkownika. Framework przekaże je do odpowiednich
-sterowników (patrz sekcja \ref{arete-master-drivers}), które można
+sterowników (patrz sekcja \ref{arete-master-sterowniki-parametrow}), które można
 tworzyć samodzielnie. Cechy można wykorzystać na przykład do przypisywania
 adresów IP interfejsom, określania sztucznie generowanych opóźnień,
 sprawdzania czy system pracuje pod kontrolą danego systemu operacyjnego itp.

@@ -15,7 +15,7 @@ właściwym produktem, mimo to należy spojrzeć krytycznym okiem na końcowy wy
 
 Jednym z podstawowym wymaganiem była możliwosć definiowania testu.
 Zastosowaliśmy rozwiązanie oparte o język Python i stworzone przez nas API, co
-szeroko opisaliśmy w rozdziale \ref{arete-master-config}.
+szeroko opisaliśmy w rozdziale \ref{arete-master-konfiguracja}.
 
 Łączenie ze zdalnymi urządzeniami możliwe jest przy użyciu wtyczek typu
 \code{ConnectionPlugin}. Dostępna jest wtyczka oparta o protokół TCP/IP oraz
@@ -23,11 +23,11 @@ jej wersja korzystająca z tunelu SSH.
 
 Konfiguracja zdalnych urządzeń jest przeprowadzana w drugiej fazie testu, tj.
 fazie konfiguracji urządzeń oraz fazie czwartej czyli przywracaniu
-konfiguracji (patrz sekcja \ref{arete-arch}). Interfejs programy opisujemy w
-sekcji \ref{arete-master-drivers}.
+konfiguracji (patrz sekcja \ref{arete-architektura}). Interfejs programy opisujemy w
+sekcji \ref{arete-master-sterowniki-parametrow}.
 
 Przesyłanie zasobów wymaganych w testach dokumentujemy w sekcji
-\ref{arete-master-resources}. Ze względu na różne możliwości komunikacyjne
+\ref{arete-master-przesylanie-zasobow}. Ze względu na różne możliwości komunikacyjne
 sprzętu sieciowego, stworzyliśmy uniwersalny interfejs programy, który można
 dowolnie rozbudować na własne potrzeby.
 
@@ -39,7 +39,7 @@ wykonanie komend odpowiedzialny jest moduł Slave.
 Pobieranie wyników ze zdalnych urządzeń odbywa się korzystając z prostego
 protokołu między modułami Master oraz Slave. Katalogowanie wyników z wielu
 testów zrealizowaliśmy przechowując wyniki w bazie danych SQLite, której
-strukturę przedstawiamy w sekcji \ref{arete-master-db}.
+strukturę przedstawiamy w sekcji \ref{arete-master-przechowywanie-wynikow}.
 
 Aby synchronizować w czasie start testu, moduł Master przesyła do urządzeń
 informację o godzinie, w której tes ma się rozpocząć. Udostępniliśmy prosty
@@ -54,14 +54,14 @@ identyfikator aby po ponownym nawiązaniu połączenia moduł Master mógł okre
 jakie wyniki chce otrzymać. W przypadku testów, których zakończenie wymaga
 kooperacji pomiędzy modułami Slave, rozłączenie na czas jego wykonania nie jest
 możliwe, komunikują one bowiem za pośrednictwem modułu Master. Mechanizm ten
-opisany jest w sekcji \ref{arete-master-others}.
+opisany jest w sekcji \ref{arete-master-pozostale}.
 
 Wspomniany mechanizm powiadomień został pierwotnie zaimplementowany aby
 umożliwić zakończenie testu w momencie, gdy wykonanie zakończą wszystkie
 uczestniczące urządzenia. Inny przypadek, w którym test kończy się gdy wybrane
 urządzenie zakończy test, również realizowany jest przy użyciu powiadomień.
 Zakończenie testu w wybranym momencie czasowym to odzielny mechanizm, opisany w
-sekcji \ref{arete-master-config-plan}.
+sekcji \ref{arete-master-plan}.
 
 Realizację wszystkich wymagań testowaliśmy w czasie implementacji za pomocą
 tworzonych testów jednostkowych\footnote{\ang{unit test}} oraz wykonując

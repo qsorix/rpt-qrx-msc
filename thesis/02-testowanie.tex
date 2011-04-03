@@ -16,7 +16,7 @@ w pracy.
 \section{Test}
 \label{test}
 
-W artykule \cite{good-test} Cem Kaner zastanawia się, jakimy cechami powinien
+W artykule \cite{good-test} Cem Kaner zastanawia się, jakimi cechami powinien
 charakteryzować się dobry test.  Odpowiedź na to pytanie wymaga najpierw
 zdefiniowania pojęcia samego testu. Bob Binder (1999) robi to w ten sposób:
 
@@ -30,9 +30,10 @@ końcowy stan obiektu oraz środowiska.
 
 Test opisuje zatem pewne oczekiwane zachowanie testowanego obiektu w zadanych
 warunkach. Istotne jest, że testowanego obiektu nie rozpatruje się w izolacji,
-ale bierze się pod uwagę także jego środowisko. Test ma też wyraźnie określony
-początek, czyli momenty, w których zaczynamy w znanym, prawidłowym stanie, oraz
-koniec, kiedy to powinniśmy zweryfikować otrzymany, z założeniami testu.
+lecz bierze się pod uwagę także jego środowisko. Test ma też wyraźnie określony
+początek, czyli moment, w którym zaczynamy w znanym, prawidłowym stanie, oraz
+koniec, kiedy to powinniśmy zweryfikować otrzymany stan, porównując go z
+założeniami testu.
 
 Powyższa definicja jest bardzo popularna i mówi, co wchodzi w skład opisu
 przypadku testowego. Pozbawiona jest jednak wymiaru praktycznego, czyli
@@ -45,7 +46,7 @@ wykonania testu jest zdobycie informacji. Na przykład, czy program spełni
 warunek testu.
 \end{quote}
 
-Z tak sformułowanej definicji wynika, że dobry jest ten test, który dostarcza
+Z tak sformułowanej definicji wynika, że dobry jest taki test, który dostarcza
 nowych informacji na temat testowanego obiektu. Kryteria ocenu konkretnego
 przypadku testowego zależne są od jego rodzaju. Innych cech wymaga się od
 testów regresyjnych, a innych od testów użytkownika.

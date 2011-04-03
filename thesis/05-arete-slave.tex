@@ -9,7 +9,7 @@ Arete Slave jest programem służącym do wykonywania testów na komputerach
 stacjonarnych. Działa on jako
 demon\footnote{http://pl.wikipedia.org/wiki/Demon\_(informatyka)} sterowany
 przez moduł Master za pomocą protokołu opisanego w rozdziale
-\ref{arete-slave-protokol}.
+\ref{arete-slave-protokol-komunikacji-z-arete-master}.
 
 \section{Architektura}
 \label{arete-slave-architektura}
@@ -30,7 +30,7 @@ przedstawione na rysunku \ref{fig:arete-slave-arch}.
 \paragraph{Handler} jest modułem obsługującym przychodzące połączenia TCP,
 służącym do komunikacji z Arete Master. Korzysta z modułu Parser, aby sprawdzić czy
 przychodzące komunikaty są zgodne z protokołem komunikacji (Rozdział
-\ref{arete-slave-protokol}). Otrzymane dane przekazuje do modułu Manager, który
+\ref{arete-slave-protokol-komunikacji-z-arete-master}). Otrzymane dane przekazuje do modułu Manager, który
 zajmuje się ich interpretacją.
 
 \paragraph{Manager} to główny moduł zarządzający testami. Na podstawie danych
@@ -48,7 +48,7 @@ zapisania wyników uruchamianych komend.
 \paragraph{Poker} realizuje funkcję \textit{poke}\footnote{\ang{poke} -
 szturchać. W pracy będziemy używać terminu angielskiego, ponieważ polskie
 tłumaczenie brzmi kolokwialnie i nie sugeruje omawianej funkcjonalności.},
-będącą częścią mechanizmu powiadomień (patrz sekcja \ref{arete-master-others}).
+będącą częścią mechanizmu powiadomień (patrz sekcja \ref{arete-master-pozostale}).
 Pozwala on na wysyłanie powiadomień w dowolnym momencie testu przez uruchamiane
 w jego ramach komendy, korzysta się z wyrażenia \code{@\{poke <nazwa
 powiadomienia>\}}.
@@ -273,7 +273,7 @@ sygnalizować o poprawnym lub błędnym działaniu:
 wchodzących w skład testu. Obowiązuje wyłącznie w trybie \emph{complete}.}
 
 \item{\code{100 Notify <identyfikator testu> <nazwa wyzwalacza>} - wysyłany w
-przypadku korzystania z mechanizmu powiadomień (patrz sekcja \ref{arete-master-others}).}
+przypadku korzystania z mechanizmu powiadomień (patrz sekcja \ref{arete-master-pozostale}).}
 
 \item{\code{200 OK} - zwracany po odebraniu każdego prawidłowego polecenia oraz
 poprawnym jego wykonaniu.}

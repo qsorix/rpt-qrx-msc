@@ -30,20 +30,20 @@ administratora musimy wykonać poniższą komendę z takimi uprawnieniami.
 
 Ponieważ na każdym z urządzeń będzie działać tylko jeden demon, możemy
 skorzystać z domyślnych ustawień. W przeciwnym wypadku wymagane jest użycie
-dodatkowych parametrów opisanych w rozdziale \ref{arete-slave-run}, aby
+dodatkowych parametrów opisanych w rozdziale \ref{arete-slave-uruchamianie}, aby
 zróżnicować porty i nazwy plików bazy danych. Użycie parametru \code{-v}
 spowoduje wypisywanie loga na standardowe wyjście, co ułatwi nam obserwację
 przebiegu testu. 
 
 Następnie tworzymy konfigurację testu. Po szczegółowy opis tej części
-testowania przy pomocy Arete odsyłamy do rozdziału \ref{arete-master-config}.
+testowania przy pomocy Arete odsyłamy do rozdziału \ref{arete-master-konfiguracja}.
 W omówionych w dalszej części tego rozdziału przykładach krok po kroku omówimy
 tworzone modele i plany testów. Tymczasem na potrzeby tej instrukcji założymy,
 że stworzyliśmy już wspomniane elementy w pliku \code{configuration}.
 
 Niezależnie od tego jaki test chcemy wykonać, potrzebujemy konfiguracji
 laboratorium. Zostało to szerzej opisane w rozdziale
-\ref{arete-master-config-lab}. Przykładowy plik laboratorium przedstawiono
+\ref{arete-master-laboratorium}. Przykładowy plik laboratorium przedstawiono
 poniżej. 
 
 \begin{pythoncode}
@@ -64,7 +64,7 @@ poniżej.
 \end{pythoncode}
 
 Kolejnym krokiem jest stworzenie odwzorowania między modelem a laboratorium.
-Odwzorowania były omówione w rozdziale \ref{arete-master-config-mapping}. 
+Odwzorowania były omówione w rozdziale \ref{arete-master-odwzorowanie}. 
 Jeśli chcielibyśmy zawrzeć go w pliku konfiguracyjnym, wyglądałoby to
 następująco.
 
@@ -78,7 +78,7 @@ następująco.
 Alternatywnie, odwzorowanie możemy podać w linii poleceń programu Arete Master,
 korzystając z argumentu \code{--map}, jak przedstawiono w przykładzie poniżej.
 Test uruchamiamy podając wszystkie pliki konfiguracyjne po argumencie \code{-c}.
-Opis wszystkiech parametrów znajduje się w rozdziale \ref{arete-master-run}.
+Opis wszystkiech parametrów znajduje się w rozdziale \ref{arete-master-uruchamianie}.
 
 \code{\$ arete -c configuration laboratory --map host1:marvin host2:defteros}
 
@@ -184,8 +184,8 @@ który odbiera go (\code{5}) i kończy pracę serwera. Na koniec na urządzeniu
 
 Poniżej omówiliśmy szczegółowo konfigurację testu w ramach którego zostaną
 wykonane opisane przed chwilą czynności. Zawiera ona jedynie model i plan testu.
-Zakładamy, że użytkownik zapoznał się z rozdziałami \ref{arete-master-config}
-oraz \ref{examples-install-run} omawiającymi konfigurację oraz uruchomienie
+Zakładamy, że użytkownik zapoznał się z rozdziałami \ref{arete-master-konfiguracja}
+oraz \ref{instalacja-i-uruchomienie-arete} omawiającymi konfigurację oraz uruchomienie
 testów za pomocą Arete.
 
 \begin{pythoncode}
@@ -417,7 +417,7 @@ sekundach.
 \end{pythoncode}
 
 Zaczynamy od stworzenia sterownika parametrów (\code{HostDriverPlugin} - opisany
-szerzej w rozdziale \ref{arete-master-drivers}), który dla każdego z urządzeń doda
+szerzej w rozdziale \ref{arete-master-sterowniki-parametrow}), który dla każdego z urządzeń doda
 komendy konfiguracyjne i czyszczące tworzące odpowiednie wpisy w \code{iptables}
 dla podanych protokołów.
 
@@ -654,12 +654,14 @@ kończący działanie klienta.
 
 Na koniec dodajemy odpowiednie plany do stworzonych w modelu urządzeń.
 
-\subsection{Wyniki}
+%\subsection{Wyniki}
 
-\FIXME{Wrzucić wyniki testu i krótko je opisać.}
+%\FIXME{Wrzucić wyniki testu i krótko je opisać.}
 
 \section{Podsumowanie}
 \label{przyklady-podsumowanie}
+
+
 
 \FIXME{Napisać jak we wszystkich 3 przykładach sprawdziliśmy, że Arete działa
 świetnie, jest łatwy w obsłudze, efektywny i nadaje się do różnego rodzaju testów.}
