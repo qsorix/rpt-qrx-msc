@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.common.PluginMount import PluginMount
-from AreteMaster.common import Exceptions
+from common.PluginMount import PluginMount
+from common import Exceptions
 
 class HookPlugin:
     """

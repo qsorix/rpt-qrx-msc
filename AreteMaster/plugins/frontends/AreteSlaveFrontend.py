@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.controller.FrontendPlugin import FrontendPlugin
-from AreteMaster.common import Database
-from AreteMaster.common import Exceptions
+from controller.FrontendPlugin import FrontendPlugin
+from common import Database
+from common import Exceptions
 
 import datetime
 import os

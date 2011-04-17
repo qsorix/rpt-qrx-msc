@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.command.DriverPlugin import InterfaceDriverPlugin
+from command.DriverPlugin import InterfaceDriverPlugin
 
 class InterfaceIP(InterfaceDriverPlugin):
     def process_interface(self, cmd, host, interface, attributes):

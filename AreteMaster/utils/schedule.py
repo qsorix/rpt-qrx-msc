@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.config import Schedule
+from config import Schedule
 
 class at(Schedule.RunPolicy):
     def __init__(self, time):

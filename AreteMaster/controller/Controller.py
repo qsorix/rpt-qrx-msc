@@ -6,8 +6,8 @@ import time
 
 from ConnectionPlugin import ConnectionPlugin
 from FrontendPlugin import FrontendPlugin
-from AreteMaster.common import Exceptions
-from AreteMaster.common import Database
+from common import Exceptions
+from common import Database
 
 class TestDurationPolicy:
     def __init__(self, start, end_policy):
@@ -60,6 +60,10 @@ class Controller:
 
             if sanity_exception:
                 raise sanity_exception
+
+        except KeyboardInterrupt as e:
+            print 'Test cancelled'
+            self._abort_test()
 
         except Exception as e:
             print 'Aborting test because of exception: ' + str(e)

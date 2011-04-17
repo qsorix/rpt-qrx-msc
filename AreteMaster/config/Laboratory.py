@@ -2,7 +2,7 @@
 # coding=utf-8
 
 from BaseMixins import NamedMixin, AttributedMixin, InterfacesMixin, BindableMixin
-from AreteMaster.common import Exceptions
+from common import Exceptions
 
 class Laboratory(NamedMixin):
     """Konfiguracja laboratorium."""

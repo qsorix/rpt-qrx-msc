@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.common.Hooks import HookPlugin
+from common.Hooks import HookPlugin
 
 class Uname(HookPlugin):
     hook_name = 'uname'

@@ -2,7 +2,7 @@
 # coding=utf-8
 
 import getpass
-from AreteMaster.common import Exceptions
+from common import Exceptions
 
 parameters = None
 """Globalny obiekt udostępniający parametry podane w linii polecenia
@@ -67,4 +67,5 @@ class Parameters(dict):
         else:
             return raw_input("%s = " % key)
 
-parameters = Parameters()
+if not parameters:
+    parameters = Parameters()

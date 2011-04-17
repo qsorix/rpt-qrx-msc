@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.common import Exceptions
+from common import Exceptions
 
 class AttributedMixin:
     """Obsługa atrybutów."""

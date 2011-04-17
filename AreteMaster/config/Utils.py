@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.common import Exceptions
+from common import Exceptions
 
 def resolve_resource_name(name):
     base_error = "Name '{0}' cannot be used as a resource reference. Resource unknown.".format(name)
 
-    from AreteMaster.config.Resources import resources
+    from config.Resources import resources
 
     try:
         return resources.resources()[name]
@@ -58,11 +58,11 @@ def resolve_entity_name(name, type, container):
     raise Exceptions.ConfigurationError(base_error + " There is no %s named '%s'." % (type, name))
 
 def resolve_host_name(name):
-    from AreteMaster.config.Model import get_model
+    from config.Model import get_model
     return resolve_entity_name(name, 'host', get_model().hosts())
 
 def resolve_device_name(name):
-    from AreteMaster.config.Laboratory import get_laboratory
+    from config.Laboratory import get_laboratory
     return resolve_entity_name(name, 'device', get_laboratory().devices())
 
 def resolve_interface_name(name, model=False, laboratory=False):

@@ -2,7 +2,7 @@
 # coding=utf-8
 
 from BaseMixins import NamedMixin, InterfacesMixin
-from AreteMaster.common import Exceptions
+from common import Exceptions
 import Utils
 
 class Mapping(NamedMixin):

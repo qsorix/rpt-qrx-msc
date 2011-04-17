@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.common import Exceptions
-from AreteMaster.controller.ConnectionPlugin import ConnectionPlugin
+from common import Exceptions
+from controller.ConnectionPlugin import ConnectionPlugin
 import os
 import stat
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.common.PluginMount import PluginMount
+from common.PluginMount import PluginMount
 
 class FrontendPlugin:
     """
@@ -107,7 +107,14 @@ class FrontendPlugin:
         return self._connection.input()
 
     def connect(self):
-        self._connection.connect()
+        try:
+            self._connection.connect()
+        except Exception as e:
+            print ('Could not connect to ' +
+              self._host.device['name'] +
+              '(' + self._host.model['name'] + '). ' +
+              str(e))
+            raise
 
     def disconnect(self):
         if self._connection:

@@ -7,7 +7,7 @@ import Mapping
 import Schedule
 import Resources
 import Utils
-import AreteMaster.common.Exceptions as Exceptions
+import common.Exceptions as Exceptions
 import uuid
 import traceback
 

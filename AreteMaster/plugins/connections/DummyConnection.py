@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.controller.ConnectionPlugin import ConnectionPlugin
+from controller.ConnectionPlugin import ConnectionPlugin
 import os
 
 class DummyConnection(ConnectionPlugin):

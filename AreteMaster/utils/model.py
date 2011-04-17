@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from AreteMaster.config.Model import add_host
+from config.Model import add_host
 
 def group(name, count):
     g = []
