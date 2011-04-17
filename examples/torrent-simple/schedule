@@ -1,0 +1,39 @@
+from utils.resources import File
+from utils.schedule import at, after, shell, trigger, notify, poke
+
+create_schedule('torrent-distribution-time')
+    
+test_end_policy('complete', setup_phase_delay=0.0)
+
+# peers[0] will be seeding. All other hosts just download
+
+torrent = add_resource(File('torrent', 'big-data-file.torrent'))
+data    = add_resource(File('torrent-file', 'big-data-file'))
+trackcfg = add_resource(File('tracker-cfg', 'xbt_tracker.conf'))
+
+# there are peers-1 downloading peers
+create_trigger('stop-torrent', len(peers)-1)
+
+tracker_schedule = [
+    ('tracker', at(0), shell('xbt_tracker --conf_file @{tracker-cfg.name}', use_resources=[trackcfg])),
+    ('stop-tracker', trigger('stop-torrent'), shell('kill @{tracker.pid}'))
+]
+
+seed_schedule = [ 
+    ('ctorrent', at(2), shell('ctorrent -f "@{torrent.name}"', use_resources=[torrent, data])),
+    ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
+]
+
+peer_schedule = [
+    ('ctorrent', at(5), shell('ctorrent "@{torrent.name}" -X @{poke stop-torrent}', use_resources=[torrent])),
+    ('poke', poke('stop-torrent'), notify('stop-torrent')),
+    ('stop', trigger('stop-torrent'), shell('kill -9 @{ctorrent.pid}'))
+]
+
+append_schedule(peers[0], tracker_schedule)
+append_schedule(peers[0], seed_schedule)
+
+for host in peers[1:]:
+    append_schedule(host, peer_schedule)
+
+# vim: ft=python

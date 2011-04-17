@@ -1,0 +1,9 @@
+create_model('torrent-minimalistic')
+
+from config.Global import parameters
+
+peers = []
+for i in range(int(parameters['peers'])):
+    peers.append(add_host('peer{0}'.format(i+1)))
+
+# vim: ft=python

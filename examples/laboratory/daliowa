@@ -1,19 +1,19 @@
 create_laboratory('daliowa')
 
-add_device('pc1',
+add_device('defteros',
   connection='tcp',
-  ip='192.168.1.100',
-  port='9999',
+  ip='localhost',
+  port='4567',
   frontend='arete_slave')
 
-add_device('pc2',
+add_device('acer',
   connection='tcp',
-  ip='192.168.1.101',
-  port='9999',
+  ip='192.168.1.107',
+  port='4567',
   frontend='arete_slave')
 
-add_device('pc3',
+add_device('hp',
   connection='tcp',
-  ip='192.168.1.102',
-  port='9999',
+  ip='192.168.1.106',
+  port='4567',
   frontend='arete_slave')

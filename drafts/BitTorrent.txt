@@ -1,0 +1,63 @@
+NOTE: zeby poker dzialal arete-poker musi byc w $PATH
+=====================================================
+
+
+http://xbtt.sourceforge.net/tracker/
+
+svn co http://xbt.googlecode.com/svn/trunk/xbt/misc xbt/misc
+svn co http://xbt.googlecode.com/svn/trunk/xbt/Tracker xbt/Tracker
+cd xbt/Tracker
+./make.sh
+cp xbt_tracker.conf.default xbt_tracker.conf
+
+Starting under Linux
+./xbt_tracker
+
+Stopping under Linux
+killall xbt_tracker
+
+============================
+emerge mysql
+
+# ustawia haslo root'a
+sudo emerge --config mysql
+
+# polaczenie z baza
+mysql -u root -h localhost -p
+
+mysql> SHOW DATABASES;
+
+mysql> CREATE DATABASE xbt;
+
+mysql> CREATE USER xbt;
+
+mysql> GRANT USAGE ON *.* TO xbt@localhost IDENTIFIED BY 'xbt';
+mysql> GRANT ALL PRIVILEGES ON xbt.* TO xbt;
+mysql> SET PASSWORD for xbt = PASSWORD('xbt');
+
+
+=============================
+edit xbt_tracker.conf and set password
+
+
+# run to create tables
+mysql -u xbt -D xbt -p < xbt_tracker.sql
+
+
+# run xbt
+./xbt_tracker
+
+# teraz slucha. domyslnie na porcie 2710
+
+# test sam go uruchamia, wiec kill.
+killall xbt_tracker
+
+export PATH="$PATH:/home/qsorix/src/xbt/Tracker/"
+
+
+===============================
+cd examples/torrent-simple
+
+./create_torrent.sh 192.168.1.101 2710 100
+
+arete -s peers=3 -c model_common schedule_torrent_east_west ../laboratory/daliowa --map peer1:defteros peer2:hp peer3:acer
