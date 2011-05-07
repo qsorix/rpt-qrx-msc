@@ -7,11 +7,11 @@
 
 Inżynieria oprogramowania bardzo szeroko omawia tematykę testów, na każdym
 kroku podkreślając wagę i nieodłączność tej fazy w procesie tworzenia
-oprogramowania.  Powstający produkt testuje się, aby zapewnić jak najwyższą
-jakość dostarczanego oprogramowania. Pod tym ogólnym stwierdzeniem często
-rozumie się co innego, w zależności od rodzaju i przeznaczenia programu.
-Dlatego też w tym rozdziale przybliżamy zakres zagadnień, na którym skupimy się
-w pracy.
+oprogramowania.  Powstający produkt testuje się między innymi, aby zapewnić jak
+najwyższą jakość dostarczanego oprogramowania. Pod tym ogólnym stwierdzeniem
+często rozumie się co innego, w zależności od rodzaju i przeznaczenia programu.
+Dlatego też w tym rozdziale przybliżamy zakres zagadnień, na których skupimy
+się w pracy.
 
 \section{Test}
 \label{test}
@@ -108,12 +108,7 @@ tylko za pierwszym razem, a ich kolejne wykonania nie zwiększają już naszej
 wiedzy o testowanym obiekcie. Z tego powodu zwykle nikt nie jest zainteresowany
 ich ponownym wykonaniem.
 
-Testowanie jest bardzo istotnym elementem procesu tworzenia oprogramowania.
-Żeby testy były przydatne, należy zadbać aby dostarczały informacji na temat
-testowanego obiektu. Obserwowane cechy muszą więc być mierzalne i posiadać
-obiektywną wartość odniesienia.
-
-\section{Testy aplikacji sieciowych}
+\section{Testy oprogramowania sieciowego}
 \label{testy-aplikacji-sieciowych}
 
 W sieciach komputerowych oprogramowanie wykorzystuje się na różnych warstwach
@@ -183,13 +178,14 @@ wady jak i zalety.  Wracając do omówionych powyżej rodzajów testów, można
 powiedzieć, że w zależności od testu pożądane będą różne warunki jego
 wykonania.
 
-Aby sprawdzić czy algorytm generuje poprawne PDU najwygodniej jest skorzystać
-ze środowiska testowego, debuggera czy symulatora. Opóźnienia związane z realną
-transmisją są niepotrzebne, a nawet niepożądane. Możemy nawet uruchomić
-algorytm osobno, poza stosem sieciowym, i analizować jego działanie
-niezależnie. W przypadku sekwencji komunikatów również wystarczy symulowanie
-uczestników komunikacji, gdyż zakładając poprawne działanie pozostałych
-elementów sieci, skupimy się w ten sposób na danym algorytmie.
+Aby sprawdzić czy algorytm generuje poprawne PDU wygodniej jest skorzystać
+ze środowiska testowego, debuggera czy symulatora niż przeprowadzać test w
+sieci. Opóźnienia związane z realną transmisją są niepotrzebne, a nawet
+niepożądane. Możemy nawet uruchomić algorytm osobno, poza stosem sieciowym, i
+analizować jego działanie niezależnie. W przypadku sekwencji komunikatów
+również wystarczy symulowanie uczestników komunikacji, gdyż zakładając poprawne
+działanie pozostałych elementów sieci, skupimy się w ten sposób na danym
+algorytmie.
 
 Test w warunkach rzeczywistych zawsze będzie wartościowym uzupełnieniem,
 ponieważ na symulatorze możemy zapomnieć o takich problemach jak przekłamania

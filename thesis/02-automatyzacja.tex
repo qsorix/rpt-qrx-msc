@@ -2,7 +2,7 @@
 
 \begin{document}
 
-\chapter{Automatyzacja}
+\chapter{Automatyzacja procesu testowania}
 \label{automatyzacja}
 
 Idea automatyzacji testów polega na przekazaniu ich wykonywania komputerom.
@@ -27,8 +27,8 @@ informatyczna oczekuje od środowisk automatyzujących testy. Mamy nadzieję, ż
 pozwoli nam to uniknąć najczęściej popełnianych błędów i niedopatrzeń w fazie
 projektowej.
 
-\section{Cechy programu do automatyzacji}
-\label{cechy-proramy-do-automatyzacji}
+\section{Wymagane cechy programu do automatyzacji}
+\label{cechy-programu-do-automatyzacji}
 
 Kolejna, po zbagatelizowaniu złożoności problemu, często popełniana pomyłka to
 drugorzędowe traktowanie narzędzi do testowania. Automatyzacja procesu wymaga
@@ -52,26 +52,24 @@ wymagania funkcjonalne, jako niezbędne w narzędziu do automatyzacji testów:
 \item dokumentacja.
 \end{itemize}
 
-Oraz uzupełnia ją o wymagania niefunkcjonalne, które często są w projekcie
+Oraz uzupełnia ją o wymagania pozafunkcjonalne, które często są w projekcie
 pomijane:
 \begin{itemize}
-\item Architektura automatyzacji musi być rozszerzalna.
-\item Wymagana jest możliwość instrumentacji w celu debugowania przebiegu testu.
-\item Skrypty testowe muszą być modularne.
-\item Należy rozważyć długoterminowe skutki decyzji dotyczących automatyzacji i
-skupić się na osiągalnych celach.
-\item Aby nie wprowadzać zbędnej złożoności, należy rozważać testy,
-które można łatwo zoptymalizować.
+\item rozszerzalna architektura,
+\item możliwość debugowania przebiegu testu,
+\item modularne skrypty testowych,
+\item orientacja na osiągalne cele projektowe,
+\item rozpatrywanie testów dających się łatwo automatyzować.
 \end{itemize}
 
 Szczególnie interesujące są dwa ostatnie punkty. Podkreśla się, że nie każdy
 test opłaca się automatyzować i należy skupić się na tych, których
-automatyzacja jest prosta. W przeciwnym razie ryzykuje się nadmierne
-komplikowanie aplikacji automatyzującej test, co w konsekwencji może uczynić ją
+automatyzacja jest prosta. W przeciwnym razie ryzykuje się nadmierną
+komplikację aplikacji automatyzującej test, co w konsekwencji może uczynić ją
 mniej użyteczną.
 
 W artykule \cite{snake-oil} można znaleźć inne zestawienie wymagań
-niefunkcjonalnych, którymi należy się kierować wybierając gotowe narzędzie do
+pozafunkcjonalnych, którymi należy się kierować wybierając gotowe narzędzie do
 automatyzacji testów. Wymagania te trafnie uzupełniają powyższą listę.
 \begin{itemize}
 \item użyteczność -- czy narzędzie posiada wymaganą funkcjonalność,
@@ -80,7 +78,7 @@ automatyzacji testów. Wymagania te trafnie uzupełniają powyższą listę.
 \item obługa -- czy funkcje narzędzia są łatwo dostępne i użytkownik nie popełni błedu korzystając z nich,
 \item wydajność -- czy narzędzie jest wystarczająco szybkie, aby przyspieszyć proces testowania,
 \item kompatybilność -- czy narzędzie współpracuje z technologią, jaka ma zostać przetestowana,
-\item nieingerencyjność -- jak dobrze narzędzie naśladuje prawdziwego użytkownika.
+\item nieingerencyjność -- jak dobrze narzędzie naśladuje użytkownika.
 \end{itemize}
 
 W zależności od zastosowań, program automatyzujący testy często musi dodatkowo
@@ -100,25 +98,29 @@ dostosować swoje testy do ograniczeń danego rozwiązania.
 \section{Koszt automatyzacji}
 \label{koszt-automatyzacji}
 
-Testy automatyzuje się, w celu obniżenia kosztów. Częstym błedem jest
-pominięcie w całkowitym bilansie faktu, że chociaż pewne koszty znikają, w ich
-miejsce pojawia się:
+Testy automatyzuje się w celu obniżenia kosztów. Częstym błędem jest pominięcie
+w całkowitym bilansie faktu, że chociaż pewne koszty znikają, w ich miejsce
+pojawia się:
 \begin{itemize}
-\item koszt stworzenia automatyzacji,
+\item koszt stworzenia programu i procesu automatyzacji,
 \item koszt przeprowadzania automatycznych testów,
 \item koszt utrzymywania testów automatycznych wraz ze zmianami w głównym
 projekcie.
 \end{itemize}
 
-Proces automatyzacji wprowadza również kosz, który związany jest wyłącznie z
+Proces automatyzacji wprowadza również koszt, który związany jest wyłącznie z
 automatyzacją i w testowaniu ręcznym nie występuje:
 \begin{itemize}
 \item przypadki testowe muszą być dokładnie udokumentowane,
-\item samo narzędzie automatyzacji i skrypty muszą być przetestowane i udokumentowane,
+\item sam program do automatyzacji oraz skrypty muszą być przetestowane i
+udokumentowane,
 \item po każdym wykonaniu testów ktoś musi przeanalizowac wyniki aby odróżnić
-fałszywe negatywy od rzeczywistych błędów,
-\item radykalne zmiany w produkcie mogą się wiązać z tworzeniem testów lub całej automatyzacji od początku,
-\item przypadki testowe muszą być przenoszone na inne platformy sprzętowo-programowe.
+fałszywie zgłoszone defekty\footnote{wynikające np. ze zbyt rygorystycznie
+określonego testu} od rzeczywistych błędów,
+\item radykalne zmiany w produkcie mogą się wiązać z tworzeniem testów lub
+całej automatyzacji od początku,
+\item przypadki testowe muszą być przenoszone na inne platformy
+sprzętowo-programowe.
 \end{itemize}
 
 Kerry Zallar w \cite{practical-automated} zwraca uwagę, że testy wykonywane
@@ -132,11 +134,11 @@ urządzeń, wciąż wiąże się to z dodatkowym kosztem.
 \section{Podsumowanie}
 \label{automatyzacja-podsumowanie}
 
-Doświadczenie pokazuje, że najwięcej błędów znajduje się w czasie przygotowania
-i pierwszego wykonania testu. Test, którego warunek raz został spełniony,
-rzadko pozwala odkryć nowe błędy. Z tego powodu realny zysk z automatyzacji ma
-miejsce tam, gdzie, ze względu np. na ryzyko, opłacalne jest wielokrotne,
-ponowne wykonywanie tych samych testów.
+Doświadczenie pokazuje, że najwięcej błędów wykrywa się w czasie
+przygotowania i pierwszego wykonania testu. Test, którego warunek raz został
+spełniony, rzadko pozwala odkryć nowe błędy. Z tego powodu realny zysk z
+automatyzacji ma miejsce tam, gdzie, ze względu np. na ryzyko, opłacalne jest
+wielokrotne, ponowne wykonywanie tych samych testów.
 
 Automatyzacja nie eliminuje roli człowieka. Wciąż jest on potrzebny do
 tworzenia i utrzymywania testów, a także analizy ich wyników. Osoba obsługująca
@@ -147,6 +149,6 @@ tworzenia skryptów testowych.
 Ponieważ automatyzacja testów ma zarówno swoje zalety jak i wady, najlepszym
 rozwiązaniem jest stosowanie obu rodzajów testów. Oznacza to też, że
 automatyzacja najlepiej sprawdza się w pewnym spektrum zastosowań, a próba
-wprowadzenia jej w nieodpowiednich przypadkach, będzie trudna i nieopłacalna.
+wprowadzenia jej w nieodpowiednich przypadkach będzie trudna i nieopłacalna.
 
 \end{document}

@@ -14,7 +14,7 @@ myślą o których tworzone jest Arete. Są to sytuacje, w których nasze narzę
 pozwoli usprawnić pracę osób przeprowadzających testy i badania.
 
 Następnie opisujemy wynikające z zastosowań wymagania funkcjonalne. Wymagania
-te krótko podsumowują podstawowe możliwości jakie oferować musi program.
+te krótko podsumowują podstawowe możliwości, jakie oferować musi program.
 
 W dalszej części prezentujemy dodatkowe założenia mające wpływ na charakter
 tworzonego rozwiązania, jednocześnie argumentując podjęte przez nas decyzje w
@@ -22,20 +22,16 @@ tworzonego rozwiązania, jednocześnie argumentując podjęte przez nas decyzje 
 
 Rozdział zamyka prezentacja zaprojektowanej architektury programu.
 
-\section{Zastosowania}
+\section{Potencjalne zastosowania}
 \label{arete-zastosowania}
 
-Arete jest tworzone z myślą o testerach, zespołach badawczych oraz studentach
-kierunków informatycznych, zajmujących się tworzeniem oprogramowania sieciowego
-lub przeprowadzaniem eksperymentów w sieciach komputerowych. Może być ono
-również przydatne dla prowadzących zajęcia praktyczne, przygotowujących
+Arete jest tworzone z myślą o osobach testujących, zespołach badawczych oraz
+studentach kierunków informatycznych zajmujących się tworzeniem oprogramowania
+sieciowego lub przeprowadzaniem eksperymentów w sieciach komputerowych. Może
+być ono również przydatne dla prowadzących zajęcia praktyczne, przygotowujących
 ćwiczenia w takich środowiskach.
 
-Tworząc Arete skupimy się na kilku przypadkach zastosowań, które pojawiły się w
-czasie naszych zajęć laboratoryjnych z różnych przedmiotów. Na uwadze mamy
-trzy konkretne scenariusze omówione poniżej.
-
-Potrzebujemy narzędzia, które zautomatyzuje najczęściej wykonywane
+Potrzebne jest narzędzie, które zautomatyzuje najczęściej wykonywane
 czynności: skonfiguruje maszyny, przeprowadzi testy, zapamięta wyniki i
 przywróci pierwotną konfigurację.
 
@@ -43,6 +39,11 @@ Samo zaprojektowanie testu i stworzenie programów potrzebnych do jego
 przeprowadzenia (m.in. programów mierzących obserwowane wartości) pozostanie w
 kwestii użytkownika. Test modelowany będzie na poziomie poleceń systemowych,
 gdyż pracując ręcznie, użytkownik najczęściej działa na tej płaszczyźnie.
+
+Tworząc Arete skupimy się na kilku przypadkach zastosowań, które pojawiły się w
+czasie naszych zajęć laboratoryjnych z różnych przedmiotów. Na uwadze będziemy
+mieli trzy konkretne scenariusze omówione poniżej, bazują na nich również
+przykłady zamieszczone na końcu pracy.
 
 \subsection{Aplikacja klient-serwer}
 
@@ -88,7 +89,7 @@ nie wpływał w ten sposób na uzyskiwane wyniki.
 \subsection{Dystrybucja pliku w sieci BitTorrent}
 
 Trzeci scenariusz, który mamy na uwadze, to ćwiczenie laboratoryjne z Systemów
-Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
+Peer\--to\--Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
 BitTorrent rozpiętej nad dwiema sieciami IP. Klienci mają rozpocząć pobieranie
 w tym samym momencie, a test należy zakończyć kiedy wszyscy będą posiadać pełny
 plik. Interesuje nas, ile każdy klient wysłał danych i ile trwała pełna
@@ -141,7 +142,7 @@ wynikające z omówionych przed chwilą scenariuszy. W skład możliwości musi 
 Powyższe wymagania będziemy mieć na uwadze projektując projekt. Będziemy do
 nich powracać w dalszej treści pracy, żeby wykazać, iż zostały one spełnione.
 
-\section{Założenia}
+\section{Założenia projektowe}
 \label{arete-zalozenia}
 
 Realizacja wymienionych w poprzedniej części wymagań wiązała się z podjęciem
@@ -217,53 +218,55 @@ wyjście ma jednak dwie wady. Po pierwsze zmiana zegara nie jest dostępna na
 wszystkich systemach. Po drugie, zmiana wskazań zegara w czasie pracy systemu
 mogłaby zaburzyć pracę innych uruchomionych programów.
 
-Z tego powodu wprowadziliśmy protokół synchronizacji, który oblicza różnice
-między zegarami urządzeń i uwzględnia je przy wyznaczaniu czasu rozpoczęcia
-testu.
+Z tego powodu wprowadzimy protokół synchronizacji, który oblicza różnice między
+zegarami urządzeń i uwzględnia je przy wyznaczaniu czasu rozpoczęcia testu.
 
-Protokół ten po prostu wysyła do modułu slave zapytanie o lokalny czas
-urządzenia, na którym jest uruchomiony. Zakładając symetryczny czas komunikacji
-w obie strony, różnicę czasu można wyznaczyć wzorem: $$\Delta t = r - \frac{l_1
-+ l_2}{2}$$ gdzie $r$ to wskazanie zegara zdalnego urządzenia w momencie
-odebrania zapytania o czas a $l_1$ i $l_2$ to odpowiednio czasy wysłania
-zapytania i odebrania odpowiedzi. Istnieją przypadki kiedy czas transmisji w
-dwóch kierunkach nie jest zbliżony, dzieje się tak np. kiedy transmisja w dwóch
-kierunkach odbywa się przy użyciu innego medium lub gdy wpisy tablic routingu
-(lub sama topologia sieci) tworzą w obu kierunkach różne ścieżki. Zastosowanie
-powyższego wzoru w takich sytuacjach owocuje większym błędem. Błąd ten jest
-równy wartości bezwzględnej różnicy czasów transmisji w obu kierunkach. Warto
-dodać, że nawet w najprostszych sieciach Ethernet czas transmisji także jest
-tylko zbliżony do równego i wciąż mamy do czynienia z pewnym błędem.
+Protokół ten ma działać w następujący sposób. Moduł master wysyła do modułu
+slave zapytanie o lokalny czas urządzenia, na którym jest uruchomiony.
+Zakładając symetryczny czas komunikacji w obie strony, różnicę czasu można
+wyznaczyć wzorem: $$\Delta t = r - \frac{l_1 + l_2}{2}$$ gdzie $r$ to wskazanie
+zegara zdalnego urządzenia w momencie odebrania zapytania o czas a $l_1$ i
+$l_2$ to odpowiednio czasy wysłania zapytania i odebrania odpowiedzi. Istnieją
+przypadki kiedy czas transmisji w dwóch kierunkach nie jest zbliżony, dzieje
+się tak np. kiedy transmisja powrotna odbywa się przy użyciu innego medium lub
+gdy wpisy tablic routingu (lub sama topologia sieci) tworzą w obu kierunkach
+różne ścieżki. Zastosowanie powyższego wzoru w takich sytuacjach owocuje
+większym błędem. Błąd ten jest równy wartości bezwzględnej różnicy czasów
+transmisji w obu kierunkach. Warto dodać, że nawet w najprostszych sieciach
+Ethernet czas transmisji także jest tylko zbliżony do równego i wciąż mamy do
+czynienia z pewnym błędem.
 
-Synchronizacja ta jest domyślnie włączona, ale opcjonalna. Jeżeli przypadek
-testowy będzie wymagać dokładnej synchronizacji to niestety, z uwagi na
-wspomniany problem czasu transmisji, jesteśmy zmuszeni samodzielnie zapewnić
+Synchronizacja ta powinna być opcjonalna, ale domyślnie włączona. Jeżeli
+przypadek testowy będzie wymagać dokładnej synchronizacji to niestety, z uwagi
+na wspomniany problem czasu transmisji, jesteśmy zmuszeni samodzielnie zapewnić
 synchronizację urządzeń. W takich testach nasz prosty protokół synchronizacji
-mógłby raczej pogorszyć wskazania zegarów, tak więc wskazane może być
-wyłączenie go. Warto też wziąć pod uwagę możliwości samego sprzętu, tzn.
-rozdzielczość samych zegarów a także algorytmu planisty w systemie operacyjnym.
+mógłby raczej pogorszyć wskazania zegarów\footnote{Przy wsparciu ze strony
+sprzętu i systemu operacyjnego protokół NTP osiąga w sieciach 100BASE-T
+dokładność rzędu 20 $\mu$s\cite{ntp-research}, nasz algorytm daje błąd mierzony
+milisekundami.}, tak więc wskazane może być wyłączenie go. Warto też wziąć pod
+uwagę możliwości samego sprzętu, tzn. rozdzielczość zegarów a także
+algorytmu planisty w systemie operacyjnym.
 
 \paragraph{Wszystkie wyniki są cenne.} Ponieważ obecnie przechowywanie dużych
 ilości danych nie sprawia problemu, w czasie testu staramy się zebrać jak
 najwięcej informacji. Ostatecznie to użytkownik decyduje o tym, co zostanie
-zapamiętane, ale naszą myślą przewodnią było umożliwienie zapisania wszystkich
+zapamiętane, ale naszą myślą przewodnią jest umożliwienie zapisania wszystkich
 występujących w teście danych, takich jak wyjście programów, wytwarzane pliki,
 kody wyjścia uruchamianych poleceń itp.
 
-Ponadto staraliśmy się ułatwić katalogowanie danych, gdyż w przypadku
+Ponadto staramy się ułatwić katalogowanie danych, gdyż w przypadku
 wielokrotnych uruchomień testu, szybko zbierają się ich duże ilości. Z tego
-powodu do ich przechowywania korzystamy z bazy danych SQLite. Jest to naszym
-zdaniem odpowiedni kompromis między możliwościami bazy danych a wygodą
+powodu do ich przechowywania będziemy korzystać z bazy danych SQLite. Jest to
+naszym zdaniem odpowiedni kompromis między możliwościami bazy danych a wygodą
 przechowywania wyników w zwykłych plikach.
 
 \paragraph{Narzędzie musi być elastyczne.} W czasie pracy zauważyliśmy, że
-scenariusze różnego rodzaju testów wymagają różnych podejść. Projektując
-aplikację uwzględniliśmy rozmaite przypadki, aby żadnego nie dyskryminować.
-Zdajemy sobie jednak sprawę, że stworzenie gotowego narzędzia do przeprowadzania
-wszystkich testów nie jest możliwe. Z tego powodu stworzyliśmy produkt
-elastyczny, którego funkcjonalność w wielu miejscach można rozszerzać
-samodzielnie. Dzięki temu możliwa jest obsługa różnego rodzaju urządzeń i
-topologii sieciowych, jak również sposobów przeprowadzania testu.
+scenariusze różnego rodzaju testów wymagają różnych podejść.  Zdajemy sobie
+jednak sprawę, że stworzenie gotowego narzędzia do przeprowadzania wszystkich
+testów nie jest możliwe. Z tego powodu chcemy stworzyć produkt elastyczny,
+którego funkcjonalność w wielu miejscach można rozszerzać samodzielnie. Dzięki
+temu możliwa będzie obsługa różnego rodzaju urządzeń i topologii sieciowych,
+jak również sposobów przeprowadzania testu.
 
 \paragraph{Użytkownicy znają język Python.} Język Python jest wybranym przez nas
 językiem implementacji jak i konfiguracji programu. Z tego powodu od
@@ -308,7 +311,7 @@ systemu Uniksowe czy dedykowane routery. To użytkownik decyduje o tym, co w
 danym teście mają robić występujące w nim urządzenia i tym samym stawia
 im wymagania dotyczące zarówno funkcjonalności, jak i bezpieczeństwa.
 
-\section{Architektura}
+\section{Architektura systemu}
 \label{arete-architektura}
 
 Rozpoczynając opis architektury powtórzmy jeszcze raz, że narzędzie Arete ma
@@ -326,14 +329,14 @@ moduły wykonawcze -- Slave.}
 \label{fig:arete-arch}
 \end{figure}
 
-Konieczność wprowadzenia takiej architektury wynika wprost z wymagań.
+Decyzja o wprowadzeniu takiej architektury wynika wprost z wymagań.
 Uruchamianie złożonego planu testu i gromadzenie wyników wymaga programu --
 Slave, który te zadania przeprowadzi. Jednocześnie, niezależnie jaki sposób
 komunikacji wybierzemy, jeżeli test używa tej samej fizycznej infrastruktury
 sieci, może on wymagać, aby nasze narzędzie wstrzymało komunikację, więc
-programy muszą być uruchamiane lokalnie na urządzeniach. Wreszcie,
-niepożądane jest ręczne uruchamianie testu na kilku urządzeniach, potrzebny
-jest więc centralny moduł kontrolujący -- Master.
+programy muszą być uruchamiane lokalnie na urządzeniach. Wreszcie, niepożądane
+jest ręczne uruchamianie testu na kilku urządzeniach, potrzebny jest więc
+centralny moduł kontrolujący -- Master.
 
 Chociaż taka architektura wynika z chęci przeprowadzania testu na kilku
 urządzeniach, to jednocześnie nie odbiera ona możliwości pracy tylko na jednym.
@@ -346,18 +349,18 @@ Moduł Slave jest zaprojektowany jako demon pracujący przez cały czas. Master
 natomiast uruchamiany jest tylko na czas trwania testu.
 
 Na rysunku \ref{fig:arete-deploy} widać przykładowe rozmieszczenie urządzeń w
-sieci i ich rolę w czasie testu. W dalszej części pracy mówiąc o modułach
-Master i Slave, jeśli nie precyzujemy, na jakich urządzeniach są uruchomione,
-oznacza to, że fizyczna konfiguracja jest dowolna.
+sieci i uruchomione na nich moduły systemu. W dalszej części pracy mówiąc o
+modułach Master i Slave, jeśli nie precyzujemy, na jakich urządzeniach są
+uruchomione, oznacza to, że fizyczna konfiguracja jest dowolna.
 
 \begin{figure}
 \begin{center}
 \leavevmode
 \includegraphics[width=0.7\textwidth]{arete-deploy}
 \end{center}
-\caption{Diagram wdrożenia narzędzia Arete w sieci komputerowej. Topologia
-sieci nie jest istotna, o ile tylko zapewnia ona poprawną komunikację między
-modułami Master i Slave.}
+\caption{Diagram wdrożenia narzędzia Arete w sieci komputerowej. Fizyczna
+topologia połączeń w sieci (linie przerywane) nie jest istotna, o ile tylko
+zapewnia ona poprawną drogę komunikacji między modułami Master i Slave.}
 \label{fig:arete-deploy}
 \end{figure}
 
