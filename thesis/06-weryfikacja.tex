@@ -13,7 +13,7 @@ właściwym produktem, mimo to należy spojrzeć krytycznym okiem na końcowy wy
 \section{Wymagania}
 \label{wymagania}
 
-Jednym z podstawowym wymaganiem była możliwosć definiowania testu.
+Jednym z podstawowych wymagań była możliwość definiowania testu.
 Zastosowaliśmy rozwiązanie oparte o język Python i stworzone przez nas API, co
 szeroko opisaliśmy w rozdziale \ref{arete-master-konfiguracja}.
 
@@ -31,7 +31,7 @@ Przesyłanie zasobów wymaganych w testach dokumentujemy w sekcji
 sprzętu sieciowego, stworzyliśmy uniwersalny interfejs programy, który można
 dowolnie rozbudować na własne potrzeby.
 
-Funkcjonalność zwiazana z uruchamieniem poleceń na zdalnych urządzeniach
+Funkcjonalność związana z uruchamianiem poleceń na zdalnych urządzeniach
 zrealizowane jest w dwóch częściach. Moduł Master analizuje pliki z definicją
 testu i tworzy listy komend do wykonania na konkretnych urządzeniach. Za samo
 wykonanie komend odpowiedzialny jest moduł Slave.
@@ -42,7 +42,7 @@ testów zrealizowaliśmy przechowując wyniki w bazie danych SQLite, której
 strukturę przedstawiamy w sekcji \ref{arete-master-przechowywanie-wynikow}.
 
 Aby synchronizować w czasie start testu, moduł Master przesyła do urządzeń
-informację o godzinie, w której tes ma się rozpocząć. Udostępniliśmy prosty
+informację o godzinie, w której test ma się rozpocząć. Udostępniliśmy prosty
 mechanizm synchronizacji między urządzeniami. Możliwe jest też poleganie
 wyłącznie na zegarach systemowych urządzeń, co jest przydatne, jeśli w sieci
 funkcjonuje inny mechanizm synchronizacji czasu.
@@ -60,7 +60,7 @@ Wspomniany mechanizm powiadomień został pierwotnie zaimplementowany aby
 umożliwić zakończenie testu w momencie, gdy wykonanie zakończą wszystkie
 uczestniczące urządzenia. Inny przypadek, w którym test kończy się gdy wybrane
 urządzenie zakończy test, również realizowany jest przy użyciu powiadomień.
-Zakończenie testu w wybranym momencie czasowym to odzielny mechanizm, opisany w
+Zakończenie testu w wybranym momencie czasowym to oddzielny mechanizm, opisany w
 sekcji \ref{arete-master-plan}.
 
 Realizację wszystkich wymagań testowaliśmy w czasie implementacji za pomocą
@@ -75,7 +75,7 @@ Istnieje wiele programów rozwiązujących problem automatyzacji testowania, kt�
 w różnym stopniu i na różnych poziomach pozwalają na ułatwienie i przyspieszenie
 przeprowadzania testów aplikacji i protokołów sieciowych. Jednak spośród znanych
 nam rozwiązań, żadne nie pozwalało przeprowadzić takiego rodzaju testów, jakie
-próbowaliśmy wykonać. W tym rozdziaje prezentujemy narzędzia i technologie,
+próbowaliśmy wykonać. W tym rozdziale prezentujemy narzędzia i technologie,
 które stanowiły dla nas punkt odniesienia w czasie pracy nad Arete.
 
 \subsection{ASN.1 i ECN}
@@ -542,7 +542,7 @@ Zamykając ten rozdział pragniemy przytoczyć kilka krytycznych opinii
 dotyczących automatyzacji testów i ustosunkować się do nich jako twórcy jednego
 z rozwiązań.
 
-W czasie pracy mieliśmy na uwadzę tezę mówiącą, że współczesne społeczeństwo
+W czasie pracy mieliśmy na uwadze tezę mówiącą, że współczesne społeczeństwo
 informatyczne nie dostrzegało pułapek i trudności procesu automatyzacji testów.
 Nie wdając się w dyskusję czy jest to teza prawdziwa, podeszliśmy do
 zagadnienia z ostrożnością. Pozwoliło nam to wykreślić z wymagań pewne ambitne,
@@ -573,7 +573,7 @@ wypadku ogranicza się ona do analizy wyników, ale często także do naprawy z�
 przypadków testowych. Trzeba pamiętać, że nie łatwo jest stworzyć złożony
 zestaw testów bez żadnych błędów. Nawet jeśli nie ma ich w pierwotnej wersji,
 wraz z rozwojem testowanego systemu testy często trzeba zmieniać, a każda
-zmiana to źródło potencjalnych błedów.
+zmiana to źródło potencjalnych błędów.
 
 Skoro więc człowiek jest obecny także w procesie automatycznego testowania, nie
 powinien on przekazywać maszynie wykonywania tych czynności, które jest w
@@ -581,6 +581,6 @@ stanie zrobić lepiej.
 
 Nie możemy zaprzeczyć tym słusznym uwagom. Trafnie uderzają one w słabe punkty
 automatyzacji. Mając jednak na uwadze przewidziany przez nas obszar zastosowań,
-uważamy, że storzone przez nas narzędzie dobrze spełnia swoją rolę.
+uważamy, że stworzone przez nas narzędzie dobrze spełnia swoją rolę.
 
 \end{document}
