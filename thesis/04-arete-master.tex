@@ -9,7 +9,7 @@ Prezentujemy tutaj szczegółowy opis modułu Master. Jest to moduł zarządzaj�
 definicją i wykonywaniem testów. Jest on też interfejsem użytkownika do naszego
 narzędzia -- za jego pomocą użytkownik wykonuje testy.
 
-Rozdział rozpoczynamy przedstawienie architektury modułu i wprowadzając nazwy
+Rozdział rozpoczynamy przedstawieniem architektury modułu i wprowadzając nazwy
 komponentów omawianych w dalszej części. Następnie szeroko opisujemy format
 plików definiujących testy, rzecz bardzo istotną z punktu widzenia użytkownika.
 Osoby chcące przeprowadzać bardziej złożone testy skorzystają z opisu części
@@ -398,7 +398,7 @@ komunikacja z danym urządzeniem (protokół przesyłanych komunikatów).
 
 Framework nie wymaga podawania parametrów \code{ip} oraz \code{port}. Są to
 atrybuty, z których korzysta wtyczka \code{tcp} i w przypadku ich braku,
-zgłosiłby błąd w czasie przetwarzania konfiguracji. Opis wymaganych atrybutów
+zgłosiłaby błąd w czasie przetwarzania konfiguracji. Opis wymaganych atrybutów
 znajduje się w dokumentacji każdej z wtyczek.
 
 Sposób tworzenia interfejsów jest identyczny jak w przypadku modelu. Ważne, aby
@@ -506,7 +506,7 @@ Strategia wykonania mówi w jaki sposób komenda ma być uruchamiana. W tym
 wypadku \code{at(0)} zleca jednokrotne wykonanie w zerowej sekundzie testu.
 Strategie muszą być wybierane z uwzględnieniem możliwości wybranej wtyczki
 frontendu (patrz opis laboratorium). Konstruktor \code{at} tworzy obiekt typu
-\code{RunPolicy}. Użytkownik może definiować własne strategie -- patrz
+\code{RunPolicy}. Użytkownik może definiować własne strategie -- patrz dodatek
 \ref{reference:config.Schedule.RunPolicy}.
 
 Ostatni element trójki to komenda do wykonania. Jest ona enkapsulowana w
@@ -593,8 +593,8 @@ ich bowiem zapisywać w plikach tekstowych.
 Powyższy przykład najpierw importuje obiekt \code{parameters} dostarczający
 odpowiedni interfejs. Operator nawiasów kwadratowych powoduje zwrócenie
 wartości parametru \code{ip} (taki sam efekt ma metoda \code{get}). Metoda
-\code{get\_secure} różni się tylko tym, że w przypadku kiedy program zapyta
-użytkownika o wprowadzenie wartości, zostanie użyty tryb, w którym tekst
+\code{get\_secure} różni się tylko tym, że w przypadku kiedy program poprosi
+użytkownika o podanie wartości, zostanie użyty tryb, w którym wprowadzany tekst
 zostanie ukryty\footnote{Pod warunkiem, że używany przez nas terminal umożliwia
 wprowadzanie znaków bez wyświetlania ich.}.
 
@@ -681,7 +681,7 @@ konfigurację podlegającego mu urządzenia, a także klasę, której powinien u
 do nawiązania z nim połączenia.
 
 Następnie frontendy instruowane są do przesłania konfiguracji testu (komunikat
-\code{deploy\_configuration}). Protokół w jakim odbywa się komunikacja jest z
+\code{deploy\-\_configuration}). Protokół w jakim odbywa się komunikacja jest z
 punktu widzenia kontrolera nieistotny.
 
 W kolejnej fazie frontendy mają poinstruować urządzenia, aby rozpoczęły test
@@ -727,7 +727,7 @@ na czas testu zmieniać swoją konfigurację sieciową bez powodowania błędów
 komunikacyjnych.
 
 Zainteresowanych szczegółami implementacji odsyłamy do kodu źródłowego
-\code{AreteSlaveFrontend} -- standardowo dostępnej wtyczki typu frontend.
+\code{Arete\-Slave\-Frontend} -- standardowo dostępnej wtyczki typu frontend.
 
 \subsubsection{AreteSlaveFrontend}
 \label{arete-master-areteslavefrontend}
@@ -749,9 +749,9 @@ Opcja \code{synchronize} jest opcjonalna i domyślnie aktywna. Ustawienie jej na
 \code{False} powoduje pominięcie kroku synchronizacji z zegarem zdalnego
 urządzenia. Jeżeli komputery, na których wykonujemy test, synchronizowane są
 niezależnym źródłem (np. korzystając z NTP), zaleca się wyłączyć wbudowany
-algorytm synchronizacji wtyczki \code{AreteSlavePlugin}. Dokładność uzyskiwana
+algorytm synchronizacji wtyczki \code{Arete\-Slave\-Plugin}. Dokładność uzyskiwana
 przy użyciu NTP jest zależna od wersji protokołu, zastosowanego sprzętu,
-systemu operacyjnego i rodzaju sieci \cite{ntp-research} i może wynosić od
+systemu operacyjnego i rodzaju sieci \cite{ntp-research}. Może ona wynosić od
 dziesiątek milisekund w sieciach WAN do nawet 20 µs w sieciach LAN przy
 zastosowaniu odbiorników GPS lub innych dokładnych źródeł czasu. Trzeba też
 pamiętać, że wpływ ma tutaj także planista systemowy, który może powodować
@@ -889,7 +889,7 @@ jego nazwy w rzeczywistym urządzeniu i możemy podać argument wymagany przez
 program \code{ip}.
 
 Dokładne wyjaśnienie znaczenia każdej funkcji znajduje się w dodatku
-\ref{reference:interfejs-programy}.  Tutaj dodamy jeszcze tylko, że sterowniki
+\ref{reference:interfejs-programowy}.  Tutaj dodamy jeszcze tylko, że sterowniki
 dzielą się na te przetwarzające argumenty hostów i te, które przetwarzają
 argumenty interfejsów.  Wtyczki dziedziczą odpowiednio z klas
 \code{HostDriverPlugin} i \code{InterfaceDriverPlugin}.
@@ -966,7 +966,7 @@ określić np. system operacyjny docelowego urządzenia i wygenerować komendy w
 odpowiednim formacie.
 
 Szersze omówienie interfejsu \code{Resource} znajduje się w dodatku
-\ref{reference-interfejs-programowy}.
+\ref{reference:interfejs-programowy}.
 
 \subsection{Wtyczki typu Hook}
 \label{arete-master-wtyczki-typu-hook}
@@ -1088,7 +1088,7 @@ muszą być dostępne w wybranych katalogach wtyczek (opcja \code{--plugins})
 \item[\code{--map}]
 
 Definiuje odwzorowania z poziomu linii poleceń. W takim wypadku nie należy
-podawać go w konfiguracji testu. Można podać wiele odwzorować w formacie
+podawać go w konfiguracji testu. Można podać wiele odwzorowań w formacie
 \code{host:urządzenie}.
 
 \item[\code{--message}]

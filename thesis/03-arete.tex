@@ -58,8 +58,7 @@ Zadanie narzędzia polegałoby tutaj na:
 \item uruchomieniu serwera i klienta z odpowiednimi parametrami,
 \item zakończeniu pracy serwera,
 \item sprawdzeniu nazw i sum kontrolnych plików,
-\item zapamiętaniu wyników z obu maszyn,
-\item usunięcie pliku ze zdalnej maszyny.
+\item zapamiętaniu wyników z obu maszyn.
 \end{enumerate}
 
 \subsection{Wpływ transmisji TCP na pracę DCCP}
@@ -112,15 +111,15 @@ przy użyciu Arete.
 
 Warto zauważyć, że w każdym ze wspomnianych scenariuszy test powinien się
 zakończyć w innym momencie. W pierwszym jest to moment, kiedy pracę skończy
-dany program. Testy z drugiego scenariusza kończą się w określonym momencie
+dany program -- klient. Testy z drugiego scenariusza kończą się w określonym momencie
 czasowym. W ostatnim wypadku decyzja o zakończeniu jest podejmowana przez
-wszystkich uczestników.
+wszystkich uczestników -- gdy każdy zakończył pobieranie pliku.
 
 \section{Wymagania}
 \label{arete-wymagania}
 
 Lista poniżej zbiera wymagania stawiane przed programem we wprowadzeniu oraz te
-wynikające z omówionych przed chwilą scenariuszy. W skład możliwości musi wchodzić:
+wynikające z omówionych przed chwilą scenariuszy. W skład możliwości muszą wchodzić:
 \begin{itemize}
 \item definiowanie testu,
 \item łączenie ze zdalnymi urządzeniami,
@@ -153,7 +152,7 @@ prostego narzędzia.
 \paragraph{Użytkownik wie, co robi.} Przyjęliśmy więc, że nie będziemy
 wprowadzać rygorystycznej kontroli poprawności konfigurowanych akcji kosztem
 funkcjonalności. Arete stara się ograniczać użytkownika w jak najmniejszym stopniu,
-dzięki czemu może być wykorzystany w większej liczbie przypadków.
+dzięki czemu może być wykorzystane w większej liczbie przypadków.
 
 \paragraph{Bezpieczeństwo jest adekwatne do zagrożeń.} Aby możliwe było
 przeprowadzenie pewnych testów, na urządzeniach wymagany jest dostęp w trybie
@@ -188,7 +187,7 @@ jest technicznie ograniczone do czynności, które użytkownik ma prawo wykonywa
 Zadbaliśmy jednak o to, aby automatyzacja nie wymagała naruszania
 bezpieczeństwa poufnych informacji. Zachęcamy użytkowników do korzystania z
 mechanizmów autoryzacji przy użyciu kluczy szyfrujących. Nie zawsze jest to
-możliwe i wtedy zwykle pozostają zwykłe hasła, zapewniliśmy jednak mechanizmy
+możliwe i wtedy zwykle pozostają zwykłe hasła, zapewnimy jednak mechanizmy
 dzięki którym nie trzeba ich wpisywać do konfiguracji, gdzie byłyby narażone na
 dostęp przez osoby postronne.
 
@@ -276,10 +275,10 @@ stosowanej przez nas, nowej składni plików konfiguracyjnych, a znajomość pod
 języka Python jest bardziej uniwersalna.
 
 Wybór języka Python był podyktowany jego popularnością, mamy więc nadzieję, że
-spora część użytkowników odbierze to założenia jako zaletę, a nie wadę
+spora część użytkowników odbierze to założenie jako zaletę, a nie wadę
 produktu. Kolejną zaletą jest to, że jest on dostępny na wszystkich popularnych
 systemach operacyjnych oraz domyślnie zainstalowany na większości systemów
-Linuksowych.
+linuksowych.
 
 Poczyniliśmy także założenia mówiące o tym, czego program robić nie będzie.
 
@@ -418,7 +417,7 @@ jest wcześniej.
 Jeżeli na etapie konfiguracji nie wystąpiły żadne błędy, Slave przechodzi do
 fazy wykonania testu (kolor czerwony na rys.~\ref{fig:arete-test-seq-test}), tj.
 wykonania tych komend, na których faktycznie zależy użytkownikowi. Jest to
-główna, zwykle najdłuższa faza testu.
+główna, zwykle najdłuższa, faza testu.
 
 Faza czwarta (kolor zielony na rys.~\ref{fig:arete-test-seq-test}) to
 przywrócenie konfiguracji. Wykonuje się ona zawsze, jeśli tylko test osiągnął
