@@ -1,10 +1,10 @@
 \documentclass[00-praca-magisterska.tex]{subfiles}
 \begin{document}
 
-\chapter{Demonstracja Arete}
+\chapter{Przykłady zastosowań Arete}
 \label{demonstracja-arete}
 
-\section{Instalacja i uruchomienie Arete}
+\section{Instalacja i uruchomienie}
 \label{instalacja-i-uruchomienie-arete}
 
 Instalacja narzędzia Arete jest bardzo prosta dzięki wykorzystaniu wbudowanej w
@@ -158,7 +158,7 @@ następnie zapisuje go w lokalnym systemie plików.
 
 \end{pythoncode}
 
-\subsection{Przebieg}
+\subsection{Przebieg testu}
 
 \begin{figure}[htb]
 \begin{center}
@@ -169,7 +169,7 @@ następnie zapisuje go w lokalnym systemie plików.
 \label{fig:example-01-sequence}
 \end{figure}
 
-Zacznijmy od prześledzenia zobrazowany na rysunku \ref{fig:example-01-sequence}
+Zacznijmy od prześledzenia zobrazowanego na rysunku \ref{fig:example-01-sequence}
 przebieg testu. Zaczynamy od wystartowania serwera (\code{1}) na urządzeniu
 \code{Server}.  Następnie na drugim urządzeniu uruchamiany jest klient
 (\code{2}), który łączy się z serwerem i przesyła do niego wskazany plik. Po
@@ -227,7 +227,7 @@ drugi parametr komendy \code{create\_trigger}.
 Kolejnym etapem jest dodanie zasobów biorących udział w teście. Będą to
 oczywiście programy \code{Client.py} oraz \code{Server.py}. Aby zapewnić im
 odpowiednie prawa po przesłaniu na zdalne urządzenia, koszystamy z parametru
-\code{chmod}. Jako trzeci dodajemy plik który zostanie przesłany między
+\code{chmod}. Jako trzeci dodajemy plik, który zostanie przesłany między
 urządzeniami.
 
 \begin{pythoncode}
@@ -369,11 +369,11 @@ ilość pakietów i bajtów całego ruchu sieciowego.
 
 Stworzyliśmy kilka różnych testów badających m.in.: samodzielną pracę DCCP,
 wpływ transmisji TCP i UDP na pracę DCCP, porównanie DCCP z TCP i UDP, itd.
-Różniły się one kolejnością i momentami, w których na uczestniczących w teście
-urządzeniach należało uruchomić lub zakończyć \code{iperf}. W tym przykładzie
-zaprezentujemy test przedstawiający wpływ transmisji TCP na pracę DCCP. 
+Różniły się one kolejnością uruchamiania oraz długością działania programu
+\code{iperf} dla poszczególnych protokołów. W tym przykładzie zaprezentujemy
+test przedstawiający wpływ transmisji TCP na pracę DCCP. 
 
-\subsection{Przebieg}
+\subsection{Przebieg testu}
 
 \begin{figure}[htb]
 \begin{center}
@@ -527,7 +527,7 @@ kontrolne plików.} można wykorzystać stworzony przez nas skrypt
 trzy argumenty - adres i port, na których docelowo będzie uruchomiony tracker
 oraz rozmiar tworzonego pliku danych.
 
-\subsection{Przebieg}
+\subsection{Przebieg testu}
 
 \begin{figure}[htb]
 \begin{center}
@@ -658,7 +658,7 @@ Na koniec dodajemy odpowiednie plany do stworzonych w modelu urządzeń.
 
 %\FIXME{Wrzucić wyniki testu i krótko je opisać.}
 
-\section{Podsumowanie}
+\section{Uwagi}
 \label{przyklady-podsumowanie}
 
 Opisane w tym rozdziale przykłady pokazują jak łatwo i efektywnie tworzyć
