@@ -36,7 +36,7 @@ zajmuje się ich interpretacją.
 \paragraph{Manager} to główny moduł zarządzający testami. Na podstawie danych
 otrzymanych od modułu Handler tworzy testy, dodaje do nich komendy oraz zapisuje te
 informacje do bazy danych. Następnie zajmuje się uruchamianiem i zatrzymywaniem
-testów oraz zwracaniem wyników. Komendy główne które mają zostać wykonane w
+testów oraz zwracaniem wyników. Komendy główne, które mają zostać wykonane w
 określonym momencie testu przekazywane są do modułu Scheduler. 
 
 \paragraph{Scheduler} pozwala uruchomić komendy w określonych punktach czasowych
@@ -49,9 +49,10 @@ zapisania wyników uruchamianych komend.
 szturchać. W pracy będziemy używać terminu angielskiego, ponieważ polskie
 tłumaczenie brzmi kolokwialnie i nie sugeruje omawianej funkcjonalności.},
 będącą częścią mechanizmu powiadomień (patrz sekcja \ref{arete-master-pozostale}).
-Pozwala on na wysyłanie powiadomień w dowolnym momencie testu przez uruchamiane
-w jego ramach komendy, korzysta się z wyrażenia \code{@\{poke <nazwa
-powiadomienia>\}}.
+Poke polega na wykonaniu powiadomienia w odpowiedzi na zewnętrzną komendę.
+Dzięki temu proces, wykonywany w obrębie testu, ma możliwość w trakcie pracy
+spowodować wysłanie powiadomienia. W teście komendę funkcjo poke uzyskuje się
+składnią \code{@\{poke <nazwa powiadomienia>\}}.
 
 \section{Protokół komunikacji z Arete Master}
 \label{arete-slave-protokol-komunikacji-z-arete-master}
@@ -69,9 +70,7 @@ Do przesyłania poleceń wykorzystaliśmy następujący format:
 Polecenie określa czynność która ma zostać wykonana, taką jak stworzenie testu,
 jego uruchomienie czy pobranie wyników. Zastosowany format przekazywania
 parametrów \code{@\{...\}} pozwala w łatwy sposób wyróżnić je w otrzymanej
-wiadomości. W przypadku poleceń \code{check}, \code{setup}, \code{task} i
-\code{clean} do testu dodawana jest komenda wraz z argumentami podawana na końcu
-wiadomości.
+wiadomości. 
 
 \subsection{Odbieranie planu testu}
 \label{arete-slave-odbieranie-planu-testu}
@@ -108,7 +107,7 @@ od daty rozpoczęcia testu.}
 \item{\code{after <identyfikator>} - uruchamia komendę po wykonaniu komendy o
 podanym identyfikatorze.} 
 \item{\code{every <sekund>} - uruchamia komendę cyklicznie co podaną liczbę
-sekund licząc od daty rozpoczęcia testu.}
+sekund licząc od momentu rozpoczęcia testu.}
 
 \end{itemize}}
 
@@ -176,7 +175,7 @@ identyfikatorze oraz wszystkie należące do niego komendy i pliki.}
 \subsection{Wysyłanie wyników testu}
 \label{arete-slave-wysylanie-wynikow-testu}
 
-Po zakończeniu testu możliwe jest odebranie jest wyników w celu zapisania do
+Po zakończeniu testu możliwe jest odebranie wyników w celu zapisania do
 bazy danych modułu Arete Master i dalszej analizy. Wykorzystujemy do tego celu
 polecenia:
 
@@ -285,19 +284,19 @@ polecenia; w przypadku pobierania wyników wykonanego testu przesyła również
 listę rozmiarów kolejnych wyników (np. \code{get @\{<id>.output\}}).}
 
 \item{\code{201 List <lista identyfikatorów>} - zwracany przy zapytaniach o listy
-komend które zakończyły się poprawnie (np. \code{get @\{checks\}}).}
+komend, które zakończyły się poprawnie (np. \code{get @\{checks\}}).}
 
 \item{\code{400 Bad Request} - zwracany w przypadku jakiegokolwiek błędu. Najczęściej
 świadczy o przesłaniu komunikatu niezgodnego z protokołem lub wykorzystaniu
-identyfikatora który już istnieje w bazie danych.}
+identyfikatora, który już istnieje w bazie danych.}
 
-\item{\code{401 Command Failed <identyfikator>} - zwracany gdy któraś z wykonywanych
+\item{\code{401 Command Failed <identyfikator>} - zwracany, gdy któraś z wykonywanych
 komend zakończy się błędem. W celu szybkiego zidentyfikowania problemu
 przesyłany jest identyfikator błędnej komendy.}
 
-\item{\code{402 Setup Too Long} - zwracany gdy komendy konfiguracyjne nie zakończyły
+\item{\code{402 Setup Too Long} - zwracany, gdy komendy konfiguracyjne nie zakończyły
 się przed planowany czasem rozpoczęcia właściwego testu. Pozwala to zwrócić
-użytkownikowi uwagę na potrzebę zwiększenia wartości opóźnienia po którym
+użytkownikowi uwagę na potrzebę zwiększenia wartości opóźnienia, po którym
 należy uruchomić test.}
 
 \end{itemize}
@@ -305,7 +304,7 @@ należy uruchomić test.}
 \section{Przechowywanie danych}
 \label{arete-slave-przechowywanie danych}
 
-Podstawową jednostką w bazie danych jest test (tabela \emph{tests}) w skład
+Podstawową jednostką w bazie danych jest test (tabela \emph{tests}), w skład
 którego wchodzą komendy (tabela \emph{commands}) i pliki (tabela \emph{files}).
 Dodatkowe cztery tabele dziedziczące z tabeli \emph{commands} określają komendy
 o konkretnych zastosowaniach (tabele \emph{check\_commands},
@@ -313,7 +312,7 @@ o konkretnych zastosowaniach (tabele \emph{check\_commands},
 
 Każda komenda posiada cztery parametry, które są zwracane jako wyniki po
 zakończeniu testu: wyjście, zwracany kod wyjścia, czas rozpoczęcia oraz długość
-trwania, które zapisywane są do tabeli \emph{invocations}.
+trwania. Są one zapisywane są do tabeli \emph{invocations}.
 
 \begin{figure}[htb]
 \begin{center}
@@ -342,7 +341,7 @@ parametrów wczytanych z pliku.
 
 \item[\code{--port}]
 
-Pozwala określić port na którym uruchomiony zostanie Arete Slave. Domyślnie
+Pozwala określić port, na którym uruchomiony zostanie Arete Slave. Domyślnie
 \code{4567}.
 
 \item[\code{--database}]
@@ -351,7 +350,7 @@ Określa plik, w którym przechowywana będzie baza danych. Domyślnie \code{are
 
 \item[\code{--log}]
 
-Określa plik w którym przechowywany będzie log. Domyślnie \code{aretes\-.log}.
+Określa plik, w którym przechowywany będzie log. Domyślnie \code{aretes\-.log}.
 
 \item[\code{--workdir}]
 

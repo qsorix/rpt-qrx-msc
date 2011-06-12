@@ -53,7 +53,7 @@ testu. W tym celu każde wykonanie przypadku testowego otrzymuje nowy
 identyfikator aby po ponownym nawiązaniu połączenia moduł Master mógł określić,
 jakie wyniki chce otrzymać. W przypadku testów, których zakończenie wymaga
 kooperacji pomiędzy modułami Slave, rozłączenie na czas jego wykonania nie jest
-możliwe, komunikują one bowiem za pośrednictwem modułu Master. Mechanizm ten
+możliwe, komunikują się one bowiem za pośrednictwem modułu Master. Mechanizm ten
 opisany jest w sekcji \ref{arete-master-pozostale}.
 
 Wspomniany mechanizm powiadomień został pierwotnie zaimplementowany aby
@@ -103,7 +103,7 @@ ASN.1 w takich wypadkach jest trudniejsze, ale możliwe dzięki ECN.
 
 ECN (Explicit Coding Notation) umożliwia formalny opis niestandardowych metod
 kodowania. Jest to standard ściśle związany z ASN.1 i opis danego kodowania
-zawsze łączy się z pewnym opisem danych wyrażonych w ASN.1. Z tego powodu często
+zawsze łączy się z pewnym opisem danych wyrażonym w ASN.1. Z tego powodu często
 spotyka się określenie ASN.1+ECN.
 
 \subsubsection{Przykład zastosowania}
@@ -125,10 +125,10 @@ zawartości, będącej napisem zakodowanym w UTF-8.
 \end{textcode}
 
 Taka definicja, po wybraniu kodowania, może zostać użyta do wygenerowania
-odpowiednich koderów i dekoderów, aby następnie użyć jej w tworzonej aplikacji.
+odpowiednich koderów i dekoderów, aby następnie użyć ich w tworzonej aplikacji.
 Dekoder zgłaszający wszelkie napotkane błędy jest doskonałym narzędziem do
-przetestowania pracy innego uczestnika komunikacji (którego poprawną
-implementację chcemy zweryfikować).
+przetestowania pracy innego uczestnika komunikacji, którego poprawną
+implementację chcemy zweryfikować.
 
 PDU powyższego protokołu może mieć taką postać:
 
@@ -141,7 +141,7 @@ PDU powyższego protokołu może mieć taką postać:
 
 Istotną cechą ASN.1 jest odseparowanie definicji danych od ich kodowania.
 Dzięki temu możliwe jest zakodowanie tych samych informacji na różne sposoby. I
-tak np. możemy użyć kodowania XER uzyskując poniższy XML:
+tak np. możemy użyć kodowania XER\footnote{\ang{XML Encoding Rules}} uzyskując poniższy XML:
 
 \begin{xmlcode}
   <Message>
@@ -231,14 +231,11 @@ testowania parser otrzymujemy niemal zerowym kosztem.
 \subsection{TTCN}
 \label{ttcn}
 
-TTCN-3 (Testing \& Test Control Notation v.~3) to język skryptowy stworzony i
-rozwijany przez grupę TC-MTS (Methods for Testing and Specification Technical
-Committee) w ramach ETSI \cite{ttcn-main}.
-
-Język swoimi korzeniami (TTCN-2) sięga do lat 80 minionego wieku. Wersja 3
-została zaprojektowana z myślą o tych samych zastosowaniach, korzystając z wielu
-lat doświadczeń, porzucono jednak sporo archaicznych rozwiązań (wprowadzono
-m.in. nową składnię). Dzisiaj TTCN to język używany od ponad 15 lat w procesach
+TTCN-3 (Testing \& Test Control Notation v.~3) to język skryptowy, który swoimi
+korzeniami (TTCN-2) sięga do lat 80 minionego wieku. Wersja 3 została
+zaprojektowana z myślą o tych samych zastosowaniach, korzystając z wielu lat
+doświadczeń, porzucono jednak sporo archaicznych rozwiązań (wprowadzono m.in.
+nową składnię). Dzisiaj TTCN to język używany od ponad 15 lat w procesach
 standaryzacji i przemyśle. Użyty został np. w czasie prac nad SIP i WiMAX.
 
 TTCN-3 najlepiej sprawdza się w testach zgodności systemów komunikacyjnych
@@ -342,8 +339,8 @@ Zależnie od wybranych adapterów komunikacyjnych, możemy wybrać, gdzie
 faktycznie zostaną wysłane dane. Mogą to być inne urządzenia, jeśli np.
 testujemy implementację protokołu działającą na routerze sprzętowym lub inny
 komponent TTCN, dzięki czemu uzyskujemy możliwość tworzenia prototypowych
-implementacji protokołów. Możliwości są nieograniczone ponieważ możemy
-dostarczyć własny adapter komunikacyjny.
+implementacji protokołów. Możliwości są szerokie ponieważ możemy dostarczyć
+własny adapter komunikacyjny.
 
 \subsubsection{Podsumowanie}
 
@@ -553,7 +550,7 @@ możliwość na bieżąco zmieniać plan testu. Zgadzamy się, że w pewnych wyp
 taka interakcja daje możliwość tworzenia bardziej interesujących przypadków
 testowych. 
 
-Z drugiej strony w obronie możemy przytoczyć kolejny punkt krytyki: próba
+Z drugiej strony, w obronie możemy przytoczyć kolejny punkt krytyki: próba
 automatyzacji wszystkich potrzebnych testów prawdopodobnie będzie wymagać o
 wiele więcej środków a skończy się stworzeniem słabych testów, które przeoczą
 wiele problemów, jednocześnie znajdując wiele sytuacji, w których problem okaże
@@ -569,13 +566,13 @@ wypadku ogranicza się ona do analizy wyników, ale często także do naprawy z�
 przypadków testowych. Trzeba pamiętać, że niełatwo jest stworzyć złożony
 zestaw testów bez żadnych błędów. Nawet jeśli nie ma ich w pierwotnej wersji,
 wraz z rozwojem testowanego systemu testy często trzeba zmieniać, a każda
-zmiana to źródło potencjalnych błędów.
+zmiana to źródło potencjalnych pomyłek.
 
 Skoro więc człowiek jest obecny także w procesie automatycznego testowania, nie
 powinien on przekazywać maszynie wykonywania tych czynności, które jest w
 stanie zrobić lepiej.
 
-Nie możemy zaprzeczyć tym słusznym uwagom. Trafnie uderzają one w słabe punkty
+Nie możemy zaprzeczyć tym uwagom. Trafnie uderzają one w słabe punkty
 automatyzacji. Mając jednak na uwadze przewidziany przez nas obszar zastosowań,
 uważamy, że stworzone przez nas narzędzie dobrze spełnia swoją rolę.
 

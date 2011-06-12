@@ -65,7 +65,7 @@ poniżej.
 
 Kolejnym krokiem jest stworzenie odwzorowania między modelem a laboratorium.
 Odwzorowania były omówione w rozdziale \ref{arete-master-odwzorowanie}. 
-Jeśli chcielibyśmy zawrzeć go w pliku konfiguracyjnym, wyglądałoby to
+Jeśli chcielibyśmy zawrzeć je w pliku konfiguracyjnym, wyglądałoby to
 następująco.
 
 \begin{pythoncode}
@@ -78,14 +78,14 @@ następująco.
 Alternatywnie, odwzorowanie możemy podać w linii poleceń programu Arete Master,
 korzystając z argumentu \code{--map}, jak przedstawiono w przykładzie poniżej.
 Test uruchamiamy podając wszystkie pliki konfiguracyjne po argumencie \code{-c}.
-Opis wszystkiech parametrów znajduje się w rozdziale \ref{arete-master-uruchamianie}.
+Opis wszystkich parametrów znajduje się w rozdziale \ref{arete-master-uruchamianie}.
 
 \code{\$ arete -c configuration laboratory --map host1:marvin host2:defteros}
 
 \section{Przykład: Aplikacja klient-serwer}
 \label{example-client-server}
 
-Pierwszym przykładem który omówimy jest prosty scenariusz, z którym często mamy
+Pierwszym przykładem, który omówimy jest prosty scenariusz, z którym często mamy
 do czynienia w czasie tworzenia oprogramowania typu klient-serwer. W naszym
 przypadku będzie to program umożliwiający transfer plików, gdzie zarówno serwer
 jak i klient będą sterowane z linii poleceń. W teście będziemy chcieli sprawdzić
@@ -182,7 +182,7 @@ który odbiera go (\code{5}) i kończy pracę serwera. Na koniec na urządzeniu
 
 \subsection{Konfiguracja}
 
-Poniżej omówiliśmy szczegółowo konfigurację testu w ramach którego zostaną
+Poniżej omówiliśmy szczegółowo konfigurację testu, w ramach którego zostaną
 wykonane opisane przed chwilą czynności. Zawiera ona jedynie model i plan testu.
 Zakładamy, że użytkownik zapoznał się z rozdziałami \ref{arete-master-konfiguracja}
 oraz \ref{instalacja-i-uruchomienie-arete} omawiającymi konfigurację oraz uruchomienie
@@ -207,16 +207,17 @@ je do stworzonego modelu.
   create_trigger('kill-server', 1)
 \end{pythoncode}
 
-Tworzymy również plan testu \code{client-server}, aby móc określić jakie komendy
-będą wykonywane na urządzeniach, a następnie konfigurujemy globalne ustawienia
-testu. Ponieważ nie wiemy jak długo potrwa test, ustawiamy politykę zakończenia
-testu na \code{complete}. Spowoduje to zakończenie testu dopiero w momencie, gdy
-zakończy się on na wszystkich urządzeniach biorących w nim udział. Zwróćmy
-uwagę, że jednym z urządzeń jest serwer, który z założenia nie kończy swojego
-działania. Z tego powodu tworzymy wyzwalacz o nazwie \code{kill-server}, mający
-za zadanie zakończyć działanie serwera, gdy określona ilość urządzeń (w naszym
-przypadku jeden klient), powiadomi o zakończeniu testu. Wartość tę podajemy jako
-drugi parametr komendy \code{create\_trigger}.
+Tworzymy również plan testu \code{client-server}, aby móc określić jakie
+komendy będą wykonywane na urządzeniach, a następnie konfigurujemy globalne
+ustawienia testu. Ponieważ nie wiemy jak długo potrwa test, ustawiamy politykę
+zakończenia testu na \code{complete}. Spowoduje to zakończenie testu dopiero w
+momencie, gdy wykonają się komendy na wszystkich urządzeniach biorących udział
+w teście.  Zwróćmy uwagę, że jednym z urządzeń jest serwer, który z założenia
+nie kończy swojego działania. Z tego powodu tworzymy wyzwalacz o nazwie
+\code{kill-server}, mający za zadanie zakończyć działanie serwera, gdy
+określona ilość urządzeń (w naszym przypadku jeden klient), powiadomi o
+zakończeniu testu. Wartość tę podajemy jako drugi parametr komendy
+\code{create\_trigger}.
 
 \begin{pythoncode}
   add_resource(File('clientdist', 'Client.py', chmod='+x'))
@@ -386,12 +387,12 @@ protokołu DCCP.}
 \end{figure}
 
 Przebieg testu przestawiliśmy na rysunku \ref{fig:example-03-sequence}. Na
-początku na urządzeniu \code{Server} uruchamiane są dwa serwery \code{iperf} -
+początku na urządzeniu \code{server} uruchamiane są dwa serwery \code{iperf} -
 jeden dla protokołu TCP, drugi korzystający z DCCP. Następnie na obu
 urządzeniach rozpoczynamy wykonywanie komendy \code{iptables} zwracającej
 statystyki ruchu sieciowego. Komenda ta będzie wykonywana co sekundę aż do
 zakończenia testu. Z sekundowym opóźnieniem uruchamiamy na urządzeniu
-\code{Client} klienta \code{iperf} który rozpoczyna komunikację z odpowiednim
+\code{client} klienta \code{iperf}, który rozpoczyna komunikację z odpowiednim
 serwerem z wykorzystaniem protokołu DCCP. W 10 sekundzie rozpoczynamy transmisję
 TCP uruchamiając kolejnego klienta \code{iperf}. Test kończy się po 20
 sekundach.
@@ -457,7 +458,7 @@ parametru \code{setup\_phase\_delay}.
       client_command='iperf -c @{server.ip} -p 7998 -t 9')
 \end{pythoncode}
 
-Korzystając z gotowej klasy \code{ClientServer} z modułu \code{Utils} tworzymy
+Korzystając z gotowej klasy \code{ClientServer} z modułu \code{utils} tworzymy
 komendy uruchamiające \code{iperf} w trybie klienta (\code{-c}) oraz serwera
 (\code{-s}) dla protokołów DCCP (opcja \code{-d}) oraz TCP (domyślnie).
 
@@ -486,7 +487,7 @@ bajtów.
 Korzystając z otrzymanych wyników w postaci statystyk zebranych
 przez cosekundowe wywołania komendy \code{iptables} byliśmy w stanie sporządzić
 wykresy, takie jak ten przedstawiony na rysunku \ref{fig:tcp-dccp}. Istotny jest
-tu fakt, że stworzenie kolejnych wykresów dla różnych sytuacji, polega jedynie
+tu fakt, że stworzenie kolejnych wykresów dla różnych sytuacji polega jedynie
 na prostych zmianach w konfiguracji testu.
 
 \begin{figure}[htb]
@@ -505,7 +506,7 @@ protokołu DCCP.}
 Trzeci, ostatni przykład, który przedstawimy, to ćwiczenie laboratoryjne z
 Systemów Peer-to-Peer. Test polega na pomiarze czasu dystrybucji pliku w sieci
 BitTorrent. Klienci mają rozpocząć pobieranie w tym samym momencie, a test należy
-zakończyć kiedy wszyscy będą posiadać pełny plik.
+zakończyć, kiedy wszyscy będą posiadać pełny plik.
 
 %Interesuje nas, ile każdy
 %klient wysłał danych i ile trwała pełna dystrybucja pliku.
@@ -519,7 +520,7 @@ tropiciel} - serwer przekazujący informacje użytkownikach pobierających dany
 plik.} i seeda\footnote{\emph{ang. obsiewacz} - użytkownik, który posiada
 kompletny plik i udostępnia go innym osobom.}.
 
-Do stworzenia danych które będą przesyłane w czasie testu oraz pliku
+Do stworzenia danych, które będą przesyłane w czasie testu oraz pliku
 torrent\footnote{Metaplik zawierający niezbędne informacje do rozpoczęcia
 pobierania pliku, takich jak zawartość archiwum i adres trackera czy sumy
 kontrolne plików.} można wykorzystać stworzony przez nas skrypt
@@ -539,13 +540,13 @@ oraz rozmiar tworzonego pliku danych.
 \end{figure}
 
 Zacznijmy od opisu przebiegu testu, który przedstawiono na rysunku
-\ref{fig:example-02-sequence}. Na urządzeniu \code{Tracker} uruchamiamy tracker
-BitTorrent, a następnie na urządzeniu \code{Seed} rozpoczynamy udostępnianie
+\ref{fig:example-02-sequence}. Na urządzeniu \code{tracker} uruchamiamy tracker protokołu
+BitTorrent, a następnie na urządzeniu \code{seed} rozpoczynamy udostępnianie
 pliku przez jednego z klientów (\emph{ang. seeding}). Z parosekundowym
-opóźnieniem, równocześnie uruchamiamy na urządzeniach \code{Peer} klientów,
+opóźnieniem, równocześnie uruchamiamy na urządzeniach \code{peer} klientów,
 którzy pobierają plik. Gdy klient kończy pobieranie wysyła powiadomienie do
 modułu Arete Master. W momencie gdy ten otrzyma powiadomienia od wszystkich
-klientów działających na urządzeniach \code{Peer} wysyła wyzwalacze do Arete
+klientów działających na urządzeniach \code{peer} wysyła wyzwalacze do Arete
 Slave na wszystkich urządzeniach. Powoduje to zakończenie pracy trackera oraz
 wszystkich klientów i zakończenie testu.
 
@@ -598,7 +599,7 @@ XBT.
   ]
 \end{pythoncode}
 
-Szczegółowy plan testu rozpoczynamy od urządzenia \code{Tracker}. Na początku testu
+Szczegółowy plan testu rozpoczynamy od urządzenia \code{tracker}. Na początku testu
 uruchamiamy program \code{xbt\_tracker} podając jako argument przesłany z
 wykorzystaniem parametru \code{use\_resources}, stworzony wcześniej plik
 konfiguracyjny. Na koniec dodajemy komendę kończącą działanie trackera, która
@@ -628,21 +629,22 @@ torrent jak i plik z danymi które mają być udostępniane.
   ]
 \end{pythoncode}
 
-Podobnie jak w przypadku urządzenia \code{Seed}, plan testu na pozostałych
+Podobnie jak w przypadku urządzenia \code{seed}, plan testu na pozostałych
 urządzeniach rozpoczyna się od uruchomienia klienta \code{ctorrent}. Różnica
 polega na tym, że jest on uruchamiany dopiero w 2 sekundzie testu oraz nie
 posiada pliku danych, gdyż ten nie jest przesyłany w parametrze
 \code{use\_resources}.
 
-Ponieważ chcemy aby klient działał dalej i udostępniał dane pozostałym klientom
-po zakończeniu pobierania wykorzystujemy udostępniany przez klienta
-\code{ctorrent} argument \code{-X}. Podana po nim komenda \code{\@\{poke
-stop-torrent\}} uruchamia program \code{arete-poker} z odpowiednimi argumentami,
-który łączy się z Arete Slave i uruchamia polecenie \code{poke}, które z kolei
-wysyła powiadomienie do modułu Arete Master.
-
-Tak jak w przypadku pozostałych planów dodajemy wyzwalacz \code{stop-torrent}
-kończący działanie klienta.
+Ponieważ chcemy aby klient po odebraniu pliku nadal udostępniał go innym, a
+jednocześnie chcemy poznać, kiedy każdy zakończy pobieranie, wykorzystujemy
+mechanizm powiadomień. Klient \code{ctorrent} pozwala przy pomocy argumentu
+\code{-X} przekazać polecenie do wykonania po zakończeniu pobierania pliku.
+Przekazana w ten sposób komenda \code{\@\{poke stop-torrent\}} uruchamia program
+\code{arete-poker} z odpowiednimi argumentami, który łączy się z Arete Slave i
+uruchamia polecenie \code{poke}, które z kolei wysyła powiadomienie do modułu
+Arete Master. Gdy moduł Master odbierze wszystkie powiadomienia, uruchomi
+wyzwalacz \code{stop-torrent}, który spowoduje zamknięcie klientów
+\code{ctorrent} i zakończenie testu.
 
 \begin{pythoncode}
   append_schedule('tracker', tracker_schedule)
