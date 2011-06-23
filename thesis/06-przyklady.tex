@@ -158,6 +158,8 @@ następnie zapisuje go w lokalnym systemie plików.
 
 \end{pythoncode}
 
+\pagebreak
+
 \subsection{Przebieg testu}
 
 \begin{figure}[htb]
@@ -288,6 +290,7 @@ Po zakończeniu testu Arete Master odbiera wyniki od obu modułów Slave
 uczestniczących w teście i zapisuje je do swojej bazy danych. W tym przykładzie
 wyglądają one następująco.
 
+Wyniki komend uruchomionych na maszynie \code{client}:
 \begin{description}
 \item[]
   node: client
@@ -313,6 +316,7 @@ wyglądają one następująco.
   \end{description}
 \end{description}
 
+Wyniki komend uruchomionych na maszynie \code{server}:
 \begin{description}
 \item[]
   node: server
@@ -452,7 +456,8 @@ parametru \code{setup\_phase\_delay}.
   dccp = ClientServer('dccp',
       server_command='iperf -s -p 7999 -d',
       client_command='iperf -c @{server.ip} -p 7999 -d -t 18')
-
+\end{pythoncode}
+\begin{pythoncode}
   tcp = ClientServer('tcp',
       server_command='iperf -s -p 7998',
       client_command='iperf -c @{server.ip} -p 7998 -t 9')
@@ -566,7 +571,7 @@ wszystkich klientów i zakończenie testu.
 
 Rozpoczynamy od stworzenia modelu o nazwie \code{torrent}. Dodajemy do niego dwa
 urządzenia, które będą pełnić rolę trackera i seeda, a następnie określoną ilość
-(w tym wypadku 10) pozostałych urządzeń które będę brały udział w teście.
+(w tym wypadku 10) pozostałych urządzeń które będą brały udział w teście.
 
 \begin{pythoncode}
   # examples/torrent/schedule_torrent
@@ -587,9 +592,11 @@ biorących udział w teście.
   trackcfg = add_resource(File('trackcfg', 'xbt_tracker.conf'))
 \end{pythoncode}
 
-Kolejnym etapem jest stworzenie zasobów. Dodajemy stworzony wcześniej plik z
-danymi oraz plik torrent. Dodatkowo przesyłamy plik konfiguracyjny dla trackera
-XBT.
+Kolejnym etapem jest stworzenie zasobów. Na urzędzeniu \code{seed} potrzebny
+będzie stworzony wcześniej plik z danymi oraz plik torrent. Na urządzeniach
+\code{peer} powinien znaleźć się sam plik torrent. Dodatkowo urzędzenie
+\code{tracker} potrzebuje pliku konfiguracyjnego dla trackera XBT. Zasoby
+przypiszemy urządzeniom podczas definiowania komend określających przebieg testu.
 
 \begin{pythoncode}
   tracker_schedule = [

@@ -172,6 +172,7 @@ Najpierw definicja typu w ASN.1:
 \end{textcode}
 
 A następnie definicja kodowania w ECN:
+\nopagebreak
 
 \begin{textcode}
   Example-EDM ENCODING-DEFINITIONS ::=
@@ -180,9 +181,11 @@ A następnie definicja kodowania w ECN:
   IMPORTS
     #MyType
   FROM Example-ASN1;
-  
+\end{textcode}
+
+\begin{textcode}
   MyEncodings #ENCODINGS ::= { myType-encoding }
-  
+
   myType-encoding #MyType ::= {
     ENCODING {
       ENCODING-SPACE
@@ -416,6 +419,8 @@ między nimi.
 
 Poniższy kod pokazuje jak z komponentów \code{EtherTrafficGen}, \code{EtherLLC}
 oraz \code{EtherMAC} tworzony jest moduł \code{EtherStation}.
+
+\enlargethispage*{3ex}
 
 \begin{textcode}
   module EtherStation {
